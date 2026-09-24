@@ -6,21 +6,16 @@
  * Vue/React subclasses only add typed `registerComponent` / `getComponent`
  * (e.g. Vue `markRaw`); storage is owned here.
  */
-import { getOrCreateStore } from '@hungpvq/shared-store';
 import { loggerFactory } from '@hungpvq/shared-log';
+import { getOrCreateStore } from '@hungpvq/shared-store';
+
 import { logHelper } from '../utils/log';
-import {
-  type MapControlHandle,
-  type MapControlPanelPosition,
-} from './control';
+import { type MapControlHandle, type MapControlPanelPosition } from './control';
 
 export type RegistryFn = (...args: any[]) => unknown;
 
 export type RegistryNamespaceKind =
-  | 'component'
-  | 'method'
-  | 'menu-handler'
-  | 'control';
+  'component' | 'method' | 'menu-handler' | 'control';
 
 export const REGISTRY_NAMESPACES = {
   COMPONENT: 'component:',
@@ -48,9 +43,7 @@ const logger = loggerFactory.createLogger().setNamespace('map:registry', 2);
 function warnOverwrite(mapId: string, key: string) {
   logHelper(logger, mapId, 'registry')
     .with({ fn: 'warnOverwrite', span: 'validation' })
-    .warn(
-    `Key '${key}' already exists for map ${mapId}, overwriting`,
-  );
+    .warn(`Key '${key}' already exists for map ${mapId}, overwriting`);
 }
 
 function globalBag(): RegistryBag {

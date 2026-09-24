@@ -6,30 +6,6 @@ import './style/index.css';
  * public-api lock test + Stable docs (or marked experimental in adapters).
  */
 
-export type {
-  BottomConfig,
-  ContainerStore,
-  ContainerStoreAction,
-  ContainerStoreOtherAction,
-  DrawerConfig,
-  InitOption,
-  ItemGroupConfig,
-  ItemGroupKey,
-  ItemLayoutState,
-  LocationSideBar,
-  PanelSnapshot,
-  SidebarConfig,
-  DraggableItemType,
-} from './types';
-export {
-  createEmptyBottom,
-  createEmptyContainer,
-  createEmptyDrawer,
-  createEmptyItemGroup,
-  createEmptySideBar,
-  itemTypeToGroup,
-} from './types';
-
 export type { DragStoreMakeReactive, DragStoreNotify } from './store';
 export {
   configureDragStore,
@@ -44,7 +20,29 @@ export {
   useDrawerItem,
   useSidebarItem,
 } from './store';
-
+export type {
+  BottomConfig,
+  ContainerStore,
+  ContainerStoreAction,
+  ContainerStoreOtherAction,
+  DraggableItemType,
+  DrawerConfig,
+  InitOption,
+  ItemGroupConfig,
+  ItemGroupKey,
+  ItemLayoutState,
+  LocationSideBar,
+  PanelSnapshot,
+  SidebarConfig,
+} from './types';
+export {
+  createEmptyBottom,
+  createEmptyContainer,
+  createEmptyDrawer,
+  createEmptyItemGroup,
+  createEmptySideBar,
+  itemTypeToGroup,
+} from './types';
 export type { Bounds } from './utils';
 export {
   assertDefined,

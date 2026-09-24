@@ -1,21 +1,20 @@
+import './basemap.css';
+
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
   BaseMapControl,
   BaseMapTagControl,
-  Map
+  Map,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
-import {
-  MapCard
-} from '@hungpvq/react-map-core/fields';
+import { MapCard } from '@hungpvq/react-map-core/fields';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useState } from 'react';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import './basemap.css';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function BasemapPage() {
   const [mapId, setMapId] = useState('');

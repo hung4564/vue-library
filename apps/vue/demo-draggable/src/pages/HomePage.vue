@@ -29,7 +29,10 @@ const demos = [
     <DraggableItemSideBar show title="Controls" location="left">
       <div class="panel">
         <h2>Home overview</h2>
-        <p>Samples of each type except modal. Use the links to open focused demos.</p>
+        <p>
+          Samples of each type except modal. Use the links to open focused
+          demos.
+        </p>
         <div class="demo-links">
           <RouterLink
             v-for="demo in demos"

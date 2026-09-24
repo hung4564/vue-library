@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { createHttpStore } from './http-store';
 
 describe('createHttpStore', () => {
@@ -9,7 +10,9 @@ describe('createHttpStore', () => {
       expect(url).toContain('limit=5');
       return new Response(
         JSON.stringify({
-          data: [{ id: 1, name: 'a', geom: { type: 'Point', coordinates: [1, 2] } }],
+          data: [
+            { id: 1, name: 'a', geom: { type: 'Point', coordinates: [1, 2] } },
+          ],
           meta: { total: 11, page: 2, pageSize: 5 },
         }),
         { status: 200 },
@@ -32,45 +35,47 @@ describe('createHttpStore', () => {
   });
 
   it('maps a legacy envelope with parseList and parseItem', async () => {
-    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = String(input);
-      const method = (init?.method ?? 'GET').toUpperCase();
-      // list: /api/legacy or /api/legacy?...  detail: /api/legacy/L1
-      const pathOnly = url.split('?')[0].replace(/\/$/, '');
-      const segments = pathOnly.split('/').filter(Boolean);
-      // /api/legacy → list; /api/legacy/L1 → detail
-      const isDetail = segments.length > 2;
+    const fetchMock = vi.fn(
+      async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        const method = (init?.method ?? 'GET').toUpperCase();
+        // list: /api/legacy or /api/legacy?...  detail: /api/legacy/L1
+        const pathOnly = url.split('?')[0].replace(/\/$/, '');
+        const segments = pathOnly.split('/').filter(Boolean);
+        // /api/legacy → list; /api/legacy/L1 → detail
+        const isDetail = segments.length > 2;
 
-      if (method === 'GET' && !isDetail) {
+        if (method === 'GET' && !isDetail) {
+          return new Response(
+            JSON.stringify({
+              success: true,
+              result: {
+                rows: [
+                  {
+                    parcel_id: 'L1',
+                    title: 'legacy',
+                    geo: { lon: 105, lat: 21 },
+                  },
+                ],
+                pagination: { current: 1, perPage: 5, count: 9 },
+              },
+            }),
+            { status: 200 },
+          );
+        }
         return new Response(
           JSON.stringify({
             success: true,
             result: {
-              rows: [
-                {
-                  parcel_id: 'L1',
-                  title: 'legacy',
-                  geo: { lon: 105, lat: 21 },
-                },
-              ],
-              pagination: { current: 1, perPage: 5, count: 9 },
+              parcel_id: 'L1',
+              title: 'legacy',
+              geo: { lon: 105, lat: 21 },
             },
           }),
           { status: 200 },
         );
-      }
-      return new Response(
-        JSON.stringify({
-          success: true,
-          result: {
-            parcel_id: 'L1',
-            title: 'legacy',
-            geo: { lon: 105, lat: 21 },
-          },
-        }),
-        { status: 200 },
-      );
-    });
+      },
+    );
 
     const store = createHttpStore({
       baseUrl: '/api/legacy',
@@ -136,17 +141,18 @@ describe('createHttpStore', () => {
 
   it('posts create and deletes by id', async () => {
     const calls: Array<{ url: string; method?: string }> = [];
-    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = String(input);
-      calls.push({ url, method: init?.method });
-      if (init?.method === 'POST') {
-        return new Response(
-          JSON.stringify({ id: 'n1', name: 'new' }),
-          { status: 200 },
-        );
-      }
-      return new Response(null, { status: 204 });
-    });
+    const fetchMock = vi.fn(
+      async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        calls.push({ url, method: init?.method });
+        if (init?.method === 'POST') {
+          return new Response(JSON.stringify({ id: 'n1', name: 'new' }), {
+            status: 200,
+          });
+        }
+        return new Response(null, { status: 204 });
+      },
+    );
 
     const store = createHttpStore({
       baseUrl: 'https://example.test/api/items',

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   collectFilesFromDataTransfer,
   isGisUploadFileName,
@@ -76,7 +77,8 @@ describe('readClipboardGisPaste', () => {
     const geo = new File(['{}'], 'a.geojson');
     const dt = {
       files: [geo, new File(['x'], 'x.png')],
-      getData: (type: string) => (type === 'text' || type === 'text/plain' ? '{"type":"Point"}' : ''),
+      getData: (type: string) =>
+        type === 'text' || type === 'text/plain' ? '{"type":"Point"}' : '',
     } as unknown as DataTransfer;
     const result = readClipboardGisPaste(dt);
     expect(result.files.map((f) => f.name)).toEqual(['a.geojson']);

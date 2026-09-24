@@ -3,16 +3,16 @@
  * Handles store operations, map instance registry, and cleanup
  */
 
-import { MapInitializationError } from '../errors';
-import { UniversalRegistry } from '../registry/universal-registry';
 import {
   clearDevtoolErrorsForMapId,
   clearDevtoolLogsForMapId,
 } from '../devtools/store-core';
+import { MapInitializationError } from '../errors';
+import { UniversalRegistry } from '../registry/universal-registry';
 import { hasMapInstance, type MapSimple } from '../types';
 import type { IMapStoreAdapter, MapFCOnUseMap } from './interface';
-import { getMapCoreMetaStore } from './map-core-meta';
 import { isUsableMapId } from './is-usable-map-id';
+import { getMapCoreMetaStore } from './map-core-meta';
 import type {
   AddStoreOptions,
   DefaultValue,
@@ -151,7 +151,11 @@ export class MapStoreManager {
    */
   subscribeMapReady(id: string, cb: MapFCOnUseMap): () => void {
     if (!id) {
-      this.log(id, 'debug', 'subscribeMapReady skipped because mapId is empty.');
+      this.log(
+        id,
+        'debug',
+        'subscribeMapReady skipped because mapId is empty.',
+      );
       return () => undefined;
     }
     const map = this.getMapFromStore(id);
@@ -202,7 +206,11 @@ export class MapStoreManager {
     if (cb) {
       this.subscribeMapReady(id, cb);
     } else {
-      this.log(id, 'debug', 'getMap returned undefined because the map instance is not ready yet.');
+      this.log(
+        id,
+        'debug',
+        'getMap returned undefined because the map instance is not ready yet.',
+      );
     }
 
     return undefined;
@@ -213,7 +221,11 @@ export class MapStoreManager {
    */
   registerCleanup(mapId: string, key: string, cleanup: StoreCleanup): void {
     if (!isUsableMapId(mapId)) {
-      this.log(mapId, 'debug', 'registerCleanup skipped because mapId is empty.');
+      this.log(
+        mapId,
+        'debug',
+        'registerCleanup skipped because mapId is empty.',
+      );
       return;
     }
     const store = this.ensureMapEntry(mapId) as MapStoreInternal;
@@ -275,7 +287,11 @@ export class MapStoreManager {
         { context: { mapId } },
       );
     }
-    this.log(mapId, 'debug', 'Initializing map instance in store and emitting READY.');
+    this.log(
+      mapId,
+      'debug',
+      'Initializing map instance in store and emitting READY.',
+    );
     const mapStore = this.ensureMapEntry(mapId);
     mapStore.map = map;
     this.adapter.getEventEmitter(mapId).emit(MAP_CORE_EVENT.READY);

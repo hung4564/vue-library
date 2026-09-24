@@ -4,7 +4,9 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { computed, inject, ref, toRef, Ref } from 'vue';
+import type { LocationSideBar } from '@hungpvq/draggable';
+import { computed, inject, Ref, ref, toRef } from 'vue';
+
 import {
   useInitAction,
   useShow,
@@ -15,7 +17,6 @@ import {
   withShowProps,
 } from '../../hook';
 import { useInitSidebar } from '../../hook/useInitSidebar';
-import type { LocationSideBar } from '@hungpvq/draggable';
 import SidebarModule from './sidebar/sidebar-module.vue';
 const props = defineProps({
   ...withShowProps,

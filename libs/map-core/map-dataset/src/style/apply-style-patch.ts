@@ -3,6 +3,7 @@
  */
 
 import type { LayerSpecification } from 'maplibre-gl';
+
 import type { Tab } from './type';
 
 function cloneLayer(layer: LayerSpecification): LayerSpecification {

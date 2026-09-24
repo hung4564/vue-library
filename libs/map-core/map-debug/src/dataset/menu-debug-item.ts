@@ -15,7 +15,12 @@ import {
   registerGlobalDatasetMenus,
 } from '@hungpvq/map-dataset/menu';
 import { loggerFactory } from '@hungpvq/shared-log';
-import { getDatasetDebugApi, installDatasetDebug, setDatasetDebugMenuHooks } from './bridge';
+
+import {
+  getDatasetDebugApi,
+  installDatasetDebug,
+  setDatasetDebugMenuHooks,
+} from './bridge';
 import type { DatasetMenuTarget } from './types';
 
 const logger = loggerFactory.createLogger().setNamespace('map-debug:menu');
@@ -37,13 +42,14 @@ export type CaptureDatasetFromMenuOptions = {
   openDevtools?: boolean;
 };
 
-export type CreateMenuItemDebugDatasetOptions = CaptureDatasetFromMenuOptions & {
-  id?: string;
-  name?: string;
-  icon?: string;
-  location?: MenuActionLocation;
-  byControl?: MenuByControl;
-};
+export type CreateMenuItemDebugDatasetOptions =
+  CaptureDatasetFromMenuOptions & {
+    id?: string;
+    name?: string;
+    icon?: string;
+    location?: MenuActionLocation;
+    byControl?: MenuByControl;
+  };
 
 /** Open map Devtools and select the Dataset inspector tab. */
 export function openDatasetDevtools(): void {
@@ -95,12 +101,12 @@ export function captureDatasetFromMenu(
   logger
     .with({ fn: 'captureDatasetFromMenu', span: 'menu.action' })
     .debug('Captured dataset from menu', {
-    mapId: props.mapId,
-    datasetId,
-    control,
-    target,
-    hasValue: props.value !== undefined,
-  });
+      mapId: props.mapId,
+      datasetId,
+      control,
+      target,
+      hasValue: props.value !== undefined,
+    });
 
   if (options?.openDevtools !== false) {
     openDatasetDevtools();

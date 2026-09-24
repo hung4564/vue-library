@@ -1,4 +1,11 @@
-import type { MenuAction, MenuActionLocation, MenuByControl, MenuConditionContext, MenuControlId, MenuControlPlacement } from '../interfaces/dataset.parts';
+import type {
+  MenuAction,
+  MenuActionLocation,
+  MenuByControl,
+  MenuConditionContext,
+  MenuControlId,
+  MenuControlPlacement,
+} from '../interfaces/dataset.parts';
 
 /** Injected as `menuContext.control` / `context.control` by dataset UI hosts. */
 export const MENU_CONTROL_ID = {

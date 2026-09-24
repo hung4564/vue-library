@@ -1,36 +1,29 @@
 <script setup lang="ts">
-
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import {
+  type GlobalVisibilityMode,
+  type IListViewUI,
+  type LayerListGroupTree,
+  type LayerListItem,
   layerMatchesSearch,
   listListViewGroups,
   syncListViewLayerOrder,
-  type GlobalVisibilityMode,
-  type LayerListGroupTree,
-  type LayerListItem,
-  type IListViewUI,
 } from '@hungpvq/map-dataset';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
-import { defaultMapProps, MapControlButton, RegistryItem, useLang, useMap } from '@hungpvq/vue-map-core';
+import {
+  defaultMapProps,
+  MapControlButton,
+  RegistryItem,
+  useLang,
+  useMap,
+} from '@hungpvq/vue-map-core';
 import { InputText } from '@hungpvq/vue-map-core/fields';
 import SvgIcon from '@jamescoyle/vue-icon';
-import {
-  mdiClose,
-  mdiDelete,
-  mdiGroup,
-  mdiLayers,
-  mdiPlus,
-} from '@mdi/js';
-import {
-  computed,
-  nextTick,
-  onUnmounted,
-  ref,
-  VNode,
-  watch,
-} from 'vue';
-import { useMapDataset } from '../../../store/dataset-api';
+import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
+import { computed, nextTick, onUnmounted, ref, VNode, watch } from 'vue';
+
 import { provideMenuConditionContext } from '../../../extra/menu/condition-context';
+import { useMapDataset } from '../../../store/dataset-api';
 import ButtonToggleShowALl from './ButtonToggleAllShow.vue';
 import DraggableGroupList from './DraggableList/draggable-list.vue';
 import LayerItem from './item/layer-item.vue';
@@ -236,7 +229,9 @@ function onTreeKeydown(event: KeyboardEvent) {
         v-if="layerSearch.trim()"
         class="layer-control__search-clear"
         title="Clear search"
-        @click="layerSearch = ''" variant="plain">
+        @click="layerSearch = ''"
+        variant="plain"
+      >
         <SvgIcon size="14" type="mdi" :path="mdiClose" />
       </MapControlButton>
     </div>
@@ -293,7 +288,10 @@ function onTreeKeydown(event: KeyboardEvent) {
           {{ trans('map.layer-control.create-btn') }}
         </button>
       </div>
-      <div v-else-if="debouncedSearch.trim() && !filteredViews.length" class="layer-control__empty">
+      <div
+        v-else-if="debouncedSearch.trim() && !filteredViews.length"
+        class="layer-control__empty"
+      >
         <div class="layer-control__empty-title">
           {{ trans('map.layer-control.search-empty') }}
         </div>
@@ -337,4 +335,3 @@ function onTreeKeydown(event: KeyboardEvent) {
     </div>
   </div>
 </template>
-

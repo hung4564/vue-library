@@ -1,15 +1,17 @@
 import {
   applyGotoSetting,
+  type GotoSetting,
   gotoSettingFromCoordinateText,
   readGotoSetting,
-  type GotoSetting,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
 import { useEffect, useRef, useState } from 'react';
+
 import { MapCommonButton } from '../../components/MapCommonButton';
+import { MapControlButton } from '../../components/MapControlButton';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
 import { useToolbarControl } from '../../extra/toolbar/helper';
@@ -17,7 +19,6 @@ import { InputText } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow } from '../../hooks/useShow';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
-import { MapControlButton } from '../../components/MapControlButton';
 
 export interface GotoControlProps extends WithMapPropType {
   show?: boolean;
@@ -25,12 +26,15 @@ export interface GotoControlProps extends WithMapPropType {
 
 export function GotoControl(props: GotoControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
-  const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapGotoControl' });
+  const { callMap, mapId, moduleContainerProps, order } = useMap({
+    ...mergedProps,
+    controlId: 'mapGotoControl',
+  });
   const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const [setting, setSetting] = useState<GotoSetting>({ center: [0, 0] });
 
-function loadCurrentView() {
+  function loadCurrentView() {
     callMap((map) => {
       setSetting(readGotoSetting(map));
     });
@@ -167,10 +171,17 @@ function loadCurrentView() {
                 </div>
               </div>
               <div className="map-goto-control__actions">
-                <MapControlButton onClick={() => void onPasteCoordinates()} variant="outlined">
+                <MapControlButton
+                  onClick={() => void onPasteCoordinates()}
+                  variant="outlined"
+                >
                   {trans('map.goto-control.btn.paste')}
                 </MapControlButton>
-                <MapControlButton className="map-goto-control__btn" onClick={onSetSetting} variant="filled">
+                <MapControlButton
+                  className="map-goto-control__btn"
+                  onClick={onSetSetting}
+                  variant="filled"
+                >
                   {trans('map.goto-control.btn.apply')}
                 </MapControlButton>
               </div>

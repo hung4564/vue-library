@@ -10,11 +10,11 @@ import {
   filterWorkerSnapshots,
   formatWorkerDuration,
   resolveSelectedWorkerId,
-  WorkerMonitor,
+  type WithMapPropType,
   workerHasHistory,
   workerLogsForDisplay,
+  WorkerMonitor,
   workerProgressRatio,
-  type WithMapPropType,
   type WorkerRuntimeStatus,
   type WorkerSnapshot,
   type WorkerTaskSnapshot,
@@ -24,7 +24,9 @@ import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
 import { computed, ref, watch } from 'vue';
+
 import MapCommonButton from '../../components/MapCommonButton.vue';
+import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
 import { useToolbarControl } from '../../extra/toolbar/helper';
@@ -34,7 +36,6 @@ import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 import WorkerLogList from './WorkerLogList.vue';
-import MapControlButton from '../../components/MapControlButton.vue';
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
@@ -190,14 +191,18 @@ function summaryText() {
               <MapControlButton
                 :title="trans('map.worker-control.action.clear')"
                 :disabled="!hasSelectedHistory"
-                @click.stop="selected && clearHistory(selected.id)" variant="plain">
+                @click.stop="selected && clearHistory(selected.id)"
+                variant="plain"
+              >
                 <SvgIcon :size="16" type="mdi" :path="mdiEraser" />
               </MapControlButton>
               <MapControlButton
                 v-if="manyWorkers"
                 :title="trans('map.worker-control.action.clearAll')"
                 :disabled="!hasAnyHistory"
-                @click.stop="clearHistory()" variant="plain">
+                @click.stop="clearHistory()"
+                variant="plain"
+              >
                 <SvgIcon
                   :size="16"
                   type="mdi"
@@ -305,7 +310,9 @@ function summaryText() {
                     <div class="map-worker-control__task-actions">
                       <MapControlButton
                         variant="outlined"
-                        @click.stop="WorkerMonitor.abortTask(selected.id, task.id)"
+                        @click.stop="
+                          WorkerMonitor.abortTask(selected.id, task.id)
+                        "
                       >
                         {{ trans('map.worker-control.action.cancel') }}
                       </MapControlButton>
@@ -343,20 +350,19 @@ function summaryText() {
                 </template>
                 <div v-else class="map-worker-control__task is-idle">
                   <div class="map-worker-control__task-row">
-                    <span>{{
-                      trans('map.worker-control.noRunning')
-                    }}</span>
+                    <span>{{ trans('map.worker-control.noRunning') }}</span>
                     <span>—</span>
                   </div>
-                  <div class="map-worker-control__bar is-idle" aria-hidden="true">
+                  <div
+                    class="map-worker-control__bar is-idle"
+                    aria-hidden="true"
+                  >
                     <div class="map-worker-control__bar-fill" />
                   </div>
                   <div class="map-worker-control__progress" aria-hidden="true">
                     &nbsp;
                   </div>
-                  <Collapse
-                    class="map-worker-control__task-logs"
-                  >
+                  <Collapse class="map-worker-control__task-logs">
                     <template #header>
                       {{ trans('map.worker-control.field.taskLogs') }}
                     </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue';
 import { useLang } from '@hungpvq/vue-map-core';
+import { computed, inject } from 'vue';
 
 const model = defineModel<boolean>({ default: false });
 const mapId = inject<string>('$map.id', '');

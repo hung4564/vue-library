@@ -25,16 +25,17 @@
 </template>
 
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import type { MapSimple } from '@hungpvq/map-core';
 import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
 import { LayerControl, useMapDataset } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import type { FeatureCollection } from 'geojson';
-import AsideControl from '../layout/aside-control.vue';
+
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 import DemoLanguageControl from '../components/DemoLanguageControl.vue';
+import AsideControl from '../layout/aside-control.vue';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:multi-map', 2);
 

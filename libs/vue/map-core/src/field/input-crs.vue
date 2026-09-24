@@ -9,6 +9,7 @@ import {
   normalizeEpsgCode,
 } from '@hungpvq/map-core/crs';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+
 import { useMapCrsItems } from '../extra/crs/useMapCrsItems';
 import { useMap } from '../hooks/useMap';
 
@@ -32,8 +33,9 @@ const props = withDefaults(
 );
 
 const { mapId: contextMapId } = useMap();
-const resolvedMapId =
-  (props.mapId || (contextMapId.value as string) || '') as string;
+const resolvedMapId = (props.mapId ||
+  (contextMapId.value as string) ||
+  '') as string;
 const { items: storeItems } = useMapCrsItems(resolvedMapId);
 
 const open = ref(false);
@@ -46,7 +48,9 @@ const listRef = ref<HTMLUListElement | null>(null);
 const listStyle = ref<Record<string, string>>({});
 
 const sourceItems = computed(() =>
-  props.items !== undefined ? props.items : buildMapCrsCatalog(storeItems.value),
+  props.items !== undefined
+    ? props.items
+    : buildMapCrsCatalog(storeItems.value),
 );
 
 const catalog = computed(() => buildCrsSearchCatalog(sourceItems.value));
@@ -187,7 +191,8 @@ function moveDropdownSelection(delta: number) {
   if (activeIndex.value < 0) {
     activeIndex.value = delta > 0 ? 0 : items.length - 1;
   } else {
-    activeIndex.value = (activeIndex.value + delta + items.length) % items.length;
+    activeIndex.value =
+      (activeIndex.value + delta + items.length) % items.length;
   }
   scrollActiveOptionIntoView();
 }

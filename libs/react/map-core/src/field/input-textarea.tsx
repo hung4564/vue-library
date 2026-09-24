@@ -1,7 +1,9 @@
 import React from 'react';
 
-export interface InputTextareaProps
-  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange' | 'value'> {
+export interface InputTextareaProps extends Omit<
+  React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  'onChange' | 'value'
+> {
   label?: string;
   value?: string;
   onChange?: (value: string) => void;

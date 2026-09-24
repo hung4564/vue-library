@@ -1,15 +1,22 @@
-import { render, cleanup, waitFor, act, fireEvent } from '@testing-library/react';
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  waitFor,
+} from '@testing-library/react';
 import React, { ReactNode } from 'react';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+
 import { ContainerProvider } from '../../context/ContainerContext';
 import {
   useDragContainer as getDragContainer,
   useDragStore as getDragStore,
 } from '../../store';
-import { ManagementControl } from './ManagementControl';
-import { DraggableItemPopup } from '../draggable/item-popup';
-import { DraggableItemBottom } from '../draggable/item-bottom';
 import { BottomContainer } from '../draggable/bottom/bottom-container';
+import { DraggableItemBottom } from '../draggable/item-bottom';
+import { DraggableItemPopup } from '../draggable/item-popup';
+import { ManagementControl } from './ManagementControl';
 
 const storeSubscribers = new Set<() => void>();
 

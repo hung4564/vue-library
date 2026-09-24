@@ -12,6 +12,7 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
 import { defaultMapProps, RegistryItem, useMap } from '@hungpvq/vue-map-core';
 import { computed, shallowRef, watch } from 'vue';
+
 import {
   type ComponentItem,
   useMapDatasetComponent,

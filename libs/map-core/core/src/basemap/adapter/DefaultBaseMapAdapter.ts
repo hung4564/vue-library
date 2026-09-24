@@ -2,10 +2,10 @@
  * Default MapLibre basemap adapter: swap a single prefixed layer under overlays.
  */
 
-import type { MapSimple } from '../../types';
 import type { MapAccessor } from '../../store';
-import type { BaseMapItem, IBaseMapLayer } from '../types';
+import type { MapSimple } from '../../types';
 import { BASEMAP_PREFIX, BaseMapLayer } from '../model/BaseMapLayer';
+import type { BaseMapItem, IBaseMapLayer } from '../types';
 import { BaseMapAdapter } from './BaseMapAdapter';
 
 function awaitMap(getMap: MapAccessor, mapId: string): Promise<MapSimple> {

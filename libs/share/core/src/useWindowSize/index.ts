@@ -1,5 +1,6 @@
 import { tryOnMounted } from '@hungpvq/shared';
 import { ref, watch } from 'vue';
+
 import type { ConfigurableWindow } from '../_configurable';
 import { defaultWindow } from '../_configurable';
 import { useEventListener } from '../useEventListener';

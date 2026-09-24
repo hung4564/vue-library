@@ -85,7 +85,9 @@ const MAPLIBRE_NAMED_SHIM = [
 ].join('\n');
 
 function isMapDatasetDep(id: string): boolean {
-  return id === '@hungpvq/map-dataset' || id.startsWith('@hungpvq/map-dataset/');
+  return (
+    id === '@hungpvq/map-dataset' || id.startsWith('@hungpvq/map-dataset/')
+  );
 }
 
 /**

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { createDataManagement, isDataManagementView } from './dataset-part';
 
 describe('createDataManagement', () => {
@@ -21,7 +22,10 @@ describe('createDataManagement', () => {
 
     const all = await part.list({ pageSize: 'all' });
     expect(all.items).toHaveLength(1);
-    expect(all.items[0].geometry).toEqual({ type: 'Point', coordinates: [1, 2] });
+    expect(all.items[0].geometry).toEqual({
+      type: 'Point',
+      coordinates: [1, 2],
+    });
 
     const page = await part.list({ page: 1, pageSize: 10 });
     expect(page.total).toBe(1);

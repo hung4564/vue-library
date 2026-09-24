@@ -1,9 +1,5 @@
 <template>
-  <div
-    v-if="mapIds.length > 1"
-    class="devtools-map-filter"
-    @pointerdown.stop
-  >
+  <div v-if="mapIds.length > 1" class="devtools-map-filter" @pointerdown.stop>
     <InputSelect
       :model-value="filterMapId"
       :items="items"
@@ -17,6 +13,7 @@
 import { listMapIds, shortMapId } from '@hungpvq/map-debug';
 import { InputSelect } from '@hungpvq/vue-map-core/fields';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+
 import { setDevtoolFilterMapId, useDevtoolState } from '../store';
 
 const ALL = 'all';

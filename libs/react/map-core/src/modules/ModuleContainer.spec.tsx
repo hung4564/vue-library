@@ -1,9 +1,7 @@
-import {
-  moduleCornerHostId,
-  moduleDraggableHostId,
-} from '@hungpvq/map-core';
+import { moduleCornerHostId, moduleDraggableHostId } from '@hungpvq/map-core';
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
+
 import { MapContextProvider } from '../context/MapContext';
 import { ModuleContainer } from './ModuleContainer/ModuleContainer';
 
@@ -31,7 +29,11 @@ describe('ModuleContainer portal', () => {
           mapId={MAP_ID}
           position="top-left"
           controlLayout="standalone"
-          btn={<button type="button" data-testid="corner-btn">Go</button>}
+          btn={
+            <button type="button" data-testid="corner-btn">
+              Go
+            </button>
+          }
         />
       </MapContextProvider>,
     );

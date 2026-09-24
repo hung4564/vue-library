@@ -1,4 +1,7 @@
-import type { IdentifyMultiResult, IIdentifyView } from '../interfaces/dataset.parts';
+import type {
+  IdentifyMultiResult,
+  IIdentifyView,
+} from '../interfaces/dataset.parts';
 
 /** Identify result panel registry actions (IdentifyResultControl). */
 export const IDENTIFY_RESULT_CONTROL = {

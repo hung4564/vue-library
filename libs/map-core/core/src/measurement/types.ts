@@ -3,6 +3,7 @@
  */
 
 import type { Feature, FeatureCollection } from 'geojson';
+
 import type { CoordinatesNumber } from '../types';
 import type { Measure } from './model/Measure';
 

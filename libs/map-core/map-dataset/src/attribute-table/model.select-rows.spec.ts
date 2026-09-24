@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import {
   attributeTableControlId,
   clearPendingAttributeTableSelectRows,
@@ -18,7 +19,9 @@ import { runMapControlAction } from '@hungpvq/map-core';
 
 describe('attributeTableControlId', () => {
   it('scopes control id by layer', () => {
-    expect(attributeTableControlId('layer-a')).toBe('mapAttributeTable:layer-a');
+    expect(attributeTableControlId('layer-a')).toBe(
+      'mapAttributeTable:layer-a',
+    );
   });
 });
 

@@ -1,6 +1,5 @@
 export type FieldFeatureDef =
-  | { text: string; value: string }
-  | { trans: string; value: string };
+  { text: string; value: string } | { trans: string; value: string };
 export type FieldFeaturesDef = FieldFeatureDef[];
 export interface WithFieldBuilder {
   setConfigFields(fields: FieldFeaturesDef): this;

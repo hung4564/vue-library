@@ -1,4 +1,9 @@
-import type { DatasetMenuEntry, DatasetMenuFor, IMenuView, MenuAction } from '../interfaces/dataset.parts';
+import type {
+  DatasetMenuEntry,
+  DatasetMenuFor,
+  IMenuView,
+  MenuAction,
+} from '../interfaces/dataset.parts';
 import { createDatasetPartMenuComponent } from './part-menu.model';
 
 export interface DatasetMenuBuilder {

@@ -1,8 +1,22 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
-
 import { createMapDisplayCoordinateFormatter } from '@hungpvq/map-core/crs';
-import { findSiblingOrNearestLeaf, isListView, type IListViewUI } from '@hungpvq/map-dataset';
+import {
+  findSiblingOrNearestLeaf,
+  type IListViewUI,
+  isListView,
+} from '@hungpvq/map-dataset';
 import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
+import {
+  clearIdentifyResultHighlight,
+  IDENTIFY_ALL_LAYERS_VALUE,
+  IDENTIFY_CONTROL,
+  IDENTIFY_RESULT_CONTROL,
+  type IdentifyResultGrouped,
+  type IdentifyResultLayerItem,
+  type IdentifyResultUpdatePayload,
+  paintIdentifyResultFocus,
+  shouldApplyIdentifyRequest,
+} from '@hungpvq/map-dataset/identify';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import {
   createMenuConditionContext,
@@ -11,17 +25,6 @@ import {
   isMenuItemHidden,
   MENU_CONTROL_ID,
 } from '@hungpvq/map-dataset/menu';
-import {
-  clearIdentifyResultHighlight,
-  IDENTIFY_ALL_LAYERS_VALUE,
-  IDENTIFY_CONTROL,
-  IDENTIFY_RESULT_CONTROL,
-  paintIdentifyResultFocus,
-  shouldApplyIdentifyRequest,
-  type IdentifyResultGrouped,
-  type IdentifyResultLayerItem,
-  type IdentifyResultUpdatePayload,
-} from '@hungpvq/map-dataset/identify';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
@@ -37,6 +40,7 @@ import { InputSelect } from '@hungpvq/react-map-core/fields';
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
 import { useMapDataset } from '../../store/dataset-api';
@@ -72,7 +76,7 @@ export function IdentifyResultControl(props: WithMapPropType) {
   const [focusedChildKey, setFocusedChildKey] = useState<string | null>(null);
   const lastRequestIdRef = useRef<number | undefined>(undefined);
 
-const flatChildren = useMemo(() => {
+  const flatChildren = useMemo(() => {
     const out: Array<{
       key: string;
       child: IdentifyResultGrouped['items'][number];
@@ -89,10 +93,7 @@ const flatChildren = useMemo(() => {
     (payload?: IdentifyResultUpdatePayload) => {
       if (!payload) return;
       if (
-        !shouldApplyIdentifyRequest(
-          lastRequestIdRef.current,
-          payload.requestId,
-        )
+        !shouldApplyIdentifyRequest(lastRequestIdRef.current, payload.requestId)
       ) {
         return;
       }
@@ -246,212 +247,215 @@ const flatChildren = useMemo(() => {
 
   return (
     <MenuConditionProvider value={{ control: MENU_CONTROL_ID.identify }}>
-    <ModuleContainer
-      {...moduleContainerProps}
-      draggable={(bind) =>
-        show ? (
-          <DraggableItemPopup
-            show={show}
-            onUpdateShow={(v) => {
-              if (!v) onClose();
-              else toggleShow(true);
-            }}
-            onClose={onClose}
-            title={trans('map.identify.title')}
-            width={400}
-            height={300}
-            afterTitle={
-              titleLayer ? (
-                <DatasetMenus
-                  menus={titleMenus}
-                  data={titleLayer}
-                  mapId={mapId}
-                  locations={['title']}
-                />
-              ) : undefined
-            }
-            extraBtn={
-              <>
-                <MapControlButton
-                  variant="plain"
-                  active={isEventClickActive}
-                  disabled={isEventClickActive}
-                  title={trans('map.identify.map_click')}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    runIdentifyAction(
-                      mapId,
-                      IDENTIFY_CONTROL.actionUseMapClick,
-                    );
-                  }}
-                >
-                  <Icon path={mdiCursorPointer} size={ICON_SIZE} />
-                </MapControlButton>
-                <MapControlButton
-                  variant="plain"
-                  active={isEventClickBox}
-                  disabled={isEventClickBox}
-                  title={trans('map.identify.box_select')}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    runIdentifyAction(
-                      mapId,
-                      IDENTIFY_CONTROL.actionUseBoxSelect,
-                    );
-                  }}
-                >
-                  <Icon path={mdiSelect} size={ICON_SIZE} />
-                </MapControlButton>
-              </>
-            }
-            {...bind}
-            {...panelBind}
-          >
-            <div className="identify-control-container">
-              <div className="identify-control-header">
-                <div className="identify-control-header__row">
-                  <b>{trans('map.identify.point')}:</b>
-                  <span>{currentPoint}</span>
-                </div>
-                {layerItems.length > 0 ? (
-                  <div className="identify-control-header__layer">
-                    <InputSelect
-                      label={trans('map.identify.layer')}
-                      items={layerItems}
-                      value={selectedLayerId}
-                      onChange={(value) => {
-                        const next = String(value);
-                        setSelectedLayerId(next);
-                        runIdentifyAction(
-                          mapId,
-                          IDENTIFY_CONTROL.actionSetLayerFilter,
-                          {
-                            identifyId:
-                              next === IDENTIFY_ALL_LAYERS_VALUE
-                                ? undefined
-                                : next,
-                          },
-                        );
-                      }}
-                    />
-                  </div>
-                ) : null}
-              </div>
-              <hr className="identify-control-separator" aria-hidden="true" />
-              <div
-                className="identify-control-body"
-                tabIndex={0}
-                role="region"
-                aria-label={trans('map.identify.title')}
-                aria-live="polite"
-                onKeyDown={onResultKeydown}
-              >
-                {loading ? (
-                  <div
-                    className="identify-control-state"
-                    role="status"
-                    aria-live="polite"
+      <ModuleContainer
+        {...moduleContainerProps}
+        draggable={(bind) =>
+          show ? (
+            <DraggableItemPopup
+              show={show}
+              onUpdateShow={(v) => {
+                if (!v) onClose();
+                else toggleShow(true);
+              }}
+              onClose={onClose}
+              title={trans('map.identify.title')}
+              width={400}
+              height={300}
+              afterTitle={
+                titleLayer ? (
+                  <DatasetMenus
+                    menus={titleMenus}
+                    data={titleLayer}
+                    mapId={mapId}
+                    locations={['title']}
+                  />
+                ) : undefined
+              }
+              extraBtn={
+                <>
+                  <MapControlButton
+                    variant="plain"
+                    active={isEventClickActive}
+                    disabled={isEventClickActive}
+                    title={trans('map.identify.map_click')}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      runIdentifyAction(
+                        mapId,
+                        IDENTIFY_CONTROL.actionUseMapClick,
+                      );
+                    }}
                   >
-                    <div className="identify-control-state__content">
-                      <div
-                        className="identify-control-state__loading"
-                        aria-hidden="true"
+                    <Icon path={mdiCursorPointer} size={ICON_SIZE} />
+                  </MapControlButton>
+                  <MapControlButton
+                    variant="plain"
+                    active={isEventClickBox}
+                    disabled={isEventClickBox}
+                    title={trans('map.identify.box_select')}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      runIdentifyAction(
+                        mapId,
+                        IDENTIFY_CONTROL.actionUseBoxSelect,
+                      );
+                    }}
+                  >
+                    <Icon path={mdiSelect} size={ICON_SIZE} />
+                  </MapControlButton>
+                </>
+              }
+              {...bind}
+              {...panelBind}
+            >
+              <div className="identify-control-container">
+                <div className="identify-control-header">
+                  <div className="identify-control-header__row">
+                    <b>{trans('map.identify.point')}:</b>
+                    <span>{currentPoint}</span>
+                  </div>
+                  {layerItems.length > 0 ? (
+                    <div className="identify-control-header__layer">
+                      <InputSelect
+                        label={trans('map.identify.layer')}
+                        items={layerItems}
+                        value={selectedLayerId}
+                        onChange={(value) => {
+                          const next = String(value);
+                          setSelectedLayerId(next);
+                          runIdentifyAction(
+                            mapId,
+                            IDENTIFY_CONTROL.actionSetLayerFilter,
+                            {
+                              identifyId:
+                                next === IDENTIFY_ALL_LAYERS_VALUE
+                                  ? undefined
+                                  : next,
+                            },
+                          );
+                        }}
                       />
-                      <span>{trans('map.identify.loading')}</span>
                     </div>
-                  </div>
-                ) : errorMessage ? (
-                  <div className="identify-control-state" role="alert">
-                    <div className="identify-control-state__content">
-                      <span>
-                        {errorMessage || trans('map.identify.error')}
-                      </span>
-                    </div>
-                  </div>
-                ) : items.length === 0 && !hasSelectedPoint ? (
-                  <div className="identify-control-state" role="status">
-                    <div className="identify-control-state__content">
-                      <span>{trans('map.identify.no_selection')}</span>
-                    </div>
-                  </div>
-                ) : items.length === 0 ? (
-                  <div className="identify-control-state" role="status">
-                    <div className="identify-control-state__content">
-                      <span>
-                        {selectedLayerId !== IDENTIFY_ALL_LAYERS_VALUE
-                          ? trans('map.identify.no_data_filtered')
-                          : trans('map.identify.no_data')}
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="identify-control-results" role="status">
-                  {items.map((item) => (
-                    <div key={item.id} className="identify-control-list-item">
-                      <div className="identify-control-list-item__container">
+                  ) : null}
+                </div>
+                <hr className="identify-control-separator" aria-hidden="true" />
+                <div
+                  className="identify-control-body"
+                  tabIndex={0}
+                  role="region"
+                  aria-label={trans('map.identify.title')}
+                  aria-live="polite"
+                  onKeyDown={onResultKeydown}
+                >
+                  {loading ? (
+                    <div
+                      className="identify-control-state"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      <div className="identify-control-state__content">
                         <div
-                          className="identify-control-list-item__header"
-                          title={item.name}
-                        >
-                          {item.name || '---'}
-                        </div>
-                        <div className="identify-control-list-item__child-container">
-                          {item.items.map((child) => {
-                            const childKey = `${item.id}:${child.id}`;
-                            return (
-                              <div
-                                key={String(child.id)}
-                                className={`identify-control-child-item${
-                                  focusedChildKey === childKey
-                                    ? ' is-focused'
-                                    : ''
-                                }`}
-                                title={child.name || String(child.id)}
-                                role="button"
-                                tabIndex={0}
-                                onClick={() => setFocusedChildKey(childKey)}
-                                onKeyDown={(event) => {
-                                  if (
-                                    event.key !== 'Enter' &&
-                                    event.key !== ' '
-                                  ) {
-                                    return;
-                                  }
-                                  event.preventDefault();
-                                  setFocusedChildKey(childKey);
-                                }}
-                              >
-                                <span className="identify-control-child-item__name">
-                                  {child.name || String(child.id) || '---'}
-                                </span>
-                                <div className="identify-control-child-item__spacer" />
-                                <div
-                                  className="identify-control-child-item__action"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <DatasetMenus
-                                    menus={getItemMenus(child.identify)}
-                                    data={child.identify}
-                                    mapId={mapId}
-                                    value={child.data}
-                                    locations={['extra', 'menu']}
-                                  />
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
+                          className="identify-control-state__loading"
+                          aria-hidden="true"
+                        />
+                        <span>{trans('map.identify.loading')}</span>
                       </div>
                     </div>
-                  ))}
-                  </div>
-                )}
+                  ) : errorMessage ? (
+                    <div className="identify-control-state" role="alert">
+                      <div className="identify-control-state__content">
+                        <span>
+                          {errorMessage || trans('map.identify.error')}
+                        </span>
+                      </div>
+                    </div>
+                  ) : items.length === 0 && !hasSelectedPoint ? (
+                    <div className="identify-control-state" role="status">
+                      <div className="identify-control-state__content">
+                        <span>{trans('map.identify.no_selection')}</span>
+                      </div>
+                    </div>
+                  ) : items.length === 0 ? (
+                    <div className="identify-control-state" role="status">
+                      <div className="identify-control-state__content">
+                        <span>
+                          {selectedLayerId !== IDENTIFY_ALL_LAYERS_VALUE
+                            ? trans('map.identify.no_data_filtered')
+                            : trans('map.identify.no_data')}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="identify-control-results" role="status">
+                      {items.map((item) => (
+                        <div
+                          key={item.id}
+                          className="identify-control-list-item"
+                        >
+                          <div className="identify-control-list-item__container">
+                            <div
+                              className="identify-control-list-item__header"
+                              title={item.name}
+                            >
+                              {item.name || '---'}
+                            </div>
+                            <div className="identify-control-list-item__child-container">
+                              {item.items.map((child) => {
+                                const childKey = `${item.id}:${child.id}`;
+                                return (
+                                  <div
+                                    key={String(child.id)}
+                                    className={`identify-control-child-item${
+                                      focusedChildKey === childKey
+                                        ? ' is-focused'
+                                        : ''
+                                    }`}
+                                    title={child.name || String(child.id)}
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => setFocusedChildKey(childKey)}
+                                    onKeyDown={(event) => {
+                                      if (
+                                        event.key !== 'Enter' &&
+                                        event.key !== ' '
+                                      ) {
+                                        return;
+                                      }
+                                      event.preventDefault();
+                                      setFocusedChildKey(childKey);
+                                    }}
+                                  >
+                                    <span className="identify-control-child-item__name">
+                                      {child.name || String(child.id) || '---'}
+                                    </span>
+                                    <div className="identify-control-child-item__spacer" />
+                                    <div
+                                      className="identify-control-child-item__action"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <DatasetMenus
+                                        menus={getItemMenus(child.identify)}
+                                        data={child.identify}
+                                        mapId={mapId}
+                                        value={child.data}
+                                        locations={['extra', 'menu']}
+                                      />
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </DraggableItemPopup>
-        ) : null
-      }
-    />
+            </DraggableItemPopup>
+          ) : null
+        }
+      />
     </MenuConditionProvider>
   );
 }

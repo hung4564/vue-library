@@ -4,10 +4,15 @@ import {
   logHelper,
   registerMapDomainStoreFactory,
 } from '@hungpvq/map-core';
+
 import { logger } from './logger';
 import { createDefaultMapDrawStore } from './store-helpers';
 import { MAP_DRAW_STORE_KEY } from './store-key';
-import { MAP_DRAW_EVENT, type MapDrawEvent, type MapDrawStore } from './types/index';
+import {
+  MAP_DRAW_EVENT,
+  type MapDrawEvent,
+  type MapDrawStore,
+} from './types/index';
 
 function endDrawSession(mapId: string, store: MapDrawStore): void {
   if (!store.config) return;

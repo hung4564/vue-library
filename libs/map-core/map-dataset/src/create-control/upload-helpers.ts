@@ -1,26 +1,31 @@
 import { WorkerMonitor, workerProgressRatio } from '@hungpvq/map-core';
 import type { GeoJSON } from 'geojson';
-import { loadGisFileAsync, loadGisTextAsync, loadGisUrlAsync } from '../geojson/geojson-worker.client';
-import { parseVectorLayerInfosFromObject } from '../vector-tile/archives';
+
+import {
+  loadGisFileAsync,
+  loadGisTextAsync,
+  loadGisUrlAsync,
+} from '../geojson/geojson-worker.client';
 import type { VectorTileSourceLayerInfo } from '../vector-tile/archives';
+import { parseVectorLayerInfosFromObject } from '../vector-tile/archives';
 import { applyCreateControlSample } from './apply-sample';
 import type { GisFormat } from './gis-format';
 import { formatCreateControlBytes } from './limits';
 import {
   buildCreateControlLoadedSource,
-  shortenCreateControlUrl,
   type CreateControlDataSourceKind,
   type CreateControlLoadedSource,
+  shortenCreateControlUrl,
 } from './loaded-source';
 import {
   applyCreateControlLayerName,
-  getCreateControlSampleUrl,
+  type CreateControlLayerKind,
+  type CreateControlSample,
   getCreateControlSamples,
+  getCreateControlSampleUrl,
   layerNameFromFileGdbFiles,
   layerNameFromFileName,
   layerNameFromUrl,
-  type CreateControlLayerKind,
-  type CreateControlSample,
 } from './presets';
 
 /** Whether pasted text looks like a finished GIS document (avoid errors mid-type). */
@@ -78,9 +83,7 @@ export function summarizeCreateControlUploadFiles(
 ): CreateControlUploadFileSummary {
   const totalBytes = files.reduce((sum, file) => sum + (file?.size ?? 0), 0);
   const label =
-    files.length === 1
-      ? files[0]?.name || 'file'
-      : `${files.length} files`;
+    files.length === 1 ? files[0]?.name || 'file' : `${files.length} files`;
   const fileName = files[0]?.name || label;
   return { label, totalBytes, fileName };
 }
@@ -122,7 +125,9 @@ export function findCreateControlSampleById(
   sampleId: string,
 ): CreateControlSample | undefined {
   if (!sampleId) return undefined;
-  return getCreateControlSamples(layerKind).find((item) => item.id === sampleId);
+  return getCreateControlSamples(layerKind).find(
+    (item) => item.id === sampleId,
+  );
 }
 
 /** URL to fill when a sample is selected; `null` if id is empty/unknown. */
@@ -166,7 +171,10 @@ export type CreateControlFileParseResult = {
   geojson: GeoJSON;
   crs: string | null;
   format?: GisFormat;
-  layers?: Array<{ name: string; geojson: import('geojson').FeatureCollection }>;
+  layers?: Array<{
+    name: string;
+    geojson: import('geojson').FeatureCollection;
+  }>;
   loadedSource: CreateControlLoadedSource;
   suggestedName: string;
 };
@@ -177,7 +185,8 @@ export async function parseCreateControlUploadedFiles(
     Blob & { name?: string; size?: number; webkitRelativePath?: string }
   >,
 ): Promise<CreateControlFileParseResult> {
-  const { label, totalBytes, fileName } = summarizeCreateControlUploadFiles(files);
+  const { label, totalBytes, fileName } =
+    summarizeCreateControlUploadFiles(files);
   const { geojson, crs, format, layers } = await loadGisFileAsync(files);
   if (!geojson) {
     throw new Error('Unsupported or invalid GIS data');
@@ -211,12 +220,13 @@ export async function parseCreateControlUploadedFiles(
     loadedSource: buildCreateControlLoadedSource({
       kind: 'file',
       label:
-        format === 'filegdb' && suggestedName
-          ? `${suggestedName}.gdb`
-          : label,
+        format === 'filegdb' && suggestedName ? `${suggestedName}.gdb` : label,
       detail:
         files.length > 1
-          ? files.map((f) => f.name).filter(Boolean).join(', ')
+          ? files
+              .map((f) => f.name)
+              .filter(Boolean)
+              .join(', ')
           : layers?.length
             ? layers.map((layer) => layer.name).join(', ')
             : undefined,
@@ -395,7 +405,11 @@ export async function loadCreateControlVectorTileFromUrl(options: {
 }): Promise<CreateControlVectorUrlLoadResult> {
   const layerKind = options.layerKind ?? 'xyz';
   const url = options.url.trim();
-  const sample = findCreateControlSampleMatchingUrl('xyz', options.sampleId, url);
+  const sample = findCreateControlSampleMatchingUrl(
+    'xyz',
+    options.sampleId,
+    url,
+  );
 
   if (sample && layerKind === 'xyz') {
     const samplePatch = await applyCreateControlSample(sample);
@@ -417,7 +431,8 @@ export async function loadCreateControlVectorTileFromUrl(options: {
   }
 
   if (looksPmtilesUrl(url) || layerKind === 'pmtiles') {
-    const { openPmtilesUrl } = await import('../vector-tile/vectortile-worker.client');
+    const { openPmtilesUrl } =
+      await import('../vector-tile/vectortile-worker.client');
     const opened = await openPmtilesUrl(url);
     return {
       patch: archiveFormPatch(
@@ -468,9 +483,8 @@ export async function loadCreateControlVectorTileFromFile(
     if (layerKind && layerKind !== 'mbtiles') {
       throw new Error('Expected a .mbtiles file');
     }
-    const { openMbtilesArchive } = await import(
-      '../vector-tile/vectortile-worker.client'
-    );
+    const { openMbtilesArchive } =
+      await import('../vector-tile/vectortile-worker.client');
     const opened = await openMbtilesArchive(file);
     return {
       patch: archiveFormPatch(
@@ -492,9 +506,8 @@ export async function loadCreateControlVectorTileFromFile(
     if (layerKind && layerKind !== 'pmtiles') {
       throw new Error('Expected a .pmtiles file');
     }
-    const { openPmtilesFile } = await import(
-      '../vector-tile/vectortile-worker.client'
-    );
+    const { openPmtilesFile } =
+      await import('../vector-tile/vectortile-worker.client');
     const opened = await openPmtilesFile(file);
     return {
       patch: archiveFormPatch(
@@ -684,7 +697,10 @@ export function summarizeFileGdbLayerMeta(
 export function createControlGeojsonPreviewPatch(
   geojson: GeoJSON | null,
   crs?: string | null,
-  layers?: Array<{ name: string; geojson: import('geojson').FeatureCollection }> | null,
+  layers?: Array<{
+    name: string;
+    geojson: import('geojson').FeatureCollection;
+  }> | null,
 ): Record<string, unknown> {
   const patch: Record<string, unknown> = { geojson };
   if (crs) {

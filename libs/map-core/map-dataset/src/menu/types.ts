@@ -1,6 +1,11 @@
 import type { MapMouseEvent } from 'maplibre-gl';
+
 import type { IDataset } from '../interfaces/dataset.base';
-import type { MenuAction, MenuCondition, MenuConditionContext } from '../interfaces/dataset.parts';
+import type {
+  MenuAction,
+  MenuCondition,
+  MenuConditionContext,
+} from '../interfaces/dataset.parts';
 import type { createMenuClickBuilder } from './builder';
 
 export type MenuContextSource =
@@ -10,7 +15,10 @@ export type MenuContextSource =
 
 export type { MenuCondition, MenuConditionContext };
 
-export type CommandHandlerMenuExecute<PDefault = unknown, TDefault = IDataset> = {
+export type CommandHandlerMenuExecute<
+  PDefault = unknown,
+  TDefault = IDataset,
+> = {
   execute: <P = PDefault, T = TDefault>(
     click: unknown,
     baseProps: MenuItemProps<P, T>,
@@ -51,8 +59,7 @@ export type MenuItemClickHandle<P = unknown, T = IDataset> = (
   | void
   | Promise<void>;
 export type MenuItemClickCommon<P = unknown, T = IDataset> =
-  | string
-  | CommandHandlerMenuExecute<P, T>;
+  string | CommandHandlerMenuExecute<P, T>;
 export type MenuItemClick<P = unknown, T = IDataset> =
   | MenuItemClickCommon<P, T>
   | MenuItemClickHandle<P, T>

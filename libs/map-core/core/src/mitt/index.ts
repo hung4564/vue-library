@@ -1,13 +1,14 @@
 import {
   getFlowParentFn,
   getFlowStackDepth,
+  type LogContext,
+  type LogEventPayload,
   loggerFactory,
   packLogEvent,
   runWithLogEvent,
-  type LogContext,
-  type LogEventPayload,
 } from '@hungpvq/shared-log';
 import mitt, { Emitter, EventType, Handler, WildcardHandler } from 'mitt';
+
 import {
   ensureMapDomainStore,
   registerMapDomainStoreFactory,
@@ -41,9 +42,7 @@ export function createMapMitt<
   const resolveMapId = (ctx?: LogContext) =>
     options?.mapId ?? ctx?.mapId ?? 'global';
 
-  const wrapHandler = (
-    handler: Handler<T[keyof T]>,
-  ): Handler<unknown> => {
+  const wrapHandler = (handler: Handler<T[keyof T]>): Handler<unknown> => {
     let wrapped = wrappers.get(handler) as Handler<unknown> | undefined;
     if (!wrapped) {
       wrapped = (event: unknown) => {
@@ -63,8 +62,7 @@ export function createMapMitt<
     handler: WildcardHandler<T>,
   ): WildcardHandler<RawEvents> => {
     let wrapped = wrappers.get(handler) as
-      | WildcardHandler<RawEvents>
-      | undefined;
+      WildcardHandler<RawEvents> | undefined;
     if (!wrapped) {
       wrapped = (type, event) => {
         runWithLogEvent(event as LogEventPayload<unknown> | unknown, (data) =>
@@ -108,10 +106,7 @@ export function createMapMitt<
       raw.on('*', wrapWildcard(handler as WildcardHandler<T>));
       return;
     }
-    raw.on(
-      type as EventType,
-      wrapHandler(handler as Handler<T[keyof T]>),
-    );
+    raw.on(type as EventType, wrapHandler(handler as Handler<T[keyof T]>));
   }) as Emitter<T>['on'];
 
   const off: Emitter<T>['off'] = ((
@@ -132,10 +127,7 @@ export function createMapMitt<
     raw.off(type as EventType, wrapped as Handler<unknown>);
   }) as Emitter<T>['off'];
 
-  const emit: Emitter<T>['emit'] = ((
-    type: keyof T,
-    event?: T[keyof T],
-  ) => {
+  const emit: Emitter<T>['emit'] = ((type: keyof T, event?: T[keyof T]) => {
     const parent = loggerFactory.getContext();
     const mapId = options?.mapId;
     const run = () => runEmit(type, event);

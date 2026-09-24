@@ -11,16 +11,17 @@ import type {
   LayerSpecification,
   LineLayerSpecification,
 } from 'maplibre-gl';
+
 import type { WithDataHelper } from '../extra/data';
 import type { IDataset } from '../interfaces/dataset.base';
 import { loggerHighlight } from '../logger';
 import { findPartByType } from '../model/visitors/helpers';
 import { isFeatureCollection } from '../utils/feature-collection';
 import type {
+  HighlightAnimState,
   HighlightFilterCreator,
   HighlightGeoJson,
   HighlightLayerIds,
-  HighlightAnimState,
 } from './types';
 
 export type { HighlightAnimState } from './types';
@@ -29,19 +30,18 @@ export type { HighlightAnimState } from './types';
 type HighlightPaintDataset = IDataset & Partial<WithDataHelper>;
 
 type HighlightLayerKey =
-  | 'pointHalo'
-  | 'lineHalo'
-  | 'polygonHalo'
-  | 'point'
-  | 'line'
-  | 'polygon';
+  'pointHalo' | 'lineHalo' | 'polygonHalo' | 'point' | 'line' | 'polygon';
 
 function scalarProperty(
   feature: GeoJSONFeature | Feature | undefined,
   key: string,
 ): string | number | boolean | undefined {
   const value = feature?.properties?.[key];
-  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+  if (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  ) {
     return value;
   }
   return undefined;
@@ -57,9 +57,7 @@ function featureIdValue(
   return undefined;
 }
 
-function collectFeatureIds(
-  feature: HighlightGeoJson,
-): Array<string | number> {
+function collectFeatureIds(feature: HighlightGeoJson): Array<string | number> {
   if (isFeatureCollection(feature)) {
     return feature.features
       .map((item) => featureIdValue(item))
@@ -96,9 +94,7 @@ export function createHighlightFilter(
     if (isFeatureCollection(feature)) {
       const values = feature.features
         .map((item) => scalarProperty(item, filterCreator))
-        .filter(
-          (value): value is string | number | boolean => value != null,
-        );
+        .filter((value): value is string | number | boolean => value != null);
       if (values.length === 0) return undefined;
       if (values.length === 1) {
         return ['==', ['get', filterCreator], values[0]] as FilterSpecification;
@@ -457,11 +453,11 @@ export function applyHighlightFeatureState(
   } catch (error) {
     logHelper(loggerHighlight, map.id, 'ensureHighlight')
       .with({ fn: 'applyHighlightFeatureState', span: 'highlight.paint' })
-      .debug(
-      'highlight',
-      'querySourceFeatures failed',
-      { error, sourceId, filter },
-    );
+      .debug('highlight', 'querySourceFeatures failed', {
+        error,
+        sourceId,
+        filter,
+      });
   }
   if (candidates.length === 0 && feature) {
     candidates = isFeatureCollection(feature)
@@ -477,11 +473,7 @@ export function applyHighlightFeatureState(
     } catch (error) {
       logHelper(loggerHighlight, map.id, 'ensureHighlight')
         .with({ fn: 'applyHighlightFeatureState', span: 'highlight.paint' })
-        .debug(
-        'highlight',
-        'setFeatureState failed',
-        { error, sourceId, id },
-      );
+        .debug('highlight', 'setFeatureState failed', { error, sourceId, id });
     }
   }
   return Array.from(ids);
@@ -499,11 +491,11 @@ export function clearHighlightFeatureState(
     } catch (error) {
       logHelper(loggerHighlight, map.id, 'ensureHighlight')
         .with({ fn: 'clearHighlightFeatureState', span: 'highlight.paint' })
-        .debug(
-        'highlight',
-        'removeFeatureState failed',
-        { error, sourceId, id },
-      );
+        .debug('highlight', 'removeFeatureState failed', {
+          error,
+          sourceId,
+          id,
+        });
     }
   }
 }
@@ -571,11 +563,12 @@ export function ensureHighlightSource(
       ).getSourceId();
       logHelper(loggerHighlight, map.id, 'ensureHighlight')
         .with({ fn: 'ensureHighlightSource', span: 'highlight.paint' })
-        .debug(
-        'highlight',
-        'use source dataset',
-        { dataset: base, source: sourceLeaf, sourceId, feature },
-      );
+        .debug('highlight', 'use source dataset', {
+          dataset: base,
+          source: sourceLeaf,
+          sourceId,
+          feature,
+        });
       return { sourceId, isolated: false };
     }
   }
@@ -584,11 +577,12 @@ export function ensureHighlightSource(
   const data = toGeoJSONData(feature);
   logHelper(loggerHighlight, map.id, 'ensureHighlight')
     .with({ fn: 'ensureHighlightSource', span: 'highlight.paint' })
-    .debug(
-    'highlight',
-    'use source geojson',
-    { dataset: base, sourceId, feature, data },
-  );
+    .debug('highlight', 'use source geojson', {
+      dataset: base,
+      sourceId,
+      feature,
+      data,
+    });
   if (!map.getSource(sourceId)) {
     map.addSource(sourceId, { type: 'geojson', data, promoteId: 'id' });
   } else {

@@ -18,8 +18,7 @@ export type BasemapSourceValidationFail = {
 };
 
 export type BasemapSourceValidationResult =
-  | BasemapSourceValidationOk
-  | BasemapSourceValidationFail;
+  BasemapSourceValidationOk | BasemapSourceValidationFail;
 
 export type ValidateBasemapSourceInput = {
   type: BasemapSourceType;
@@ -42,11 +41,7 @@ export function isAbsoluteHttpUrl(url: string): boolean {
 export function isValidRasterTileTemplate(url: string): boolean {
   const u = url.trim();
   if (!isAbsoluteHttpUrl(u)) return false;
-  return (
-    u.includes('{z}') &&
-    u.includes('{x}') &&
-    u.includes('{y}')
-  );
+  return u.includes('{z}') && u.includes('{x}') && u.includes('{y}');
 }
 
 export function buildSampleRasterTileUrl(template: string): string {
@@ -65,7 +60,9 @@ function fail(
   return { ok: false, code, message };
 }
 
-async function probeRasterTile(template: string): Promise<BasemapSourceValidationResult> {
+async function probeRasterTile(
+  template: string,
+): Promise<BasemapSourceValidationResult> {
   const sample = buildSampleRasterTileUrl(template);
   try {
     await loadImage(sample);
@@ -97,7 +94,9 @@ function loadImage(src: string): Promise<void> {
   });
 }
 
-async function probeVectorStyle(url: string): Promise<BasemapSourceValidationResult> {
+async function probeVectorStyle(
+  url: string,
+): Promise<BasemapSourceValidationResult> {
   let res: Response;
   try {
     res = await fetch(url.trim(), { method: 'GET', mode: 'cors' });
@@ -108,10 +107,7 @@ async function probeVectorStyle(url: string): Promise<BasemapSourceValidationRes
     );
   }
   if (!res.ok) {
-    return fail(
-      'probe-failed',
-      `Style request failed (${res.status}).`,
-    );
+    return fail('probe-failed', `Style request failed (${res.status}).`);
   }
   let data: unknown;
   try {

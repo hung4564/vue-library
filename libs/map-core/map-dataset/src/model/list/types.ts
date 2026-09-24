@@ -1,13 +1,14 @@
 import type { Color } from '@hungpvq/map-core';
+
 import type { WithEventHelper } from '../../extra/event/types';
 import type { IDataset } from '../../interfaces/dataset.base';
-import type { WithMenuHelper } from '../../interfaces/dataset.parts';
 import type {
   WithOpacity,
   WithSetOpacity,
   WithShow,
   WithToggleShow,
 } from '../../interfaces/dataset.extra';
+import type { WithMenuHelper } from '../../interfaces/dataset.parts';
 import type { ComponentType } from '../../types';
 import type { GroupTree, Item, TreeItem } from '../../utils/tree';
 

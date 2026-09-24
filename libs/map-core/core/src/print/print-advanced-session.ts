@@ -7,8 +7,8 @@ import type { MapSimple } from '../types';
 import { CrosshairManager } from './CrosshairManager';
 import { PrintableAreaManager } from './PrintableAreaManager';
 import {
-  PRINT_PAPER_PRESETS,
   type MapPrintStore,
+  PRINT_PAPER_PRESETS,
   type PrintOption,
 } from './types';
 import { exportMapbox, exportMapboxWithOptions } from './utils';

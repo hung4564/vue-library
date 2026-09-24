@@ -8,9 +8,6 @@ import { DevtoolsControl, type DevtoolsControlProps } from './DevtoolsControl';
 export type DevtoolsProps = Partial<DevtoolsControlProps> &
   Partial<WithMapPropType>;
 
-export function Devtools({
-  mapId,
-  ...controlProps
-}: DevtoolsProps = {}) {
+export function Devtools({ mapId, ...controlProps }: DevtoolsProps = {}) {
   return <DevtoolsControl mapId={mapId} {...controlProps} />;
 }

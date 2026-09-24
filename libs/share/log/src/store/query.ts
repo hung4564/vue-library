@@ -9,7 +9,9 @@ export function logActionId(log: LogRecord): string | undefined {
 }
 
 export function logSpanId(log: LogRecord): string | undefined {
-  return log.header.spanId ?? (log.header as { functionId?: string }).functionId;
+  return (
+    log.header.spanId ?? (log.header as { functionId?: string }).functionId
+  );
 }
 
 export function logMapId(log: LogRecord): string | null {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
-  GeoLocateSession,
   type GeoLocateControlOptions,
+  GeoLocateSession,
   type GeoLocateUiState,
   type MapSimple,
   type WithMapPropType,
@@ -9,6 +9,7 @@ import {
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { ref, watch } from 'vue';
+
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';

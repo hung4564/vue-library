@@ -1,8 +1,15 @@
-import type { FeatureCollection } from 'geojson';
 import type { IDataset } from '@hungpvq/map-dataset';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { StrictMode, type ReactNode } from 'react';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
+import type { FeatureCollection } from 'geojson';
+import { type ReactNode, StrictMode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { ExportGeo } from './export-geo';
 
 vi.mock('@hungpvq/react-draggable', () => ({

@@ -1,4 +1,5 @@
 import type { Feature } from 'geojson';
+
 import { isDraftOption } from './is-draft-option';
 import type { IDraftRecord, MapDrawOption } from './types/index';
 
@@ -40,9 +41,7 @@ export function getDraftListSnapshot(
  * Classify a `draw.create` feature for the draft store.
  * Selecting an existing feature for edit also fires create — treat as update.
  */
-export function classifyDrawCreateFeature(
-  method: string,
-): 'updated' | 'added' {
+export function classifyDrawCreateFeature(method: string): 'updated' | 'added' {
   return method === 'select' ? 'updated' : 'added';
 }
 
@@ -132,10 +131,7 @@ export async function handleDrawMapClick(options: {
   control: MapDrawEditControl;
   mapId: string;
   point: [number, number];
-  setFeature: (
-    type: 'added' | 'updated' | 'deleted',
-    feature: Feature,
-  ) => void;
+  setFeature: (type: 'added' | 'updated' | 'deleted', feature: Feature) => void;
   detachMapClick?: () => void;
 }): Promise<DrawMapClickResult> {
   const {

@@ -1,12 +1,13 @@
-import { describe, expect, it, afterEach } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
+
 import { createDataset } from '../model/dataset.base';
+import { getResolvedMenus } from './dataset';
 import {
   clearGlobalDatasetMenus,
   getGlobalDatasetMenus,
   registerGlobalDatasetMenus,
 } from './global-defaults';
 import { createMenuItem } from './items';
-import { getResolvedMenus } from './dataset';
 
 describe('registerGlobalDatasetMenus', () => {
   afterEach(() => {

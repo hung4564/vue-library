@@ -1,11 +1,12 @@
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { defineComponent, nextTick, ref } from 'vue';
+
 import { useDragContainer, useDragStore } from '../../store';
-import ManagementControl from './index.vue';
-import DraggableItemPopup from '../draggable/item-popup.vue';
-import DraggableItemBottom from '../draggable/item-bottom.vue';
 import BottomContainer from '../draggable/bottom/bottom-container.vue';
+import DraggableItemBottom from '../draggable/item-bottom.vue';
+import DraggableItemPopup from '../draggable/item-popup.vue';
+import ManagementControl from './index.vue';
 
 vi.mock('vue-draggable-resizable', () => ({
   default: defineComponent({
@@ -105,7 +106,9 @@ describe('ManagementControl', () => {
     expect(wrapper.text()).toContain('Bottoms');
     expect(wrapper.text()).toMatch(/1\/1/);
 
-    const hideBtn = wrapper.findAll('button').find((b) => b.attributes('title') === 'Hide');
+    const hideBtn = wrapper
+      .findAll('button')
+      .find((b) => b.attributes('title') === 'Hide');
     expect(hideBtn).toBeTruthy();
     if (!hideBtn) return;
     await hideBtn.trigger('click');

@@ -1,14 +1,15 @@
 import {
   buildCreateControlArchiveMetaChips,
+  type CreateControlLoadedSource,
   createControlLoadedSourceEyebrowKey,
   formatCreateControlBytes,
   loadCreateControlVectorTileFromFile,
-  type CreateControlLoadedSource,
 } from '@hungpvq/map-dataset/create-control';
 import { closeVectorTileArchive } from '@hungpvq/map-dataset/vector-tile';
 import { MapControlButton } from '@hungpvq/react-map-core';
 import { DragDropFile } from '@hungpvq/react-map-core/fields';
 import { useState } from 'react';
+
 import type { CreateConfigFormProps } from './types';
 
 function archiveMetaChips(
@@ -126,9 +127,7 @@ export function ConfigMbtilesJson({
                   )}
                 </p>
                 <p className="create-control-loaded__title">
-                  {loadedSource?.label ||
-                    (config.name as string) ||
-                    'MBTiles'}
+                  {loadedSource?.label || (config.name as string) || 'MBTiles'}
                 </p>
                 {loadedSource?.detail ? (
                   <p className="create-control-loaded__detail">

@@ -1,9 +1,15 @@
 import { describe, expect, it } from 'vitest';
+
+import {
+  detectGisFormat,
+  isFileGdbPartName,
+  isFileGdbZipName,
+} from './gis-format';
 import {
   ConfigFilegdbHelper,
-  FILEGDB_FILE_ACCEPT,
   createControlGeojsonPreviewPatch,
   featuresWithGeometry,
+  FILEGDB_FILE_ACCEPT,
   getCreateControlDataTabs,
   LAYER_TYPES,
   layerNameFromFileGdbFiles,
@@ -11,11 +17,6 @@ import {
   normalizeLayerType,
   suggestLayerName,
 } from './index';
-import {
-  detectGisFormat,
-  isFileGdbPartName,
-  isFileGdbZipName,
-} from './gis-format';
 
 describe('CreateControl FileGDB layer type', () => {
   it('exposes filegdb in LAYER_TYPES and helpers', () => {
@@ -40,15 +41,11 @@ describe('CreateControl FileGDB layer type', () => {
   it('detects .gdb.zip, *_gdb.zip, and folder members', () => {
     expect(isFileGdbZipName('Demo.gdb.zip')).toBe(true);
     expect(
-      isFileGdbZipName(
-        '_static_unosat_filesystem_2340_FL20150730VNM_gdb.zip',
-      ),
+      isFileGdbZipName('_static_unosat_filesystem_2340_FL20150730VNM_gdb.zip'),
     ).toBe(true);
     expect(isFileGdbZipName('Demo.zip')).toBe(false);
     expect(detectGisFormat({ name: 'Demo.gdb.zip' })).toBe('filegdb');
-    expect(
-      detectGisFormat({ name: 'FL20150730VNM_gdb.zip' }),
-    ).toBe('filegdb');
+    expect(detectGisFormat({ name: 'FL20150730VNM_gdb.zip' })).toBe('filegdb');
     expect(isFileGdbPartName('Demo.gdb/a00000001.gdbtable')).toBe(true);
     expect(
       looksLikeFileGdbFiles([
@@ -56,9 +53,9 @@ describe('CreateControl FileGDB layer type', () => {
         { name: 'Demo.gdb/a00000001.gdbtablx' },
       ]),
     ).toBe(true);
-    expect(
-      looksLikeFileGdbFiles([{ name: 'FL20150730VNM_gdb.zip' }]),
-    ).toBe(true);
+    expect(looksLikeFileGdbFiles([{ name: 'FL20150730VNM_gdb.zip' }])).toBe(
+      true,
+    );
     expect(looksLikeFileGdbFiles([{ name: 'roads.geojson' }])).toBe(false);
   });
 
@@ -74,9 +71,9 @@ describe('CreateControl FileGDB layer type', () => {
     expect(layerNameFromFileGdbFiles([{ name: 'Counties.gdb.zip' }])).toBe(
       'Counties',
     );
-    expect(
-      layerNameFromFileGdbFiles([{ name: 'FL20150730VNM_gdb.zip' }]),
-    ).toBe('FL20150730VNM');
+    expect(layerNameFromFileGdbFiles([{ name: 'FL20150730VNM_gdb.zip' }])).toBe(
+      'FL20150730VNM',
+    );
   });
 
   it('filters attribute-only features without geometry', () => {

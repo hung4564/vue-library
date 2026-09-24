@@ -5,9 +5,9 @@ import {
   EMPTY_MAP_VIEW_INFO,
   latDMS,
   lngDMS,
+  type MapViewInfo,
   parseCoordinateText,
   readMapViewInfo,
-  type MapViewInfo,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { exportMapbox } from '@hungpvq/map-core/print';
@@ -20,6 +20,7 @@ import {
 } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlButton } from '../../components/MapControlButton';
 import { MapCopyButton } from '../../components/MapCopyButton';
@@ -28,8 +29,8 @@ import { useRegisterMapControl } from '../../extra/registry/useRegisterMapContro
 import { useToolbarControl } from '../../extra/toolbar/helper';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import {
-  ModuleContainer,
   type BindPosition,
+  ModuleContainer,
 } from '../ModuleContainer/ModuleContainer';
 
 export interface InfoControlProps extends WithMapPropType {
@@ -51,7 +52,7 @@ export function InfoControl(props: InfoControlProps) {
   const [capturing, setCapturing] = useState(false);
   const detachInfoRef = useRef<(() => void) | null>(null);
 
-const syncInfo = useCallback(() => {
+  const syncInfo = useCallback(() => {
     callMap((map) => {
       setInfo(readMapViewInfo(map));
       const c = map.getCenter();

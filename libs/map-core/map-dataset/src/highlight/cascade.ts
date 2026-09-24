@@ -1,5 +1,6 @@
 import type { IDataset } from '../interfaces/dataset.base';
 import { findPartByType } from '../model/visitors/helpers';
+import type { IHighlightPart } from './part';
 import type {
   HighlightClickAction,
   HighlightDataSource,
@@ -11,7 +12,6 @@ import type {
   HighlightSource,
   HighlightStyle,
 } from './types';
-import type { IHighlightPart } from './part';
 
 export const DEFAULT_HIGHLIGHT_STYLE: HighlightStyle = {
   mode: 'default',
@@ -42,7 +42,9 @@ export function findHighlightPart(
   return findPartByType(dataset, 'highlight');
 }
 
-export function partOptionsToStyle(options: HighlightPartOptions): HighlightStyle {
+export function partOptionsToStyle(
+  options: HighlightPartOptions,
+): HighlightStyle {
   const base = options.style ?? {};
   return {
     mode: options.mode ?? base.mode ?? 'default',

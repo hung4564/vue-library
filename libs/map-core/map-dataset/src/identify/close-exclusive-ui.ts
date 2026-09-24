@@ -1,4 +1,5 @@
 import { UniversalRegistry } from '@hungpvq/map-core';
+
 import { ATTRIBUTE_TABLE_CONTROL } from '../attribute-table/model';
 import { getHighlightController } from '../highlight/controller';
 

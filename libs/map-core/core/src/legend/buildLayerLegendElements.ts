@@ -1,4 +1,5 @@
 import type { LayerSpecification, Map } from 'maplibre-gl';
+
 import { MapLegend } from './MapLegend';
 import type { LegendElement } from './types';
 
@@ -55,9 +56,7 @@ function legendItemStyleFromSymbol(
   };
 }
 
-function buildSymbolContent(
-  symbol: LegendElement | null,
-): LegendElement {
+function buildSymbolContent(symbol: LegendElement | null): LegendElement {
   if (!symbol) {
     return buildFallbackSymbolContent();
   }

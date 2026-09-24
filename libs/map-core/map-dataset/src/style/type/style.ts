@@ -115,8 +115,7 @@ export type MultiTabConfig<L extends LayerSpecification = LayerSpecification> =
     tabs: TabConfig<L>[];
   };
 export type LayerTabsConfig<L extends LayerSpecification = LayerSpecification> =
-  | SingleTabConfig<L>
-  | MultiTabConfig<L>;
+  SingleTabConfig<L> | MultiTabConfig<L>;
 export type LayerTypeConfig<L extends LayerSpecification = LayerSpecification> =
   {
     TAB: LayerTabsConfig<L>;

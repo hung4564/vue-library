@@ -9,16 +9,28 @@
                 <p class="create-control-loaded__eyebrow">
                   {{ trans('map.layer-control.create.loaded-from-file') }}
                 </p>
-                <p class="create-control-loaded__title">{{ loadedSource.label }}</p>
-                <p v-if="loadedSource.detail" class="create-control-loaded__detail">
+                <p class="create-control-loaded__title">
+                  {{ loadedSource.label }}
+                </p>
+                <p
+                  v-if="loadedSource.detail"
+                  class="create-control-loaded__detail"
+                >
                   {{ loadedSource.detail }}
                 </p>
               </div>
-              <MapControlButton type="button" @click="clearLoadedData" variant="outlined">
+              <MapControlButton
+                type="button"
+                @click="clearLoadedData"
+                variant="outlined"
+              >
                 {{ trans('map.layer-control.create.clear-data') }}
               </MapControlButton>
             </div>
-            <ul v-if="loadedMetaChips.length" class="create-control-loaded__meta">
+            <ul
+              v-if="loadedMetaChips.length"
+              class="create-control-loaded__meta"
+            >
               <li
                 v-for="chip in loadedMetaChips"
                 :key="chip"
@@ -28,7 +40,11 @@
               </li>
             </ul>
             <div class="create-control-loaded__actions">
-              <MapControlButton type="button" @click="replaceFileMode = true" variant="outlined">
+              <MapControlButton
+                type="button"
+                @click="replaceFileMode = true"
+                variant="outlined"
+              >
                 {{ trans('map.layer-control.create.replace-file') }}
               </MapControlButton>
             </div>
@@ -47,13 +63,22 @@
               @change="onChangeFile"
             />
             <div v-if="parsing" class="create-control-status--busy">
-              <span>{{ parseStatusText || trans('map.layer-control.create.parsing') }}</span>
-              <MapControlButton type="button" @click="cancelParsing" variant="outlined">
+              <span>{{
+                parseStatusText || trans('map.layer-control.create.parsing')
+              }}</span>
+              <MapControlButton
+                type="button"
+                @click="cancelParsing"
+                variant="outlined"
+              >
                 {{ trans('map.layer-control.create.cancel') }}
               </MapControlButton>
             </div>
           </div>
-          <p v-if="!showFileSummary || replaceFileMode" class="create-control-status">
+          <p
+            v-if="!showFileSummary || replaceFileMode"
+            class="create-control-status"
+          >
             {{ trans('map.layer-control.create.file-hint') }}
           </p>
           <div v-if="parseError" class="create-control-sample-error">
@@ -68,16 +93,28 @@
                 <p class="create-control-loaded__eyebrow">
                   {{ loadedSourceEyebrow }}
                 </p>
-                <p class="create-control-loaded__title">{{ loadedSource.label }}</p>
-                <p v-if="loadedSource.detail" class="create-control-loaded__detail">
+                <p class="create-control-loaded__title">
+                  {{ loadedSource.label }}
+                </p>
+                <p
+                  v-if="loadedSource.detail"
+                  class="create-control-loaded__detail"
+                >
                   {{ loadedSource.detail }}
                 </p>
               </div>
-              <MapControlButton type="button" @click="clearLoadedData" variant="outlined">
+              <MapControlButton
+                type="button"
+                @click="clearLoadedData"
+                variant="outlined"
+              >
                 {{ trans('map.layer-control.create.clear-data') }}
               </MapControlButton>
             </div>
-            <ul v-if="loadedMetaChips.length" class="create-control-loaded__meta">
+            <ul
+              v-if="loadedMetaChips.length"
+              class="create-control-loaded__meta"
+            >
               <li
                 v-for="chip in loadedMetaChips"
                 :key="chip"
@@ -92,7 +129,9 @@
               :model-value="pasteText"
               rows="4"
               :label="trans('map.layer-control.create.paste-geojson')"
-              :placeholder="trans('map.layer-control.create.paste-geojson-hint')"
+              :placeholder="
+                trans('map.layer-control.create.paste-geojson-hint')
+              "
               @update:model-value="onPasteGeojson"
             />
             <div v-if="parsing" class="create-control-status--row">
@@ -141,27 +180,19 @@
 </template>
 
 <script setup>
-import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
-import {
-  DragDropFile,
-  InputActionRow,
-  InputSelect,
-  InputText,
-  InputTextArea,
-} from '@hungpvq/vue-map-core/fields';
 import {
   applyCreateControlLayerName,
   assertCreateControlFileSize,
   buildCreateControlLoadedMetaChips,
+  collectFilesFromDataTransfer,
+  CREATE_CONTROL_DEFAULT_DATA_TAB,
+  CREATE_CONTROL_SAMPLE_NONE,
   createControlGeojsonPreviewPatch,
   createControlLoadedSourceEyebrowKey,
-  CREATE_CONTROL_SAMPLE_NONE,
-  CREATE_CONTROL_DEFAULT_DATA_TAB,
-  collectFilesFromDataTransfer,
   formatCreateControlParseStatus,
-  GIS_FILE_ACCEPT,
   getCreateControlDataTabs,
   getCreateControlSamples,
+  GIS_FILE_ACCEPT,
   loadCreateControlVectorFromUrl,
   looksCompleteGis,
   parseCreateControlPastedText,
@@ -173,7 +204,16 @@ import {
   summarizeCreateControlUploadFiles,
 } from '@hungpvq/map-dataset/create-control';
 import { terminateGeojsonWorker } from '@hungpvq/map-dataset/geojson';
+import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
+import {
+  DragDropFile,
+  InputActionRow,
+  InputSelect,
+  InputText,
+  InputTextArea,
+} from '@hungpvq/vue-map-core/fields';
 import { computed, markRaw, onBeforeUnmount, ref } from 'vue';
+
 import DataSourceTabs from './DataSourceTabs.vue';
 
 const form = defineModel();
@@ -295,7 +335,10 @@ async function onChangeFile(input) {
   const { totalBytes } = summarizeCreateControlUploadFiles(files);
   const parsingLabel = trans.value('map.layer-control.create.parsing');
   parsing.value = true;
-  parseStatusText.value = formatCreateControlParseStatus(parsingLabel, totalBytes);
+  parseStatusText.value = formatCreateControlParseStatus(
+    parsingLabel,
+    totalBytes,
+  );
   const unsubProgress = subscribeCreateControlParseProgress(
     parsingLabel,
     totalBytes,
@@ -391,11 +434,12 @@ async function onLoadUrl() {
   urlError.value = '';
   pasteText.value = '';
   try {
-    const { patch, loadedSource: nextSource } = await loadCreateControlVectorFromUrl({
-      url,
-      sampleId: sampleId.value,
-      currentName: form.value.name,
-    });
+    const { patch, loadedSource: nextSource } =
+      await loadCreateControlVectorFromUrl({
+        url,
+        sampleId: sampleId.value,
+        currentName: form.value.name,
+      });
     const { geojson: nextGeojson, ...rest } = patch;
     Object.assign(form.value, rest);
     if ('geojson' in patch) {

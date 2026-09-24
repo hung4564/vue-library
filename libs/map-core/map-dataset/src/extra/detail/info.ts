@@ -1,6 +1,11 @@
 import type { LayerSpecification, SourceSpecification } from 'maplibre-gl';
+
 import type { IDataset } from '../../interfaces/dataset.base';
-import type { IFieldInfo, IMapboxLayerView, IMapboxSourceView } from '../../interfaces/dataset.parts';
+import type {
+  IFieldInfo,
+  IMapboxLayerView,
+  IMapboxSourceView,
+} from '../../interfaces/dataset.parts';
 import type { IListViewUI } from '../../model/list/types';
 import { findSiblingOrNearestLeaf } from '../../model/visitors/helpers';
 import { getDatasetSourceKind } from '../../utils/source-kind';
@@ -43,7 +48,9 @@ function formatDisplay(value: unknown): string {
   if (Array.isArray(value)) {
     if (
       value.length > 0 &&
-      value.every((item) => ['string', 'number', 'boolean'].includes(typeof item))
+      value.every((item) =>
+        ['string', 'number', 'boolean'].includes(typeof item),
+      )
     ) {
       return value.join(', ');
     }
@@ -55,11 +62,7 @@ function formatDisplay(value: unknown): string {
   return String(value);
 }
 
-function pushField(
-  out: DatasetDetailInfo,
-  field: IFieldInfo,
-  value: unknown,
-) {
+function pushField(out: DatasetDetailInfo, field: IFieldInfo, value: unknown) {
   const display = formatDisplay(value);
   if (display === '') return;
   if (out.item[field.value] != null) return;
@@ -79,10 +82,8 @@ function findSource(dataset: IDataset): IMapboxSourceView | undefined {
 function findLayerView(
   dataset: IDataset,
 ): (IDataset & IMapboxLayerView) | undefined {
-  return findSiblingOrNearestLeaf(
-    dataset,
-    (node) => node.type === 'layer',
-  ) as (IDataset & IMapboxLayerView) | undefined;
+  return findSiblingOrNearestLeaf(dataset, (node) => node.type === 'layer') as
+    (IDataset & IMapboxLayerView) | undefined;
 }
 
 function kindLabel(dataset: IDataset): string | undefined {
@@ -129,22 +130,16 @@ export function getDatasetDetailInfo(dataset: IDataset): DatasetDetailInfo {
     FIELD.layerIds,
     layers.map((layer) => layer.id).filter(Boolean),
   );
-  pushField(
-    out,
-    FIELD.layerTypes,
-    [...new Set(layers.map((layer) => layer.type))],
-  );
-  pushField(
-    out,
-    FIELD.sourceLayer,
-    [
-      ...new Set(
-        layers
-          .map((layer) => ('source-layer' in layer ? layer['source-layer'] : ''))
-          .filter(Boolean),
-      ),
-    ],
-  );
+  pushField(out, FIELD.layerTypes, [
+    ...new Set(layers.map((layer) => layer.type)),
+  ]);
+  pushField(out, FIELD.sourceLayer, [
+    ...new Set(
+      layers
+        .map((layer) => ('source-layer' in layer ? layer['source-layer'] : ''))
+        .filter(Boolean),
+    ),
+  ]);
   pushField(
     out,
     FIELD.filter,

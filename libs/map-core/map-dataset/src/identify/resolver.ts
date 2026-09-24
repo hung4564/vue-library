@@ -1,5 +1,6 @@
 import { FallbackResolver, runMapControlAction } from '@hungpvq/map-core';
 import { MapMouseEvent } from 'maplibre-gl';
+
 import {
   attributeTableIdentifyRowSelectKey,
   queueAttributeTableSelectRows,

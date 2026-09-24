@@ -1,4 +1,4 @@
-﻿import {
+import {
   attributeTableDemoLogger,
   DATA_MANAGEMENT_HTTP_CUSTOM_LIST_NAME,
   DATA_MANAGEMENT_HTTP_LIST_NAME,
@@ -6,7 +6,7 @@
   DATA_MANAGEMENT_LOCAL_LIST_NAME,
   DATA_MANAGEMENT_MEMORY_LIST_NAME,
 } from '@hungpvq/demo-map-datasets';
-import { runMapControlAction, type MapSimple } from '@hungpvq/map-core';
+import { type MapSimple, runMapControlAction } from '@hungpvq/map-core';
 import { type IDataset } from '@hungpvq/map-dataset';
 import {
   ATTRIBUTE_TABLE_COMPONENT_KEY,
@@ -24,8 +24,6 @@ import {
   UniversalRegistry,
   WorkerControl,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../../components/DemoLanguageControl';
 import {
   AttributeTableGrid,
   AttributeTablePager,
@@ -36,7 +34,11 @@ import {
   LayerControl,
   useMapDatasetComponent,
 } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useCallback, useEffect, useState } from 'react';
+
+import { DemoHelpPanel } from '../../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../../components/DemoLanguageControl';
 import { MapPageShell } from '../../components/MapPageShell';
 import { loadDataManagementDemoDatasets } from '../../data/loaders';
 import { useDatasetRegistry } from '../../hooks/useDatasetRegistry';
@@ -47,8 +49,6 @@ import { SampleAttributeTableHeader } from './sample-attribute-table-header';
 import { SampleAttributeTablePager } from './sample-attribute-table-pager';
 import { SampleAttributeTableToolbar } from './sample-attribute-table-toolbar';
 import { SampleAttributeTableView } from './sample-attribute-table-view';
-import { DemoHelpPanel } from '../../components/DemoHelpPanel';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 type LayerKey = 'http' | 'httpCustom' | 'localGeojson' | 'localList' | 'memory';
 type OverrideKey = 'default' | 'toolbar' | 'grid' | 'pager' | 'all' | 'view';

@@ -1,10 +1,11 @@
 import type { MenuAction } from '../interfaces/dataset.parts';
 import { createMenuConditionContext } from './condition';
-import { partitionMenuActions, mergeMenusById, filterLayerDetailHeaderMenus } from './location';
 import {
-  MENU_CONTROL_ID,
-  applyMenuControlPlacement,
-} from './placement';
+  filterLayerDetailHeaderMenus,
+  mergeMenusById,
+  partitionMenuActions,
+} from './location';
+import { applyMenuControlPlacement, MENU_CONTROL_ID } from './placement';
 
 describe('partitionMenuActions', () => {
   const menus: MenuAction[] = [

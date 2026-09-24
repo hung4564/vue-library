@@ -1,26 +1,27 @@
-import Sortable from 'sortablejs';
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-  type MutableRefObject,
-  type ReactNode,
-} from 'react';
-import { ListItem } from '../../../List/ListItem';
-import { DraggableGroupItem } from './DraggableGroupItem';
 import {
   convertListToTree,
   convertTreeToList,
   createDefaultGroup,
   isGroupNode,
-  mergeEmptyGroups,
   type LayerListGroupTree,
   type LayerListItem,
   type LayerListTreeNode,
+  mergeEmptyGroups,
 } from '@hungpvq/map-dataset';
+import {
+  forwardRef,
+  type MutableRefObject,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import Sortable from 'sortablejs';
+
+import { ListItem } from '../../../List/ListItem';
+import { DraggableGroupItem } from './DraggableGroupItem';
 
 export interface DraggableGroupListRef {
   update: (items?: LayerListItem[]) => void;
@@ -79,7 +80,9 @@ function restoreSortableItem(evt: Sortable.SortableEvent) {
   else from.appendChild(item);
 }
 
-function getListTarget(el: HTMLElement): { kind: 'root' } | { kind: 'group'; groupId: string } {
+function getListTarget(
+  el: HTMLElement,
+): { kind: 'root' } | { kind: 'group'; groupId: string } {
   const listId = el.dataset.listId ?? 'root';
   if (listId === 'root') return { kind: 'root' };
   return { kind: 'group', groupId: listId };
@@ -96,7 +99,10 @@ function createLayerSortable(
       pull: true,
       put: (to, _from, dragEl) => {
         const target = getListTarget(to.el);
-        if (target.kind === 'group' && dragEl.dataset.nodeId?.startsWith('group-')) {
+        if (
+          target.kind === 'group' &&
+          dragEl.dataset.nodeId?.startsWith('group-')
+        ) {
           return false;
         }
         return true;
@@ -153,9 +159,12 @@ export const DraggableGroupList = forwardRef<
     [onItemsChange, onDragDone],
   );
 
-  const updateTree = useCallback((nextItems: LayerListItem[] = items) => {
-    setTree((prev) => mergeEmptyGroups(convertListToTree(nextItems), prev));
-  }, [items]);
+  const updateTree = useCallback(
+    (nextItems: LayerListItem[] = items) => {
+      setTree((prev) => mergeEmptyGroups(convertListToTree(nextItems), prev));
+    },
+    [items],
+  );
 
   useImperativeHandle(ref, () => ({
     update: (nextItems?: LayerListItem[]) => updateTree(nextItems),
@@ -175,7 +184,9 @@ export const DraggableGroupList = forwardRef<
               if (isGroupNode(node)) {
                 return {
                   ...node,
-                  children: node.children.filter((child) => !selected.includes(child.id)),
+                  children: node.children.filter(
+                    (child) => !selected.includes(child.id),
+                  ),
                 };
               }
               return node;
@@ -187,7 +198,10 @@ export const DraggableGroupList = forwardRef<
           selectedObjectsRef.current = {};
         }
 
-        const group = createDefaultGroup({ name: name || 'New Group', children });
+        const group = createDefaultGroup({
+          name: name || 'New Group',
+          children,
+        });
         next.unshift(group);
         // Match Vue: empty groups stay local until they have children —
         // convertTreeToList drops empty groups, so emitChange would wipe them.
@@ -228,14 +242,23 @@ export const DraggableGroupList = forwardRef<
       setTree((prev) => {
         let next = [...prev];
 
-        if (from.kind === to.kind && (from.kind === 'root' || (from.kind === 'group' && to.kind === 'group' && from.groupId === to.groupId))) {
+        if (
+          from.kind === to.kind &&
+          (from.kind === 'root' ||
+            (from.kind === 'group' &&
+              to.kind === 'group' &&
+              from.groupId === to.groupId))
+        ) {
           if (from.kind === 'root') {
             next = reorder(next, oldIndex, newIndex);
           } else {
             const groupId = from.groupId;
             next = next.map((node) => {
               if (isGroupNode(node) && node.id === groupId) {
-                return { ...node, children: reorder(node.children, oldIndex, newIndex) };
+                return {
+                  ...node,
+                  children: reorder(node.children, oldIndex, newIndex),
+                };
               }
               return node;
             });
@@ -267,7 +290,8 @@ export const DraggableGroupList = forwardRef<
           } else {
             const toGroupId = to.groupId;
             const targetGroup = next.find(
-              (node): node is LayerListGroupTree => isGroupNode(node) && node.id === toGroupId,
+              (node): node is LayerListGroupTree =>
+                isGroupNode(node) && node.id === toGroupId,
             );
             if (!targetGroup) return prev;
             movedItem.group = { id: targetGroup.id, name: targetGroup.name };
@@ -300,7 +324,8 @@ export const DraggableGroupList = forwardRef<
   handlersRef.current = { onEnd: handleSortEnd, onMove: checkMove };
 
   const createGroupSortable = useCallback(
-    (el: HTMLElement) => createLayerSortable(el, '> .draggable__item', handlersRef),
+    (el: HTMLElement) =>
+      createLayerSortable(el, '> .draggable__item', handlersRef),
     [],
   );
 
@@ -353,7 +378,11 @@ export const DraggableGroupList = forwardRef<
   }
 
   return (
-    <div ref={rootRef} className="draggable-group-container" data-list-id="root">
+    <div
+      ref={rootRef}
+      className="draggable-group-container"
+      data-list-id="root"
+    >
       {tree.map((node, index) => {
         if (isGroupNode(node)) {
           return (

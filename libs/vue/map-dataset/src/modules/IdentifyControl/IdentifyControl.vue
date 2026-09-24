@@ -6,30 +6,27 @@ export default {
 
 <script setup lang="ts">
 import { type WithMapPropType } from '@hungpvq/map-core';
-import {
-  EventBboxRanger,
-  EventClick,
-} from '@hungpvq/map-core/event';
+import { EventBboxRanger, EventClick } from '@hungpvq/map-core/event';
 import {
   MAP_CONTEXT_MENU_ID,
   type MapMenuItemProps,
 } from '@hungpvq/map-core/menu';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import {
+  bindHighlightMittBridge,
+  emitHighlightIdentifyClose,
+} from '@hungpvq/map-dataset/highlight';
 import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import {
   createIdentifySession,
   IDENTIFY_CONTROL,
   IDENTIFY_RESULT_CONTROL,
-  syncIdentifyPointerPick,
   type IdentifyLayerFilterPayload,
   type IdentifyResultUpdatePayload,
   type IdentifyScopeToggleResult,
   type IdentifySession,
+  syncIdentifyPointerPick,
 } from '@hungpvq/map-dataset/identify';
-import {
-  bindHighlightMittBridge,
-  emitHighlightIdentifyClose,
-} from '@hungpvq/map-dataset/highlight';
-import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -44,8 +41,9 @@ import {
 } from '@hungpvq/vue-map-core';
 import { mdiHandPointingUp } from '@mdi/js';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { useMapDataset } from '../../store/dataset-api';
+
 import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
+import { useMapDataset } from '../../store/dataset-api';
 import IdentifyResultControl from './IdentifyResultControl.vue';
 
 const path = {
@@ -129,6 +127,9 @@ session = createIdentifySession({
     else removeEventClick();
   },
   onEventBoxSelectActive: (active) => {
+    console.log('onEventBoxSelectActive', {
+      active,
+    });
     if (active) addEventBbox();
     else removeEventBbox();
   },
@@ -250,11 +251,7 @@ useRegisterMapControl(mapId, {
 function onIdentifyHere(menuProps: MapMenuItemProps) {
   const { lng, lat } = menuProps.layer.lngLat;
   const point = menuProps.layer.point;
-  session.onIdentifyHere(
-    lng,
-    lat,
-    point ? [point.x, point.y] : undefined,
-  );
+  session.onIdentifyHere(lng, lat, point ? [point.x, point.y] : undefined);
 }
 
 onMounted(() => {

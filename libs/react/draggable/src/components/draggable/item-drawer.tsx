@@ -1,3 +1,4 @@
+import type { LocationSideBar } from '@hungpvq/draggable';
 import { focusFirst, restoreFocus } from '@hungpvq/draggable';
 import {
   type MouseEvent as ReactMouseEvent,
@@ -10,6 +11,7 @@ import {
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
+
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,
@@ -22,9 +24,8 @@ import {
   useShow,
 } from '../../hook';
 import { useContainerSize } from '../../hook/useContainerSize';
-import { useDrawerItem, useDragLayout } from '../../store';
+import { useDragLayout, useDrawerItem } from '../../store';
 import { useContainerReactive } from '../../store/useStoreReactive';
-import type { LocationSideBar } from '@hungpvq/draggable';
 import { ContextMenu, type ContextMenuRef } from '../ContextMenu';
 import { ContextMenuItem } from '../ContextMenuItem';
 import { DragButton } from '../parts/DragButton';
@@ -251,12 +252,7 @@ export function DraggableDrawer({
 
   const selectDrawer = useCallback(
     (nextId: string) => {
-      drawerStoreRef.current.registerDrawerShow(
-        nextId,
-        location,
-        true,
-        p_size,
-      );
+      drawerStoreRef.current.registerDrawerShow(nextId, location, true, p_size);
       contextMenuRef.current?.close();
     },
     [location, p_size],

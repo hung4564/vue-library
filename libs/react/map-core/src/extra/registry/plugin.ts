@@ -1,8 +1,6 @@
 /* Dynamic registry: components are registered at runtime with heterogeneous props. */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  UniversalRegistry as CoreUniversalRegistry,
-} from '@hungpvq/map-core';
+import { UniversalRegistry as CoreUniversalRegistry } from '@hungpvq/map-core';
 import type { ComponentType } from 'react';
 
 /**

@@ -1,5 +1,6 @@
 import { getMap, logHelper, type MapSimple } from '@hungpvq/map-core';
 import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
+
 import type { IDataset } from '../interfaces/dataset.base';
 import type {
   IdentifyFeatureRow,
@@ -23,9 +24,7 @@ import {
   mergePayload,
   splitResponse,
 } from './identifyMapboxMerged';
-import {
-  buildIdentifyFeatureRows,
-} from './rows';
+import { buildIdentifyFeatureRows } from './rows';
 
 /** Ensure `show-detail` menu exists when identify has detail fields. */
 export function ensureIdentifyShowDetailMenu(identify: IIdentifyView): void {
@@ -365,10 +364,7 @@ export async function handleMultiIdentifyGetFirst(
     return undefined;
   }
 
-  const rows = await buildIdentifyFeatureRows(
-    datasetPartIdentify,
-    [x],
-  );
+  const rows = await buildIdentifyFeatureRows(datasetPartIdentify, [x]);
   const row = rows[0];
   if (!row) {
     logHelper(loggerIdentify, mapId, 'FIRST', 'handleMultiIdentifyGetFirst')

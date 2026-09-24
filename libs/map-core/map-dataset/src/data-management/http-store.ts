@@ -1,4 +1,5 @@
 import { getUUIDv4 } from '@hungpvq/shared';
+
 import { toRecord } from './normalize';
 import type {
   DataRecord,
@@ -24,7 +25,9 @@ function defaultParseList(json: unknown): HttpListResponse {
       meta: {
         total: Number(meta['total'] ?? data.length),
         page: Number(meta['page'] ?? 1),
-        pageSize: Number(meta['pageSize'] ?? meta['limit'] ?? (data.length || 1)),
+        pageSize: Number(
+          meta['pageSize'] ?? meta['limit'] ?? (data.length || 1),
+        ),
       },
     };
   }
@@ -36,7 +39,9 @@ function defaultParseList(json: unknown): HttpListResponse {
       meta: {
         total: Number(meta['total'] ?? data.length),
         page: Number(meta['page'] ?? 1),
-        pageSize: Number(meta['pageSize'] ?? meta['limit'] ?? (data.length || 1)),
+        pageSize: Number(
+          meta['pageSize'] ?? meta['limit'] ?? (data.length || 1),
+        ),
       },
     };
   }
@@ -73,7 +78,8 @@ export function createHttpStore(
 
   const normalizeOpts = {
     idField,
-    geometryFields: geometryFields ??
+    geometryFields:
+      geometryFields ??
       (geometryField ? [geometryField, 'geometry', 'geom', 'geo'] : undefined),
   };
 
@@ -81,10 +87,7 @@ export function createHttpStore(
   const pageSizeKey = queryKeys.pageSize ?? 'limit';
   const searchKey = queryKeys.search ?? 'search';
 
-  async function request(
-    input: string,
-    init?: RequestInit,
-  ): Promise<unknown> {
+  async function request(input: string, init?: RequestInit): Promise<unknown> {
     const res = await fetchImpl(input, {
       headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
       ...init,
@@ -169,8 +172,7 @@ export function createHttpStore(
         body: JSON.stringify(serializeBody(body)),
       });
       return (
-        toRecord(parseItem(json ?? body), normalizeOpts) ??
-        (body as DataRecord)
+        toRecord(parseItem(json ?? body), normalizeOpts) ?? (body as DataRecord)
       );
     },
 
@@ -181,8 +183,7 @@ export function createHttpStore(
         body: JSON.stringify(serializeBody(body as DataRecord)),
       });
       return (
-        toRecord(parseItem(json ?? body), normalizeOpts) ??
-        (body as DataRecord)
+        toRecord(parseItem(json ?? body), normalizeOpts) ?? (body as DataRecord)
       );
     },
 

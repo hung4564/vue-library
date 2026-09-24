@@ -1,5 +1,6 @@
 import type { FeatureCollection } from 'geojson';
 import { describe, expect, it } from 'vitest';
+
 import {
   buildAttributeTable,
   resolveAttributeTableColumns,

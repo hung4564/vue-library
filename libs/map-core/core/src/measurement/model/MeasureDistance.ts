@@ -6,12 +6,13 @@ import { lineString, point } from '@turf/helpers';
 import length from '@turf/length';
 import midpoint from '@turf/midpoint';
 import { Feature } from 'geojson';
+
+import type { IViewSetting } from '../types';
 import {
+  edgeLabelRotation,
   formatDistanceText,
   getMeasurementLabelPrefs,
-  edgeLabelRotation,
 } from '../utils';
-import type { IViewSetting } from '../types';
 import { Measure } from './Measure';
 
 /**

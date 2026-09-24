@@ -10,7 +10,9 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiCog } from '@mdi/js';
 import { ref, watch } from 'vue';
+
 import MapCommonButton from '../../components/MapCommonButton.vue';
+import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
 import { useToolbarControl } from '../../extra/toolbar/helper';
@@ -18,7 +20,6 @@ import { InputText } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-import MapControlButton from '../../components/MapControlButton.vue';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
@@ -155,7 +156,9 @@ watch(show, () => control.sync());
 
           <map-control-button
             class="map-setting-control__apply"
-            @click="onSetSetting()" variant="filled">
+            @click="onSetSetting()"
+            variant="filled"
+          >
             {{ trans('map.setting-control.btn.apply') }}
           </map-control-button>
         </div>

@@ -53,7 +53,7 @@
     max-width: 21px;
     max-height: 21px;
   }
-  &-active {
+  &#{&}-active {
     color: var(--map-button-active-color, var(--map-primary-color, #004e98));
   }
   &-disabled {

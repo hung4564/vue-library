@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Icon } from '@mdi/react';
 import { mdiMenuDown, mdiMenuUp } from '@mdi/js';
+import { Icon } from '@mdi/react';
+import React, { useEffect, useState } from 'react';
 
 export interface BaseCollapseProps {
   selected?: boolean;

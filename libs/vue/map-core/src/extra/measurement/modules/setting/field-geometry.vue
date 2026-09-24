@@ -72,9 +72,7 @@ function onPasteCoordinate(event: ClipboardEvent, index: number) {
   event.preventDefault();
 
   const max = props.maxLength ?? 0;
-  let points = parsed.map(
-    ([lng, lat]) => [lng, lat] as DraftCoordinatesNumber,
-  );
+  let points = parsed.map(([lng, lat]) => [lng, lat] as DraftCoordinatesNumber);
   if (max > 0) {
     const room = Math.max(0, max - index);
     points = points.slice(0, room);

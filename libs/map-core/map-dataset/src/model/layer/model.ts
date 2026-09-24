@@ -1,10 +1,10 @@
+import type { MapSimple } from '@hungpvq/map-core';
 import { copyByJson, getUUIDv4 } from '@hungpvq/shared';
+import type { LayerSpecification } from 'maplibre-gl';
+
+import type { WithDataHelper } from '../../extra/data';
 import type { IDataset } from '../../interfaces/dataset.base';
 import type { IMapboxLayerView } from '../../interfaces/dataset.parts';
-
-import type { MapSimple } from '@hungpvq/map-core';
-import type { LayerSpecification } from 'maplibre-gl';
-import type { WithDataHelper } from '../../extra/data';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '../../menu/items';
 import { createNamedComponent } from '../base';
 import { findPartByType } from '../visitors/helpers';

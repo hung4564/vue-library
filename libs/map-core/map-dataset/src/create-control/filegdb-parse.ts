@@ -7,6 +7,7 @@
  */
 import { loggerFactory } from '@hungpvq/shared-log';
 import type { Feature, FeatureCollection, GeoJSON } from 'geojson';
+
 import { asFeatureCollection } from '../utils/feature-collection';
 import { featuresWithGeometry } from './filegdb-meta';
 import { isIgnoredZipEntry } from './gis-format';

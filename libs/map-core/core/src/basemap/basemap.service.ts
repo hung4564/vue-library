@@ -3,10 +3,10 @@
  * Hot path applies go through {@link BasemapManager} → these methods.
  */
 
-import type { BaseMapItem } from './types';
+import { errorHandler } from '../services/error-handler.service';
 import { BaseMapAdapter } from './adapter/BaseMapAdapter';
 import { BasemapError } from './errors';
-import { errorHandler } from '../services/error-handler.service';
+import type { BaseMapItem } from './types';
 
 export class BasemapService {
   static async switchBasemap(

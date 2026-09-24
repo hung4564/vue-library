@@ -1,12 +1,9 @@
+import { registerMapStoreCleanup } from '../store/map-platform-registry';
 import type { MapLangLocale, MapLanguageCode } from '../types/lang';
 import { MAP_DEFAULT_CATALOG_LANGUAGE } from '../types/lang';
-import { registerMapStoreCleanup } from '../store/map-platform-registry';
 import { MAP_CORE_LOCALE_EN } from './locale.en';
 
-type RegisterLocaleFn = (
-  code: MapLanguageCode,
-  tree: MapLangLocale,
-) => unknown;
+type RegisterLocaleFn = (code: MapLanguageCode, tree: MapLangLocale) => unknown;
 
 const seededMapIds = new Set<string>();
 const CLEANUP_KEY = 'locale:map-core';

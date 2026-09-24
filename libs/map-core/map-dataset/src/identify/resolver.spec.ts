@@ -33,8 +33,8 @@ vi.mock('../model/visitors/helpers', async (importOriginal) => {
 });
 
 import { LIST_VIEW_MENU_ID } from '../menu/items';
-import { IDENTIFY_RESULT_CONTROL } from './result';
 import { identifyResolver } from './resolver';
+import { IDENTIFY_RESULT_CONTROL } from './result';
 
 function resultUpdates() {
   return runMapControlAction.mock.calls.filter(
@@ -86,7 +86,11 @@ describe('identifyResolver', () => {
     expect(handleMenuAction).toHaveBeenCalledOnce();
 
     const updates = resultUpdates();
-    expect(updates.find((c) => Array.isArray((c[3] as { items?: unknown }).items))?.[3]).toMatchObject({
+    expect(
+      updates.find((c) =>
+        Array.isArray((c[3] as { items?: unknown }).items),
+      )?.[3],
+    ).toMatchObject({
       items: [
         {
           id: 'id-1',

@@ -32,7 +32,9 @@ const props = defineProps<{
   tabs: CreateControlDataTab[];
 }>();
 
-const activeTab = defineModel<CreateControlDataTab>('activeTab', { required: true });
+const activeTab = defineModel<CreateControlDataTab>('activeTab', {
+  required: true,
+});
 
 const { mapId } = useMap();
 const { trans } = useLang(mapId.value);

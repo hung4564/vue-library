@@ -10,6 +10,7 @@ import {
 } from '@hungpvq/shared';
 import type { Ref } from 'vue';
 import { computed, ref, watch } from 'vue';
+
 import type { ConfigurableWindow } from '../_configurable';
 import { defaultWindow } from '../_configurable';
 import { useSupported } from '../useSupported';

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { sanitizeExportFilename } from './download';
 
 describe('sanitizeExportFilename', () => {

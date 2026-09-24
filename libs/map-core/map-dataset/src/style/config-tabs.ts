@@ -1,122 +1,119 @@
-import type {
-  ArrayIndexTab,
-  ChoseTab,
-  SelectTab,
-  Tab,
-} from './type/style';
+import type { ArrayIndexTab, ChoseTab, SelectTab, Tab } from './type/style';
 
 /**
  * Shared non-UI tab config (props + formatters). Adapters supply `component`
  * via {@link buildConfigTabs}.
  */
-export const CONFIG_TAB_BASE: Record<string, Omit<Partial<Tab>, 'component'>> =
-  {
-    'array-index': {
-      props: {
-        content: (tab: ArrayIndexTab) => ({
-          items: tab.data,
-        }),
+export const CONFIG_TAB_BASE: Record<
+  string,
+  Omit<Partial<Tab>, 'component'>
+> = {
+  'array-index': {
+    props: {
+      content: (tab: ArrayIndexTab) => ({
+        items: tab.data,
+      }),
+    },
+  },
+  multiple: {
+    props: {},
+  },
+  select: {
+    props: {
+      content: (tab: SelectTab) => ({
+        items: tab.items,
+      }),
+    },
+  },
+  image: {
+    props: {
+      content: {},
+    },
+  },
+  color: {
+    props: {
+      content: {
+        disableAlpha: true,
+        class: 'tab-content-no-padding',
       },
     },
-    multiple: {
-      props: {},
+  },
+  boolean: {
+    props: {
+      content: {},
     },
-    select: {
-      props: {
-        content: (tab: SelectTab) => ({
-          items: tab.items,
-        }),
-      },
-    },
-    image: {
-      props: {
-        content: {},
-      },
-    },
-    color: {
-      props: {
-        content: {
-          disableAlpha: true,
-          class: 'tab-content-no-padding',
+  },
+  chose: {
+    props: {
+      content: (tab: ChoseTab) => ({
+        items: tab.menu,
+        class: 'tab-content-padding',
+      }),
+      label: (tab: ChoseTab) => ({
+        format(value: string) {
+          return tab.menu.find((x) => x.value === value)?.text;
         },
+      }),
+    },
+  },
+  opacity: {
+    props: {
+      content: {
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+      label: {
+        format: (value: number) => `${(+value * 100).toFixed(0)} %`,
       },
     },
-    boolean: {
-      props: {
-        content: {},
+    format: (value: unknown) => +(value as number),
+  },
+  minMax: {
+    props: {
+      content: {
+        min: 0,
+        max: 1,
+        step: 0.01,
+      },
+      label: {
+        format: (value: number) => `${(+value).toFixed(2)}`,
       },
     },
-    chose: {
-      props: {
-        content: (tab: ChoseTab) => ({
-          items: tab.menu,
-          class: 'tab-content-padding',
-        }),
-        label: (tab: ChoseTab) => ({
-          format(value: string) {
-            return tab.menu.find((x) => x.value === value)?.text;
-          },
-        }),
+    format: (value: unknown) => +(value as number),
+  },
+  unit: {
+    props: {
+      content: {
+        type: 'number',
+        min: 0,
       },
     },
-    opacity: {
-      props: {
-        content: {
-          min: 0,
-          max: 1,
-          step: 0.01,
-        },
-        label: {
-          format: (value: number) => `${(+value * 100).toFixed(0)} %`,
-        },
-      },
-      format: (value: unknown) => +(value as number),
-    },
-    minMax: {
-      props: {
-        content: {
-          min: 0,
-          max: 1,
-          step: 0.01,
-        },
-        label: {
-          format: (value: number) => `${(+value).toFixed(2)}`,
-        },
-      },
-      format: (value: unknown) => +(value as number),
-    },
-    unit: {
-      props: {
-        content: {
-          type: 'number',
-          min: 0,
-        },
-      },
-      format: (value: unknown) => +(value as number),
-    },
-    number: {
-      props: {
-        content: {
-          type: 'number',
-          min: 0,
-        },
-      },
-      format: (value: unknown) => +(value as number),
-    },
-    text: {
-      props: {
-        content: {},
+    format: (value: unknown) => +(value as number),
+  },
+  number: {
+    props: {
+      content: {
+        type: 'number',
+        min: 0,
       },
     },
-    'array-x-y': {
-      props: {},
+    format: (value: unknown) => +(value as number),
+  },
+  text: {
+    props: {
+      content: {},
     },
-    default: {
-      props: {
-        content: {},
-      },
+  },
+  'array-x-y': {
+    props: {},
+  },
+  default: {
+    props: {
+      content: {},
     },
-  };
+  },
+};
 
 export type StyleTabComponentMap = Record<
   string,

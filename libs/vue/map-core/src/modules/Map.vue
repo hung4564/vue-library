@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import '@hungpvq/map-core';
+
 import type { ButtonInMobile, MapSimple } from '@hungpvq/map-core';
 import { bindMapKeyboardShortcuts } from '@hungpvq/map-core';
-import '@hungpvq/map-core';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
 import { MapOptions } from 'maplibre-gl';
 import { computed, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
+
 import MapErrorToast from '../components/MapErrorToast.vue';
 import ActionControl from '../extra/event/modules/ActionControl.vue';
 import { useBreakpoints } from '../hooks/useBreakpoints';
@@ -74,7 +76,10 @@ const isMobile = breakpoints.smallerOrEqual('tablet');
 
 provide<string>('$map.dragId', props.dragId || draggableTo.value);
 provide<string>('$map.id', id.value);
-provide('$map.buttonInMobile', computed(() => props.buttonInMobile ?? 'button'));
+provide(
+  '$map.buttonInMobile',
+  computed(() => props.buttonInMobile ?? 'button'),
+);
 provide('$map.isMobile', isMobile);
 
 const loadedDrag = ref(false);

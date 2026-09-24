@@ -7,9 +7,7 @@ import type { LngLatLike, PointLike } from 'maplibre-gl';
  * Prefer writing `properties.id` when saving (DrawService does this for adds)
  * and `promoteId: 'id'` on GeoJSON result sources so query hits expose ids.
  */
-export function getFeatureId(
-  feature: Feature,
-): string | number | undefined {
+export function getFeatureId(feature: Feature): string | number | undefined {
   const fromProps = feature.properties?.['id'];
   const id = feature.id ?? fromProps;
   return id == null ? undefined : id;

@@ -11,11 +11,12 @@ import {
   isMenuItemDisabled,
   isMenuItemHidden,
   MENU_CONTROL_ID,
-  partitionMenuActions,
   type MenuAction,
   type MenuConditionContext,
   type PartitionedMenuActions,
+  partitionMenuActions,
 } from '@hungpvq/map-dataset/menu';
+
 import type {
   DatasetMenuTarget,
   ExplainStep,

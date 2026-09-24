@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   filterWorkerSnapshots,
   formatWorkerDuration,
@@ -15,9 +16,9 @@ describe('worker format', () => {
     expect(formatWorkerDuration(12)).toBe('12ms');
     expect(formatWorkerDuration(1500)).toBe('1.5s');
     expect(formatWorkerDuration(12_000)).toBe('12s');
-    expect(formatWorkerLogTime(new Date('2020-01-01T12:34:56.789Z').getTime())).toMatch(
-      /\d{2}:\d{2}:\d{2}\.\d{3}/,
-    );
+    expect(
+      formatWorkerLogTime(new Date('2020-01-01T12:34:56.789Z').getTime()),
+    ).toMatch(/\d{2}:\d{2}:\d{2}\.\d{3}/);
   });
 
   it('computes progress ratio and busy state', () => {
@@ -65,12 +66,10 @@ describe('worker format', () => {
     expect(resolveSelectedWorkerId(workers, 'b')).toBe('b');
     expect(resolveSelectedWorkerId(workers, '')).toBe('a');
     expect(
-      workerLogsForDisplay(
-        [
-          { message: 'new', at: 2 },
-          { message: 'old', at: 1 },
-        ] as any,
-      ).map((l) => l.message),
+      workerLogsForDisplay([
+        { message: 'new', at: 2 },
+        { message: 'old', at: 1 },
+      ] as any).map((l) => l.message),
     ).toEqual(['new', 'old']);
     expect(
       workerLogsForDisplay(

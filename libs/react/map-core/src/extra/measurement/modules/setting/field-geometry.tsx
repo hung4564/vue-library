@@ -11,9 +11,9 @@ import {
   mdiPlus,
 } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { saveAs } from 'file-saver';
-import { useMemo, type ClipboardEvent } from 'react';
+import type { Feature, FeatureCollection, Geometry } from 'geojson';
+import { type ClipboardEvent, useMemo } from 'react';
 
 type Coord = DraftCoordinatesNumber;
 
@@ -25,9 +25,7 @@ export interface FieldGeometryProps {
   titleActionFillBound?: string;
   titleActionAddPoint?: string;
   onChange?: (value: Coord[]) => void;
-  onClickFillBound?: (
-    geometry: Geometry | Feature | FeatureCollection,
-  ) => void;
+  onClickFillBound?: (geometry: Geometry | Feature | FeatureCollection) => void;
   onClickRemove?: (index: number) => void;
 }
 
@@ -87,7 +85,11 @@ export function FieldGeometry({
       ...points,
       ...value.slice(index + points.length),
     ];
-    submit(maxLength > 0 && next.length > maxLength ? next.slice(0, maxLength) : next);
+    submit(
+      maxLength > 0 && next.length > maxLength
+        ? next.slice(0, maxLength)
+        : next,
+    );
   }
 
   function onDeleteItem(index: number) {

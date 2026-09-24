@@ -5,10 +5,10 @@ import {
   resolveCrsDisplayItems,
   resolveCrsItemForStore,
 } from '@hungpvq/map-core/crs';
-
 import { mdiClose } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useEffect, useMemo, useState } from 'react';
+
 import { MapControlButton } from '../../components/MapControlButton';
 import { InputCrs } from '../../field';
 import { useMap } from '../../hooks/useMap';
@@ -45,7 +45,7 @@ export function CrsDisplaySettings({
     [catalog, displayEpsgs],
   );
 
-function tryAdd(raw: string) {
+  function tryAdd(raw: string) {
     const epsg = normalizeEpsgCode(raw);
     if (!epsg || displayEpsgs.includes(epsg)) return false;
 

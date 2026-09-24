@@ -1,8 +1,6 @@
-import {
-  resolveMapButtonSizePx,
-  type MapButtonSize,
-} from '@hungpvq/map-core';
+import { type MapButtonSize, resolveMapButtonSizePx } from '@hungpvq/map-core';
 import React, { useMemo } from 'react';
+
 import { MapButton } from './MapButton';
 import { MapControlButtonGroupContext } from './MapControlButton';
 import { MapIcon } from './MapIcon';

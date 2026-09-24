@@ -1,6 +1,7 @@
-import { render, cleanup, waitFor, act } from '@testing-library/react';
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { act, cleanup, render, waitFor } from '@testing-library/react';
 import React, { ComponentType, ReactNode } from 'react';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+
 import { ContainerProvider } from '../../context/ContainerContext';
 import {
   useDragContainer as getDragContainer,

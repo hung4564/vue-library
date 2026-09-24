@@ -1,4 +1,4 @@
-﻿import {
+import {
   BaseMapCard,
   BaseMapControl,
   CrsControl,
@@ -21,8 +21,6 @@
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
   DatasetControl,
@@ -30,12 +28,14 @@ import {
   IdentifyShowFirstControl,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { DrawControl, InspectControl } from '@hungpvq/react-map-draw';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function RegistryControlPage() {
   useDatasetRegistry();

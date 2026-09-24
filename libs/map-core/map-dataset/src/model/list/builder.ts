@@ -1,5 +1,8 @@
 import type { MapSimple } from '@hungpvq/map-core';
+
 import { createWithEventHelper } from '../../extra/event/model';
+import type { WithChildren } from '../../interfaces/dataset.base';
+import { setOpacity, toggleShow } from '../../interfaces/dataset.extra';
 import { addMenuBuilder } from '../../menu/builder';
 import {
   createMenuItemAddToGroup,
@@ -10,8 +13,6 @@ import {
   LIST_VIEW_MENU_COMPONENT_KEY,
 } from '../../menu/items';
 import type { WithMenuBuilder } from '../../menu/types';
-import type { WithChildren } from '../../interfaces/dataset.base';
-import { setOpacity, toggleShow } from '../../interfaces/dataset.extra';
 import { createNamedComponent } from '../base';
 import {
   addDatasetWithChildren,
@@ -138,10 +139,7 @@ function createBaseListViewUiBuilder(
       }
       if (dataset.type !== 'list-item') {
         if (!dataset.config.disabled_move) {
-          dataset.addMenus([
-            createMenuItemMoveUp(),
-            createMenuItemMoveDown(),
-          ]);
+          dataset.addMenus([createMenuItemMoveUp(), createMenuItemMoveDown()]);
         }
         if (!dataset.config.disabled_add_to_group) {
           dataset.addMenu(createMenuItemAddToGroup());

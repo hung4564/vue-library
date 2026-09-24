@@ -32,10 +32,7 @@ const logger = loggerFactory
   .setNamespace('demo:menu-handler', 2);
 
 export type DemoLoaderDeps = {
-  addDatasetToMap: (
-    mapId: string,
-    dataset: IDataset,
-  ) => void | Promise<void>;
+  addDatasetToMap: (mapId: string, dataset: IDataset) => void | Promise<void>;
   registerMenuHandler: (
     key: string,
     handler: (props: MenuItemProps) => void,
@@ -77,11 +74,15 @@ export function createDemoLoaders(deps: DemoLoaderDeps) {
 
   return {
     async loadListDemoDatasets(mapId: string) {
-      await loadDemoDatasets(addForMap(mapId), [...LIST_DEMO_DATASET_FACTORIES]);
+      await loadDemoDatasets(addForMap(mapId), [
+        ...LIST_DEMO_DATASET_FACTORIES,
+      ]);
     },
     async loadMenuDemoDatasets(mapId: string) {
       ensureCustomMenuHandler();
-      await loadDemoDatasets(addForMap(mapId), [...MENU_DEMO_DATASET_FACTORIES]);
+      await loadDemoDatasets(addForMap(mapId), [
+        ...MENU_DEMO_DATASET_FACTORIES,
+      ]);
     },
     async loadIdentifyDemoDatasets(mapId: string) {
       await loadDemoDatasets(addForMap(mapId), [
@@ -114,10 +115,13 @@ export function createDemoLoaders(deps: DemoLoaderDeps) {
       mapId: string,
     ): Promise<DataManagementDemoLoadResult> {
       const loaded: IDataset[] = [];
-      await loadDemoDatasets(async (dataset) => {
-        loaded.push(dataset);
-        await deps.addDatasetToMap(mapId, dataset);
-      }, [...DATA_MANAGEMENT_DEMO_DATASET_FACTORIES]);
+      await loadDemoDatasets(
+        async (dataset) => {
+          loaded.push(dataset);
+          await deps.addDatasetToMap(mapId, dataset);
+        },
+        [...DATA_MANAGEMENT_DEMO_DATASET_FACTORIES],
+      );
 
       const standardRoot = loaded.find(
         (d) => d.getName() === DATA_MANAGEMENT_HTTP_DATASET_NAME,
@@ -130,9 +134,7 @@ export function createDemoLoaders(deps: DemoLoaderDeps) {
         standardHttp: standardRoot
           ? findDataManagementPart(standardRoot)
           : undefined,
-        customHttp: customRoot
-          ? findDataManagementPart(customRoot)
-          : undefined,
+        customHttp: customRoot ? findDataManagementPart(customRoot) : undefined,
         lists: {
           http: findListViewByName(loaded, DATA_MANAGEMENT_HTTP_LIST_NAME),
           httpCustom: findListViewByName(
@@ -143,7 +145,10 @@ export function createDemoLoaders(deps: DemoLoaderDeps) {
             loaded,
             DATA_MANAGEMENT_LOCAL_GEOJSON_LIST_NAME,
           ),
-          localList: findListViewByName(loaded, DATA_MANAGEMENT_LOCAL_LIST_NAME),
+          localList: findListViewByName(
+            loaded,
+            DATA_MANAGEMENT_LOCAL_LIST_NAME,
+          ),
           memory: findListViewByName(loaded, DATA_MANAGEMENT_MEMORY_LIST_NAME),
         },
       };

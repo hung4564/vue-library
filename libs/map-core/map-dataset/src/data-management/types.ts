@@ -1,5 +1,6 @@
-import type { IDataset } from '../interfaces/dataset.base';
 import type { Geometry } from 'geojson';
+
+import type { IDataset } from '../interfaces/dataset.base';
 
 export type ID = string | number;
 

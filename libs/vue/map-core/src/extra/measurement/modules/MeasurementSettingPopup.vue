@@ -15,7 +15,10 @@
           />
           <MeasurementSettingFields v-else :fields="fields" />
 
-          <div v-if="showSettingsSection" class="map-measurement-setting__prefs">
+          <div
+            v-if="showSettingsSection"
+            class="map-measurement-setting__prefs"
+          >
             <InputSelect
               v-if="showDistanceUnit"
               :model-value="distanceUnit"
@@ -50,17 +53,13 @@
                 v-if="showEdgeLabelToggle"
                 :label="trans('map.measurement.field.label-edge')"
                 :model-value="labelPrefs.showEdgeLabels"
-                @update:model-value="
-                  onLabelToggle('showEdgeLabels', !!$event)
-                "
+                @update:model-value="onLabelToggle('showEdgeLabels', !!$event)"
               />
               <InputCheckbox
                 v-if="showResultLabelToggle"
                 :label="trans('map.measurement.field.label-result')"
                 :model-value="labelPrefs.showResultLabel"
-                @update:model-value="
-                  onLabelToggle('showResultLabel', !!$event)
-                "
+                @update:model-value="onLabelToggle('showResultLabel', !!$event)"
               />
             </div>
             <CrsDisplaySettings
@@ -98,27 +97,28 @@ import {
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import {
+  type AreaUnit,
+  type DistanceUnit,
   getMeasurementAreaUnit,
   getMeasurementDistanceUnit,
   getMeasurementLabelPrefs,
   getMeasurementSettingUiFlags,
+  type IViewSettingField,
+  type MeasurementLabelPrefs,
   setMeasurementAreaUnit,
   setMeasurementDistanceUnit,
   setMeasurementLabelPrefs,
-  type AreaUnit,
-  type DistanceUnit,
-  type IViewSettingField,
-  type MeasurementLabelPrefs,
 } from '@hungpvq/map-core/measurement';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { computed, ref, watch } from 'vue';
+
 import { InputCheckbox, InputSelect } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
+import CrsDisplaySettings from '../../crs/CrsDisplaySettings.vue';
 import { useLang } from '../../lang/hook';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import CrsDisplaySettings from '../../crs/CrsDisplaySettings.vue';
 import FieldGeometry from './setting/field-geometry.vue';
 import FieldPointCrs from './setting/field-point-crs.vue';
 import MeasurementSettingFields from './setting/fields-show.vue';

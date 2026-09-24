@@ -5,10 +5,9 @@ export default {
 </script>
 
 <script setup lang="ts">
-
 import { type WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import type { IDataset } from '@hungpvq/map-dataset';
-
 import {
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
@@ -29,11 +28,10 @@ import {
   useToolbarControl,
   type WithShowProps,
 } from '@hungpvq/vue-map-core';
-
-import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import { shallowRef, watch } from 'vue';
+
 import { useMapDataset } from '../../store/dataset-api';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,

@@ -1,5 +1,6 @@
 import { logHelper, UniversalRegistry } from '@hungpvq/map-core';
 import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
+
 import type { IDataset } from '../interfaces/dataset.base';
 import type { MenuAction, MenuItemCommon } from '../interfaces/dataset.parts';
 import { type createMenuClickBuilder, createMenuProps } from './builder';
@@ -49,8 +50,7 @@ function menuLogMeta(
       ? context.context['control']
       : undefined;
   const layer = context.layer as
-    | { id?: string; type?: string; name?: string }
-    | undefined;
+    { id?: string; type?: string; name?: string } | undefined;
   return {
     control,
     datasetId: typeof layer?.id === 'string' ? layer.id : undefined,
@@ -104,8 +104,7 @@ export function handleMenuAction(menu: MenuAction, props: MenuItemProps) {
   const menuName =
     'name' in menu && typeof menu.name === 'string' ? menu.name : undefined;
   const layer = props.layer as
-    | { id?: string; type?: string; name?: string }
-    | undefined;
+    { id?: string; type?: string; name?: string } | undefined;
   const datasetId = typeof layer?.id === 'string' ? layer.id : undefined;
   const datasetType = typeof layer?.type === 'string' ? layer.type : undefined;
   const datasetName = typeof layer?.name === 'string' ? layer.name : undefined;
@@ -316,8 +315,7 @@ export async function handleMenuActionClick<P = unknown, T = IDataset>(
                 handler: handler.name,
                 clickKind,
                 errorName: err instanceof Error ? err.name : undefined,
-                errorMessage:
-                  err instanceof Error ? err.message : String(err),
+                errorMessage: err instanceof Error ? err.message : String(err),
               }),
             );
             throw err;

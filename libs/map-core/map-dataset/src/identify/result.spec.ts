@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { shouldApplyIdentifyRequest } from './result';
 
 describe('shouldApplyIdentifyRequest', () => {

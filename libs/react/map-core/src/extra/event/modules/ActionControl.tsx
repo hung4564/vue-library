@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import {
   createEventActionSync,
-  MittTypeMapEventEventKey,
   type IEvent,
   type MittTypeMapEvent,
+  MittTypeMapEventEventKey,
 } from '@hungpvq/map-core/event';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useMapMittStore } from '../../../store/mitt-store';
 import { useEventMapItems } from '../hook/useEventMapItems';
@@ -32,7 +33,8 @@ export function ActionControl(props: WithMapPropType) {
     () =>
       createEventActionSync({
         callMap: (cb) => depsRef.current.callMap(cb),
-        setCurrent: (type, event) => depsRef.current.setCurrentEvent(type, event),
+        setCurrent: (type, event) =>
+          depsRef.current.setCurrentEvent(type, event),
       }),
     [],
   );

@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
 import type { FeatureCollection } from 'geojson';
+import { describe, expect, it } from 'vitest';
+
 import { createDataManagement } from '../data-management';
 import type { IDataset } from '../interfaces/dataset.base';
 import { createRootDataset } from '../model/dataset.base';

@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { MAP_STORE_KEY } from '../types/constants';
+import { getMapCoreRootStore } from './map-core-meta';
 import {
   clearMapDomainStoreFactories,
   ensureMapDomainStore,
   hasMapDomainStoreFactory,
   registerMapDomainStoreFactory,
 } from './map-domain-store';
-import { getMapCoreRootStore } from './map-core-meta';
 import * as platform from './map-platform-registry';
 
 describe('map-domain-store', () => {
@@ -39,8 +40,14 @@ describe('map-domain-store', () => {
       },
     });
 
-    const a = ensureMapDomainStore<{ items: string[] }>('map-1', MAP_STORE_KEY.EVENT);
-    const b = ensureMapDomainStore<{ items: string[] }>('map-1', MAP_STORE_KEY.EVENT);
+    const a = ensureMapDomainStore<{ items: string[] }>(
+      'map-1',
+      MAP_STORE_KEY.EVENT,
+    );
+    const b = ensureMapDomainStore<{ items: string[] }>(
+      'map-1',
+      MAP_STORE_KEY.EVENT,
+    );
     expect(a).toBe(b);
     expect(creates).toBe(1);
     expect(getMapCoreRootStore()['map-1']?.[MAP_STORE_KEY.EVENT]).toBe(a);

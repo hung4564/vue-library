@@ -4,8 +4,18 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { computed, inject, nextTick, onBeforeUnmount, ref, Ref, StyleValue, watch } from 'vue';
 import { focusFirst, restoreFocus } from '@hungpvq/draggable';
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  Ref,
+  ref,
+  StyleValue,
+  watch,
+} from 'vue';
+
 import {
   useComponent,
   useContainerOrder,

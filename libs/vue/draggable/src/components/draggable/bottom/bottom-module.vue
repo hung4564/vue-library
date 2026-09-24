@@ -26,6 +26,7 @@ import {
   useSlots,
   watch,
 } from 'vue';
+
 import { useBottomContainer } from '../../../hook/useBottomContainer';
 import { useDragComponent, useDragContainer } from '../../../store';
 
@@ -47,9 +48,7 @@ const contentTo = computed(() => `#bottom-content-${c_containerId.value}`);
 const hasSlotTitle = computed(() => !!slots['title']);
 const hasSlotAfterTitle = computed(() => !!slots['after-title']);
 const isCurrentShow = computed(() => {
-  return (
-    !!props.containerId && !!props.itemId && props.itemId === getShow()
-  );
+  return !!props.containerId && !!props.itemId && props.itemId === getShow();
 });
 const activeShellCards = computed(() => {
   const id = getShow();

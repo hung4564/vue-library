@@ -94,11 +94,7 @@ export function shouldOpenIdentifyAttributeTable(
 ): boolean {
   if (isIdentifyContextAborted(ctx)) return false;
   const { total, records } = ctx;
-  return (
-    records.length === 1 &&
-    !!total &&
-    !!getAttributeTableTarget(records)
-  );
+  return records.length === 1 && !!total && !!getAttributeTableTarget(records);
 }
 
 /** Map `auto` (and unavailable explicit actions) to detail | table | result. */

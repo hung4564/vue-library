@@ -11,6 +11,7 @@ import {
   useDragComponent,
 } from '@hungpvq/vue-draggable';
 import { onBeforeMount, onUnmounted, ref } from 'vue';
+
 import GlobalCard from '../components/custom-cards/GlobalCard.vue';
 import GlobalHeader from '../components/custom-cards/GlobalHeader.vue';
 import LocalCard from '../components/custom-cards/LocalCard.vue';
@@ -47,7 +48,9 @@ onUnmounted(() => {
 
     <DraggableItemSideBar show title="Sidebar (global)" location="right">
       <div class="panel">
-        <p>Sidebar uses global card (store) — no local override API on shell.</p>
+        <p>
+          Sidebar uses global card (store) — no local override API on shell.
+        </p>
       </div>
     </DraggableItemSideBar>
 
@@ -108,8 +111,15 @@ onUnmounted(() => {
       <div class="panel">Drawer with global card.</div>
     </DraggableDrawer>
 
-    <DraggableItemBottom show title="Bottom (local)" :componentCard="LocalCard" :componentCardHeader="LocalHeader">
-      <div class="panel">Bottom shell uses local override while this item is active.</div>
+    <DraggableItemBottom
+      show
+      title="Bottom (local)"
+      :componentCard="LocalCard"
+      :componentCardHeader="LocalHeader"
+    >
+      <div class="panel">
+        Bottom shell uses local override while this item is active.
+      </div>
     </DraggableItemBottom>
 
     <DraggableModal

@@ -31,7 +31,11 @@ function onKeydown(event: KeyboardEvent) {
     role="menuitem"
     tabindex="-1"
     class="context-menu__item"
-    :class="{ 'is-active': active, 'is-disabled': disabled, clickable: !disabled }"
+    :class="{
+      'is-active': active,
+      'is-disabled': disabled,
+      clickable: !disabled,
+    }"
     :aria-disabled="disabled ? 'true' : undefined"
     :aria-current="active ? 'true' : undefined"
     @click.stop="!disabled && onActivate($event)"

@@ -169,9 +169,7 @@ export function registerLanguageControlPacks(
     if (tree) registerLocale(code, tree);
     registerLanguage(code, {
       label:
-        labels?.[code] ??
-        resolveLabel?.(code) ??
-        mapLanguageCodeLabel(code),
+        labels?.[code] ?? resolveLabel?.(code) ?? mapLanguageCodeLabel(code),
     });
   }
 }
@@ -318,10 +316,7 @@ export function flattenLocaleMessages(
 }
 
 /** Flatten-compare nested locale trees (string leaves only). */
-export function localeTreesEqual(
-  a: MapLangLocale,
-  b: MapLangLocale,
-): boolean {
+export function localeTreesEqual(a: MapLangLocale, b: MapLangLocale): boolean {
   const fa = flattenLocaleMessages(a);
   const fb = flattenLocaleMessages(b);
   const keysA = Object.keys(fa);

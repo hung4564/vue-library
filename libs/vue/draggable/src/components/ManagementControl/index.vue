@@ -6,7 +6,8 @@ export default {
 
 <script setup lang="ts">
 import { assertDefined } from '@hungpvq/draggable';
-import { computed, inject, ref, Ref } from 'vue';
+import { computed, inject, Ref, ref } from 'vue';
+
 import { useManagement, withShareProps } from '../../hook';
 import ShowStatusDragItem from './ShowStatusDragItem.vue';
 import ShowStatusDrawer from './ShowStatusDrawer.vue';

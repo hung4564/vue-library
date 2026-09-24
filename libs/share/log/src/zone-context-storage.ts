@@ -15,9 +15,7 @@ export type ZoneContextStorage<T> = {
   getStore(): T | undefined;
 };
 
-function isPromiseLike<T>(
-  value: T | PromiseLike<T>,
-): value is PromiseLike<T> {
+function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
   return (
     value != null &&
     typeof value === 'object' &&

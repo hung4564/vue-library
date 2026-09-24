@@ -3,7 +3,9 @@
     :disabled="disabled"
     :title="title"
     :active="show"
-    @click.stop="emit('toggle')" variant="text">
+    @click.stop="emit('toggle')"
+    variant="text"
+  >
     <span class="sample-toggle-show-button__label">
       {{ show ? 'ON' : 'OFF' }}
     </span>

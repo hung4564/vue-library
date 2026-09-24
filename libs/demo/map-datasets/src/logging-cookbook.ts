@@ -97,23 +97,30 @@ export async function runCookbookScenario(
           );
         }),
       );
-      return { ok: true, note: 'Inspect Flow: inner.parentSpanId === outer.spanId' };
+      return {
+        ok: true,
+        note: 'Inspect Flow: inner.parentSpanId === outer.spanId',
+      };
     }
     case 'track-request': {
       await loggerFactory.ensureActionContext(base, async () =>
-        runWithFunctionLog(log, { fn: 'withHttp', span: 'cookbook' }, async () => {
-          await loggerFactory.trackRequest(
-            {
-              url: 'https://httpbin.org/get?token=demo-secret',
-              method: 'GET',
-              mapId,
-            },
-            async () => {
-              const res = await fetch('https://httpbin.org/get');
-              return res;
-            },
-          );
-        }),
+        runWithFunctionLog(
+          log,
+          { fn: 'withHttp', span: 'cookbook' },
+          async () => {
+            await loggerFactory.trackRequest(
+              {
+                url: 'https://httpbin.org/get?token=demo-secret',
+                method: 'GET',
+                mapId,
+              },
+              async () => {
+                const res = await fetch('https://httpbin.org/get');
+                return res;
+              },
+            );
+          },
+        ),
       );
       return { ok: true };
     }
@@ -149,18 +156,20 @@ export async function runCookbookScenario(
       }
     }
     case 'orphan': {
-      log
-        .with({ fn: 'orphan', span: 'cookbook', mapId })
-        .warn('outside zone');
+      log.with({ fn: 'orphan', span: 'cookbook', mapId }).warn('outside zone');
       return { ok: true, note: 'new actionId minted on orphan log' };
     }
     case 'abort': {
       try {
         await loggerFactory.ensureActionContext(base, async () =>
-          runWithFunctionLog(log, { fn: 'abortable', span: 'cookbook' }, async () => {
-            const err = new DOMException('Aborted', 'AbortError');
-            throw err;
-          }),
+          runWithFunctionLog(
+            log,
+            { fn: 'abortable', span: 'cookbook' },
+            async () => {
+              const err = new DOMException('Aborted', 'AbortError');
+              throw err;
+            },
+          ),
         );
         return { ok: false };
       } catch {

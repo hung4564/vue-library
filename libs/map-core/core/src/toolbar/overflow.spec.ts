@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   BUTTON_GROUP_OVERFLOW_FRACTION,
-  TOOLBAR_EDGE_INSET_PX,
   cornerVerticalMenuBudgetsPx,
   groupToolbarButtons,
   maxVisibleButtonsInStackHeight,
@@ -10,6 +10,7 @@ import {
   measureCornerStandaloneReserved,
   splitToolbarOverflow,
   splitToolbarOverflowKeepGroups,
+  TOOLBAR_EDGE_INSET_PX,
   toolbarAvailableWidth,
   toolbarOverflowPanelClassName,
 } from './overflow';
@@ -239,9 +240,7 @@ describe('toolbar overflow', () => {
       querySelector: (sel: string) =>
         sel.includes('.map-toolbar-corner') ? {} : null,
     };
-    expect(
-      measureCornerMenuUsedPx({ children: [coords, toolbar] }),
-    ).toBe(200);
+    expect(measureCornerMenuUsedPx({ children: [coords, toolbar] })).toBe(200);
   });
 
   it('measures standalone chrome in a corner host excluding toolbar corners', () => {

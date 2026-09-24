@@ -10,6 +10,50 @@ export {
   installDatasetDebug,
   uninstallDatasetDebug,
 } from './bridge';
+export type { CommonDatasetPartType } from './describe';
+export {
+  COMMON_DATASET_PART_TYPES,
+  describeDataset,
+  getMenuPartData,
+  getMenusRaw,
+  listTypesInSubtree,
+  suggestPartTypes,
+} from './describe';
+export {
+  debugFindAllByType,
+  debugFindPartByType,
+  explainFindPart,
+} from './find';
+export {
+  collectSearchableDatasets,
+  filterSearchableDatasets,
+  getDatasetHierarchyKind,
+  inspectDataset,
+  listTypesInStoreRoots,
+} from './inspect';
+export type {
+  CaptureDatasetFromMenuOptions,
+  CreateMenuItemDebugDatasetOptions,
+} from './menu-debug-item';
+export {
+  captureDatasetFromMenu,
+  createMenuItemDebugDataset,
+  installDatasetDebugMenus,
+  MENU_ITEM_DEBUG_DATASET_ICON,
+  MENU_ITEM_DEBUG_DATASET_ID,
+  MENU_ITEM_DEBUG_DATASET_ID_ITEM,
+  openDatasetDevtools,
+  uninstallDatasetDebugMenus,
+} from './menu-debug-item';
+export {
+  explainMenus,
+  findMenuInResolved,
+  inspectMenuAction,
+  invokeResolvedMenu,
+  MENU_CONTROL_ID,
+  menuDebugKey,
+  resolveAndPartitionMenus,
+} from './menu-preview';
 export {
   buildDatasetTree,
   findDatasetById,
@@ -20,51 +64,6 @@ export {
   getRootDataset,
   toDatasetSummary,
 } from './tree';
-export {
-  debugFindAllByType,
-  debugFindPartByType,
-  explainFindPart,
-} from './find';
-export {
-  describeDataset,
-  getMenuPartData,
-  getMenusRaw,
-  listTypesInSubtree,
-  suggestPartTypes,
-  COMMON_DATASET_PART_TYPES,
-} from './describe';
-export type { CommonDatasetPartType } from './describe';
-export {
-  collectSearchableDatasets,
-  filterSearchableDatasets,
-  getDatasetHierarchyKind,
-  inspectDataset,
-  listTypesInStoreRoots,
-} from './inspect';
-export {
-  explainMenus,
-  findMenuInResolved,
-  inspectMenuAction,
-  invokeResolvedMenu,
-  menuDebugKey,
-  resolveAndPartitionMenus,
-  MENU_CONTROL_ID,
-} from './menu-preview';
-export {
-  captureDatasetFromMenu,
-  createMenuItemDebugDataset,
-  installDatasetDebugMenus,
-  openDatasetDevtools,
-  uninstallDatasetDebugMenus,
-  MENU_ITEM_DEBUG_DATASET_ICON,
-  MENU_ITEM_DEBUG_DATASET_ID,
-  MENU_ITEM_DEBUG_DATASET_ID_ITEM,
-} from './menu-debug-item';
-export type {
-  CaptureDatasetFromMenuOptions,
-  CreateMenuItemDebugDatasetOptions,
-} from './menu-debug-item';
-
 export type {
   DatasetDebugApi,
   DatasetDebugHelp,

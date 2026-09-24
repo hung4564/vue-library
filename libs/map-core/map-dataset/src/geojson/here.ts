@@ -2,9 +2,10 @@ import type {
   AddGeojsonHerePayload,
   MapAddGeojsonHereLayerType,
 } from '@hungpvq/map-core/menu';
-import { createGeoJsonDataset } from './builder';
+
 import type { IDataset } from '../interfaces/dataset.base';
 import { asFeatureCollection } from '../utils/feature-collection';
+import { createGeoJsonDataset } from './builder';
 import { detectGeojsonStyleType } from './geojson-parse';
 
 export function createGeojsonHereDataset(

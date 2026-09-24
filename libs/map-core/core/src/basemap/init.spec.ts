@@ -1,8 +1,9 @@
-import { describe, expect, it, vi, afterEach } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { BaseMapAdapter } from './adapter/BaseMapAdapter';
 import { getLowestLayerId } from './adapter/DefaultBaseMapAdapter';
-import { BASEMAP_PREFIX } from './model/BaseMapLayer';
 import { INIT_BASEMAPS } from './init';
+import { BASEMAP_PREFIX } from './model/BaseMapLayer';
 import type { BaseMapItem } from './types';
 
 class StubAdapter extends BaseMapAdapter {
@@ -37,7 +38,14 @@ describe('INIT_BASEMAPS', () => {
 describe('BaseMapAdapter.getIndexDefault', () => {
   const maps: BaseMapItem[] = [
     { id: 1, title: 'A', type: 'raster', links: [], thumbnail: '' },
-    { id: 2, title: 'B', type: 'raster', links: [], thumbnail: '', default: true },
+    {
+      id: 2,
+      title: 'B',
+      type: 'raster',
+      links: [],
+      thumbnail: '',
+      default: true,
+    },
     { id: 3, title: 'C', type: 'raster', links: [], thumbnail: '' },
   ];
 

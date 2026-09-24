@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { BasemapError } from '../basemap/errors';
 import { MapError, MapEventError, MapInitializationError } from './index';
 

@@ -4,20 +4,20 @@ export default {
 };
 </script>
 <script setup lang="ts">
+import type { WithMapPropType } from '@hungpvq/map-core';
 import { logHelper } from '@hungpvq/map-core';
-
 import {
   createEventActionSync,
+  type IEvent,
   MittTypeMapEvent,
   MittTypeMapEventEventKey,
-  type IEvent,
 } from '@hungpvq/map-core/event';
+import { logger } from '@hungpvq/map-core/event';
 import { onMounted } from 'vue';
-import type { WithMapPropType } from '@hungpvq/map-core';
+
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useMapMittStore } from '../../../store/mitt-store';
 import { useEventMapItems } from '../hook/useEventMapItems';
-import { logger } from '@hungpvq/map-core/event';
 import { useMapEventStore } from '../store';
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,

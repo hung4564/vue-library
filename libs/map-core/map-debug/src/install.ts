@@ -8,7 +8,9 @@ let installed = false;
 export function installMapDebug(): void {
   if (installed) return;
   installed = true;
-  logger.with({ fn: 'installMapDebug', span: 'init' }).debug('map-debug installed');
+  logger
+    .with({ fn: 'installMapDebug', span: 'init' })
+    .debug('map-debug installed');
 }
 
 export function uninstallMapDebug(): void {

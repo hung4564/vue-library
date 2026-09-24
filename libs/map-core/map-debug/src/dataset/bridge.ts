@@ -2,6 +2,7 @@ import type { IDataset } from '@hungpvq/map-dataset';
 import { DatasetService } from '@hungpvq/map-dataset';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { loggerFactory } from '@hungpvq/shared-log';
+
 import { getDatasetStore, listMapIds } from '../store-access';
 import {
   describeDataset,
@@ -11,15 +12,16 @@ import {
   suggestPartTypes,
 } from './describe';
 import {
-  collectSearchableDatasets,
-  inspectDataset,
-  listTypesInStoreRoots,
-} from './inspect';
-import {
   debugFindAllByType,
   debugFindPartByType,
   explainFindPart as explainFindPartSteps,
 } from './find';
+import {
+  collectSearchableDatasets,
+  inspectDataset,
+  listTypesInStoreRoots,
+} from './inspect';
+import { getMapDebugStore } from './map-debug-store';
 import {
   explainMenus as explainMenusSteps,
   findMenuInResolved,
@@ -43,7 +45,6 @@ import type {
   DatasetMenuTarget,
   DatasetNodeSummary,
 } from './types';
-import { getMapDebugStore } from './map-debug-store';
 
 const logger = loggerFactory.createLogger().setNamespace('map-debug:dataset');
 
@@ -167,7 +168,8 @@ function buildHelp(): DatasetDebugHelp {
       `${d}.previewMenus()`,
     ],
     session: {
-      setSession: 'partial → { mapId, datasetId, control, target, menuId }; refreshes live fields',
+      setSession:
+        'partial → { mapId, datasetId, control, target, menuId }; refreshes live fields',
       refresh: 're-resolve dataset + menus from current session',
       session: 'current { mapId, datasetId, control, target, menuId }',
       listMapIds: '() → map ids with a dataset store',
@@ -200,10 +202,13 @@ function buildHelp(): DatasetDebugHelp {
         'menu, list, list-item, identify, source, layer, bound, highlight, attribute-table, …',
     },
     menus: {
-      previewMenus: '(opts?) → { extra, menu, bottom, … }; sets menus / lastPreview',
+      previewMenus:
+        '(opts?) → { extra, menu, bottom, … }; sets menus / lastPreview',
       explainMenus: '(opts?) → show/hide steps; sets lastExplain',
-      inspectMenu: '({ menuId }) → action detail by id or generated anon id; sets selectedMenu / lastInspect',
-      invokeMenu: '({ menuId, value?, meta? }) → run click (needs mapId + dataset)',
+      inspectMenu:
+        '({ menuId }) → action detail by id or generated anon id; sets selectedMenu / lastInspect',
+      invokeMenu:
+        '({ menuId, value?, meta? }) → run click (needs mapId + dataset)',
       getMenusRaw: '() → raw menus on dataset',
       getMenuPartData: '() → menu part payload',
       MENU_CONTROL_ID:
@@ -297,7 +302,10 @@ function createApi(): DatasetDebugApi {
   target.help = () => {
     const text = formatDatasetDebugHelp(buildHelp());
     // Print as preformatted text so F12 shows a readable guide, not an object tree.
-    console.log(`%c${text}`, 'font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre');
+    console.log(
+      `%c${text}`,
+      'font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre',
+    );
     return text;
   };
 
@@ -370,8 +378,7 @@ function createApi(): DatasetDebugApi {
   target.listForest = (mapId) =>
     listRootDatasets(mapId).map((root) => buildDatasetTree(root));
 
-  target.suggestPartTypes = (from) =>
-    suggestPartTypes(from ?? target.dataset);
+  target.suggestPartTypes = (from) => suggestPartTypes(from ?? target.dataset);
 
   target.describe = (dataset) => {
     const node = dataset ?? target.dataset;

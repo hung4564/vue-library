@@ -1,7 +1,8 @@
 import { FallbackResolver } from '@hungpvq/map-core';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import type { MapGeoJSONFeature } from 'maplibre-gl';
-import { toFeature, type DataRecord } from '../data-management';
+
+import { type DataRecord, toFeature } from '../data-management';
 import { getDatasetFeatureCollection } from '../geo-export/dataset';
 import { GEOJSON_FEATURE_ID_KEY } from '../geojson/feature-id';
 import { findGeojsonSource } from '../geojson/find-source';
@@ -96,9 +97,7 @@ export function getIdentifySourceFeatureCollectionSync(
 }
 
 /** Coerce enrichment slot to a Feature with real geometry. */
-export function coerceIdentifyResolvedFeature(
-  result: unknown,
-): Feature | null {
+export function coerceIdentifyResolvedFeature(result: unknown): Feature | null {
   if (result == null) return null;
   if (
     typeof result === 'object' &&
@@ -216,8 +215,7 @@ export function createIdentifyFeatureResolver() {
     {
       priority: 20,
       always: true,
-      when: (ctx) =>
-        !!ctx.collection && ctx.slots.some(slotNeedsGeometry),
+      when: (ctx) => !!ctx.collection && ctx.slots.some(slotNeedsGeometry),
       execute: (ctx) => {
         const collection = ctx.collection!;
         for (let i = 0; i < ctx.slots.length; i++) {
@@ -328,12 +326,6 @@ export async function resolveIdentifyFeaturesData(
   rendered: MapGeoJSONFeature[],
   fieldId?: string,
 ): Promise<Record<string, unknown>[]> {
-  const features = await resolveIdentifyFeatures(
-    identify,
-    rendered,
-    fieldId,
-  );
-  return rendered.map((hit, i) =>
-    flattenIdentifyFeatureData(hit, features[i]),
-  );
+  const features = await resolveIdentifyFeatures(identify, rendered, fieldId);
+  return rendered.map((hit, i) => flattenIdentifyFeatureData(hit, features[i]));
 }

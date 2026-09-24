@@ -9,20 +9,21 @@ import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   groupEventsByMapType,
   isEventActive,
-  MittTypeMapEventEventKey,
   type MapEventStore,
   type MittTypeMapEvent,
+  MittTypeMapEventEventKey,
 } from '@hungpvq/map-core/event';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
 import { computed, onMounted, onUnmounted, shallowRef, watch } from 'vue';
+
 import MapCommonButton from '../../../components/MapCommonButton.vue';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow, type WithShowProps } from '../../../hooks/useShow';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
-import { useLang } from '../../lang/hook';
 import { useMapMittStore } from '../../../store/mitt-store';
+import { useLang } from '../../lang/hook';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { useToolbarControl } from '../../toolbar/helper';
 import { useEventMapItems } from '../hook/useEventMapItems';
@@ -142,7 +143,9 @@ watch(show, () => control.sync());
                     class="map-event-control__status-icon is-active"
                     >✔ Đang kích hoạt</span
                   >
-                  <span v-else class="map-event-control__status-icon is-inactive"
+                  <span
+                    v-else
+                    class="map-event-control__status-icon is-inactive"
                     >✖ Không kích hoạt</span
                   >
                 </div>

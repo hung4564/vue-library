@@ -25,17 +25,12 @@ const pageSizeModel = computed({
 });
 const visible = computed(() => props.total > 0);
 const pageStatus = computed(
-  () =>
-    `${props.pageLabel} ${props.page} ${props.ofLabel} ${props.totalPages}`,
+  () => `${props.pageLabel} ${props.page} ${props.ofLabel} ${props.totalPages}`,
 );
 </script>
 <template>
   <div v-if="visible" class="attribute-table__pager">
-    <span
-      class="attribute-table__pager-label"
-      role="status"
-      aria-live="polite"
-    >
+    <span class="attribute-table__pager-label" role="status" aria-live="polite">
       {{ pageStatus }}
     </span>
     <MapControlButton

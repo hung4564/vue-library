@@ -1,6 +1,6 @@
 import {
-  getDatasetSourceKind,
   type DatasetSourceKind,
+  getDatasetSourceKind,
   type IDataset,
 } from '@hungpvq/map-dataset';
 import {
@@ -34,10 +34,7 @@ export function LayerItemIcon({
   data?: IDataset;
   item?: IDataset;
 }) {
-  const kind = useMemo(
-    () => getDatasetSourceKind(data ?? item),
-    [data, item],
-  );
+  const kind = useMemo(() => getDatasetSourceKind(data ?? item), [data, item]);
   const className = [
     'layer-item__icon-content',
     kind !== 'unknown' ? `layer-item__icon-content--${kind}` : '',

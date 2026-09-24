@@ -1,10 +1,4 @@
-﻿import type { MapSimple } from '@hungpvq/map-core';
-import {
-  ComponentManagementControl,
-  DatasetControl,
-  IdentifyControl,
-  LayerControl,
-} from '@hungpvq/react-map-dataset';
+import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
   BaseMapControl,
@@ -20,14 +14,20 @@ import {
   PrintControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+import {
+  ComponentManagementControl,
+  DatasetControl,
+  IdentifyControl,
+  LayerControl,
+} from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
+import { MapPageShell } from '../components/MapPageShell';
 import { loadAllMapDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
-import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 /** Alias of full dataset demo — same as home but reachable via /map-dataset */
 export function MapDatasetPage() {

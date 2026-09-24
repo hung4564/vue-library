@@ -1,4 +1,5 @@
 import type { CircleLayerSpecification } from 'maplibre-gl';
+
 import type { LayerTypeConfig } from './style';
 
 export const CIRCLE_CONFIG: LayerTypeConfig<CircleLayerSpecification> = {

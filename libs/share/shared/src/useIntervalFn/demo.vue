@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useIntervalFn } from '.';
+
 import { rand } from '../utils';
+import { useIntervalFn } from '.';
 
 const greetings = [
   'Hello',

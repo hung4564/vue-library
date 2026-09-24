@@ -1,10 +1,31 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
-import { createDatasetPartBoundComponent, createDatasetPartListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import {
+  createDatasetPartBoundComponent,
+  createDatasetPartListViewUiComponentBuilder,
+  createGroupDataset,
+  createMultiMapboxLayerComponent,
+  createRootDataset,
+} from '@hungpvq/map-dataset';
 import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
-import { createDatasetPartMenuComponentBuilder, createMenuBuilder, createMenuClickBuilder, createMenuClickHighlightBuilder, createMenuItemIdentifyForList, createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToBoundActionForList, createMenuItemToggleShow, LIST_VIEW_MENU_ID, MENU_CONTROL_ID, type MenuItemClick } from '@hungpvq/map-dataset/menu';
+import {
+  createDatasetPartMenuComponentBuilder,
+  createMenuBuilder,
+  createMenuClickBuilder,
+  createMenuClickHighlightBuilder,
+  createMenuItemIdentifyForList,
+  createMenuItemShowDetailForItem,
+  createMenuItemShowDetailInfoSource,
+  createMenuItemStyleEdit,
+  createMenuItemToBoundActionForItem,
+  createMenuItemToBoundActionForList,
+  createMenuItemToggleShow,
+  LIST_VIEW_MENU_ID,
+  MENU_CONTROL_ID,
+  type MenuItemClick,
+} from '@hungpvq/map-dataset/menu';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { loggerFactory } from '@hungpvq/shared-log';
 import {
@@ -164,17 +185,21 @@ export function createSharedDatasetMenuDataset() {
       kind: 'point',
     }),
   ];
-  const bbox: [number, number, number, number] = [
-    105.78, 20.98, 105.9, 21.06,
-  ];
+  const bbox: [number, number, number, number] = [105.78, 20.98, 105.9, 21.06];
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features,
   });
   const bound = createDatasetPartBoundComponent(name, bbox);
   const menus = createDatasetPartMenuComponentBuilder(name)
-    .addLayerMenu(createMenuItemToggleShow(), LIST_VIEW_MENU_ID.layer.toggleShow)
-    .addLayerMenu(createMenuItemShowDetailInfoSource(), LIST_VIEW_MENU_ID.layer.info)
+    .addLayerMenu(
+      createMenuItemToggleShow(),
+      LIST_VIEW_MENU_ID.layer.toggleShow,
+    )
+    .addLayerMenu(
+      createMenuItemShowDetailInfoSource(),
+      LIST_VIEW_MENU_ID.layer.info,
+    )
     .addLayerMenu(
       createMenuItemToBoundActionForList(),
       LIST_VIEW_MENU_ID.layer.fillBound,
@@ -259,9 +284,7 @@ export function createByControlPlacementDataset() {
       kind: 'point',
     }),
   ];
-  const bbox: [number, number, number, number] = [
-    105.7, 20.9, 105.78, 20.96,
-  ];
+  const bbox: [number, number, number, number] = [105.7, 20.9, 105.78, 20.96];
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features,
@@ -301,8 +324,14 @@ export function createByControlPlacementDataset() {
     .build();
 
   const menus = createDatasetPartMenuComponentBuilder(name)
-    .addLayerMenu(createMenuItemToggleShow(), LIST_VIEW_MENU_ID.layer.toggleShow)
-    .addLayerMenu(createMenuItemShowDetailInfoSource(), LIST_VIEW_MENU_ID.layer.info)
+    .addLayerMenu(
+      createMenuItemToggleShow(),
+      LIST_VIEW_MENU_ID.layer.toggleShow,
+    )
+    .addLayerMenu(
+      createMenuItemShowDetailInfoSource(),
+      LIST_VIEW_MENU_ID.layer.info,
+    )
     .addLayerMenu(
       createMenuItemToBoundActionForList(),
       LIST_VIEW_MENU_ID.layer.fillBound,
@@ -504,7 +533,10 @@ export function createCustomMultiSupportDataset() {
             {
               execute(click, props) {
                 logger
-                  .with({ fn: 'onCustomExecuteAfterTransform', span: 'menu.action' })
+                  .with({
+                    fn: 'onCustomExecuteAfterTransform',
+                    span: 'menu.action',
+                  })
                   .info('custom execute after transform', click, props);
               },
             },
@@ -619,9 +651,7 @@ export function createCustomToggleButtonDataset() {
       name: 'Custom toggle point',
     }),
   ];
-  const bbox: [number, number, number, number] = [
-    106.15, 20.55, 106.32, 20.68,
-  ];
+  const bbox: [number, number, number, number] = [106.15, 20.55, 106.32, 20.68];
   return createGeoJsonListDataset({
     name,
     features,
@@ -664,8 +694,5 @@ export const MENU_DEMO_DATASET_FACTORIES = [
   createCustomChainSupportDataset,
 ] as const;
 
-export {
-  helpI18n,
-  MENU_DEMO_HELP,
-} from './help';
+export { helpI18n, MENU_DEMO_HELP } from './help';
 export type { DemoHelpLang, DemoHelpSection } from './help';

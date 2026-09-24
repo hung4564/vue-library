@@ -1,12 +1,13 @@
-import { useExpand, useShow } from '../../../hook';
 import type { LocationSideBar } from '@hungpvq/draggable';
+
+import { useExpand, useShow } from '../../../hook';
 import { useSidebarTransition } from './useSidebarTransition';
 
 export function useSidebarBehavior(
   props: {
     location: LocationSideBar;
-    show?: boolean,
-    expand?: boolean
+    show?: boolean;
+    expand?: boolean;
   },
   containerId: string,
 ) {

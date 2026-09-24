@@ -1,18 +1,18 @@
-import { type WithMapPropType, subscribeMapReady } from '@hungpvq/map-core';
+import { subscribeMapReady, type WithMapPropType } from '@hungpvq/map-core';
 import {
-  MAP_THEME_COLOR_SCHEME,
-  MAP_THEME_MODES,
   applyMapTheme,
   getMapThemeLocaleKey,
   getPrefersDark,
   getStoredMapThemeMode,
+  MAP_THEME_COLOR_SCHEME,
+  MAP_THEME_MODES,
+  type MapThemeMode,
+  type MapThemeScope,
   normalizeMapThemeModes,
   resolveMapTheme,
   setStoredMapThemeMode,
   subscribePrefersContrastMore,
   toggleMapThemeLightDark,
-  type MapThemeMode,
-  type MapThemeScope,
 } from '@hungpvq/map-core/theme';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
@@ -26,6 +26,7 @@ import {
   mdiWeatherSunset,
 } from '@mdi/js';
 import { useEffect, useMemo, useState } from 'react';
+
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
 import { useLang } from '../../extra/lang/hook';
@@ -89,7 +90,7 @@ export function ThemeControl({
       ? mdiWeatherSunny
       : mdiWeatherNight;
 
-useEffect(() => {
+  useEffect(() => {
     setMode(getStoredMapThemeMode('auto', storageOpts));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scope, mapId]);
@@ -173,10 +174,7 @@ useEffect(() => {
     <ModuleContainer
       {...moduleContainerProps}
       btn={
-        <MapControlGroupButton
-          row
-          className="button-group-hover-expand"
-        >
+        <MapControlGroupButton row className="button-group-hover-expand">
           {state ? (
             <MapCommonButton
               option={state}

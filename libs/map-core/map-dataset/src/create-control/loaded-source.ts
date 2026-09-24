@@ -1,4 +1,5 @@
 import type { GeoJSON } from 'geojson';
+
 import { asFeatureCollection } from '../utils/feature-collection';
 
 export type CreateControlDataSourceKind = 'paste' | 'file' | 'url';
@@ -119,9 +120,7 @@ export function buildCreateControlArchiveMetaChips(
     chips.push(meta.archiveKind.trim().toUpperCase());
   }
   if (meta.minzoom != null || meta.maxzoom != null) {
-    chips.push(
-      `${labels.zoom}: ${meta.minzoom ?? '?'}–${meta.maxzoom ?? '?'}`,
-    );
+    chips.push(`${labels.zoom}: ${meta.minzoom ?? '?'}–${meta.maxzoom ?? '?'}`);
   }
   const layerCount = meta.sourceLayers?.length ?? 0;
   if (meta.tileKind === 'vector') {

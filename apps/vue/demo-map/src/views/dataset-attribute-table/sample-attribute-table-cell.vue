@@ -17,7 +17,11 @@ defineProps<AttributeTableCellProps>();
   max-width: 100%;
   padding: 1px 6px;
   border-radius: 4px;
-  background: color-mix(in srgb, var(--map-accent-color, #1a73e8) 14%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--map-accent-color, #1a73e8) 14%,
+    transparent
+  );
   color: var(--map-accent-color, #1a73e8);
   font-size: 0.85em;
   font-weight: 600;

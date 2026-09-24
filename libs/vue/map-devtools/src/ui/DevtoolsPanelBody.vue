@@ -46,29 +46,17 @@
     </MapControlButton>
   </div>
   <div class="devtools-content">
-    <div
-      class="devtools-content__pane"
-      :hidden="state.activeTab !== 'store'"
-    >
+    <div class="devtools-content__pane" :hidden="state.activeTab !== 'store'">
       <StoreViewer />
     </div>
     <!-- Keep mounted: Run/menu actions can remount the panel; local UI must survive. -->
-    <div
-      class="devtools-content__pane"
-      :hidden="state.activeTab !== 'dataset'"
-    >
+    <div class="devtools-content__pane" :hidden="state.activeTab !== 'dataset'">
       <DatasetMenuViewer />
     </div>
-    <div
-      class="devtools-content__pane"
-      :hidden="state.activeTab !== 'logs'"
-    >
+    <div class="devtools-content__pane" :hidden="state.activeTab !== 'logs'">
       <LogViewer />
     </div>
-    <div
-      class="devtools-content__pane"
-      :hidden="state.activeTab !== 'errors'"
-    >
+    <div class="devtools-content__pane" :hidden="state.activeTab !== 'errors'">
       <ErrorViewer />
     </div>
   </div>
@@ -77,6 +65,7 @@
 <script setup lang="ts">
 import { MapControlButton } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
+
 import { devtoolState, setDevtoolActiveTab } from '../store';
 import DatasetMenuViewer from './DatasetMenuViewer.vue';
 import DevtoolsMapFilter from './DevtoolsMapFilter.vue';

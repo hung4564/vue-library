@@ -1,21 +1,22 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import {
-  Popup,
   type LayerSpecification,
   type MapMouseEvent,
   type MapSourceDataEvent,
   type PointLike,
+  Popup,
   type QueryRenderedFeaturesOptions,
   type StyleSpecification,
 } from 'maplibre-gl';
-import { brightColor } from './colors';
+
 import { DrawError } from '../errors';
+import { brightColor } from './colors';
 import {
+  cloneStyleSpecification,
   getSourcesFromMap,
+  type InspectStyleSpecification,
   isInspectStyle,
   markInspectStyle,
-  cloneStyleSpecification,
-  type InspectStyleSpecification,
 } from './inspect';
 import { renderPopup as defaultRenderPopup } from './renderPopup';
 import { generateColoredLayers, generateInspectStyle } from './stylegen';

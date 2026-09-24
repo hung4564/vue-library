@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { LIST_VIEW_MENU_ID } from '../menu/items';
 import {
-  resolveAutoIdentifyHitAction,
-  resolveIdentifyHitAction,
   type IdentifyHitAction,
   type IdentifyHitActionContext,
+  resolveAutoIdentifyHitAction,
+  resolveIdentifyHitAction,
 } from './hit-action';
 
 const findSiblingOrNearestLeaf = vi.fn();

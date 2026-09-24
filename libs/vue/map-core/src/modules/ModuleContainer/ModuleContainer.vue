@@ -27,9 +27,9 @@ export default {
 </script>
 <script setup lang="ts">
 import {
-  MAP_MODULE_CONTROL_ID_KEY,
   buildModuleBindPosition,
   isModuleCornerChromeVisible,
+  MAP_MODULE_CONTROL_ID_KEY,
   moduleBtnContainerClassName,
   moduleCornerHostSelector,
   moduleDraggableHostSelector,
@@ -61,9 +61,7 @@ const props = defineProps({
     type: String,
     default: 'standalone',
     validator(value: string) {
-      return (
-        ['toolbar', 'standalone', 'button', 'menu'].indexOf(value) !== -1
-      );
+      return ['toolbar', 'standalone', 'button', 'menu'].indexOf(value) !== -1;
     },
   },
 });
@@ -97,9 +95,7 @@ const c_mapId = computed<string>(() => {
   return props.mapId || i_map_id!;
 });
 
-const draggableTo = computed(() =>
-  moduleDraggableHostSelector(c_mapId.value),
-);
+const draggableTo = computed(() => moduleDraggableHostSelector(c_mapId.value));
 const btnTo = computed(() =>
   moduleCornerHostSelector(
     props.position as 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
@@ -110,10 +106,7 @@ const btnTo = computed(() =>
 const bindDrag = computed(() =>
   buildModuleBindPosition({
     position: props.position as
-      | 'top-left'
-      | 'top-right'
-      | 'bottom-left'
-      | 'bottom-right',
+      'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
     btnWidth: props.btnWidth,
     containerId: c_containerId.value,
   }),

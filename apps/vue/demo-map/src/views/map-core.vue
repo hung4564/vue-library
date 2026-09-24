@@ -22,8 +22,6 @@
   </Map>
 </template>
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
 import {
   CrsControl,
@@ -42,7 +40,9 @@ import {
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
-import AsideControl from '../layout/aside-control.vue';
-import DemoHelpPanel from '../components/DemoHelpPanel.vue';
-</script>
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 
+import DemoHelpPanel from '../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
+import AsideControl from '../layout/aside-control.vue';
+</script>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {
   COOKBOOK_CHECKLIST,
-  runCookbookScenario,
   type CookbookScenarioId,
+  runCookbookScenario,
 } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
@@ -16,9 +16,10 @@ import {
 } from '@hungpvq/vue-map-dataset';
 import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { ref } from 'vue';
-import { loadIdentifyDemoDatasets } from '../../data/loaders';
+
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import { loadIdentifyDemoDatasets } from '../../data/loaders';
 import AsideControl from '../../layout/aside-control.vue';
 
 loggerFactory.enableEverything();
@@ -43,8 +44,8 @@ async function run(id: CookbookScenarioId) {
     <aside class="logging-cookbook__panel">
       <h2>Logging cookbook</h2>
       <p class="logging-cookbook__hint">
-        Open Devtools → Logs → Flow after each run. Menu / Identify / LayerDetail
-        cover scenarios 5–7 on the map.
+        Open Devtools → Logs → Flow after each run. Menu / Identify /
+        LayerDetail cover scenarios 5–7 on the map.
       </p>
       <ul class="logging-cookbook__list">
         <li v-for="item in COOKBOOK_CHECKLIST" :key="item.id">
@@ -129,5 +130,3 @@ async function run(id: CookbookScenarioId) {
   height: 100%;
 }
 </style>
-
-

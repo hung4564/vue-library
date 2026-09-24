@@ -5,6 +5,7 @@ import {
   MittTypeMapEvent,
   MittTypeMapEventEventKey,
 } from '@hungpvq/map-core/event';
+import { logger } from '@hungpvq/map-core/event';
 import { MapEventType } from 'maplibre-gl';
 import {
   computed,
@@ -14,9 +15,9 @@ import {
   onUnmounted,
   shallowRef,
 } from 'vue';
-import { getMap } from '../../../store/store';
+
 import { useMapMittStore } from '../../../store/mitt-store';
-import { logger } from '@hungpvq/map-core/event';
+import { getMap } from '../../../store/store';
 import { useMapEventStore } from '../store';
 
 export function useComponentName() {
@@ -40,10 +41,12 @@ export function useEventMap(
     store,
     emitter,
     (mapIdParam, level, message, data) => {
-      logHelper(logger, mapIdParam, 'hook', 'useEventMap').with({
-        fn: 'useEventMap',
-        span: 'hook.add',
-      })[level](message, data);
+      logHelper(logger, mapIdParam, 'hook', 'useEventMap')
+        .with({
+          fn: 'useEventMap',
+          span: 'hook.add',
+        })
+        [level](message, data);
     },
   );
 

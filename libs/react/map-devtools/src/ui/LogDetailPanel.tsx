@@ -48,8 +48,7 @@ export function LogDetailPanel({
     );
   }
 
-  const title =
-    textMessage(log) || log.header.fn || log.header.span || 'Log';
+  const title = textMessage(log) || log.header.fn || log.header.span || 'Log';
   const objects = objectArgs(log);
 
   return (

@@ -1,14 +1,18 @@
-import { createCopyFeedback, type MapButtonSize, type MapButtonVariant } from '@hungpvq/map-core';
+import {
+  createCopyFeedback,
+  type MapButtonSize,
+  type MapButtonVariant,
+} from '@hungpvq/map-core';
 import { mdiCheck, mdiContentCopy } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import React, { useEffect, useRef, useState, type MouseEvent } from 'react';
+import React, { type MouseEvent, useEffect, useRef, useState } from 'react';
+
 import { MapControlButton } from './MapControlButton';
 
-export interface MapCopyButtonProps
-  extends Omit<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    'value' | 'children' | 'onClick' | 'title'
-  > {
+export interface MapCopyButtonProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'value' | 'children' | 'onClick' | 'title'
+> {
   /** Text copied to the clipboard. */
   value?: string | number | null;
   title?: string;
@@ -66,10 +70,7 @@ export function MapCopyButton({
       aria-label={label}
       onClick={onClick}
     >
-      <Icon
-        path={copied ? mdiCheck : mdiContentCopy}
-        size={`${iconSize}px`}
-      />
+      <Icon path={copied ? mdiCheck : mdiContentCopy} size={`${iconSize}px`} />
     </MapControlButton>
   );
 }

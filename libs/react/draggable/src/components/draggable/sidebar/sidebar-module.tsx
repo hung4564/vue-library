@@ -1,8 +1,9 @@
-import { useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
+import type { LocationSideBar } from '@hungpvq/draggable';
+import { type ReactNode, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
 import { useContainerReactive } from '../../../store/useStoreReactive';
-import type { LocationSideBar } from '@hungpvq/draggable';
 export interface SidebarModuleProps {
   containerId: string;
   itemId: string;
@@ -78,9 +79,7 @@ export function SidebarModule({
 
   return (
     <div className="module-sidebar__container">
-      {title &&
-        portalTargets.title &&
-        createPortal(title, portalTargets.title)}
+      {title && portalTargets.title && createPortal(title, portalTargets.title)}
       {afterTitle &&
         portalTargets.afterTitle &&
         createPortal(afterTitle, portalTargets.afterTitle)}

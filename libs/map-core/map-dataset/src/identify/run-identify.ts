@@ -1,17 +1,18 @@
 import { logHelper } from '@hungpvq/map-core';
 import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
 import type { MapMouseEvent, PointLike } from 'maplibre-gl';
+
 import type {
   IdentifyMultiResult,
   IIdentifyView,
 } from '../interfaces/dataset.parts';
 import { loggerIdentify } from '../logger';
-import { handleMultiIdentify, handleMultiIdentifyGetFirst } from './models';
 import { getHighlightResolver } from './highlight-resolver';
 import {
   countIdentifyMultiFeatures,
   resolveIdentifyHitAction,
 } from './hit-action';
+import { handleMultiIdentify, handleMultiIdentifyGetFirst } from './models';
 import { getIdentifyResolver } from './resolver-registry';
 import {
   IDENTIFY_ALL_LAYERS_VALUE,
@@ -220,11 +221,11 @@ export async function runIdentifyMulti(
   log
     .with({ fn: 'runIdentifyMulti', span: 'identify.query' })
     .info(IDENTIFY_LOADING_LOG.done, {
-    durationMs,
-    hitCount,
-    featureCount,
-    empty: featureCount === 0,
-  });
+      durationMs,
+      hitCount,
+      featureCount,
+      empty: featureCount === 0,
+    });
 
   return {
     records: nonEmpty,

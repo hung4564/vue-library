@@ -67,8 +67,7 @@ export function ensureMapDomainStore<T>(mapId: string, key: string): T {
     throw new Error('mapId is required');
   }
   const factory = getDomainStoreFactories().get(key) as
-    | MapDomainStoreFactory<T>
-    | undefined;
+    MapDomainStoreFactory<T> | undefined;
   if (!factory) {
     throw new Error(
       `No domain store factory registered for key "${key}". Import the domain module or call registerMapDomainStoreFactory.`,

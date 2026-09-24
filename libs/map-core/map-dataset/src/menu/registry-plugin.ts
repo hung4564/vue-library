@@ -37,9 +37,7 @@ export function resolveDatasetRegistryKey(
 /** Register framework dataset UI components into the map registry. */
 export function registerDatasetRegistryComponents<TComponent>(
   registerComponent: (registryKey: string, component: TComponent) => void,
-  components: Partial<
-    Record<DatasetRegistryComponentKey, NoInfer<TComponent>>
-  >,
+  components: Partial<Record<DatasetRegistryComponentKey, NoInfer<TComponent>>>,
 ): void {
   for (const slot of DATASET_REGISTRY_SLOTS) {
     const component = components[slot];

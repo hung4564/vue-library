@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { createRootDataset } from '../model/dataset.base';
 import { createDatasetPartListViewUiComponentBuilder } from '../model/list/builder';
 import {
@@ -28,9 +29,9 @@ describe('attribute-table dataset part', () => {
     expect(
       resolveAttributeTableColumnsOption(list, [{ key: 'id', label: 'ID' }]),
     ).toEqual([{ key: 'id', label: 'ID' }]);
-    expect(
-      resolveAttributeTableUiOption(list, { search: false }),
-    ).toEqual({ search: false });
+    expect(resolveAttributeTableUiOption(list, { search: false })).toEqual({
+      search: false,
+    });
 
     root.add(
       createDatasetPartAttributeTable('table', {

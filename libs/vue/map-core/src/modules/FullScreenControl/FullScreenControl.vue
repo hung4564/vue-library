@@ -7,9 +7,9 @@ import {
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
+
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';

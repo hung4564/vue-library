@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { buildSimpleStyleLayers } from './layer-simple-builder';
 
 describe('buildSimpleStyleLayers', () => {

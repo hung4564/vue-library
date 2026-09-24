@@ -1,7 +1,9 @@
 import React, { useId } from 'react';
 
-export interface InputCheckboxProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'checked'> {
+export interface InputCheckboxProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'onChange' | 'checked'
+> {
   label?: string;
   disabled?: boolean;
   checked?: boolean;

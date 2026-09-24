@@ -1,5 +1,6 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useEffect, useRef, useState } from 'react';
+
 import { useBottomItem } from '../store';
 
 export function useInitBottom(
@@ -14,9 +15,7 @@ export function useInitBottom(
   } = { type: 'item-bottom' },
   stableId?: string,
 ) {
-  const [itemId] = useState(
-    () => stableId || `draggable-item-${getUUIDv4()}`,
-  );
+  const [itemId] = useState(() => stableId || `draggable-item-${getUUIDv4()}`);
   const [zIndex, setZIndexState] = useState(0);
 
   function setZIndex(value: number) {

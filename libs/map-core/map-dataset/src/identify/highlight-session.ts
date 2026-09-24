@@ -1,4 +1,5 @@
 import type { Feature, Geometry } from 'geojson';
+
 import { getHighlightController } from '../highlight/controller';
 import type { HighlightSource } from '../highlight/types';
 import type { IDataset } from '../interfaces/dataset.base';
@@ -8,11 +9,7 @@ import type { IdentifyResultGroupedItem } from './result';
 
 /** UX-owned highlight intents (map to {@link HighlightSource}). */
 export type HighlightSessionIntent =
-  | 'detail'
-  | 'identify'
-  | 'attribute-table'
-  | 'hover'
-  | 'pointer';
+  'detail' | 'identify' | 'attribute-table' | 'hover' | 'pointer';
 
 function intentToSource(intent: HighlightSessionIntent): HighlightSource {
   return intent;

@@ -1,5 +1,5 @@
-import type { ErrorHandler } from './error-handler.service';
 import { getMapCoreMetaStore } from '../store/map-core-meta';
+import type { ErrorHandler } from './error-handler.service';
 
 function normalizeGlobalError(reason: unknown): Error {
   if (reason instanceof Error) {

@@ -1,10 +1,11 @@
 import {
+  type MutableRefObject,
   useCallback,
   useEffect,
   useRef,
   useState,
-  type MutableRefObject,
 } from 'react';
+
 import {
   createOrbitGlobalActions,
   createSimpleMapAction,
@@ -101,9 +102,7 @@ function useStorytelling(options: UseStorytellingOptions) {
     (nextIndex: number) => {
       const current = chaptersRef.current[currentIndexRef.current];
       const nextChapter = chaptersRef.current[nextIndex];
-      const nextTypes = new Set(
-        nextChapter?.actions?.map((a) => a.type) ?? [],
-      );
+      const nextTypes = new Set(nextChapter?.actions?.map((a) => a.type) ?? []);
 
       current?.onExit?.();
 
@@ -236,7 +235,10 @@ export function useMapStorytelling(
             document.querySelector(selector)?.classList.remove('highlight'),
         };
       },
-      ...(simpleActionsRef.current as unknown as Record<string, GlobalActionFn>),
+      ...(simpleActionsRef.current as unknown as Record<
+        string,
+        GlobalActionFn
+      >),
       ...(orbitActionsRef.current as unknown as Record<string, GlobalActionFn>),
       ...options.globalActions,
     },

@@ -5,6 +5,7 @@ import { mdiCached, mdiMagnify } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
@@ -82,9 +83,7 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
             newLngLat,
             isDMSRef.current,
           );
-          setCurrentPoint(
-            `${formatted.longitude}, ${formatted.latitude}`,
-          );
+          setCurrentPoint(`${formatted.longitude}, ${formatted.latitude}`);
         }
       }, 15),
     [],

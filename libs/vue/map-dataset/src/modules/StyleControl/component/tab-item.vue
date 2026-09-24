@@ -3,7 +3,9 @@
     class="tab-item"
     :class="{ 'tab-item-active': active, 'tab-item-disabled': disabled }"
     :disabled="disabled"
-    v-bind="$attrs" variant="text">
+    v-bind="$attrs"
+    variant="text"
+  >
     <div class="tab-item-title" :title="text">
       {{ text }}
     </div>

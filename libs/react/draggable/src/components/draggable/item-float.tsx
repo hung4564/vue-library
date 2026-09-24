@@ -1,11 +1,12 @@
 import { focusFirst, restoreFocus } from '@hungpvq/draggable';
 import {
+  type CSSProperties,
+  type ReactNode,
   useEffect,
   useMemo,
   useRef,
-  type CSSProperties,
-  type ReactNode,
 } from 'react';
+
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,

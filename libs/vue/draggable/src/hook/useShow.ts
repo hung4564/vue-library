@@ -5,9 +5,11 @@ import { computed, ref, watch } from 'vue';
  * `(event: string, …)` and fail under strictFunctionTypes; the bivariance
  * hack matches DOM EventListener / React SyntheticEvent patterns.
  */
-type LooseEmit = {
-  bivarianceHack(event: string, ...args: unknown[]): void;
-}['bivarianceHack'] | null;
+type LooseEmit =
+  | {
+      bivarianceHack(event: string, ...args: unknown[]): void;
+    }['bivarianceHack']
+  | null;
 type ShowProps = {
   show?: boolean;
   [key: string]: unknown;

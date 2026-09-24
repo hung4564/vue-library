@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import {
   buildMapCrsCatalog,
   formatCrsLabel,
@@ -10,10 +9,11 @@ import {
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose } from '@mdi/js';
 import { computed, ref, watch } from 'vue';
+
 import MapControlButton from '../../components/MapControlButton.vue';
-import { useLang } from '../lang/hook';
 import { InputCrs } from '../../field';
 import { useMap } from '../../hooks/useMap';
+import { useLang } from '../lang/hook';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from './useMapCrsItems';
 
 const props = withDefaults(

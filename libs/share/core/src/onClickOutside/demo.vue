@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
 import type { OnClickOutsideHandler } from '.';
 import { onClickOutside } from '.';
 import { vOnClickOutside } from './directive';

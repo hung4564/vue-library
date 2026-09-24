@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useClipboard } from '.';
+
 import { usePermission } from '../usePermission';
+import { useClipboard } from '.';
 const input = ref('');
 
 const { text, isSupported, copy } = useClipboard();

@@ -2,15 +2,15 @@
 export default { name: 'log-request-flow-modal' };
 </script>
 <script setup lang="ts">
-import type { LogDataStore, LogRecord } from '@hungpvq/shared-log';
-import { resolveMaybePromise } from '@hungpvq/shared-log';
 import {
   buildRequestFlowSteps,
   buildRequestFlowTree,
-  shortActionId,
   type RequestFlowStep,
   type RequestFlowTreeNode,
+  shortActionId,
 } from '@hungpvq/map-debug';
+import type { LogDataStore, LogRecord } from '@hungpvq/shared-log';
+import { resolveMaybePromise } from '@hungpvq/shared-log';
 import { DraggableModal } from '@hungpvq/vue-draggable';
 import {
   MapControlButton,
@@ -18,6 +18,7 @@ import {
   useMap,
 } from '@hungpvq/vue-map-core';
 import { computed, ref, watch } from 'vue';
+
 import LogDetailPanel from './LogDetailPanel.vue';
 import LogRequestFlowNode from './LogRequestFlowNode.vue';
 
@@ -149,7 +150,10 @@ function onStepClick(logId: string) {
               <div v-if="nodeCount === 0" class="log-request-flow__empty">
                 No logs for this actionId
               </div>
-              <ol v-else-if="viewMode === 'tree'" class="log-request-flow__list">
+              <ol
+                v-else-if="viewMode === 'tree'"
+                class="log-request-flow__list"
+              >
                 <LogRequestFlowNode
                   v-for="node in tree"
                   :key="node.id"

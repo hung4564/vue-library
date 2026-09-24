@@ -108,9 +108,7 @@ describe('coordinate helpers', () => {
       [106, 21.2],
       [105.9, 20.8],
     ]);
-    expect(
-      parseCoordinateListText('105.85\t21.03\n106.1\t21.15'),
-    ).toEqual([
+    expect(parseCoordinateListText('105.85\t21.03\n106.1\t21.15')).toEqual([
       [105.85, 21.03],
       [106.1, 21.15],
     ]);

@@ -1,16 +1,17 @@
+import type { LocationSideBar } from '@hungpvq/draggable';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
-  Ref,
   computed,
+  type MaybeRef,
   onMounted,
   onUnmounted,
+  Ref,
   ref,
   unref,
   watch,
-  type MaybeRef,
 } from 'vue';
+
 import { useSidebarItem } from '../store';
-import type { LocationSideBar } from '@hungpvq/draggable';
 
 function resolveTitle(
   title: MaybeRef<string | undefined> | undefined,
@@ -40,9 +41,9 @@ export function useInitSidebar(
 
   const locationRef = computed(() => {
     const loc = optionDefault.location;
-    return (typeof loc === 'object' && loc && 'value' in loc
-      ? loc.value
-      : loc) as LocationSideBar;
+    return (
+      typeof loc === 'object' && loc && 'value' in loc ? loc.value : loc
+    ) as LocationSideBar;
   });
 
   const titleRef = computed(() => resolveTitle(optionDefault.title));

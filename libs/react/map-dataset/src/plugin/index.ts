@@ -1,6 +1,7 @@
 import { bootstrapMapTheme } from '@hungpvq/map-core/theme';
 import { registerDatasetRegistryComponents } from '@hungpvq/map-dataset/menu';
 import { UniversalRegistry } from '@hungpvq/react-map-core';
+
 import { AddToGroup } from '../extra/component/add-to-group';
 import { ExportGeo } from '../extra/component/export-geo';
 import { ExportGeoFormatMenu } from '../extra/component/export-geo-menu';
@@ -16,12 +17,12 @@ import { AttributeTableToolbar } from '../modules/AttributeTable/AttributeTableT
 import { AttributeTableView } from '../modules/AttributeTable/AttributeTableView';
 import { DatasetDetail } from '../modules/DatasetControl/DatasetDetail';
 import { LayerDetail } from '../modules/LayerDetail/LayerDetail';
+import { MultiLegend } from '../modules/Legend/MultiLegend';
 import { LayerLegendLinearGradient } from '../modules/Legend/parts/linear-gradient';
 import { LayerLegendSingleColor } from '../modules/Legend/parts/single-color';
 import { LayerLegendSingleText } from '../modules/Legend/parts/single-value';
-import { MultiLegend } from '../modules/Legend/MultiLegend';
-import { StyleControl } from '../modules/StyleControl/StyleControl';
 import { MultiStyle } from '../modules/StyleControl/style/MultiStyle';
+import { StyleControl } from '../modules/StyleControl/StyleControl';
 
 export function createDatasetRegistryPlugin() {
   return {

@@ -1,4 +1,5 @@
 import { NavigationGuardWithThis, Router } from 'vue-router';
+
 import { Middleware } from './middleware';
 import { getMiddleware } from './store';
 import { MiddlewareFn } from './types';

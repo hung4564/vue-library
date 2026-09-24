@@ -1,18 +1,21 @@
-import type { CreateControlLayerKind, CreateControlSample } from '../vector-tile/samples';
+import { RASTER_XYZ_SAMPLES } from '../raster/samples';
+import type {
+  CreateControlLayerKind,
+  CreateControlSample,
+} from '../vector-tile/samples';
 import {
   TILEJSON_SAMPLES,
   VECTOR_SAMPLES,
   VECTOR_TILE_SAMPLES,
 } from '../vector-tile/samples';
-import { RASTER_XYZ_SAMPLES } from '../raster/samples';
 
 export type { CreateControlLayerKind, CreateControlSample };
+export { RASTER_XYZ_SAMPLES } from '../raster/samples';
 export {
   TILEJSON_SAMPLES,
   VECTOR_SAMPLES,
   VECTOR_TILE_SAMPLES,
 } from '../vector-tile/samples';
-export { RASTER_XYZ_SAMPLES } from '../raster/samples';
 
 export const SUGGESTED_LAYER_NAMES: Record<CreateControlLayerKind, string> = {
   geojson: 'GeoJSON layer',
@@ -121,9 +124,7 @@ export function getCreateControlSamples(
 }
 
 /** URL filled into the URL tab when a sample is selected. */
-export function getCreateControlSampleUrl(
-  sample: CreateControlSample,
-): string {
+export function getCreateControlSampleUrl(sample: CreateControlSample): string {
   if (sample.dataUrl) return sample.dataUrl;
   const url = sample.config['url'];
   return typeof url === 'string' ? url : '';

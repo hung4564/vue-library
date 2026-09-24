@@ -1,3 +1,4 @@
+import { buildConfigTabs, type Tab } from '@hungpvq/map-dataset/style';
 import {
   InputCheckbox,
   InputChoose,
@@ -6,7 +7,7 @@ import {
   InputSlider,
   InputText,
 } from '@hungpvq/react-map-core/fields';
-import { buildConfigTabs, type Tab } from '@hungpvq/map-dataset/style';
+
 import { InputArrayIndex } from '../field/InputArrayIndex';
 import { InputArrayXY } from '../field/InputArrayXY';
 import { InputImage } from '../field/InputImage';

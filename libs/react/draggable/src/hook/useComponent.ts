@@ -1,8 +1,9 @@
-import { useMemo, type ComponentType } from 'react';
-import { DragCard } from '../components/parts/DragCard';
+import { type ComponentType, useMemo } from 'react';
+
 import type { DragCardProps } from '../components/parts/DragCard';
-import { DragHeader } from '../components/parts/DragHeader';
+import { DragCard } from '../components/parts/DragCard';
 import type { DragHeaderProps } from '../components/parts/DragHeader';
+import { DragHeader } from '../components/parts/DragHeader';
 import { useDragComponent } from '../store';
 
 export type ShareCardComponent = ComponentType<DragCardProps>;
@@ -16,8 +17,7 @@ export function useComponent(props: {
   const store = useDragComponent();
   const storeCard = store.getComponentCard() as ShareCardComponent | undefined;
   const storeHeader = store.getComponentCardHeader() as
-    | ShareHeaderComponent
-    | undefined;
+    ShareHeaderComponent | undefined;
   const componentCard = useMemo(
     () => props.componentCard || storeCard || DragCard,
     [storeCard, props.componentCard],

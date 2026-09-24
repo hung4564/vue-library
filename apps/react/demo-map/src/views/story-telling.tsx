@@ -1,3 +1,5 @@
+import './story-telling.css';
+
 import { getMap, type MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapControl,
@@ -13,8 +15,10 @@ import {
   ZoomControl,
 } from '@hungpvq/react-map-core';
 import { MapCard } from '@hungpvq/react-map-core/fields';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { useRef, useState } from 'react';
+
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
@@ -30,12 +34,8 @@ import {
   createZoomAction,
 } from './StoryTelling/helper-action';
 import { useMapStorytelling } from './StoryTelling/useStorytelling';
-import './story-telling.css';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
-const storyLog = loggerFactory
-  .createLogger()
-  .setNamespace('demo:story', 0);
+const storyLog = loggerFactory.createLogger().setNamespace('demo:story', 0);
 
 const chapters = [
   {

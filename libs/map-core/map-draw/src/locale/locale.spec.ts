@@ -1,14 +1,16 @@
-import { describe, expect, it } from 'vitest';
 import { diffLocaleKeys } from '@hungpvq/map-core';
+import { describe, expect, it } from 'vitest';
+
 import { DRAW_CONTROL_LOCALE, INSPECT_CONTROL_LOCALE } from './draw.en';
-import {
-  DRAW_CONTROL_LOCALE_VI,
-  INSPECT_CONTROL_LOCALE_VI,
-} from './draw.vi';
+import { DRAW_CONTROL_LOCALE_VI, INSPECT_CONTROL_LOCALE_VI } from './draw.vi';
 import { MAP_DRAW_LOCALE_EN } from './locale.en';
 import { MAP_DRAW_LOCALE_VI } from './locale.vi';
 
-const DRAW_SLICE_PAIRS: [string, Record<string, unknown>, Record<string, unknown>][] = [
+const DRAW_SLICE_PAIRS: [
+  string,
+  Record<string, unknown>,
+  Record<string, unknown>,
+][] = [
   ['DRAW_CONTROL', DRAW_CONTROL_LOCALE, DRAW_CONTROL_LOCALE_VI],
   ['INSPECT_CONTROL', INSPECT_CONTROL_LOCALE, INSPECT_CONTROL_LOCALE_VI],
 ];

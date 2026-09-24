@@ -11,7 +11,9 @@
         :disabled="isDisabled"
         :title="title"
         :active="show"
-        @click.stop="toggle" variant="plain">
+        @click.stop="toggle"
+        variant="plain"
+      >
         <input
           class="sample-layer-toggle-show__checkbox"
           type="checkbox"

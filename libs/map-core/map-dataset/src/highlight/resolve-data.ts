@@ -1,11 +1,16 @@
 import type { Feature, FeatureCollection } from 'geojson';
 import type { FilterSpecification, GeoJSONFeature } from 'maplibre-gl';
+
 import { loggerHighlight } from '../logger';
 import {
   asFeatureCollection,
   isFeatureCollection,
 } from '../utils/feature-collection';
-import type { HighlightDataContext, HighlightDataSource, HighlightGeoJson } from './types';
+import type {
+  HighlightDataContext,
+  HighlightDataSource,
+  HighlightGeoJson,
+} from './types';
 
 function isFeature(value: unknown): value is Feature {
   return (
@@ -70,8 +75,8 @@ export async function resolveHighlightData(
       loggerHighlight
         .with({ fn: 'resolveHighlightData', span: 'highlight.resolve' })
         .warn('Local highlight skipped because geometry is missing.', {
-        mapId: ctx.mapId,
-      });
+          mapId: ctx.mapId,
+        });
       return null;
     }
     return geo;
@@ -99,18 +104,18 @@ export async function resolveHighlightData(
       if (!sourceId) {
         loggerHighlight
           .with({ fn: 'resolveHighlightData', span: 'highlight.resolve' })
-          .warn('Vector-tile highlight query skipped because source id is missing.', {
-          mapId: ctx.mapId,
-        });
+          .warn(
+            'Vector-tile highlight query skipped because source id is missing.',
+            {
+              mapId: ctx.mapId,
+            },
+          );
         return null;
       }
-      const id =
-        ctx.input && 'id' in ctx.input ? ctx.input.id : undefined;
+      const id = ctx.input && 'id' in ctx.input ? ctx.input.id : undefined;
       try {
         const filter =
-          id != null
-            ? (['==', ['id'], id] as FilterSpecification)
-            : undefined;
+          id != null ? (['==', ['id'], id] as FilterSpecification) : undefined;
         const features = ctx.map.querySourceFeatures(sourceId, {
           sourceLayer: data.sourceLayer,
           filter,
@@ -123,7 +128,10 @@ export async function resolveHighlightData(
       } catch (err) {
         loggerHighlight
           .with({ fn: 'resolveHighlightData', span: 'highlight.resolve' })
-          .warn('Vector-tile highlight query failed.', { mapId: ctx.mapId, err });
+          .warn('Vector-tile highlight query failed.', {
+            mapId: ctx.mapId,
+            err,
+          });
         return null;
       }
     }

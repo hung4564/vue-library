@@ -1,8 +1,8 @@
 ﻿<template>
   <div class="map-page worker-sample-page">
     <Map>
-    <DevtoolsControl position="bottom-right" />
-    <DemoLanguageControl />
+      <DevtoolsControl position="bottom-right" />
+      <DemoLanguageControl />
       <AsideControl position="top-left" />
       <WorkerControl position="top-left" />
       <BaseMapControl position="bottom-left" />
@@ -37,8 +37,6 @@
 </template>
 
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import {
   BaseMapControl,
   HomeControl,
@@ -46,9 +44,12 @@ import {
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { onBeforeUnmount, ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
+
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../../layout/aside-control.vue';
 import {
   runSampleSumRange,
   terminateSampleWorker,

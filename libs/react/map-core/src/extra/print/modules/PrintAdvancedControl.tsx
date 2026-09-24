@@ -5,7 +5,10 @@ import {
   type PrintAdvancedUiState,
   type PrintOption,
 } from '@hungpvq/map-core/print';
-import { type MapControlButtonUIState, mdiIcon } from '@hungpvq/map-core/toolbar';
+import {
+  type MapControlButtonUIState,
+  mdiIcon,
+} from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   mdiClose,
@@ -15,6 +18,7 @@ import {
 } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { useEffect, useMemo, useRef, useState } from 'react';
+
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { MapControlButton } from '../../../components/MapControlButton';
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
@@ -97,7 +101,7 @@ export function PrintAdvancedControl({
   }
   const session = sessionRef.current;
 
-useEffect(() => {
+  useEffect(() => {
     return () => {
       session.destroy();
     };
@@ -203,8 +207,7 @@ useEffect(() => {
   }, [print, order, control]);
 
   const moduleState = state as
-    | Record<string, MapControlButtonUIState | undefined>
-    | undefined;
+    Record<string, MapControlButtonUIState | undefined> | undefined;
 
   return (
     <ModuleContainer

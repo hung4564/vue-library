@@ -1,4 +1,5 @@
 import { GlobalStoreService } from '@hungpvq/shared-store';
+
 import { getMapBag } from '../store-access';
 
 /** Shallow snapshot of the process-wide shared store bag. */

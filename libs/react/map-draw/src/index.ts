@@ -4,8 +4,4 @@
  */
 export { DrawControl } from './modules/DrawControl/DrawControl';
 export { InspectControl } from './modules/InspectControl/InspectControl';
-export {
-  useConfigDrawControl,
-  useMapDraw,
-  useMapDrawStore,
-} from './store';
+export { useConfigDrawControl, useMapDraw, useMapDrawStore } from './store';

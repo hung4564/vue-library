@@ -5,6 +5,7 @@ import {
   registerMapStoreCleanupRegistrar,
 } from '@hungpvq/map-core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { createRootDataset } from '../model/dataset.base';
 import {
   DEFAULT_HIGHLIGHT_DATA,
@@ -266,7 +267,10 @@ describe('HighlightController selection / hide / pointer fields', () => {
     const raf = globalThis.requestAnimationFrame;
     const caf = globalThis.cancelAnimationFrame;
     globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) =>
-      setTimeout(() => cb(performance.now()), 0) as unknown as number) as typeof requestAnimationFrame;
+      setTimeout(
+        () => cb(performance.now()),
+        0,
+      ) as unknown as number) as typeof requestAnimationFrame;
     globalThis.cancelAnimationFrame = ((id: number) =>
       clearTimeout(id)) as typeof cancelAnimationFrame;
 
@@ -329,9 +333,13 @@ describe('HighlightController selection / hide / pointer fields', () => {
       destroyHighlightController('hl-test');
       registerMapAccessor(() => undefined);
       if (raf) globalThis.requestAnimationFrame = raf;
-      else delete (globalThis as { requestAnimationFrame?: unknown }).requestAnimationFrame;
+      else
+        delete (globalThis as { requestAnimationFrame?: unknown })
+          .requestAnimationFrame;
       if (caf) globalThis.cancelAnimationFrame = caf;
-      else delete (globalThis as { cancelAnimationFrame?: unknown }).cancelAnimationFrame;
+      else
+        delete (globalThis as { cancelAnimationFrame?: unknown })
+          .cancelAnimationFrame;
     }
   });
 
@@ -419,7 +427,10 @@ describe('HighlightController selection / hide / pointer fields', () => {
     const raf = globalThis.requestAnimationFrame;
     const caf = globalThis.cancelAnimationFrame;
     globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) =>
-      setTimeout(() => cb(performance.now()), 0) as unknown as number) as typeof requestAnimationFrame;
+      setTimeout(
+        () => cb(performance.now()),
+        0,
+      ) as unknown as number) as typeof requestAnimationFrame;
     globalThis.cancelAnimationFrame = ((id: number) =>
       clearTimeout(id)) as typeof cancelAnimationFrame;
 
@@ -459,9 +470,13 @@ describe('HighlightController selection / hide / pointer fields', () => {
     registerMapAccessor(() => undefined);
     registerMapStoreCleanupRegistrar(() => undefined);
     if (raf) globalThis.requestAnimationFrame = raf;
-    else delete (globalThis as { requestAnimationFrame?: unknown }).requestAnimationFrame;
+    else
+      delete (globalThis as { requestAnimationFrame?: unknown })
+        .requestAnimationFrame;
     if (caf) globalThis.cancelAnimationFrame = caf;
-    else delete (globalThis as { cancelAnimationFrame?: unknown }).cancelAnimationFrame;
+    else
+      delete (globalThis as { cancelAnimationFrame?: unknown })
+        .cancelAnimationFrame;
   });
 });
 
@@ -477,7 +492,10 @@ describe('HighlightController hideEntry / duration / pointerClickEnabled', () =>
     const raf = globalThis.requestAnimationFrame;
     const caf = globalThis.cancelAnimationFrame;
     globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) =>
-      setTimeout(() => cb(performance.now()), 0) as unknown as number) as typeof requestAnimationFrame;
+      setTimeout(
+        () => cb(performance.now()),
+        0,
+      ) as unknown as number) as typeof requestAnimationFrame;
     globalThis.cancelAnimationFrame = ((id: number) =>
       clearTimeout(id)) as typeof cancelAnimationFrame;
 
@@ -601,10 +619,8 @@ describe('resolvePresentationForSource', () => {
     ).toBe(false);
 
     expect(
-      resolvePresentationForSource(
-        { clickAction: 'none' },
-        'pointer',
-      ).clickAction,
+      resolvePresentationForSource({ clickAction: 'none' }, 'pointer')
+        .clickAction,
     ).toBe('none');
   });
 });
@@ -626,27 +642,15 @@ describe('resolvePopupLngLat', () => {
 
   it('uses pointer, feature, fixed, and function positions', () => {
     expect(
-      resolvePopupLngLat(
-        baseEntry,
-        { popup: { position: 'pointer' } },
-        map,
-      ),
+      resolvePopupLngLat(baseEntry, { popup: { position: 'pointer' } }, map),
     ).toEqual([1, 2]);
 
     expect(
-      resolvePopupLngLat(
-        baseEntry,
-        { popup: { position: 'feature' } },
-        map,
-      ),
+      resolvePopupLngLat(baseEntry, { popup: { position: 'feature' } }, map),
     ).toEqual([105, 21]);
 
     expect(
-      resolvePopupLngLat(
-        baseEntry,
-        { popup: { position: [10, 20] } },
-        map,
-      ),
+      resolvePopupLngLat(baseEntry, { popup: { position: [10, 20] } }, map),
     ).toEqual([10, 20]);
 
     expect(

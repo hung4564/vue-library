@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { LegendService } from './legend.service';
 
 describe('LegendService', () => {

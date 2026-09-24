@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { FallbackResolver } from './fallback-resolver';
 
 describe('FallbackResolver', () => {

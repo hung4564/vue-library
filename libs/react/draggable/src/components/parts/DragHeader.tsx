@@ -9,7 +9,12 @@ export type DragHeaderProps = {
   extraBtn?: ReactNode;
 };
 
-function DragHeader({ preTitle, title, afterTitle, extraBtn }: DragHeaderProps) {
+function DragHeader({
+  preTitle,
+  title,
+  afterTitle,
+  extraBtn,
+}: DragHeaderProps) {
   return (
     <>
       <hr className="map-divider" aria-hidden="true" />

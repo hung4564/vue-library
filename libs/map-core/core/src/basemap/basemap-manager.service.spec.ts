@@ -1,12 +1,13 @@
-import { describe, expect, it, vi } from 'vitest';
 import mitt from 'mitt';
+import { describe, expect, it, vi } from 'vitest';
+
 import { BaseMapAdapter } from './adapter/BaseMapAdapter';
 import {
   BasemapManager,
   getOrCreateBasemapManager,
 } from './basemap-manager.service';
-import { createDefaultBaseMapStore } from './types';
 import type { BaseMapItem, MittTypeBaseMap } from './types';
+import { createDefaultBaseMapStore } from './types';
 
 class StubAdapter extends BaseMapAdapter {
   applied: BaseMapItem[] = [];

@@ -6,7 +6,9 @@ function isMouseEventLike(value: unknown): value is MouseEvent {
     return true;
   }
   // Node / non-DOM: accept objects that look like a MouseEvent for MapLibre.
-  return 'type' in value && typeof (value as { type: unknown }).type === 'string';
+  return (
+    'type' in value && typeof (value as { type: unknown }).type === 'string'
+  );
 }
 
 /** Resolve a MapLibre `originalEvent` from React synthetic or raw MouseEvent. */
@@ -18,7 +20,6 @@ export function resolveOriginalEvent(e?: unknown): MouseEvent | undefined {
   }
   return isMouseEventLike(e) ? (e as MouseEvent) : undefined;
 }
-
 
 export function zoomIn(map: MapSimple, e?: unknown): void {
   map.zoomIn({}, { originalEvent: resolveOriginalEvent(e) });

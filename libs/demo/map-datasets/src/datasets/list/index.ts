@@ -1,9 +1,22 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
 import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
-import { createDatasetPartGroupSubListViewUiComponentBuilder, createDatasetPartListViewUiComponentBuilder, createDatasetPartMetadataComponent, createDatasetPartSubListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import {
+  createDatasetPartGroupSubListViewUiComponentBuilder,
+  createDatasetPartListViewUiComponentBuilder,
+  createDatasetPartMetadataComponent,
+  createDatasetPartSubListViewUiComponentBuilder,
+  createGroupDataset,
+  createMultiMapboxLayerComponent,
+  createRootDataset,
+} from '@hungpvq/map-dataset';
 import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
-import { createMenuBuilder, createMenuItemShowDetailInfoSource, createMenuItemToBoundActionForList, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
+import {
+  createMenuBuilder,
+  createMenuItemShowDetailInfoSource,
+  createMenuItemToBoundActionForList,
+  createMenuItemToggleShow,
+} from '@hungpvq/map-dataset/menu';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { mdiPen, mdiStar } from '@mdi/js';
@@ -367,11 +380,11 @@ function buildSublistDataset(options: { withSublistMenus: boolean }) {
   groupLayer.add(list);
   dataset.add(groupLayer);
 
-  const subList1 = createDatasetPartSubListViewUiComponentBuilder('Sub list point')
+  const subList1 = createDatasetPartSubListViewUiComponentBuilder(
+    'Sub list point',
+  )
     .setColor(getChartRandomColor())
-    .addMenus(
-      options.withSublistMenus ? [createMenuItemToggleShow()] : [],
-    )
+    .addMenus(options.withSublistMenus ? [createMenuItemToggleShow()] : [])
     .build();
   const groupSubLayer1 = createGroupDataset('Group sub layer 1');
   groupSubLayer1.add(subList1);
@@ -384,11 +397,11 @@ function buildSublistDataset(options: { withSublistMenus: boolean }) {
     ]),
   );
 
-  const subList2 = createDatasetPartSubListViewUiComponentBuilder('Sub list line')
+  const subList2 = createDatasetPartSubListViewUiComponentBuilder(
+    'Sub list line',
+  )
     .setColor(getChartRandomColor())
-    .addMenus(
-      options.withSublistMenus ? [createMenuItemToggleShow()] : [],
-    )
+    .addMenus(options.withSublistMenus ? [createMenuItemToggleShow()] : [])
     .build();
   const groupSubLayer2 = createGroupDataset('Group sub layer 2');
   groupSubLayer2.add(subList2);

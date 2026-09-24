@@ -1,12 +1,31 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
 import { type MeasurementHandleType } from '@hungpvq/map-core/measurement';
-import { createDatasetPartGroupSubListViewUiComponentBuilder, createDatasetPartListViewUiComponent, createDatasetPartListViewUiComponentBuilder, createDatasetPartMetadataComponent, createDatasetPartSubListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import {
+  createDatasetPartGroupSubListViewUiComponentBuilder,
+  createDatasetPartListViewUiComponent,
+  createDatasetPartListViewUiComponentBuilder,
+  createDatasetPartMetadataComponent,
+  createDatasetPartSubListViewUiComponentBuilder,
+  createGroupDataset,
+  createMultiMapboxLayerComponent,
+  createRootDataset,
+} from '@hungpvq/map-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
 import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
-import { createMenuItemShowDetailForItem, createMenuItemShowDetailInfoSource, createMenuItemStyleEdit, createMenuItemToBoundActionForItem, createMenuItemToBoundActionForList, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
-import { LayerSimpleMapboxBuild, type LayerStyleType } from '@hungpvq/map-dataset/style';
+import {
+  createMenuItemShowDetailForItem,
+  createMenuItemShowDetailInfoSource,
+  createMenuItemStyleEdit,
+  createMenuItemToBoundActionForItem,
+  createMenuItemToBoundActionForList,
+  createMenuItemToggleShow,
+} from '@hungpvq/map-dataset/menu';
+import {
+  LayerSimpleMapboxBuild,
+  type LayerStyleType,
+} from '@hungpvq/map-dataset/style';
 import { createLegend, createMultiLegend } from '@hungpvq/map-dataset/menu';
 import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
 
@@ -357,7 +376,7 @@ export function createDatasetMeasure(
   const result = handler.getResult();
   const measureFeatures = Array.isArray(result.features)
     ? result.features
-    : result.features?.features ?? [];
+    : (result.features?.features ?? []);
   const dataset = createRootDataset('Dataset Measure');
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',

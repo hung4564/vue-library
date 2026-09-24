@@ -9,6 +9,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+
 import { useDragContainer } from '../../store';
 
 const TYPE_LABELS: Record<string, string> = {

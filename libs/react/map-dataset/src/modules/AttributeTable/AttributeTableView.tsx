@@ -2,21 +2,22 @@ import {
   ATTRIBUTE_TABLE_COLUMN_FILTER_MODES,
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
   ATTRIBUTE_TABLE_ROW_HEIGHT,
+  type AttributeTableColumnFilterMode,
+  type AttributeTableGridProps,
+  type AttributeTablePagerProps,
+  type AttributeTableToolbarProps,
+  type AttributeTableViewProps,
   formatAttributeTableSelectionStatus,
   getAttributeTableColumnFilterMode,
   getAttributeTableColumnFilterQuery,
   getVirtualRowWindow,
   resolveAttributeTableUi,
   resolveAttributeTableVisibleColumns,
-  type AttributeTableColumnFilterMode,
-  type AttributeTableGridProps,
-  type AttributeTablePagerProps,
-  type AttributeTableToolbarProps,
-  type AttributeTableViewProps,
 } from '@hungpvq/map-dataset/attribute-table';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { RegistryItem } from '@hungpvq/react-map-core';
 import { useEffect, useMemo, useState } from 'react';
+
 import { AttributeTableGrid } from './AttributeTableGrid';
 import { AttributeTablePager } from './AttributeTablePager';
 import { AttributeTableToolbar } from './AttributeTableToolbar';
@@ -315,8 +316,7 @@ export function AttributeTableView(props: AttributeTableViewProps) {
       setScrollTop((prev) => (prev === top ? prev : top));
       setViewportHeight((prev) => (prev === height ? prev : height));
     },
-    onSortColumn: (key, shiftKey) =>
-      props.controller.toggleSort(key, shiftKey),
+    onSortColumn: (key, shiftKey) => props.controller.toggleSort(key, shiftKey),
     onColumnFilterChange: (key, query) => {
       const mode = getAttributeTableColumnFilterMode(state.columnFilters[key]);
       applyColumnFilter(key, query, mode);
@@ -332,7 +332,11 @@ export function AttributeTableView(props: AttributeTableViewProps) {
 
   return (
     <div className="attribute-table">
-      <div className="attribute-table__sr-only" role="status" aria-live="polite">
+      <div
+        className="attribute-table__sr-only"
+        role="status"
+        aria-live="polite"
+      >
         {selectionStatusText}
       </div>
       <RegistryItem

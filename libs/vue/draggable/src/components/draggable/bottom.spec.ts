@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { defineComponent, nextTick, ref } from 'vue';
+
 import { useDragContainer, useDragStore } from '../../store';
 import BottomContainer from './bottom/bottom-container.vue';
 import DraggableItemBottom from './item-bottom.vue';
@@ -99,9 +100,9 @@ describe('BottomContainer portal hosts', () => {
 
     const c = useDragStore().container[CID];
     expect(c.bottom.show).toBe('bot-portal');
-    expect(document.getElementById(`bottom-title-${CID}`)?.textContent).toContain(
-      'Portal Title',
-    );
+    expect(
+      document.getElementById(`bottom-title-${CID}`)?.textContent,
+    ).toContain('Portal Title');
     expect(
       document.getElementById(`bottom-content-${CID}`)?.textContent,
     ).toContain('Hello bottom');

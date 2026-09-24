@@ -1,17 +1,18 @@
 import { mdiDownload } from '@mdi/js';
+
 import type { IDataset } from '../interfaces/dataset.base';
-import type { MenuConditionContext, MenuItemBottomOrExtra } from '../interfaces/dataset.parts';
-import {
-  createMenuBuilder,
-  createMenuClickBuilder,
-} from '../menu/builder';
+import type {
+  MenuConditionContext,
+  MenuItemBottomOrExtra,
+} from '../interfaces/dataset.parts';
+import { createMenuBuilder, createMenuClickBuilder } from '../menu/builder';
 import { LIST_VIEW_MENU_ID } from '../menu/items';
 import { createGeoExportController } from './controller';
 import { hasGeojsonExportData } from './dataset';
 import { resolveGeoExportOption } from './dataset-part';
 import {
-  GEO_EXPORT_COMPONENT_KEY,
   type ExportGeoGetCollection,
+  GEO_EXPORT_COMPONENT_KEY,
   type GeoExportHandler,
   type GeoExportOptions,
   type GeoExportScope,
@@ -130,19 +131,16 @@ export function createMenuItemExportGeo(menu: ExportGeoMenuOptions = {}) {
   return builder
     .setClick(
       createMenuClickBuilder()
-        .addTupleDynamic(
-          LIST_VIEW_MENU_ID.addComponent,
-          ({ layer, mapId }) => {
-            const resolved = resolveGeoExportOption(layer, optionOverride);
-            const ctrl = createGeoExportController(layer, {
-              ...resolved,
-              mapId,
-            });
-            return {
-              value: ctrl.createExportGeoAddComponent(mapId),
-            };
-          },
-        )
+        .addTupleDynamic(LIST_VIEW_MENU_ID.addComponent, ({ layer, mapId }) => {
+          const resolved = resolveGeoExportOption(layer, optionOverride);
+          const ctrl = createGeoExportController(layer, {
+            ...resolved,
+            mapId,
+          });
+          return {
+            value: ctrl.createExportGeoAddComponent(mapId),
+          };
+        })
         .build(),
     )
     .setAdditional({

@@ -1,17 +1,18 @@
 import {
   bboxFromGeojson,
+  type GeojsonBbox,
   getChartRandomColor,
   MapError,
   toPlainJson,
-  type GeojsonBbox,
 } from '@hungpvq/map-core';
 import type { FeatureCollection, GeoJSON } from 'geojson';
+
 import {
   createGeoJsonDataset,
   createGeoJsonLayersDataset,
-  splitGeojsonByGdbLayer,
   type GeojsonDatasetOption,
   type GeojsonLayerPart,
+  splitGeojsonByGdbLayer,
 } from '../geojson/builder';
 import {
   GEOJSON_STYLE_AUTO,
@@ -366,7 +367,7 @@ function resolveFileGdbLayerParts(form: FilegdbCreateForm): GeojsonLayerPart[] {
   if (form.geojson) {
     const features = featuresWithGeometry(
       form.geojson.type === 'FeatureCollection'
-        ? form.geojson.features ?? []
+        ? (form.geojson.features ?? [])
         : form.geojson.type === 'Feature'
           ? [form.geojson]
           : [],

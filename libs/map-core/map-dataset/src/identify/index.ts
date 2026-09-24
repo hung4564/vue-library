@@ -2,18 +2,19 @@
  * Public entry for `@hungpvq/map-dataset/identify`.
  * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
  */
+export type {
+  IdentifyFeatureRow,
+  IdentifyMultiResult,
+  IdentifyResolveFeatureQuery,
+  IdentifyResolveFeatureResult,
+  IIdentifyView,
+} from '../interfaces/dataset.parts';
+export { isIdentifyResolveFeatureQuery } from '../interfaces/dataset.parts';
 export { createDatasetPartIdentifyComponentBuilder } from './builder';
 export {
   closeIdentifyExclusiveUi,
   LAYER_DETAIL_CONTROL_ID,
 } from './close-exclusive-ui';
-export {
-  buildIdentifyClosePanelPayload,
-  createIdentifyControlModel,
-  resolveIdentifyScopedSession,
-  resolveIdentifySessionToggle,
-  shouldBindIdentifyLongPress,
-} from './control-model';
 export type {
   IdentifyControlModel,
   IdentifyControlModelState,
@@ -21,16 +22,13 @@ export type {
   IdentifySessionToggleResult,
 } from './control-model';
 export {
-  clearHighlight,
-  clearIdentifyResultHighlight,
-  onDetailClose,
-  onIdentifyClose,
-  paintHighlight,
-  paintHighlights,
-  paintIdentifyResultFocus,
-  syncIdentifyPointerPick,
-} from './highlight-session';
-export type { HighlightSessionIntent } from './highlight-session';
+  buildIdentifyClosePanelPayload,
+  createIdentifyControlModel,
+  resolveIdentifyScopedSession,
+  resolveIdentifySessionToggle,
+  shouldBindIdentifyLongPress,
+} from './control-model';
+export type { HighlightContext } from './highlight-resolver';
 export {
   createDefaultHighlightResolver,
   featuresFromIdentifyRecords,
@@ -41,7 +39,22 @@ export {
   setGlobalHighlightResolver,
   setHighlightResolver,
 } from './highlight-resolver';
-export type { HighlightContext } from './highlight-resolver';
+export type { HighlightSessionIntent } from './highlight-session';
+export {
+  clearHighlight,
+  clearIdentifyResultHighlight,
+  onDetailClose,
+  onIdentifyClose,
+  paintHighlight,
+  paintHighlights,
+  paintIdentifyResultFocus,
+  syncIdentifyPointerPick,
+} from './highlight-session';
+export type {
+  IdentifyHitAction,
+  IdentifyHitActionContext,
+  IdentifyResolvedHitAction,
+} from './hit-action';
 export {
   resolveAutoIdentifyHitAction,
   resolveIdentifyHitAction,
@@ -49,18 +62,13 @@ export {
   shouldOpenIdentifyShowDetail,
 } from './hit-action';
 export type {
-  IdentifyHitAction,
-  IdentifyHitActionContext,
-  IdentifyResolvedHitAction,
-} from './hit-action';
-export { createIdentifySession } from './identify-session';
-export type {
   IdentifyBboxCorners,
   IdentifyInputModeFlags,
   IdentifyQueryInput,
   IdentifySession,
   IdentifySessionOptions,
 } from './identify-session';
+export { createIdentifySession } from './identify-session';
 export { IDENTIFY_CONTROL_LOCALE } from './locale';
 export {
   createDatasetPartIdentifyComponent,
@@ -70,14 +78,19 @@ export {
   handleMultiIdentify,
   handleMultiIdentifyGetFirst,
 } from './models';
-export { createDefaultIdentifyResolver, identifyResolver } from './resolver';
 export type { IdentifyContext } from './resolver';
+export { createDefaultIdentifyResolver, identifyResolver } from './resolver';
 export {
   getGlobalIdentifyResolver,
   getIdentifyResolver,
   setGlobalIdentifyResolver,
   setIdentifyResolver,
 } from './resolver-registry';
+export type {
+  IdentifyResultGrouped,
+  IdentifyResultLayerItem,
+  IdentifyResultUpdatePayload,
+} from './result';
 export {
   groupIdentifyResults,
   IDENTIFY_ALL_LAYERS_VALUE,
@@ -85,10 +98,10 @@ export {
   shouldApplyIdentifyRequest,
 } from './result';
 export type {
-  IdentifyResultGrouped,
-  IdentifyResultLayerItem,
-  IdentifyResultUpdatePayload,
-} from './result';
+  RunIdentifyMultiOptions,
+  RunIdentifyResult,
+  RunIdentifyShowFirstOptions,
+} from './run-identify';
 export {
   buildIdentifyLayerItems,
   buildIdentifyResultPanelBase,
@@ -101,10 +114,9 @@ export {
   runIdentifyShowFirst,
 } from './run-identify';
 export type {
-  RunIdentifyMultiOptions,
-  RunIdentifyResult,
-  RunIdentifyShowFirstOptions,
-} from './run-identify';
+  IdentifyLayerFilterPayload,
+  IdentifyScopeToggleResult,
+} from './scope';
 export {
   clearIdentifyScope,
   findListIdentifyView,
@@ -115,23 +127,10 @@ export {
   subscribeIdentifyScope,
   toggleListIdentifyScope,
 } from './scope';
-export type {
-  IdentifyLayerFilterPayload,
-  IdentifyScopeToggleResult,
-} from './scope';
+export type { IdentifyFeatureResolveContext } from './source-geometry';
 export {
   createIdentifyFeatureResolver,
   resolveIdentifyFeatureData,
   resolveIdentifyFeatures,
   resolveIdentifyFeaturesData,
 } from './source-geometry';
-export type { IdentifyFeatureResolveContext } from './source-geometry';
-
-export type {
-  IdentifyFeatureRow,
-  IdentifyMultiResult,
-  IdentifyResolveFeatureQuery,
-  IdentifyResolveFeatureResult,
-  IIdentifyView,
-} from '../interfaces/dataset.parts';
-export { isIdentifyResolveFeatureQuery } from '../interfaces/dataset.parts';

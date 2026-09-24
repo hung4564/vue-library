@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
 import type { LayerSpecification } from 'maplibre-gl';
+import { describe, expect, it } from 'vitest';
+
 import { applyStyleTabValue, applyStyleZoom } from './apply-style-patch';
 import type { Tab } from './type';
 

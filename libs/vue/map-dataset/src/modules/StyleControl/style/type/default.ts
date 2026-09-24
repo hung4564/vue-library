@@ -1,3 +1,4 @@
+import { buildConfigTabs, type Tab } from '@hungpvq/map-dataset/style';
 import {
   InputCheckbox,
   InputChoose,
@@ -6,7 +7,7 @@ import {
   InputSlider,
   InputText,
 } from '@hungpvq/vue-map-core/fields';
-import { buildConfigTabs, type Tab } from '@hungpvq/map-dataset/style';
+
 import InputArrayIndex from '../field/InputArrayIndex.vue';
 import InputArrayXY from '../field/InputArrayXY.vue';
 import InputImage from '../field/InputImage.vue';

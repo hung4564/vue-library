@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type KeyboardEvent } from 'react';
+import { type KeyboardEvent, useCallback, useRef, useState } from 'react';
 
 export interface DragDropFileProps {
   accept?: string;

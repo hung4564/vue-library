@@ -15,6 +15,7 @@ import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { getMenuItemLocation } from '@hungpvq/map-dataset/menu';
 import { useUniversalRegistry } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
+
 import DatasetMenuDivider from './dataset-menu-divider.vue';
 import DatasetMenuItem from './dataset-menu-item.vue';
 
@@ -31,7 +32,11 @@ const { getComponent } = useUniversalRegistry(props.mapId);
 const itemLocation = computed(() => getMenuItemLocation(props.item));
 const component = computed(() => {
   if (props.item.type === 'divider') return DatasetMenuDivider;
-  if (props.item.type === 'item' && 'componentKey' in props.item && props.mapId) {
+  if (
+    props.item.type === 'item' &&
+    'componentKey' in props.item &&
+    props.mapId
+  ) {
     return getComponent(props.item.componentKey) || DatasetMenuItem;
   }
   return DatasetMenuItem;

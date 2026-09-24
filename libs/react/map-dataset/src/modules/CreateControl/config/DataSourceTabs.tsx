@@ -1,6 +1,6 @@
 import type { CreateControlDataTab } from '@hungpvq/map-dataset/create-control';
 import { CREATE_CONTROL_DEFAULT_DATA_TAB } from '@hungpvq/map-dataset/create-control';
-import { useEffect, useState, type ReactNode } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 
 type DataSourceTabsProps = {
   tabs: CreateControlDataTab[];
@@ -17,7 +17,9 @@ export function DataSourceTabs({
   onActiveTabChange,
   children,
 }: DataSourceTabsProps) {
-  const [internalTab, setInternalTab] = useState<CreateControlDataTab>(CREATE_CONTROL_DEFAULT_DATA_TAB);
+  const [internalTab, setInternalTab] = useState<CreateControlDataTab>(
+    CREATE_CONTROL_DEFAULT_DATA_TAB,
+  );
   const activeTab = activeTabProp ?? internalTab;
 
   function setActiveTab(tab: CreateControlDataTab) {

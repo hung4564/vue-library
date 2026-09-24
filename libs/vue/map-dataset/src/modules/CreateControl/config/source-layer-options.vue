@@ -1,5 +1,8 @@
 <template>
-  <p v-if="!options.length && emptyHintKey" class="map-col-12 create-control-status">
+  <p
+    v-if="!options.length && emptyHintKey"
+    class="map-col-12 create-control-status"
+  >
     {{ trans(emptyHintKey) }}
   </p>
   <div v-else-if="options.length" class="map-col-12">
@@ -47,9 +50,9 @@
 </template>
 
 <script setup>
+import { buildSourceLayerOptionMetaChips } from '@hungpvq/map-dataset/create-control';
 import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
 import { InputCheckbox } from '@hungpvq/vue-map-core/fields';
-import { buildSourceLayerOptionMetaChips } from '@hungpvq/map-dataset/create-control';
 
 const props = defineProps({
   options: { type: Array, default: () => [] },

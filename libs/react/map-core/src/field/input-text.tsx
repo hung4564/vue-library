@@ -1,7 +1,9 @@
 import React from 'react';
 
-export interface InputTextProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> {
+export interface InputTextProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'onChange' | 'value'
+> {
   label?: string;
   disabled?: boolean;
   value?: string;

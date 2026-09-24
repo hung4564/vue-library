@@ -1,8 +1,6 @@
 ﻿<script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
-import type { MapSimple } from '@hungpvq/map-core';
 import { GEO_EXPORT_DEMO_LEGEND } from '@hungpvq/demo-map-datasets';
+import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
   BaseMapCard,
@@ -15,10 +13,13 @@ import {
   ExportGeoForm,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { defineComponent, h, ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
-import { loadGeoExportDemoDatasets } from '../../data/loaders';
+
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import { loadGeoExportDemoDatasets } from '../../data/loaders';
+import AsideControl from '../../layout/aside-control.vue';
 
 const mapId = ref(getUUIDv4());
 

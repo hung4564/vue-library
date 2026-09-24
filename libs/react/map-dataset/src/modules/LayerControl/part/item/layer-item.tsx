@@ -1,4 +1,8 @@
 import type { IListViewUI } from '@hungpvq/map-dataset';
+import {
+  findAllComponentsByType,
+  splitSearchHighlight,
+} from '@hungpvq/map-dataset';
 import type {
   ListViewGroupOption,
   MenuAction,
@@ -9,12 +13,15 @@ import {
   getResolvedMenus,
   partitionMenuActions,
 } from '@hungpvq/map-dataset/menu';
-import { findAllComponentsByType, splitSearchHighlight } from '@hungpvq/map-dataset';
-import { MapControlButton, RegistryItem, useShow } from '@hungpvq/react-map-core';
-
+import {
+  MapControlButton,
+  RegistryItem,
+  useShow,
+} from '@hungpvq/react-map-core';
 import { mdiDelete, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useEffect, useMemo, useState } from 'react';
+
 import { useMenuConditionContext } from '../../../../extra/menu/condition-context';
 import { DatasetMenus } from '../../../../extra/menu/dataset-menus';
 import { LayerSubItem } from './layer-sub-item';
@@ -44,7 +51,9 @@ export function LayerItem({
   onRemove?: (item: IListViewUI) => void;
   onTitleClick?: () => void;
 }) {
-  const [legendShow, toggleLegend] = useShow(item.config?.init_show_legend ?? false);
+  const [legendShow, toggleLegend] = useShow(
+    item.config?.init_show_legend ?? false,
+  );
   const [childrenShow, toggleChildren] = useShow(
     item.config?.init_show_children ?? false,
   );

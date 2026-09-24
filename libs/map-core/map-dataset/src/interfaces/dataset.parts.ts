@@ -1,18 +1,18 @@
+import type { MapSimple } from '@hungpvq/map-core';
+import type { BBox, Feature } from 'geojson';
 import type {
   LayerSpecification,
   MapGeoJSONFeature,
   PointLike,
   SourceSpecification,
 } from 'maplibre-gl';
+
 import type { WithDataHelper } from '../extra/data';
 import type { FieldFeaturesDef } from '../extra/field';
 import type { MenuItemClick } from '../menu/types';
-import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
-
-import type { MapSimple } from '@hungpvq/map-core';
-import type { BBox, Feature } from 'geojson';
 import { ComponentType } from '../types';
 import type { IDataset } from './dataset.base';
+import type { WithSetOpacity, WithToggleShow } from './dataset.extra';
 import type { IDatasetMap } from './dataset.map';
 
 /**
@@ -28,24 +28,15 @@ export type MenuConditionContext<T = IDataset, C = Record<string, unknown>> = {
 };
 
 export type MenuCondition<T = IDataset, C = Record<string, unknown>> =
-  | boolean
-  | ((ctx: MenuConditionContext<T, C>) => boolean);
+  boolean | ((ctx: MenuConditionContext<T, C>) => boolean);
 
 /** Where a menu action renders (list row, overflow, panel title, …). */
 export type MenuActionLocation =
-  | 'extra'
-  | 'menu'
-  | 'bottom'
-  | 'prebottom'
-  | 'title';
+  'extra' | 'menu' | 'bottom' | 'prebottom' | 'title';
 
 /** Stable ids for dataset UI hosts that render menus (injected as `context.control`). */
 export type MenuControlId =
-  | 'layer-control'
-  | 'layer-detail'
-  | 'identify'
-  | 'attribute-table'
-  | string;
+  'layer-control' | 'layer-detail' | 'identify' | 'attribute-table' | string;
 
 /** Placement overrides for one control id. */
 export type MenuControlPlacement = {
@@ -95,10 +86,10 @@ export type MenuItemBottomOrExtra<P = unknown, T = IDataset> = MenuItemCommon<
 };
 
 /** Menu item type custom component for bottom or extra location */
-export type MenuItemCustomComponentBottomOrExtra<P = unknown, T = IDataset> = Omit<
-  MenuItemCommon<P, T>,
-  'click'
-> & {
+export type MenuItemCustomComponentBottomOrExtra<
+  P = unknown,
+  T = IDataset,
+> = Omit<MenuItemCommon<P, T>, 'click'> & {
   type: 'item';
   location?: Extract<
     MenuActionLocation,

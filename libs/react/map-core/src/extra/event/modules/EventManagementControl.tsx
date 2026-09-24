@@ -1,22 +1,22 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-
 import type { WithMapPropType } from '@hungpvq/map-core';
 import {
   groupEventsByMapType,
-  isEventActive,
-  MittTypeMapEventEventKey,
   type IEvent,
+  isEventActive,
   type MittTypeMapEvent,
+  MittTypeMapEventEventKey,
 } from '@hungpvq/map-core/event';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useLang } from '../../lang/hook';
 import { useMapMittStore } from '../../../store/mitt-store';
+import { useLang } from '../../lang/hook';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { useToolbarControl } from '../../toolbar/helper';
 import { useEventMapItems } from '../hook/useEventMapItems';
@@ -27,7 +27,10 @@ export interface EventManagementControlProps extends WithMapPropType {
 
 export function EventManagementControl(props: EventManagementControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps } = useMap({ ...merged, controlId: 'mapEventManagementControl' });
+  const { mapId, moduleContainerProps } = useMap({
+    ...merged,
+    controlId: 'mapEventManagementControl',
+  });
   const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { panelPosition } = useRegisterMapControl(mapId, {
@@ -42,9 +45,7 @@ export function EventManagementControl(props: EventManagementControlProps) {
       position: merged.position,
       controlLayout: merged.controlLayout,
     }),
-    actions: [
-      { type: 'mapEventManagementControl', run: () => toggleShow() },
-    ],
+    actions: [{ type: 'mapEventManagementControl', run: () => toggleShow() }],
   });
   const [events, setEvents] = useState<IEvent[]>([]);
   const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
@@ -53,7 +54,7 @@ export function EventManagementControl(props: EventManagementControlProps) {
   });
   const [current, setCurrent] = useState(getCurrent);
 
-useEffect(() => {
+  useEffect(() => {
     const update = () => setCurrent(getCurrent());
     emitter.on(MittTypeMapEventEventKey.setCurrent, update);
     update();
@@ -62,10 +63,7 @@ useEffect(() => {
     };
   }, [emitter, getCurrent]);
 
-  const groupedViews = useMemo(
-    () => groupEventsByMapType(events),
-    [events],
-  );
+  const groupedViews = useMemo(() => groupEventsByMapType(events), [events]);
 
   const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
@@ -119,7 +117,9 @@ useEffect(() => {
                         className={`map-event-control__item${active ? ' is-active' : ''}`}
                       >
                         <div>
-                          <strong>{trans('map.event-control.field.id')}:</strong>{' '}
+                          <strong>
+                            {trans('map.event-control.field.id')}:
+                          </strong>{' '}
                           {event.id}
                         </div>
                         <div>

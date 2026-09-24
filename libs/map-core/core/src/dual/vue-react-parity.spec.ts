@@ -1,12 +1,14 @@
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
 import { describe, expect, it } from 'vitest';
+
 import {
-  MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL,
-  MAP_CORE_ADAPTER_SHARED_STABLE,
   MAP_CONTROL_BUTTON_SIZES,
   MAP_CONTROL_BUTTON_VARIANTS,
+  MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL,
+  MAP_CORE_ADAPTER_SHARED_STABLE,
   MAP_DATASET_ADAPTER_SHARED_STABLE,
   MAP_DRAW_ADAPTER_SHARED_STABLE,
   MAP_DUAL_CONTROL_IDS,
@@ -101,14 +103,14 @@ describe('Vue ↔ React dual-framework parity', () => {
   });
 
   it('map-core adapters publish shared Stable on root and Experimental on fields', () => {
-    const vue = parseAllowlistExports(
-      join(vueCore, 'public-api.spec.ts'),
-    );
-    const react = parseAllowlistExports(
-      join(reactCore, 'public-api.spec.ts'),
-    );
+    const vue = parseAllowlistExports(join(vueCore, 'public-api.spec.ts'));
+    const react = parseAllowlistExports(join(reactCore, 'public-api.spec.ts'));
     assertSubset('vue-map-core Stable', MAP_CORE_ADAPTER_SHARED_STABLE, vue);
-    assertSubset('react-map-core Stable', MAP_CORE_ADAPTER_SHARED_STABLE, react);
+    assertSubset(
+      'react-map-core Stable',
+      MAP_CORE_ADAPTER_SHARED_STABLE,
+      react,
+    );
     assertSubset(
       'vue-map-core fields Experimental',
       MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL,
@@ -122,38 +124,23 @@ describe('Vue ↔ React dual-framework parity', () => {
   });
 
   it('map-dataset adapters publish shared Stable symbols', () => {
-    const vue = parseAllowlistExports(
-      join(vueDataset, 'public-api.spec.ts'),
-    );
+    const vue = parseAllowlistExports(join(vueDataset, 'public-api.spec.ts'));
     const react = parseAllowlistExports(
       join(reactDataset, 'public-api.spec.ts'),
     );
-    assertSubset(
-      'vue-map-dataset',
-      MAP_DATASET_ADAPTER_SHARED_STABLE,
-      vue,
-    );
-    assertSubset(
-      'react-map-dataset',
-      MAP_DATASET_ADAPTER_SHARED_STABLE,
-      react,
-    );
+    assertSubset('vue-map-dataset', MAP_DATASET_ADAPTER_SHARED_STABLE, vue);
+    assertSubset('react-map-dataset', MAP_DATASET_ADAPTER_SHARED_STABLE, react);
   });
 
   it('map-draw adapters publish shared Stable symbols', () => {
     const vue = parseAllowlistExports(join(vueDraw, 'public-api.spec.ts'));
-    const react = parseAllowlistExports(
-      join(reactDraw, 'public-api.spec.ts'),
-    );
+    const react = parseAllowlistExports(join(reactDraw, 'public-api.spec.ts'));
     assertSubset('vue-map-draw', MAP_DRAW_ADAPTER_SHARED_STABLE, vue);
     assertSubset('react-map-draw', MAP_DRAW_ADAPTER_SHARED_STABLE, react);
   });
 
   it('MapControlButton variant/size SoT lives in map-core; adapters import it', () => {
-    const coreButtonPath = join(
-      repoLibs,
-      'map-core/core/src/ui/map-button.ts',
-    );
+    const coreButtonPath = join(repoLibs, 'map-core/core/src/ui/map-button.ts');
     expect(existsSync(coreButtonPath)).toBe(true);
     const coreButton = readFileSync(coreButtonPath, 'utf8');
     for (const variant of MAP_CONTROL_BUTTON_VARIANTS) {

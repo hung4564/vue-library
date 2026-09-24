@@ -1,10 +1,11 @@
 import {
+  type LogContext,
   LoggerFactory,
   loggerFactory,
   runWithFunctionLog,
-  type LogContext,
 } from '@hungpvq/shared-log';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { createMapMitt } from './index';
 
 describe('createMapMitt', () => {

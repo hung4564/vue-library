@@ -1,3 +1,4 @@
+import type { DataManagementPart } from '../data-management/types';
 import type { WithDataHelper } from '../extra/data';
 import type { IDataset, WithChildren } from '../interfaces/dataset.base';
 import type {
@@ -11,7 +12,6 @@ import type {
   IMapboxLayerView,
   IMapboxSourceView,
 } from '../interfaces/dataset.parts';
-import type { DataManagementPart } from '../data-management/types';
 import type { IListViewUI } from '../model/list/types';
 
 export function isDatasetMapHasAddToMap(

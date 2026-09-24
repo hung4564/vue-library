@@ -1,4 +1,5 @@
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
+
 import type { DataRecord } from '../data-management/types';
 
 const GEOMETRY_TYPES = new Set([

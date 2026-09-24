@@ -2,6 +2,7 @@ import type { MaybeRefOrGetter } from '@hungpvq/shared';
 import { toValue, useTimeoutFn } from '@hungpvq/shared';
 import type { ComputedRef, Ref } from 'vue';
 import { computed, ref } from 'vue';
+
 import type { ConfigurableNavigator } from '../_configurable';
 import { defaultNavigator } from '../_configurable';
 import { useEventListener } from '../useEventListener';

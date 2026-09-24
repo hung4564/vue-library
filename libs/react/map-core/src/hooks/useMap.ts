@@ -6,6 +6,7 @@ import type {
 } from '@hungpvq/map-core';
 import { resolveControlLayout, subscribeMapReady } from '@hungpvq/map-core';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+
 import { MapContext } from '../context/MapContext';
 import { getMap } from '../store/store';
 
@@ -47,8 +48,7 @@ export const useMap = (
     (props.controlOrder === undefined || props.controlOrder === 0) &&
     registerOrder
   ) {
-    const key =
-      controlLayout === 'toolbar' ? 'toolbar' : `${props.position}`;
+    const key = controlLayout === 'toolbar' ? 'toolbar' : `${props.position}`;
     autoOrderRef.current = registerOrder(key);
   }
 

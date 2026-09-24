@@ -1,15 +1,16 @@
 import {
   Arrayable,
   Fn,
-  MaybeRefOrGetter,
   isObject,
+  type MaybeElementRef,
+  MaybeRefOrGetter,
   noop,
   toValue,
   tryOnScopeDispose,
   unrefElement,
-  type MaybeElementRef,
 } from '@hungpvq/shared';
 import { watch } from 'vue';
+
 import { defaultWindow } from '../_configurable';
 
 interface InferEventTarget<Events> {

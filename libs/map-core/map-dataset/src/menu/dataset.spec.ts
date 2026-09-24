@@ -1,18 +1,15 @@
-import { describe, expect, it, afterEach } from 'vitest';
-import { createRootDataset, createGroupDataset } from '../model/dataset.base';
-import { createDatasetPartListViewUiComponent } from '../model/list/model';
+import { afterEach, describe, expect, it } from 'vitest';
+
 import { createIdentifyMapboxComponent } from '../identify/models';
+import { createGroupDataset, createRootDataset } from '../model/dataset.base';
+import { createDatasetPartListViewUiComponent } from '../model/list/model';
+import { getItemMenuHost, getLayerMenuHost, getResolvedMenus } from './dataset';
+import { clearGlobalDatasetMenus } from './global-defaults';
 import {
   createMenuItemToBoundActionForItem,
   createMenuItemToBoundActionForList,
   LIST_VIEW_MENU_ID,
 } from './items';
-import {
-  getLayerMenuHost,
-  getItemMenuHost,
-  getResolvedMenus,
-} from './dataset';
-import { clearGlobalDatasetMenus } from './global-defaults';
 import { filterLayerDetailHeaderMenus } from './location';
 
 describe('getResolvedMenus layer vs item hosts', () => {
@@ -46,7 +43,8 @@ describe('getResolvedMenus layer vs item hosts', () => {
     );
     const headerItem = getResolvedMenus(identify, 'item');
     const titleCandidates = [...headerLayer, ...headerItem].filter(
-      (m) => m.id === LIST_VIEW_MENU_ID.layer.fillBound ||
+      (m) =>
+        m.id === LIST_VIEW_MENU_ID.layer.fillBound ||
         m.id === LIST_VIEW_MENU_ID.item.flyTo,
     );
     // After LayerDetail filter: fill-bound dropped; only one fly-to remains

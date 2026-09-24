@@ -1,6 +1,4 @@
-import {
-  UniversalRegistry as CoreUniversalRegistry,
-} from '@hungpvq/map-core';
+import { UniversalRegistry as CoreUniversalRegistry } from '@hungpvq/map-core';
 import type { Component } from 'vue';
 import { markRaw } from 'vue';
 

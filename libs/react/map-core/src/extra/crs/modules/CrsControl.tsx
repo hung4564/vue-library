@@ -1,5 +1,4 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
-
 import type { CrsItem } from '@hungpvq/map-core/crs';
 import {
   buildMapCrsCatalog,
@@ -8,15 +7,16 @@ import {
 } from '@hungpvq/map-core/crs';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
-import { Icon } from '@mdi/react';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
+import { Icon } from '@mdi/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { MapCommonButton } from '../../../components/MapCommonButton';
-import { useLang } from '../../lang/hook';
 import { BaseCollapse, InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
+import { useLang } from '../../lang/hook';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { useToolbarControl } from '../../toolbar/helper';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../useMapCrsItems';
@@ -32,7 +32,10 @@ const UNIT_ITEMS = [
 
 export function CrsControl(props: CrsControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapCrsControl' });
+  const { mapId, moduleContainerProps, order } = useMap({
+    ...merged,
+    controlId: 'mapCrsControl',
+  });
   const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { panelBind } = useRegisterMapControl(mapId, {
@@ -52,10 +55,7 @@ export function CrsControl(props: CrsControlProps) {
   const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId);
   const [filterQuery, setFilterQuery] = useState('');
 
-const catalogItems = useMemo(
-    () => buildMapCrsCatalog(crsItems),
-    [crsItems],
-  );
+  const catalogItems = useMemo(() => buildMapCrsCatalog(crsItems), [crsItems]);
   const filteredCatalog = useMemo(() => {
     const q = filterQuery.trim();
     if (!q) return catalogItems;

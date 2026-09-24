@@ -14,7 +14,9 @@ export function createControlDraftKey(mapId: string): string {
   return `${CREATE_CONTROL_DRAFT_PREFIX}${mapId || 'default'}`;
 }
 
-export function loadCreateControlDraft(mapId: string): CreateControlDraft | null {
+export function loadCreateControlDraft(
+  mapId: string,
+): CreateControlDraft | null {
   if (typeof sessionStorage === 'undefined') return null;
   try {
     const raw = sessionStorage.getItem(createControlDraftKey(mapId));

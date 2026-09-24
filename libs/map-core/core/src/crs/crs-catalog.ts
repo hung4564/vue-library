@@ -1,9 +1,10 @@
-import { DEFAULT_CRS_ITEMS, type CrsItem } from './types';
 import proj4 from 'proj4';
+
 import {
   ensureRegisteredProjection,
   lookupProj4CrsItem,
 } from './proj4-crs-catalog';
+import { type CrsItem, DEFAULT_CRS_ITEMS } from './types';
 const EXTRA_CRS_ITEMS: CrsItem[] = [
   {
     name: 'VN-2000 / UTM zone 48N',

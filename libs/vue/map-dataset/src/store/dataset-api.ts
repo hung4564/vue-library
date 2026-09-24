@@ -8,13 +8,14 @@ import {
 import { useMapStore } from '@hungpvq/vue-map-core';
 import {
   getCurrentScope,
+  type MaybeRefOrGetter,
   onScopeDispose,
   ref,
   shallowRef,
   toValue,
   watch,
-  type MaybeRefOrGetter,
 } from 'vue';
+
 import { useMapDatasetStore } from './dataset-store';
 
 const EMPTY_DATASET_IDS = { value: [] as string[] };
@@ -30,7 +31,9 @@ export const useMapDataset = (
   mapIdSource?: MaybeRefOrGetter<string | undefined>,
 ) => {
   const mapId = ref(
-    typeof toValue(mapIdSource) === 'string' ? (toValue(mapIdSource) as string) : '',
+    typeof toValue(mapIdSource) === 'string'
+      ? (toValue(mapIdSource) as string)
+      : '',
   );
   /** UI tick — follows store.version and remounts when mapId rebinds. */
   const datasetVersion = shallowRef(0);

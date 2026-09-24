@@ -2,6 +2,7 @@
  * Locks `@hungpvq/map-draw` root **runtime** export surface.
  */
 import { describe, expect, it } from 'vitest';
+
 import * as api from './index';
 
 export const MAP_DRAW_STABLE_RUNTIME_EXPORTS = [

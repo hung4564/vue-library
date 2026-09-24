@@ -3,8 +3,8 @@
  */
 
 import type { MapSimple } from '../../types';
-import { Event } from './Event';
 import type { EventClickOption } from '../types';
+import { Event } from './Event';
 
 /**
  * Click event handler for map

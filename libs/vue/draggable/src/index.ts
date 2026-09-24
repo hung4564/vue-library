@@ -7,7 +7,6 @@ import './store';
  * Root barrel is an **explicit Stable allowlist** (+ experimental re-exports).
  * Do not reintroduce `export *`. See `libs/draggable/core/docs/stable-api.md`.
  */
-
 import {
   DraggableContainer,
   DraggableDrawer,
@@ -52,16 +51,16 @@ export {
   withShowEmit,
   withShowProps,
 } from './hook';
-export {
-  useContainerOrder,
-  useContainerSize,
-  useManagement,
-} from './hook/useInitItem';
 export type {
   PropsShareComponent,
   ShareCardComponent,
   ShareHeaderComponent,
 } from './hook/useComponent';
+export {
+  useContainerOrder,
+  useContainerSize,
+  useManagement,
+} from './hook/useInitItem';
 
 // --- Stable: store (after Vue configureDragStore) ---
 export {

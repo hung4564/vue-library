@@ -12,10 +12,7 @@ export type EventActionSyncDeps = {
  * Sync ActionControl map listeners: one active IEvent per event_map_type.
  */
 export function createEventActionSync(deps: EventActionSyncDeps) {
-  const currentByMapId: Record<
-    string,
-    Record<string, IEvent | undefined>
-  > = {};
+  const currentByMapId: Record<string, Record<string, IEvent | undefined>> = {};
 
   function updateEventMap(events: IEvent[]) {
     const listeners: Record<string, IEvent[]> = {};
@@ -48,9 +45,7 @@ export function createEventActionSync(deps: EventActionSyncDeps) {
         deps.setCurrent(key, next);
       }
       for (const key in currentByMapId[map.id]) {
-        if (
-          Object.prototype.hasOwnProperty.call(currentByMapId[map.id], key)
-        ) {
+        if (Object.prototype.hasOwnProperty.call(currentByMapId[map.id], key)) {
           const element = currentByMapId[map.id][key];
           if (!keyAdd.includes(key) && element) {
             element.removeFromMap(map);

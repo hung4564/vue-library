@@ -1,5 +1,6 @@
 import { ensureMapMitt } from '@hungpvq/map-core';
 import { describe, expect, it, vi } from 'vitest';
+
 import { MAP_DRAW_EVENT, type MapDrawEvent } from './types/index';
 
 describe('MAP_DRAW_EVENT.END payload', () => {

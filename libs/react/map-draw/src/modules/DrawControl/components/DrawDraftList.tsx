@@ -99,7 +99,9 @@ export function DrawDraftList({
                       variant="plain"
                       type="button"
                       className="menu-item"
-                      title={trans('map.draw-control.draftList.action.fillBound')}
+                      title={trans(
+                        'map.draw-control.draftList.action.fillBound',
+                      )}
                       onClick={() => onFlyTo(item.modified as Feature)}
                     >
                       <Icon path={mdiCrosshairsGps} size="16px" />

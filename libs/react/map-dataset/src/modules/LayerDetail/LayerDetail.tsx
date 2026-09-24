@@ -1,7 +1,4 @@
-import {
-  type FieldFeaturesDef,
-  type IDataset,
-} from '@hungpvq/map-dataset';
+import { type FieldFeaturesDef, type IDataset } from '@hungpvq/map-dataset';
 import {
   bindHighlightMittBridge,
   emitHighlightDetailClose,
@@ -22,7 +19,8 @@ import {
   useShow,
 } from '@hungpvq/react-map-core';
 import { InputTextarea } from '@hungpvq/react-map-core/fields';
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { type ReactNode, useEffect, useMemo, useRef } from 'react';
+
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
 
@@ -170,63 +168,63 @@ export function LayerDetail({
 
   return (
     <MenuConditionProvider value={{ control: MENU_CONTROL_ID.layerDetail }}>
-    <ModuleContainer
-      {...moduleContainerProps}
-      draggable={(bind) => (
-        <DraggableItemPopup
-          show={show}
-          onClose={handleClose}
-          onUpdateShow={(v) => {
-            if (!v) handleClose();
-          }}
-          width={520}
-          {...bind}
-          {...panelBind}
-          {...popupProps}
-          title={trans('map.layer-control.info.title')}
-          afterTitle={
-            view ? (
-              <>
-                <DatasetMenus
-                  menus={layerTitleMenus}
-                  data={view}
-                  mapId={mapId}
-                  locations={['title']}
-                />
-                {host ? (
+      <ModuleContainer
+        {...moduleContainerProps}
+        draggable={(bind) => (
+          <DraggableItemPopup
+            show={show}
+            onClose={handleClose}
+            onUpdateShow={(v) => {
+              if (!v) handleClose();
+            }}
+            width={520}
+            {...bind}
+            {...panelBind}
+            {...popupProps}
+            title={trans('map.layer-control.info.title')}
+            afterTitle={
+              view ? (
+                <>
                   <DatasetMenus
-                    menus={itemMenus}
-                    data={host}
+                    menus={layerTitleMenus}
+                    data={view}
                     mapId={mapId}
-                    value={item}
                     locations={['title']}
                   />
-                ) : null}
-              </>
-            ) : undefined
-          }
-        >
-          <div className="table-show-info">
-            <div className="table-content">
-              {fields.map((field, i) => (
-                <TableTdLayer
-                  key={i}
-                  field={field}
-                  label={
-                    'trans' in field && field.trans
-                      ? trans(field.trans)
-                      : 'text' in field
-                        ? field.text
-                        : ''
-                  }
-                  item={item}
-                />
-              ))}
+                  {host ? (
+                    <DatasetMenus
+                      menus={itemMenus}
+                      data={host}
+                      mapId={mapId}
+                      value={item}
+                      locations={['title']}
+                    />
+                  ) : null}
+                </>
+              ) : undefined
+            }
+          >
+            <div className="table-show-info">
+              <div className="table-content">
+                {fields.map((field, i) => (
+                  <TableTdLayer
+                    key={i}
+                    field={field}
+                    label={
+                      'trans' in field && field.trans
+                        ? trans(field.trans)
+                        : 'text' in field
+                          ? field.text
+                          : ''
+                    }
+                    item={item}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        </DraggableItemPopup>
-      )}
-    />
+          </DraggableItemPopup>
+        )}
+      />
     </MenuConditionProvider>
   );
 }

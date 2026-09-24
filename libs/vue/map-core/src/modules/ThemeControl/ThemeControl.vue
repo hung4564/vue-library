@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { type WithMapPropType, subscribeMapReady } from '@hungpvq/map-core';
+import { subscribeMapReady, type WithMapPropType } from '@hungpvq/map-core';
 import {
-  MAP_THEME_COLOR_SCHEME,
-  MAP_THEME_MODES,
   applyMapTheme,
   getMapThemeLocaleKey,
   getPrefersDark,
   getStoredMapThemeMode,
+  MAP_THEME_COLOR_SCHEME,
+  MAP_THEME_MODES,
+  type MapThemeMode,
+  type MapThemeScope,
   normalizeMapThemeModes,
   resolveMapTheme,
   setStoredMapThemeMode,
   subscribePrefersContrastMore,
   toggleMapThemeLightDark,
-  type MapThemeMode,
-  type MapThemeScope,
 } from '@hungpvq/map-core/theme';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
@@ -27,6 +27,7 @@ import {
   mdiWeatherSunset,
 } from '@mdi/js';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
 import { useLang } from '../../extra/lang/hook';
@@ -77,9 +78,7 @@ const prefersDark = ref(getPrefersDark());
 
 const themeModes = computed(() => normalizeMapThemeModes(props.themes));
 
-const resolved = computed(() =>
-  resolveMapTheme(mode.value, prefersDark.value),
-);
+const resolved = computed(() => resolveMapTheme(mode.value, prefersDark.value));
 
 const toggleTarget = computed(() => toggleMapThemeLightDark(resolved.value));
 
@@ -190,10 +189,7 @@ onUnmounted(() => {
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlGroupButton
-        row
-        class="button-group-hover-expand"
-      >
+      <MapControlGroupButton row class="button-group-hover-expand">
         <MapCommonButton
           v-if="state"
           :option="state"

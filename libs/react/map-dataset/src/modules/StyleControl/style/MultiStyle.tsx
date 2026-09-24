@@ -1,12 +1,13 @@
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { MapControlButton, useShow } from '@hungpvq/react-map-core';
 import { InputSelect } from '@hungpvq/react-map-core/fields';
-import { Icon } from '@mdi/react';
 import { mdiClose, mdiDelete, mdiPlus } from '@mdi/js';
+import { Icon } from '@mdi/react';
 import type { LayerSpecification } from 'maplibre-gl';
 import { useEffect, useMemo, useState } from 'react';
-import type { TransFn } from './type/tab-utils';
+
 import { SingleStyle } from './SingleStyle';
+import type { TransFn } from './type/tab-utils';
 
 export function MultiStyle({
   value = [],
@@ -95,14 +96,16 @@ export function MultiStyle({
             items={tabs}
           />
         </div>
-        <MapControlButton variant="text"
+        <MapControlButton
+          variant="text"
           className="tab-item tab-add clickable"
           onClick={() => onRemoveStyleLayer(tab)}
           disabled={!tab}
         >
           <Icon path={mdiDelete} size="14px" />
         </MapControlButton>
-        <MapControlButton variant="text"
+        <MapControlButton
+          variant="text"
           className="tab-item tab-add clickable"
           onClick={() => setShowAdd(!showAdd)}
         >
@@ -112,16 +115,28 @@ export function MultiStyle({
       {showAdd ? (
         <div className="style-container">
           <div className="add-style-container">
-            <MapControlButton variant="text" onClick={() => onAddStyleLayer('area')}>
+            <MapControlButton
+              variant="text"
+              onClick={() => onAddStyleLayer('area')}
+            >
               {trans('map.style-control.add.area')}
             </MapControlButton>
-            <MapControlButton variant="text" onClick={() => onAddStyleLayer('line')}>
+            <MapControlButton
+              variant="text"
+              onClick={() => onAddStyleLayer('line')}
+            >
               {trans('map.style-control.add.line')}
             </MapControlButton>
-            <MapControlButton variant="text" onClick={() => onAddStyleLayer('point')}>
+            <MapControlButton
+              variant="text"
+              onClick={() => onAddStyleLayer('point')}
+            >
               {trans('map.style-control.add.point')}
             </MapControlButton>
-            <MapControlButton variant="text" onClick={() => onAddStyleLayer('symbol')}>
+            <MapControlButton
+              variant="text"
+              onClick={() => onAddStyleLayer('symbol')}
+            >
               {trans('map.style-control.add.symbol')}
             </MapControlButton>
           </div>

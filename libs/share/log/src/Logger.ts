@@ -1,6 +1,6 @@
-import type { LogAdapter, LogContext, LogLevel, LogRecord } from './types';
 import { captureLogCallerSite } from './caller';
 import { LoggerFactory } from './LoggerFactory';
+import type { LogAdapter, LogContext, LogLevel, LogRecord } from './types';
 import { getUUIDv4 } from './uuid';
 
 type LoggerOptions = {
@@ -64,18 +64,12 @@ export class Logger {
       this.getAmbientContext,
       {
         bound: { ...this.bound, ...partial },
-        extraNamespaces: [
-          ...this.extraNamespaces,
-          ...(extraNamespaces ?? []),
-        ],
+        extraNamespaces: [...this.extraNamespaces, ...(extraNamespaces ?? [])],
       },
     );
     for (const [priority, ns] of this.namespaceMap) {
       child.namespaceMap.set(priority, ns);
-      child.namespaceMapHide.set(
-        ns,
-        this.namespaceMapHide.get(ns) ?? false,
-      );
+      child.namespaceMapHide.set(ns, this.namespaceMapHide.get(ns) ?? false);
     }
     return child;
   }

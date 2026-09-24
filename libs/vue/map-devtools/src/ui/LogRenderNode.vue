@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { formatDevtoolsLogEntryForCopy } from '@hungpvq/map-core/devtools';
+import { formatLogTime, shortActionId, textMessage } from '@hungpvq/map-debug';
 import { logActionId, type LogRecord } from '@hungpvq/shared-log';
-import {
-  formatLogTime,
-  shortActionId,
-  textMessage,
-} from '@hungpvq/map-debug';
 import { MapControlButton, MapCopyButton } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
 
@@ -47,9 +43,7 @@ function onRowClick(event: MouseEvent) {
     @keydown.enter.prevent="emit('select', log)"
   >
     <div class="log-entry__main">
-      <span class="log-entry__time">{{
-        formatLogTime(log.header.ts)
-      }}</span>
+      <span class="log-entry__time">{{ formatLogTime(log.header.ts) }}</span>
       <div class="log-entry__row">
         <div class="log-entry__content">
           <span v-if="message" class="log-entry__msg">{{ message }}</span>
@@ -78,10 +72,7 @@ function onRowClick(event: MouseEvent) {
       >
         {{ (log.header.level || '?').toUpperCase() }}
       </span>
-      <div
-        v-if="log.header.namespaces[0] || actionId"
-        class="log-entry__meta"
-      >
+      <div v-if="log.header.namespaces[0] || actionId" class="log-entry__meta">
         <MapControlButton
           v-if="log.header.namespaces[0]"
           variant="text"

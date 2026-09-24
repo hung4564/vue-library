@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { buildMapControlHandle } from './build-map-control-handle';
 
 describe('buildMapControlHandle', () => {

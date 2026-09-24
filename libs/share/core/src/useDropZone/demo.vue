@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useDropZone } from '.';
+
 import { useEventListener } from '../useEventListener';
+import { useDropZone } from '.';
 
 const filesData = ref<
   { name: string; size: number; type: string; lastModified: number }[]

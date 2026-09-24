@@ -5,13 +5,13 @@ import {
   type MapSimple,
   type WithMapPropType,
 } from '@hungpvq/map-core';
-import type { MapMouseEvent } from 'maplibre-gl';
+import { createMapDisplayCoordinateFormatter } from '@hungpvq/map-core/crs';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCached, mdiMagnify, mdiMapMarkerOutline } from '@mdi/js';
+import type { MapMouseEvent } from 'maplibre-gl';
 import { nextTick, ref } from 'vue';
-import { defaultMapProps, useMap } from '../../hooks/useMap';
 
-import { createMapDisplayCoordinateFormatter } from '@hungpvq/map-core/crs';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
 const props = withDefaults(

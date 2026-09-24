@@ -19,8 +19,8 @@
   </div>
 </template>
 <script setup>
-import { InputTextArea } from '@hungpvq/vue-map-core/fields';
 import { MapCopyButton } from '@hungpvq/vue-map-core';
+import { InputTextArea } from '@hungpvq/vue-map-core/fields';
 import { computed } from 'vue';
 
 const props = defineProps({

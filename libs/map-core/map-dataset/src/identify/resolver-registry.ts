@@ -1,8 +1,9 @@
-import { createMapCoreMetaRegistry, type FallbackResolver } from '@hungpvq/map-core';
 import {
-  identifyResolver,
-  type IdentifyContext,
-} from './resolver';
+  createMapCoreMetaRegistry,
+  type FallbackResolver,
+} from '@hungpvq/map-core';
+
+import { type IdentifyContext, identifyResolver } from './resolver';
 
 const identifyResolverRegistry = createMapCoreMetaRegistry<
   FallbackResolver<IdentifyContext>

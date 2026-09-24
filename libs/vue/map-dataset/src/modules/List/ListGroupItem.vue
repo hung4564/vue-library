@@ -6,7 +6,11 @@
       </span>
       <div class="draggable-group__action">
         <slot name="extra-data" :item="item"></slot>
-        <MapControlButton @click="toggleShowChildrenGroup()" variant="plain" size="small">
+        <MapControlButton
+          @click="toggleShowChildrenGroup()"
+          variant="plain"
+          size="small"
+        >
           <SvgIcon
             size="14"
             type="mdi"
@@ -33,12 +37,12 @@
   </ListItem>
 </template>
 <script setup lang="ts">
+import type { GroupTree } from '@hungpvq/map-dataset';
+import { MapControlButton } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
-import { MapControlButton } from '@hungpvq/vue-map-core';
-import type { GroupTree } from '@hungpvq/map-dataset';
-
 import { ref } from 'vue';
+
 import ListItem from './ListItem.vue';
 
 defineProps<{

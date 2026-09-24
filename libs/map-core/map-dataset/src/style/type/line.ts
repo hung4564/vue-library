@@ -1,4 +1,5 @@
 import type { LineLayerSpecification } from 'maplibre-gl';
+
 import type { LayerTypeConfig } from './style';
 
 export const LINE_CONFIG: LayerTypeConfig<LineLayerSpecification> = {

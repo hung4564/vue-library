@@ -13,15 +13,16 @@ import {
   filterVisibleMapMenuItems,
   formatMapContextCoords,
   handleMapMenuAction,
-  resolveMapMenuCondition,
   type MapContextMenuItem,
   type MapContextMenuTarget,
+  resolveMapMenuCondition,
 } from '@hungpvq/map-core/menu';
 import { ContextMenu } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronRight, mdiMapMarkerOutline } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { computed, ref, watch } from 'vue';
+
 import { useEventMap } from '../../extra/event/hook/useEvent';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 
@@ -71,11 +72,7 @@ watch(
 const sourceItems = computed(() => {
   void target.value;
   if (props.items?.length) {
-    return [
-      ...(props.prepend ?? []),
-      ...props.items,
-      ...(props.extra ?? []),
-    ];
+    return [...(props.prepend ?? []), ...props.items, ...(props.extra ?? [])];
   }
   return createDefaultMapContextMenuItems({
     include: props.include,
@@ -94,7 +91,10 @@ const visibleItems = computed(() => {
 
 const coordsLabel = computed(() => {
   if (!target.value) return '';
-  return formatMapContextCoords(target.value.lngLat.lng, target.value.lngLat.lat);
+  return formatMapContextCoords(
+    target.value.lngLat.lng,
+    target.value.lngLat.lat,
+  );
 });
 
 function onContextMenu(e: MapMouseEvent) {
@@ -166,12 +166,7 @@ function isDisabled(item: MapContextMenuItem) {
           @click.stop="onSelect(item, $event)"
         >
           <div class="map-context-menu__item-icon">
-            <SvgIcon
-              v-if="item.icon"
-              :size="16"
-              type="mdi"
-              :path="item.icon"
-            />
+            <SvgIcon v-if="item.icon" :size="16" type="mdi" :path="item.icon" />
           </div>
           <span class="map-context-menu__label">{{ item.name }}</span>
           <div v-if="item.children?.length" class="map-context-menu__chevron">

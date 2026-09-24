@@ -4,11 +4,11 @@ import {
   filterWorkerSnapshots,
   formatWorkerDuration,
   resolveSelectedWorkerId,
-  WorkerMonitor,
+  type WithMapPropType,
   workerHasHistory,
   workerLogsForDisplay,
+  WorkerMonitor,
   workerProgressRatio,
-  type WithMapPropType,
   type WorkerRuntimeStatus,
   type WorkerSnapshot,
   type WorkerTaskSnapshot,
@@ -17,12 +17,8 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlButton } from '../../components/MapControlButton';
 import { useLang } from '../../extra/lang/hook';
@@ -64,7 +60,7 @@ export function WorkerControl(props: WorkerControlProps) {
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState('');
 
-const filtered = useMemo(
+  const filtered = useMemo(
     () => filterWorkerSnapshots(workers, query),
     [workers, query],
   );
@@ -171,7 +167,8 @@ const filtered = useMemo(
                 <span />
               )}
               <div className="map-worker-control__toolbar-actions">
-                <MapControlButton variant="plain"
+                <MapControlButton
+                  variant="plain"
                   title={trans('map.worker-control.action.clear')}
                   disabled={!hasSelectedHistory}
                   onClick={(e) => {
@@ -182,7 +179,8 @@ const filtered = useMemo(
                   <Icon path={mdiEraser} size="16px" />
                 </MapControlButton>
                 {manyWorkers ? (
-                  <MapControlButton variant="plain"
+                  <MapControlButton
+                    variant="plain"
                     title={trans('map.worker-control.action.clearAll')}
                     disabled={!hasAnyHistory}
                     onClick={(e) => {

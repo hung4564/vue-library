@@ -1,8 +1,16 @@
-import { GEO_EXPORT_COMPONENT_KEY, resolveGeoExportUiSlot } from '@hungpvq/map-dataset/geo-export';
+import {
+  GEO_EXPORT_COMPONENT_KEY,
+  resolveGeoExportUiSlot,
+} from '@hungpvq/map-dataset/geo-export';
 import { MapControlButton, RegistryItem } from '@hungpvq/react-map-core';
-import { InputCrs, InputSelect, InputText } from '@hungpvq/react-map-core/fields';
+import {
+  InputCrs,
+  InputSelect,
+  InputText,
+} from '@hungpvq/react-map-core/fields';
 import type { ComponentType } from 'react';
 import { useMemo } from 'react';
+
 import { ExportGeoLoading } from './export-geo-loading';
 
 export type ExportGeoFormProps = {
@@ -37,8 +45,7 @@ export function ExportGeoForm(props: ExportGeoFormProps) {
     return {
       componentKey: slot.componentKey,
       defaultComponent: slot.defaultComponent as
-        | ComponentType<Record<string, never>>
-        | undefined,
+        ComponentType<Record<string, never>> | undefined,
     };
   }, [props.loadingComponent]);
 

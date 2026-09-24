@@ -28,8 +28,8 @@ export function DatasetSourceViewer(props: DatasetSourceViewerProps) {
   const activeTab = hasExampleData ? tab : 'definition';
   const code =
     activeTab === 'example' && hasExampleData
-      ? props.exampleData ?? ''
-      : props.definition ?? '';
+      ? (props.exampleData ?? '')
+      : (props.definition ?? '');
   const popupTitle = props.title || props.listName || 'Dataset source';
 
   function handleClose() {

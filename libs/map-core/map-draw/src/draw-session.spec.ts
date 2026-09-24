@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
-import { createDrawSession } from './draw-session';
 import type { Feature } from 'geojson';
+import { describe, expect, it, vi } from 'vitest';
+
+import { createDrawSession } from './draw-session';
 
 describe('createDrawSession', () => {
   it('selectMethod attaches map click and sets static mode', () => {
@@ -153,10 +154,12 @@ describe('dual behavioral parity — draw delete/redraw', () => {
 });
 
 describe('dual behavioral parity — draw save/cancel', () => {
-  function makeSession(overrides: {
-    getDrawOption?: () => unknown;
-    redrawNonDraft?: () => void | Promise<void>;
-  } = {}) {
+  function makeSession(
+    overrides: {
+      getDrawOption?: () => unknown;
+      redrawNonDraft?: () => void | Promise<void>;
+    } = {},
+  ) {
     return createDrawSession({
       mapId: 'parity-save',
       control: {

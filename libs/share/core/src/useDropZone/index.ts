@@ -1,6 +1,5 @@
+import { isClient, type MaybeRefOrGetter, notNullish } from '@hungpvq/shared';
 import type { MaybeRef, Ref } from 'vue';
-
-import { isClient, notNullish, type MaybeRefOrGetter } from '@hungpvq/shared';
 import { ref, shallowRef, unref } from 'vue';
 
 import { useEventListener } from '../useEventListener';

@@ -1,9 +1,5 @@
 <template>
-  <div
-    v-if="hasAnything"
-    class="dataset-menus"
-    :class="rootClass"
-  >
+  <div v-if="hasAnything" class="dataset-menus" :class="rootClass">
     <DatasetMenuButton
       v-for="(menu, i) in inlineMenus"
       :key="menu.id || `inline-${i}`"
@@ -87,11 +83,12 @@ import {
   isMenuItemDisabled,
   partitionMenuActions,
 } from '@hungpvq/map-dataset/menu';
-import { MapControlButton, RegistryItem } from '@hungpvq/vue-map-core';
 import { ContextMenu } from '@hungpvq/vue-draggable';
+import { MapControlButton, RegistryItem } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCircleSmall, mdiDotsVertical } from '@mdi/js';
 import { computed, ref } from 'vue';
+
 import { useMenuConditionSource } from './condition-context';
 import DatasetMenuButton from './dataset-menu-button.vue';
 

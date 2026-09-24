@@ -1,4 +1,5 @@
 import type { FeatureCollection } from 'geojson';
+
 import type { GeoExportFormat } from './types';
 import { GEO_EXPORT_FORMAT_META } from './types';
 
@@ -26,7 +27,9 @@ function featuresToCsv(data: FeatureCollection): string {
   const lines = [
     headers.join(','),
     ...rows.map((row) =>
-      headers.map((header) => escape((row as Record<string, unknown>)[header])).join(','),
+      headers
+        .map((header) => escape((row as Record<string, unknown>)[header]))
+        .join(','),
     ),
   ];
   return `\uFEFF${lines.join('\n')}`;
@@ -40,7 +43,8 @@ function toBlob(result: unknown, mime: string): Blob | null {
     copy.set(result);
     return new Blob([copy], { type: mime });
   }
-  if (Array.isArray(result)) return new Blob([new Uint8Array(result)], { type: mime });
+  if (Array.isArray(result))
+    return new Blob([new Uint8Array(result)], { type: mime });
   if (typeof result === 'string') return new Blob([result], { type: mime });
   return null;
 }

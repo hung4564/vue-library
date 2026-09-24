@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
 import { onStartTyping } from '.';
 
 const input = ref<HTMLInputElement | null>(null);

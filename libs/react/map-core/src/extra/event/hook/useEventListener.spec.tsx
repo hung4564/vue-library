@@ -1,10 +1,11 @@
 import {
+  type MapSimple,
   registerMapAccessor,
   registerMapReadySubscriber,
-  type MapSimple,
 } from '@hungpvq/map-core';
 import { cleanup, render } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { useEventListener } from './useEvent';
 
 const MAP_ID = 'react-use-event-listener';

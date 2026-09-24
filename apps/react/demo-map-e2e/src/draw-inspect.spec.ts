@@ -14,22 +14,30 @@ test.describe('react-demo-map draw + inspect smoke', () => {
       page.locator('.mapDrawControl-btn-module-container'),
     ).toBeAttached({ timeout: 30_000 });
 
-    const drawBtn = page.locator('.mapDrawControl-btn-module-container button').first();
+    const drawBtn = page
+      .locator('.mapDrawControl-btn-module-container button')
+      .first();
     if (await drawBtn.count()) {
       await drawBtn.click();
     }
     await expect(
-      page.locator('.button-draw-container, .mapDrawControl-btn-module-container').first(),
+      page
+        .locator('.button-draw-container, .mapDrawControl-btn-module-container')
+        .first(),
     ).toBeVisible({ timeout: 15_000 });
 
-    const draftListBtn = page.getByRole('button', { name: /Draft list/i }).first();
+    const draftListBtn = page
+      .getByRole('button', { name: /Draft list/i })
+      .first();
     if (await draftListBtn.count()) {
       const disabled = await draftListBtn.isDisabled();
       if (!disabled) {
         await draftListBtn.click();
         await expect(
           page
-            .locator('.draft-items-table, .draggable-popup-wrapper, [class*="draft"]')
+            .locator(
+              '.draft-items-table, .draggable-popup-wrapper, [class*="draft"]',
+            )
             .first(),
         ).toBeVisible({ timeout: 15_000 });
       }

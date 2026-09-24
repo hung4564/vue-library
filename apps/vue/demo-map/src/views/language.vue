@@ -24,7 +24,6 @@
 </template>
 
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import {
   MAP_CORE_LOCALE_VI,
   type MapLangFlatMessages,
@@ -43,10 +42,12 @@ import {
   ThemeControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { ref } from 'vue';
-import AsideControl from '../layout/aside-control.vue';
+
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 import LanguageReloadToggle from '../components/LanguageReloadToggle.vue';
+import AsideControl from '../layout/aside-control.vue';
 
 const reloadOnSelect = ref(false);
 
@@ -90,5 +91,3 @@ async function localeLoader(
   }
 }
 </script>
-
-

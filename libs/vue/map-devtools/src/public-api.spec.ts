@@ -3,6 +3,7 @@
  * Root `index.ts` must use **named** exports only (no public `export *`).
  */
 import { describe, expect, it } from 'vitest';
+
 import * as api from './index';
 
 /** Stable root runtime exports (SemVer contract for 1.x). */

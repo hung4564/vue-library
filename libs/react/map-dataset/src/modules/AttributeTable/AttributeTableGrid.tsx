@@ -1,15 +1,16 @@
+import { convertFeatureToItem } from '@hungpvq/map-dataset';
 import {
-  getAttributeTableCellRaw,
-  resolveAttributeTableComponentRef,
   type AttributeTableColumn,
   type AttributeTableGridProps,
   type AttributeTableRow,
+  getAttributeTableCellRaw,
+  resolveAttributeTableComponentRef,
 } from '@hungpvq/map-dataset/attribute-table';
-import { convertFeatureToItem } from '@hungpvq/map-dataset';
 import { RegistryItem } from '@hungpvq/react-map-core';
 import { InputText } from '@hungpvq/react-map-core/fields';
 import type { ComponentType, KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
 
 function isColumnSortable(
@@ -24,8 +25,7 @@ function resolveSlot(value: unknown) {
   return {
     componentKey: resolved.componentKey,
     defaultComponent: resolved.defaultComponent as
-      | ComponentType<Record<string, unknown>>
-      | undefined,
+      ComponentType<Record<string, unknown>> | undefined,
   };
 }
 
@@ -198,7 +198,11 @@ export function AttributeTableGrid(props: AttributeTableGridProps) {
         aria-label={props.gridRegionLabel}
         aria-busy="true"
       >
-        <div className="attribute-table__status" role="status" aria-live="polite">
+        <div
+          className="attribute-table__status"
+          role="status"
+          aria-live="polite"
+        >
           {props.loadingLabel}
         </div>
       </div>
@@ -211,7 +215,11 @@ export function AttributeTableGrid(props: AttributeTableGridProps) {
         role="region"
         aria-label={props.gridRegionLabel}
       >
-        <div className="attribute-table__status" role="status" aria-live="polite">
+        <div
+          className="attribute-table__status"
+          role="status"
+          aria-live="polite"
+        >
           {props.emptyLabel}
         </div>
       </div>
@@ -329,7 +337,9 @@ export function AttributeTableGrid(props: AttributeTableGridProps) {
                   </th>
                 ) : null}
                 {props.columns.map((column) => {
-                  const active = !!(props.columnFilters[column.key] ?? '').trim();
+                  const active = !!(
+                    props.columnFilters[column.key] ?? ''
+                  ).trim();
                   return (
                     <th
                       key={`filter-${column.key}`}

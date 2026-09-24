@@ -18,11 +18,7 @@ export const EMPTY_MAP_VIEW_INFO: MapViewInfo = {
   bounds: '',
 };
 
-export function formatCoordPair(
-  lng: number,
-  lat: number,
-  digits = 4,
-): string {
+export function formatCoordPair(lng: number, lat: number, digits = 4): string {
   return `${lng.toFixed(digits)}, ${lat.toFixed(digits)}`;
 }
 

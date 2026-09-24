@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
 import { useElementVisibility } from '.';
 
 const el = ref(null);

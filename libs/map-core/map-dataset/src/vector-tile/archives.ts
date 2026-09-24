@@ -74,9 +74,9 @@ export function pmtilesLocalTilesUrl(archiveId: string): string {
   return `${PMTILES_LOCAL_PROTOCOL}://${archiveId}/{z}/{x}/{y}`;
 }
 
-type LocalProtocolLoader = (
-  params: { url: string },
-) => Promise<{ data: ArrayBuffer | Uint8Array }>;
+type LocalProtocolLoader = (params: {
+  url: string;
+}) => Promise<{ data: ArrayBuffer | Uint8Array }>;
 
 /** Register MapLibre custom protocols (ids stay package-internal). */
 export function registerVectorTileLocalProtocols(
@@ -95,7 +95,9 @@ export function registerVectorTileLocalProtocols(
   }
 }
 
-function parseBounds(raw: string | undefined): [number, number, number, number] | undefined {
+function parseBounds(
+  raw: string | undefined,
+): [number, number, number, number] | undefined {
   if (!raw) return undefined;
   try {
     const arr = JSON.parse(raw) as number[];
@@ -239,9 +241,7 @@ export function metaFromMbtilesRows(
 
 const SQL_JS_CDN = 'https://cdn.jsdelivr.net/npm/sql.js@1.12.0/dist';
 
-type InitSqlJs = (opts?: {
-  locateFile?: (file: string) => string;
-}) => Promise<{
+type InitSqlJs = (opts?: { locateFile?: (file: string) => string }) => Promise<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Database: new (data?: ArrayLike<number> | Buffer) => any;
 }>;
@@ -349,7 +349,9 @@ async function maybeGunzip(data: Uint8Array): Promise<ArrayBuffer> {
   if (typeof DecompressionStream === 'undefined') {
     return plain;
   }
-  const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream('gzip'));
+  const stream = new Blob([data])
+    .stream()
+    .pipeThrough(new DecompressionStream('gzip'));
   return new Response(stream).arrayBuffer();
 }
 
@@ -385,19 +387,16 @@ export async function openMbtilesFromBuffer(
 function tileKindFromPmtilesTileType(
   tileType: number | undefined,
 ): VectorTileArchiveTileKind {
-  if (
-    tileType === 2 ||
-    tileType === 3 ||
-    tileType === 4 ||
-    tileType === 5
-  ) {
+  if (tileType === 2 || tileType === 3 || tileType === 4 || tileType === 5) {
     return 'raster';
   }
   // Unknown / missing / mvt → vector (CreateControl needs paint layers).
   return 'vector';
 }
 
-function formatFromPmtilesTileType(tileType: number | undefined): string | undefined {
+function formatFromPmtilesTileType(
+  tileType: number | undefined,
+): string | undefined {
   switch (tileType) {
     case 1:
       return 'mvt';
@@ -447,12 +446,7 @@ async function openPmtilesInstance(
     format,
     minzoom: header.minZoom,
     maxzoom: header.maxZoom,
-    bounds: [
-      header.minLon,
-      header.minLat,
-      header.maxLon,
-      header.maxLat,
-    ],
+    bounds: [header.minLon, header.minLat, header.maxLon, header.maxLat],
     sourceLayers: tileKind === 'vector' ? sourceLayers : [],
     sourceLayerInfos: tileKind === 'vector' ? sourceLayerInfos : [],
     sourceLayer: tileKind === 'vector' ? sourceLayers[0] : undefined,
@@ -486,7 +480,9 @@ export async function openPmtilesFromBuffer(
 ): Promise<VectorTileOpenResult> {
   const { PMTiles, FileSource } = await loadPMTiles();
   const blob =
-    buffer instanceof Blob ? buffer : new Blob([buffer], { type: 'application/vnd.pmtiles' });
+    buffer instanceof Blob
+      ? buffer
+      : new Blob([buffer], { type: 'application/vnd.pmtiles' });
   const file = new File([blob], `${archiveId}.pmtiles`, {
     type: 'application/vnd.pmtiles',
   });
@@ -530,9 +526,7 @@ export async function getArchiveTile(
     const cell = result[0]?.values?.[0]?.[0];
     if (!cell) return null;
     const bytes =
-      cell instanceof Uint8Array
-        ? cell
-        : new Uint8Array(cell as ArrayBuffer);
+      cell instanceof Uint8Array ? cell : new Uint8Array(cell as ArrayBuffer);
     return maybeGunzip(bytes);
   }
 

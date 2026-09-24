@@ -1,5 +1,6 @@
-import { MAP_STORE_KEY } from './constants';
 import { loggerFactory } from '@hungpvq/shared-log';
+
+import { MAP_STORE_KEY } from './constants';
 
 /** Domain logger for map language / locale store (`map:lang`). */
 export const mapLangLogger = loggerFactory

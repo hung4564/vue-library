@@ -1,14 +1,15 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
-  Ref,
   markRaw,
+  type MaybeRefOrGetter,
   onMounted,
   onUnmounted,
+  Ref,
   ref,
   toValue,
   watch,
-  type MaybeRefOrGetter,
 } from 'vue';
+
 import { useBottomItem, useDragItem } from '../store';
 
 function rawCard(component: unknown) {

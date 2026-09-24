@@ -8,6 +8,7 @@ import {
   toPlainJson,
 } from '@hungpvq/map-core';
 import type { Feature, FeatureCollection, GeoJSON, Geometry } from 'geojson';
+
 import { createMenuItemAttributeTable } from '../attribute-table/menu';
 import type { FieldFeaturesDef } from '../extra/field';
 import { createMenuItemExportGeo } from '../geo-export';
@@ -37,8 +38,8 @@ import { ensureGeojsonFeatureIds, GEOJSON_FEATURE_ID_KEY } from './feature-id';
 import {
   detectGeojsonStyleTypes,
   GEOJSON_STYLE_AUTO,
-  isGeojsonStyleAuto,
   type GeojsonStyleMode,
+  isGeojsonStyleAuto,
 } from './geojson-parse';
 import { createDatasetPartGeojsonSourceComponent } from './source';
 
@@ -402,9 +403,7 @@ export function createGeoJsonLayersDataset(
     if (box) layerBboxes.push(box);
   }
   const parentBbox =
-    data.bbox === null
-      ? undefined
-      : (data.bbox ?? unionBboxes(layerBboxes));
+    data.bbox === null ? undefined : (data.bbox ?? unionBboxes(layerBboxes));
 
   if (parentBbox) {
     dataset.add(createDatasetPartBoundComponent(data.name, parentBbox));
@@ -446,7 +445,7 @@ export function splitGeojsonByGdbLayer(
   if (!geojson || typeof geojson !== 'object') return [];
   const features: Feature[] =
     geojson.type === 'FeatureCollection'
-      ? geojson.features ?? []
+      ? (geojson.features ?? [])
       : geojson.type === 'Feature'
         ? [geojson]
         : [];
@@ -455,8 +454,7 @@ export function splitGeojsonByGdbLayer(
   const buckets = new Map<string, Feature[]>();
   for (const feature of features) {
     const raw = feature.properties?.['__gdb_layer'];
-    const name =
-      typeof raw === 'string' && raw.trim() ? raw.trim() : 'layer';
+    const name = typeof raw === 'string' && raw.trim() ? raw.trim() : 'layer';
     const list = buckets.get(name);
     if (list) list.push(feature);
     else buckets.set(name, [feature]);
@@ -467,4 +465,3 @@ export function splitGeojsonByGdbLayer(
     geojson: { type: 'FeatureCollection', features: feats },
   }));
 }
-

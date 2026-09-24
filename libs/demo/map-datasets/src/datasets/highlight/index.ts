@@ -32,9 +32,7 @@ import { demoLine, demoPoint, demoPolygon } from '../../fixtures/geojson';
 import { registerFactoryViewSource } from '../data-management/view-source-registry';
 import { createDatasetCustomHighlightComponent } from './helper';
 
-const logger = loggerFactory
-  .createLogger()
-  .setNamespace('demo:highlight', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:highlight', 2);
 
 const DEMO_DETAIL_FIELDS = [
   { text: 'Id', value: 'id' },
@@ -248,7 +246,10 @@ function createHighlightWithPropertyName() {
     name: 'Highlight with Property Name',
     listName: 'Default + filterCreator "code"',
     features: [
-      demoPoint([105.8892014954, 20.743262715], { code: 'P001', name: 'Point 1' }),
+      demoPoint([105.8892014954, 20.743262715], {
+        code: 'P001',
+        name: 'Point 1',
+      }),
       demoLine(
         [
           [105.7804053203, 20.5274626545],
@@ -523,8 +524,16 @@ function createHighlightByClickedCategory() {
     listName: 'Default + filterCreator(feature)',
     color: '#2A9D8F',
     features: [
-      demoPoint([105.72, 21.05], { id: '1', category: 'A', name: 'Category A point' }),
-      demoPoint([105.8, 21.08], { id: '2', category: 'A', name: 'Category A point 2' }),
+      demoPoint([105.72, 21.05], {
+        id: '1',
+        category: 'A',
+        name: 'Category A point',
+      }),
+      demoPoint([105.8, 21.08], {
+        id: '2',
+        category: 'A',
+        name: 'Category A point 2',
+      }),
       demoLine(
         [
           [105.65, 21.0],
@@ -595,8 +604,16 @@ function createFeatureStateHighlightWithGroup() {
     color: '#9B5DE5',
     promoteId: 'id',
     features: [
-      demoPoint([106.22, 21.05], { id: 'g-1', group: 'alpha', name: 'Group A point' }),
-      demoPoint([106.28, 21.08], { id: 'g-2', group: 'alpha', name: 'Group A point 2' }),
+      demoPoint([106.22, 21.05], {
+        id: 'g-1',
+        group: 'alpha',
+        name: 'Group A point',
+      }),
+      demoPoint([106.28, 21.08], {
+        id: 'g-2',
+        group: 'alpha',
+        name: 'Group A point 2',
+      }),
       demoLine(
         [
           [106.18, 20.98],

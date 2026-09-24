@@ -131,9 +131,7 @@ function FlowNode({
         closers: [] as RequestFlowTreeNode[],
         after: [] as RequestFlowTreeNode[],
       };
-  const canToggle = isFrame
-    ? body.length > 0
-    : node.children.length > 0;
+  const canToggle = isFrame ? body.length > 0 : node.children.length > 0;
 
   const twist = canToggle ? (
     <button
@@ -159,9 +157,7 @@ function FlowNode({
           ? ' log-request-flow__frame--open'
           : ''
       }${
-        isFrame && closers.length > 0
-          ? ' log-request-flow__frame--has-end'
-          : ''
+        isFrame && closers.length > 0 ? ' log-request-flow__frame--has-end' : ''
       }`}
       style={{ ['--flow-depth' as string]: String(depth) }}
     >
@@ -261,8 +257,7 @@ export function LogRequestFlowModal({
     setLocalId(null);
   }, [show, actionId]);
 
-  const selected =
-    matched.find((l) => l.id === localId) ?? matched[0] ?? null;
+  const selected = matched.find((l) => l.id === localId) ?? matched[0] ?? null;
   const title = `Action flow · ${shortActionId(actionId)}`;
   const nodes = matched.length;
   const displayNodes = viewMode === 'tree' ? tree : flatNodes;

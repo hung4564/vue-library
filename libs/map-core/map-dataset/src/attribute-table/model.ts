@@ -1,5 +1,6 @@
 import { runMapControlAction } from '@hungpvq/map-core';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
+
 import { GEOJSON_FEATURE_ID_KEY } from '../geojson/feature-id';
 
 export const ATTRIBUTE_TABLE_GEOMETRY_KEY = '__geometry';
@@ -127,7 +128,9 @@ export function takePendingAttributeTableSelectRows(
   mapId: string,
   layerId?: string,
 ): string[] | null {
-  const keyed = pendingSelectRowsByKey.get(pendingSelectRowsKey(mapId, layerId));
+  const keyed = pendingSelectRowsByKey.get(
+    pendingSelectRowsKey(mapId, layerId),
+  );
   if (keyed) return keyed;
   // Legacy queue without layerId (pre-per-layer key).
   if (layerId) return pendingSelectRowsByKey.get(mapId) ?? null;
@@ -154,10 +157,7 @@ export type AttributeTableColumn = {
   /** Default true. When false, header is not sortable. */
   sortable?: boolean;
   /** Format raw property/geometry value into the display string in `row.cells`. */
-  format?: (
-    value: unknown,
-    ctx: AttributeTableCellFormatContext,
-  ) => string;
+  format?: (value: unknown, ctx: AttributeTableCellFormatContext) => string;
   /**
    * Custom cell: Registry `componentKey` (`string`) or a Vue/React component.
    * Grid resolves via `RegistryItem`.
@@ -233,7 +233,9 @@ export function resolveAttributeTableComponentRef(value: unknown): {
   return { defaultComponent: value };
 }
 
-function normalizeColumnDef(item: AttributeTableColumnDef): AttributeTableColumn {
+function normalizeColumnDef(
+  item: AttributeTableColumnDef,
+): AttributeTableColumn {
   if (typeof item === 'string') {
     return { key: item, label: item, sortable: true };
   }

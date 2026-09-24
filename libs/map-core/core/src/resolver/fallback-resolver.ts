@@ -38,9 +38,7 @@ export class FallbackResolver<TContext> {
   /**
    * Chạy khi không action nào phù hợp hoặc đều lỗi.
    */
-  setFallback(
-    fallback: (context: TContext) => void | Promise<void>,
-  ): this {
+  setFallback(fallback: (context: TContext) => void | Promise<void>): this {
     this.fallback = fallback;
     return this;
   }

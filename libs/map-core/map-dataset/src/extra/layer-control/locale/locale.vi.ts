@@ -35,8 +35,7 @@ export const LAYER_CONTROL_CREATE_LOCALE_VI = {
   'file-drop': 'Thả tệp vào đây hoặc bấm để chọn',
   parsing: 'Đang đọc tệp…',
   'parse-error': 'Không đọc được tệp này',
-  'crs-mismatch':
-    'CRS tệp khác CRS đã chọn; dữ liệu sẽ được chuyển hệ.',
+  'crs-mismatch': 'CRS tệp khác CRS đã chọn; dữ liệu sẽ được chuyển hệ.',
   'multi-file-error':
     'Thả một tệp GIS, bộ shapefile (.shp + sidecar / .zip), hoặc nhiều GeoJSON/KML/GPX.',
   creating: 'Đang tạo lớp…',

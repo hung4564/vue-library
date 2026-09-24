@@ -1,4 +1,5 @@
 import type { FillLayerSpecification } from 'maplibre-gl';
+
 import type { LayerTypeConfig } from './style';
 
 export const FILL_CONFIG: LayerTypeConfig<FillLayerSpecification> = {

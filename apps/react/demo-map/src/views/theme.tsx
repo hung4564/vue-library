@@ -1,11 +1,13 @@
-﻿import { BaseMapControl, Map, ThemeControl } from '@hungpvq/react-map-core';
+import './theme.css';
+
+import { BaseMapControl, Map, ThemeControl } from '@hungpvq/react-map-core';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useEffect, useState } from 'react';
+
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import './theme.css';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 function readTokens() {
   const style = getComputedStyle(document.documentElement);

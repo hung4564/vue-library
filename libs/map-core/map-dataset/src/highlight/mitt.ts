@@ -1,9 +1,10 @@
 import { ensureMapMitt } from '@hungpvq/map-core';
+
 import {
   clearHighlight,
+  type HighlightSessionIntent,
   onDetailClose,
   onIdentifyClose,
-  type HighlightSessionIntent,
 } from '../identify/highlight-session';
 import type { IDataset } from '../interfaces/dataset.base';
 
@@ -20,9 +21,7 @@ export const MAP_DATASET_EVENT = {
 } as const;
 
 export type HighlightClearTarget =
-  | HighlightSessionIntent
-  | { featureId: string | number }
-  | 'identify-session';
+  HighlightSessionIntent | { featureId: string | number } | 'identify-session';
 
 /** Shared close payload — hosts attach `mapId` + `dataset` when known. */
 export type MapDatasetClosePayload = {

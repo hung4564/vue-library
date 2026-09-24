@@ -6,21 +6,22 @@ import {
   ATTRIBUTE_TABLE_COLUMN_FILTER_MODES,
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
   ATTRIBUTE_TABLE_ROW_HEIGHT,
+  type AttributeTableColumnFilterMode,
+  type AttributeTableGridProps,
+  type AttributeTablePagerProps,
+  type AttributeTableToolbarProps,
+  type AttributeTableViewProps,
   formatAttributeTableSelectionStatus,
   getAttributeTableColumnFilterMode,
   getAttributeTableColumnFilterQuery,
   getVirtualRowWindow,
   resolveAttributeTableUi,
   resolveAttributeTableVisibleColumns,
-  type AttributeTableColumnFilterMode,
-  type AttributeTableGridProps,
-  type AttributeTablePagerProps,
-  type AttributeTableToolbarProps,
-  type AttributeTableViewProps,
 } from '@hungpvq/map-dataset/attribute-table';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { RegistryItem } from '@hungpvq/vue-map-core';
 import { computed, ref, watch } from 'vue';
+
 import AttributeTableGrid from './AttributeTableGrid.vue';
 import AttributeTablePager from './AttributeTablePager.vue';
 import AttributeTableToolbar from './AttributeTableToolbar.vue';
@@ -128,10 +129,11 @@ watch(
 );
 
 watch(
-  () => [
-    toolbarColumnKey.value,
-    state.value.columnFilters[toolbarColumnKey.value],
-  ] as const,
+  () =>
+    [
+      toolbarColumnKey.value,
+      state.value.columnFilters[toolbarColumnKey.value],
+    ] as const,
   () => {
     const key = toolbarColumnKey.value;
     if (!key) {
@@ -203,161 +205,160 @@ const selectionStatusText = computed(() =>
   ),
 );
 
-function applyColumnFilter(key: string, query: string, mode: AttributeTableColumnFilterMode) {
+function applyColumnFilter(
+  key: string,
+  query: string,
+  mode: AttributeTableColumnFilterMode,
+) {
   props.controller.setColumnFilter(key, query, { mode });
 }
 
-const toolbarProps = computed(
-  (): AttributeTableToolbarProps => ({
-    mapId: props.mapId,
-    query: state.value.search,
-    searchPlaceholder: props.labels.search,
-    searchLabel: props.labels.search,
-    zoomDisabled: state.value.selectedIds.length === 0,
-    zoomLabel: props.labels.zoomToSelection,
-    rowFilter: state.value.rowFilter,
-    filterItems: filterItems.value,
-    rowFilterLabel: props.labels.rowFilter,
-    columnFilterItems: columnFilterItems.value,
-    columnFilterKey: toolbarColumnKey.value,
-    columnFilterQuery: getAttributeTableColumnFilterQuery(
-      state.value.columnFilters[toolbarColumnKey.value],
-    ),
-    columnFilterLabel: props.labels.columnFilter,
-    columnFilterQueryPlaceholder: queryPlaceholder(toolbarColumnMode.value),
-    clearColumnFilterLabel: props.labels.clearColumnFilter,
-    columnFilterMode: toolbarColumnMode.value,
-    columnFilterModeItems: columnFilterModeItems.value,
-    columnFilterModeLabel: props.labels.columnFilterMode,
-    columnVisibilityItems: columnFilterItems.value,
-    visibleColumnKeys: state.value.visibleColumnKeys ?? [],
-    columnVisibilityAll: state.value.visibleColumnKeys == null,
-    columnVisibilityLabel: props.labels.columnsVisibility,
-    columnsShowAllLabel: props.labels.columnsShowAll,
-    clearLabel: props.labels.clear,
-    clearDisabled: state.value.selectedIds.length === 0,
-    exportLabel: props.labels.export,
-    exportFormats: props.exportFormats,
-    ui: ui.value,
-    onQueryChange: (value) => props.controller.setSearch(value),
-    onZoomToSelection: () => props.onZoomToSelection?.(),
-    onRowFilterChange: (value) => props.controller.setRowFilter(value),
-    onColumnFilterKeyChange: (key) => {
-      toolbarColumnKey.value = key;
-    },
-    onColumnFilterQueryChange: (value) => {
-      const key = toolbarColumnKey.value;
-      if (!key) return;
-      applyColumnFilter(key, value, toolbarColumnMode.value);
-    },
-    onColumnFilterModeChange: (mode) => {
-      const next = (ATTRIBUTE_TABLE_COLUMN_FILTER_MODES.includes(
+const toolbarProps = computed((): AttributeTableToolbarProps => ({
+  mapId: props.mapId,
+  query: state.value.search,
+  searchPlaceholder: props.labels.search,
+  searchLabel: props.labels.search,
+  zoomDisabled: state.value.selectedIds.length === 0,
+  zoomLabel: props.labels.zoomToSelection,
+  rowFilter: state.value.rowFilter,
+  filterItems: filterItems.value,
+  rowFilterLabel: props.labels.rowFilter,
+  columnFilterItems: columnFilterItems.value,
+  columnFilterKey: toolbarColumnKey.value,
+  columnFilterQuery: getAttributeTableColumnFilterQuery(
+    state.value.columnFilters[toolbarColumnKey.value],
+  ),
+  columnFilterLabel: props.labels.columnFilter,
+  columnFilterQueryPlaceholder: queryPlaceholder(toolbarColumnMode.value),
+  clearColumnFilterLabel: props.labels.clearColumnFilter,
+  columnFilterMode: toolbarColumnMode.value,
+  columnFilterModeItems: columnFilterModeItems.value,
+  columnFilterModeLabel: props.labels.columnFilterMode,
+  columnVisibilityItems: columnFilterItems.value,
+  visibleColumnKeys: state.value.visibleColumnKeys ?? [],
+  columnVisibilityAll: state.value.visibleColumnKeys == null,
+  columnVisibilityLabel: props.labels.columnsVisibility,
+  columnsShowAllLabel: props.labels.columnsShowAll,
+  clearLabel: props.labels.clear,
+  clearDisabled: state.value.selectedIds.length === 0,
+  exportLabel: props.labels.export,
+  exportFormats: props.exportFormats,
+  ui: ui.value,
+  onQueryChange: (value) => props.controller.setSearch(value),
+  onZoomToSelection: () => props.onZoomToSelection?.(),
+  onRowFilterChange: (value) => props.controller.setRowFilter(value),
+  onColumnFilterKeyChange: (key) => {
+    toolbarColumnKey.value = key;
+  },
+  onColumnFilterQueryChange: (value) => {
+    const key = toolbarColumnKey.value;
+    if (!key) return;
+    applyColumnFilter(key, value, toolbarColumnMode.value);
+  },
+  onColumnFilterModeChange: (mode) => {
+    const next = (
+      ATTRIBUTE_TABLE_COLUMN_FILTER_MODES.includes(
         mode as AttributeTableColumnFilterMode,
       )
         ? mode
-        : 'contains') as AttributeTableColumnFilterMode;
-      toolbarColumnMode.value = next;
-      const key = toolbarColumnKey.value;
-      if (!key) return;
-      const query = getAttributeTableColumnFilterQuery(
-        state.value.columnFilters[key],
-      );
-      if (query.trim() || next === 'number_between') {
-        applyColumnFilter(key, query, next);
-      }
-    },
-    onClearColumnFilters: () => props.controller.clearColumnFilters(),
-    onVisibleColumnKeysChange: (keys) =>
-      props.controller.setVisibleColumnKeys(keys),
-    onShowAllColumns: () => props.controller.showAllColumns(),
-    onClearSelection: () => props.controller.clearSelection(),
-    onExport: props.onExport,
-    onExportFormat: props.onExportFormat,
-  }),
-);
+        : 'contains'
+    ) as AttributeTableColumnFilterMode;
+    toolbarColumnMode.value = next;
+    const key = toolbarColumnKey.value;
+    if (!key) return;
+    const query = getAttributeTableColumnFilterQuery(
+      state.value.columnFilters[key],
+    );
+    if (query.trim() || next === 'number_between') {
+      applyColumnFilter(key, query, next);
+    }
+  },
+  onClearColumnFilters: () => props.controller.clearColumnFilters(),
+  onVisibleColumnKeysChange: (keys) =>
+    props.controller.setVisibleColumnKeys(keys),
+  onShowAllColumns: () => props.controller.showAllColumns(),
+  onClearSelection: () => props.controller.clearSelection(),
+  onExport: props.onExport,
+  onExportFormat: props.onExportFormat,
+}));
 
-const pagerProps = computed(
-  (): AttributeTablePagerProps => ({
-    mapId: props.mapId,
-    page: state.value.page,
-    totalPages: props.controller.getTotalPages(),
-    pageSize: state.value.pageSize,
-    total: state.value.total,
-    loading: state.value.loading,
-    canPrev: props.controller.canPrev(),
-    canNext: props.controller.canNext(),
-    onPrev: () => {
-      void props.controller.goPrev();
-    },
-    onNext: () => {
-      void props.controller.goNext();
-    },
-    onPageSizeChange: (size) => {
-      void props.controller.setPageSize(size);
-    },
-    pageSizeItems: props.pageSizeItems.length
-      ? props.pageSizeItems
-      : [...ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS],
-    pageLabel: props.labels.page,
-    ofLabel: props.labels.of,
-    prevLabel: props.labels.prev,
-    nextLabel: props.labels.next,
-    rowsPerPageLabel: props.labels.rowsPerPage,
-  }),
-);
+const pagerProps = computed((): AttributeTablePagerProps => ({
+  mapId: props.mapId,
+  page: state.value.page,
+  totalPages: props.controller.getTotalPages(),
+  pageSize: state.value.pageSize,
+  total: state.value.total,
+  loading: state.value.loading,
+  canPrev: props.controller.canPrev(),
+  canNext: props.controller.canNext(),
+  onPrev: () => {
+    void props.controller.goPrev();
+  },
+  onNext: () => {
+    void props.controller.goNext();
+  },
+  onPageSizeChange: (size) => {
+    void props.controller.setPageSize(size);
+  },
+  pageSizeItems: props.pageSizeItems.length
+    ? props.pageSizeItems
+    : [...ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS],
+  pageLabel: props.labels.page,
+  ofLabel: props.labels.of,
+  prevLabel: props.labels.prev,
+  nextLabel: props.labels.next,
+  rowsPerPageLabel: props.labels.rowsPerPage,
+}));
 
-const gridProps = computed(
-  (): AttributeTableGridProps => ({
-    mapId: props.mapId,
-    loading: state.value.loading,
-    empty: visibleRows.value.length === 0,
-    loadingLabel: props.labels.loading,
-    emptyLabel: props.labels.empty,
-    tableLabel: tableLabel.value,
-    gridRegionLabel: props.labels.gridRegion,
-    selectAllLabel: props.labels.selectAll,
-    selectRowLabel: props.labels.selectRow,
-    actionsColumnLabel: props.labels.actionsColumn,
-    sortedAscLabel: props.labels.sortedAsc,
-    sortedDescLabel: props.labels.sortedDesc,
-    notSortedLabel: props.labels.notSorted,
-    columnFilterForLabel: props.labels.columnFilterFor,
-    columns: displayColumns.value,
-    windowedRows: windowedRows.value,
-    sortStates: state.value.sortStates,
-    columnFilters: columnFilterQueries.value,
-    selectedIds: selectedSet.value,
-    allVisibleSelected: allVisibleSelected.value,
-    checkbox: ui.value.checkbox,
-    columnFilter: ui.value.columnFilter,
-    sort: ui.value.sort,
-    rowHeight: ATTRIBUTE_TABLE_ROW_HEIGHT,
-    virtualWindow: virtualWindow.value,
-    bottomSpacerHeight: bottomSpacerHeight.value,
-    itemMenus: ui.value.rowMenus ? props.itemMenus : [],
-    itemMenuHost: props.itemMenuHost,
-    isMenuDisabled: props.isMenuDisabled,
-    onScrollMetrics: (top, height) => {
-      if (scrollTop.value !== top) scrollTop.value = top;
-      if (viewportHeight.value !== height) viewportHeight.value = height;
-    },
-    onSortColumn: (key, shiftKey) =>
-      props.controller.toggleSort(key, shiftKey),
-    onColumnFilterChange: (key, query) => {
-      const mode = getAttributeTableColumnFilterMode(
-        state.value.columnFilters[key],
-      );
-      applyColumnFilter(key, query, mode);
-    },
-    onToggleSelectAll: () => {
-      void props.controller.toggleSelectAll(visibleRows.value);
-    },
-    onToggleRow: (row) => {
-      void props.controller.toggleRow(row);
-    },
-    onRowMenuAction: props.onRowMenuAction,
-  }),
-);
+const gridProps = computed((): AttributeTableGridProps => ({
+  mapId: props.mapId,
+  loading: state.value.loading,
+  empty: visibleRows.value.length === 0,
+  loadingLabel: props.labels.loading,
+  emptyLabel: props.labels.empty,
+  tableLabel: tableLabel.value,
+  gridRegionLabel: props.labels.gridRegion,
+  selectAllLabel: props.labels.selectAll,
+  selectRowLabel: props.labels.selectRow,
+  actionsColumnLabel: props.labels.actionsColumn,
+  sortedAscLabel: props.labels.sortedAsc,
+  sortedDescLabel: props.labels.sortedDesc,
+  notSortedLabel: props.labels.notSorted,
+  columnFilterForLabel: props.labels.columnFilterFor,
+  columns: displayColumns.value,
+  windowedRows: windowedRows.value,
+  sortStates: state.value.sortStates,
+  columnFilters: columnFilterQueries.value,
+  selectedIds: selectedSet.value,
+  allVisibleSelected: allVisibleSelected.value,
+  checkbox: ui.value.checkbox,
+  columnFilter: ui.value.columnFilter,
+  sort: ui.value.sort,
+  rowHeight: ATTRIBUTE_TABLE_ROW_HEIGHT,
+  virtualWindow: virtualWindow.value,
+  bottomSpacerHeight: bottomSpacerHeight.value,
+  itemMenus: ui.value.rowMenus ? props.itemMenus : [],
+  itemMenuHost: props.itemMenuHost,
+  isMenuDisabled: props.isMenuDisabled,
+  onScrollMetrics: (top, height) => {
+    if (scrollTop.value !== top) scrollTop.value = top;
+    if (viewportHeight.value !== height) viewportHeight.value = height;
+  },
+  onSortColumn: (key, shiftKey) => props.controller.toggleSort(key, shiftKey),
+  onColumnFilterChange: (key, query) => {
+    const mode = getAttributeTableColumnFilterMode(
+      state.value.columnFilters[key],
+    );
+    applyColumnFilter(key, query, mode);
+  },
+  onToggleSelectAll: () => {
+    void props.controller.toggleSelectAll(visibleRows.value);
+  },
+  onToggleRow: (row) => {
+    void props.controller.toggleRow(row);
+  },
+  onRowMenuAction: props.onRowMenuAction,
+}));
 
 watch(
   () => [state.value.page, state.value.pageSize] as const,
@@ -369,11 +370,7 @@ watch(
 
 <template>
   <div class="attribute-table">
-    <div
-      class="attribute-table__sr-only"
-      role="status"
-      aria-live="polite"
-    >
+    <div class="attribute-table__sr-only" role="status" aria-live="polite">
       {{ selectionStatusText }}
     </div>
     <RegistryItem

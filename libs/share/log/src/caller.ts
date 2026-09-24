@@ -31,8 +31,7 @@ export function captureLogCallerSite(
       line.match(/at\s+(?:async\s+)?(\S+?)\s+\((.+?):(\d+):\d+\)/) ||
       line.match(/([^@\s]+)@(.+?):(\d+):\d+/);
     const pathOnly =
-      line.match(/at\s+(.+?):(\d+):\d+/) ||
-      line.match(/\((.+?):(\d+):\d+\)/);
+      line.match(/at\s+(.+?):(\d+):\d+/) || line.match(/\((.+?):(\d+):\d+\)/);
 
     let fnName: string | undefined;
     let rawPath: string | undefined;
@@ -67,7 +66,12 @@ export function captureLogCallerSite(
 
 function cleanFnName(raw: string): string | undefined {
   let name = raw.trim();
-  if (!name || name === 'Object' || name === 'anonymous' || name === '<anonymous>') {
+  if (
+    !name ||
+    name === 'Object' ||
+    name === 'anonymous' ||
+    name === '<anonymous>'
+  ) {
     return undefined;
   }
   // Object.foo / Module.foo / Proxy.foo → foo (keep nested Foo.bar)

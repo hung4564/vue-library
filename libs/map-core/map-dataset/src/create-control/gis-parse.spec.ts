@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   asGisFeatureCollection,
   parseGisText,
@@ -60,9 +61,9 @@ describe('parseGisText', () => {
   });
 
   it('throws when strict is true and input is invalid', () => {
-    expect(() =>
-      parseGisText('not-valid-gis{{{', { strict: true }),
-    ).toThrow(/Unsupported or invalid GIS data/);
+    expect(() => parseGisText('not-valid-gis{{{', { strict: true })).toThrow(
+      /Unsupported or invalid GIS data/,
+    );
   });
 
   it('throws by default (strict) on invalid GeoJSON object', () => {

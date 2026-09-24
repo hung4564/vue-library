@@ -1,10 +1,18 @@
 import type { MapSimple } from '@hungpvq/map-core';
-import type { IDataset, IListViewUI, WithSetOpacity } from '@hungpvq/map-dataset';
-import { isHasSetOpacity, runAllComponentsWithCheck } from '@hungpvq/map-dataset';
+import type {
+  IDataset,
+  IListViewUI,
+  WithSetOpacity,
+} from '@hungpvq/map-dataset';
+import {
+  isHasSetOpacity,
+  runAllComponentsWithCheck,
+} from '@hungpvq/map-dataset';
+import type { WithLayerItemActionType } from '@hungpvq/map-dataset/menu';
 import { useMap } from '@hungpvq/react-map-core';
 import { useEffect, useState } from 'react';
+
 import { LayerItemSlider } from './layer-item-slider';
-import type { WithLayerItemActionType } from '@hungpvq/map-dataset/menu';
 
 export function SetOpacity(props: WithLayerItemActionType) {
   const { callMap } = useMap(props);
@@ -21,7 +29,8 @@ export function SetOpacity(props: WithLayerItemActionType) {
     callMap((map: MapSimple) => {
       runAllComponentsWithCheck(
         parent,
-        (dataset): dataset is IDataset & WithSetOpacity => isHasSetOpacity(dataset),
+        (dataset): dataset is IDataset & WithSetOpacity =>
+          isHasSetOpacity(dataset),
         [(dataset) => dataset.setOpacity(map, opacity)],
       );
     });
@@ -43,4 +52,3 @@ export function SetOpacity(props: WithLayerItemActionType) {
     </div>
   );
 }
-

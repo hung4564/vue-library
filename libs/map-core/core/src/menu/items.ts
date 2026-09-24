@@ -7,8 +7,8 @@ import {
   mdiMagnifyPlusOutline,
   mdiTarget,
 } from '@mdi/js';
+
 import { UniversalRegistry } from '../registry/universal-registry';
-import { createMenuItemsAddGeojsonHere } from './add-geojson-here';
 import {
   centerMapHere,
   copyMapPointAsGeojson,
@@ -19,6 +19,7 @@ import {
   openGoogleMaps,
   zoomInMapHere,
 } from './actions';
+import { createMenuItemsAddGeojsonHere } from './add-geojson-here';
 import { createMapMenuBuilder } from './builder';
 import type { MapContextMenuItem } from './types';
 import { MAP_CONTEXT_MENU_ID } from './types';

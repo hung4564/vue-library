@@ -1,22 +1,23 @@
-﻿import {
+import './worker-sample.css';
+
+import {
   BaseMapControl,
   HomeControl,
   Map,
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useEffect, useState } from 'react';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import {
   runSampleSumRange,
   terminateSampleWorker,
 } from '../workers/sample-worker.client';
-import './worker-sample.css';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function WorkerSamplePage() {
   const [from, setFrom] = useState(1);

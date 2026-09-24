@@ -22,10 +22,9 @@
       </svg>
     </template>
 
-    <span
-      v-else-if="option.text"
-      class="map-common-button__text"
-    >{{ option.text }}</span>
+    <span v-else-if="option.text" class="map-common-button__text">{{
+      option.text
+    }}</span>
 
     <SvgIcon
       v-else-if="option.icon?.type === 'mdi'"
@@ -39,6 +38,7 @@
 <script setup lang="ts">
 import { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 import SvgIcon from '@jamescoyle/vue-icon';
+
 import MapControlButton from './MapControlButton.vue';
 defineProps<{ option: MapControlButtonUIState }>();
 defineOptions({

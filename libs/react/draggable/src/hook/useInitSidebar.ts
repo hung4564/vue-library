@@ -1,7 +1,8 @@
+import type { LocationSideBar } from '@hungpvq/draggable';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
+
 import { useSidebarItem } from '../store';
-import type { LocationSideBar } from '@hungpvq/draggable';
 
 export function useInitSidebar(
   containerId: string,
@@ -14,9 +15,7 @@ export function useInitSidebar(
   },
   stableId?: string,
 ) {
-  const [itemId] = useState(
-    () => stableId || `draggable-item-${getUUIDv4()}`,
-  );
+  const [itemId] = useState(() => stableId || `draggable-item-${getUUIDv4()}`);
   const [zIndex, setZIndexState] = useState(0);
 
   function setZIndex(value: number) {

@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from 'vitest';
 import type { MapSimple } from '@hungpvq/map-core';
+import { describe, expect, it, vi } from 'vitest';
+
 import { createWithEventHelper } from '../extra/event/model';
-import { setOpacity, toggleShow } from './dataset.extra';
 import type { IDataset } from './dataset.base';
+import { setOpacity, toggleShow } from './dataset.extra';
 
 describe('dataset.extra list UI emits', () => {
   it('toggleShow emits show + dataset + mapId from map.id', () => {

@@ -1,6 +1,7 @@
 import type { IDataset } from '@hungpvq/map-dataset';
 import { isComposite } from '@hungpvq/map-dataset';
 import { findRoot } from '@hungpvq/map-dataset';
+
 import type { DatasetNodeSummary, DatasetTreeNode } from './types';
 
 function summary(node: IDataset): DatasetNodeSummary {

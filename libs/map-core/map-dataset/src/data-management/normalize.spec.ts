@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { toFeatureCollection } from '../utils/feature-collection';
 import {
   normalizeInitData,

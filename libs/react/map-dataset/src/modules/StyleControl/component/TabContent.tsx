@@ -1,8 +1,8 @@
-import { copyByJson } from '@hungpvq/shared';
-import { MapControlButton } from '@hungpvq/react-map-core';
-
-import type { ComponentType } from 'react';
 import type { Tab } from '@hungpvq/map-dataset/style';
+import { MapControlButton } from '@hungpvq/react-map-core';
+import { copyByJson } from '@hungpvq/shared';
+import type { ComponentType } from 'react';
+
 import type { TransFn } from '../style/type/tab-utils';
 import { resolveTabProps, toReactFieldProps } from '../style/type/tab-utils';
 
@@ -80,7 +80,9 @@ export function TabContent({
           <MapControlButton
             onClick={onSetDefaultValue}
             disabled={form == null || form === default_value}
-            className="map-button text-center full-width" variant="text">
+            className="map-button text-center full-width"
+            variant="text"
+          >
             {trans('map.style-control.back-to-default')}
           </MapControlButton>
         </div>

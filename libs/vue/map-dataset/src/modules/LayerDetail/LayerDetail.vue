@@ -5,10 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import {
-  type FieldFeaturesDef,
-  type IDataset,
-} from '@hungpvq/map-dataset';
+import { type FieldFeaturesDef, type IDataset } from '@hungpvq/map-dataset';
 import {
   bindHighlightMittBridge,
   emitHighlightDetailClose,
@@ -27,6 +24,7 @@ import {
   useRegisterMapControl,
 } from '@hungpvq/vue-map-core';
 import { computed, ref, watch } from 'vue';
+
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 import TableTdLayer from './table-td-layer.vue';

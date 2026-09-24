@@ -1,6 +1,4 @@
 ﻿<script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { DataManagementPart } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
@@ -16,10 +14,13 @@ import {
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { reactive, ref } from 'vue';
+
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { loadDataManagementDemoDatasets } from '../../data/loaders';
 import AsideControl from '../../layout/aside-control.vue';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 const mapId = ref(getUUIDv4());
 

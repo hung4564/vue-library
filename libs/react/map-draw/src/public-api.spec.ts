@@ -2,6 +2,7 @@
  * Locks `@hungpvq/react-map-draw` root **runtime** export surface.
  */
 import { describe, expect, it } from 'vitest';
+
 import * as api from './index';
 
 export const REACT_MAP_DRAW_STABLE_RUNTIME_EXPORTS = [

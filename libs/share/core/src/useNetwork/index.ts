@@ -2,6 +2,7 @@
 
 import type { Ref } from 'vue';
 import { ref } from 'vue';
+
 import type { ConfigurableWindow } from '../_configurable';
 import { defaultWindow } from '../_configurable';
 import { useEventListener } from '../useEventListener';

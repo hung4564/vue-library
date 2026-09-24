@@ -2,15 +2,17 @@ import {
   applyCreateControlLayerName,
   assertCreateControlFileSize,
   buildCreateControlLoadedMetaChips,
-  createControlGeojsonPreviewPatch,
-  createControlLoadedSourceEyebrowKey,
+  collectFilesFromDataTransfer,
   CREATE_CONTROL_DEFAULT_DATA_TAB,
   CREATE_CONTROL_SAMPLE_NONE,
-  collectFilesFromDataTransfer,
+  type CreateControlDataTab,
+  createControlGeojsonPreviewPatch,
+  type CreateControlLoadedSource,
+  createControlLoadedSourceEyebrowKey,
   formatCreateControlParseStatus,
-  GIS_FILE_ACCEPT,
   getCreateControlDataTabs,
   getCreateControlSamples,
+  GIS_FILE_ACCEPT,
   loadCreateControlVectorFromUrl,
   looksCompleteGis,
   parseCreateControlPastedText,
@@ -20,19 +22,28 @@ import {
   resolveCreateControlSampleSelection,
   subscribeCreateControlParseProgress,
   summarizeCreateControlUploadFiles,
-  type CreateControlDataTab,
-  type CreateControlLoadedSource,
 } from '@hungpvq/map-dataset/create-control';
 import { terminateGeojsonWorker } from '@hungpvq/map-dataset/geojson';
 import { MapControlButton } from '@hungpvq/react-map-core';
-import { DragDropFile, InputActionRow, InputSelect, InputText, InputTextarea } from '@hungpvq/react-map-core/fields';
+import {
+  DragDropFile,
+  InputActionRow,
+  InputSelect,
+  InputText,
+  InputTextarea,
+} from '@hungpvq/react-map-core/fields';
 import type { GeoJSON } from 'geojson';
 import { useEffect, useMemo, useRef, useState } from 'react';
+
 import { DataSourceTabs } from './DataSourceTabs';
 import type { CreateConfigFormProps } from './types';
 
 /** GeoJSON data source — mirrors Vue `geojson-upload.vue`. */
-export function GeojsonUpload({ config, onChange, trans }: CreateConfigFormProps) {
+export function GeojsonUpload({
+  config,
+  onChange,
+  trans,
+}: CreateConfigFormProps) {
   const [pasteText, setPasteText] = useState('');
   const [parsing, setParsing] = useState(false);
   const [parseError, setParseError] = useState('');
@@ -41,7 +52,8 @@ export function GeojsonUpload({ config, onChange, trans }: CreateConfigFormProps
   const [dataUrl, setDataUrl] = useState('');
   const [loadingUrl, setLoadingUrl] = useState(false);
   const [urlError, setUrlError] = useState('');
-  const [loadedSource, setLoadedSource] = useState<CreateControlLoadedSource | null>(null);
+  const [loadedSource, setLoadedSource] =
+    useState<CreateControlLoadedSource | null>(null);
   const [replaceFileMode, setReplaceFileMode] = useState(false);
   const pasteTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const parseGenerationRef = useRef(0);
@@ -127,7 +139,9 @@ export function GeojsonUpload({ config, onChange, trans }: CreateConfigFormProps
     const { totalBytes } = summarizeCreateControlUploadFiles(files);
     const parsingLabel = trans('map.layer-control.create.parsing');
     setParsing(true);
-    setParseStatusText(formatCreateControlParseStatus(parsingLabel, totalBytes));
+    setParseStatusText(
+      formatCreateControlParseStatus(parsingLabel, totalBytes),
+    );
     const unsubProgress = subscribeCreateControlParseProgress(
       parsingLabel,
       totalBytes,
@@ -236,11 +250,12 @@ export function GeojsonUpload({ config, onChange, trans }: CreateConfigFormProps
     setUrlError('');
     setPasteText('');
     try {
-      const { patch, loadedSource: nextSource } = await loadCreateControlVectorFromUrl({
-        url,
-        sampleId,
-        currentName: typeof config.name === 'string' ? config.name : '',
-      });
+      const { patch, loadedSource: nextSource } =
+        await loadCreateControlVectorFromUrl({
+          url,
+          sampleId,
+          currentName: typeof config.name === 'string' ? config.name : '',
+        });
       onChange(patch);
       setLoadedSource(nextSource);
       setReplaceFileMode(false);
@@ -275,26 +290,41 @@ export function GeojsonUpload({ config, onChange, trans }: CreateConfigFormProps
                         <p className="create-control-loaded__eyebrow">
                           {trans('map.layer-control.create.loaded-from-file')}
                         </p>
-                        <p className="create-control-loaded__title">{loadedSource.label}</p>
+                        <p className="create-control-loaded__title">
+                          {loadedSource.label}
+                        </p>
                         {loadedSource.detail ? (
-                          <p className="create-control-loaded__detail">{loadedSource.detail}</p>
+                          <p className="create-control-loaded__detail">
+                            {loadedSource.detail}
+                          </p>
                         ) : null}
                       </div>
-                      <MapControlButton type="button" onClick={clearLoadedData} variant="outlined">
+                      <MapControlButton
+                        type="button"
+                        onClick={clearLoadedData}
+                        variant="outlined"
+                      >
                         {trans('map.layer-control.create.clear-data')}
                       </MapControlButton>
                     </div>
                     {metaChips.length ? (
                       <ul className="create-control-loaded__meta">
                         {metaChips.map((chip) => (
-                          <li key={chip} className="create-control-loaded__chip">
+                          <li
+                            key={chip}
+                            className="create-control-loaded__chip"
+                          >
                             {chip}
                           </li>
                         ))}
                       </ul>
                     ) : null}
                     <div className="create-control-loaded__actions">
-                      <MapControlButton variant="outlined" type="button" onClick={() => setReplaceFileMode(true)}>
+                      <MapControlButton
+                        variant="outlined"
+                        type="button"
+                        onClick={() => setReplaceFileMode(true)}
+                      >
                         {trans('map.layer-control.create.replace-file')}
                       </MapControlButton>
                     </div>
@@ -317,9 +347,14 @@ export function GeojsonUpload({ config, onChange, trans }: CreateConfigFormProps
                       {parsing ? (
                         <div className="create-control-status--busy">
                           <span>
-                            {parseStatusText || trans('map.layer-control.create.parsing')}
+                            {parseStatusText ||
+                              trans('map.layer-control.create.parsing')}
                           </span>
-                          <MapControlButton type="button" onClick={cancelParsing} variant="outlined">
+                          <MapControlButton
+                            type="button"
+                            onClick={cancelParsing}
+                            variant="outlined"
+                          >
                             {trans('map.layer-control.create.cancel')}
                           </MapControlButton>
                         </div>
@@ -331,55 +366,74 @@ export function GeojsonUpload({ config, onChange, trans }: CreateConfigFormProps
                   </>
                 ) : null}
                 {parseError ? (
-                  <div className="create-control-sample-error">{parseError}</div>
+                  <div className="create-control-sample-error">
+                    {parseError}
+                  </div>
                 ) : null}
               </>
             ),
-            raw: showLoadedRawCard && loadedSource ? (
-              <div className="create-control-loaded">
-                <div className="create-control-loaded__head">
-                  <div>
-                    <p className="create-control-loaded__eyebrow">
-                      {trans(createControlLoadedSourceEyebrowKey(loadedSource.kind))}
-                    </p>
-                    <p className="create-control-loaded__title">{loadedSource.label}</p>
-                    {loadedSource.detail ? (
-                      <p className="create-control-loaded__detail">{loadedSource.detail}</p>
-                    ) : null}
+            raw:
+              showLoadedRawCard && loadedSource ? (
+                <div className="create-control-loaded">
+                  <div className="create-control-loaded__head">
+                    <div>
+                      <p className="create-control-loaded__eyebrow">
+                        {trans(
+                          createControlLoadedSourceEyebrowKey(
+                            loadedSource.kind,
+                          ),
+                        )}
+                      </p>
+                      <p className="create-control-loaded__title">
+                        {loadedSource.label}
+                      </p>
+                      {loadedSource.detail ? (
+                        <p className="create-control-loaded__detail">
+                          {loadedSource.detail}
+                        </p>
+                      ) : null}
+                    </div>
+                    <MapControlButton
+                      type="button"
+                      onClick={clearLoadedData}
+                      variant="outlined"
+                    >
+                      {trans('map.layer-control.create.clear-data')}
+                    </MapControlButton>
                   </div>
-                  <MapControlButton type="button" onClick={clearLoadedData} variant="outlined">
-                    {trans('map.layer-control.create.clear-data')}
-                  </MapControlButton>
+                  {metaChips.length ? (
+                    <ul className="create-control-loaded__meta">
+                      {metaChips.map((chip) => (
+                        <li key={chip} className="create-control-loaded__chip">
+                          {chip}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
                 </div>
-                {metaChips.length ? (
-                  <ul className="create-control-loaded__meta">
-                    {metaChips.map((chip) => (
-                      <li key={chip} className="create-control-loaded__chip">
-                        {chip}
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-              </div>
-            ) : (
-              <>
-                <InputTextarea
-                  label={trans('map.layer-control.create.paste-geojson')}
-                  placeholder={trans('map.layer-control.create.paste-geojson-hint')}
-                  value={pasteText}
-                  rows={4}
-                  onChange={onPasteGeojson}
-                />
-                {parsing ? (
-                  <div className="create-control-status--row">
-                    <span>{trans('map.layer-control.create.parsing')}</span>
-                  </div>
-                ) : null}
-                {parseError ? (
-                  <div className="create-control-sample-error">{parseError}</div>
-                ) : null}
-              </>
-            ),
+              ) : (
+                <>
+                  <InputTextarea
+                    label={trans('map.layer-control.create.paste-geojson')}
+                    placeholder={trans(
+                      'map.layer-control.create.paste-geojson-hint',
+                    )}
+                    value={pasteText}
+                    rows={4}
+                    onChange={onPasteGeojson}
+                  />
+                  {parsing ? (
+                    <div className="create-control-status--row">
+                      <span>{trans('map.layer-control.create.parsing')}</span>
+                    </div>
+                  ) : null}
+                  {parseError ? (
+                    <div className="create-control-sample-error">
+                      {parseError}
+                    </div>
+                  ) : null}
+                </>
+              ),
             url: (
               <>
                 <InputSelect

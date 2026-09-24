@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from 'vitest';
-import type { Feature } from 'geojson';
 import type { MapSimple } from '@hungpvq/map-core';
+import type { Feature } from 'geojson';
+import { describe, expect, it, vi } from 'vitest';
+
 import {
   getFeatureByMap,
   getFeatureId,

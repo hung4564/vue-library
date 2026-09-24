@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { TILEJSON_SAMPLES } from '../vector-tile/samples';
 import {
   ConfigTilejsonHelper,

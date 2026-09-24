@@ -1,4 +1,4 @@
-﻿import {
+import {
   logHelper,
   type MapSimple,
   type WithMapPropType,
@@ -9,18 +9,18 @@ import {
 } from '@hungpvq/map-core/crs';
 import { EventClick } from '@hungpvq/map-core/event';
 import {
-  MEASUREMENT_MAP_VIEW_IMAGE,
   createMeasurementSession,
-  resolveMeasurementToolbarStatus,
+  logger,
   type MeasureActionItem,
+  MEASUREMENT_MAP_VIEW_IMAGE,
   type MeasurementHandleType,
   type MeasurementModeType,
   type MeasurementUiState,
-  logger,
+  resolveMeasurementToolbarStatus,
 } from '@hungpvq/map-core/measurement';
 import {
-  mdiIcon,
   type MapControlButtonUIState,
+  mdiIcon,
   type ToolbarButtonConfig,
 } from '@hungpvq/map-core/toolbar';
 import {
@@ -37,19 +37,23 @@ import {
 } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../crs/useMapCrsItems';
+import {
+  useMapCrsDisplayEpsgs,
+  useMapCrsItems,
+} from '../../crs/useMapCrsItems';
 import { useEventMap } from '../../event/hook/useEvent';
 import { useMapImage } from '../../image/store';
 import { useLang } from '../../lang/hook';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
 import { useToolbarControl } from '../../toolbar/helper';
-import { MeasurementSettingPopup } from './MeasurementSettingPopup';
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
+import { MeasurementSettingPopup } from './MeasurementSettingPopup';
 
 const PATH = {
   distance: mdiRuler,
@@ -86,12 +90,12 @@ export function MeasurementControl(props: MeasurementControlProps) {
   const addEventClickRef = useRef<() => void>(() => undefined);
   const removeEventClickRef = useRef<() => void>(() => undefined);
   const controlRef = useRef<{ sync: () => void } | null>(null);
-  const getMeasurePointCrsItemsRef = useRef<() => ReturnType<typeof resolveCrsDisplayItems>>(
-    () => [],
-  );
-  const translateRef = useRef<(key: string, params?: Record<string, string | number>) => string>(
-    (key) => key,
-  );
+  const getMeasurePointCrsItemsRef = useRef<
+    () => ReturnType<typeof resolveCrsDisplayItems>
+  >(() => []);
+  const translateRef = useRef<
+    (key: string, params?: Record<string, string | number>) => string
+  >((key) => key);
 
   const { callMap, mapId, moduleContainerProps, order } = useMap(
     { ...merged, controlId: 'mapMeasurementControl' },
@@ -102,7 +106,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
   const displayCrsHandle = useMapCrsDisplayEpsgs(mapId);
   const imageHandle = useMapImage(mapId);
   const { trans } = useLang(mapId);
-const getMeasurePointCrsItems = useCallback(() => {
+  const getMeasurePointCrsItems = useCallback(() => {
     return resolveCrsDisplayItems(
       displayCrsHandle.displayEpsgs,
       buildMapCrsCatalog(crsHandle.items),
@@ -304,11 +308,9 @@ const getMeasurePointCrsItems = useCallback(() => {
       moduleId: 'mapMeasurementControl',
       order: order,
       orientation: 'row' as const,
-      buttons: [
-        ...buttonShow,
-        ...buttonHandle,
-        ...(props.actions || []),
-      ].map(toToolbarButton),
+      buttons: [...buttonShow, ...buttonHandle, ...(props.actions || [])].map(
+        toToolbarButton,
+      ),
     }),
     [order, buttonShow, buttonHandle, props.actions, toToolbarButton],
   );
@@ -376,8 +378,7 @@ const getMeasurePointCrsItems = useCallback(() => {
   }
 
   const moduleState = state as
-    | Record<string, MapControlButtonUIState | undefined>
-    | undefined;
+    Record<string, MapControlButtonUIState | undefined> | undefined;
 
   return (
     <ModuleContainer

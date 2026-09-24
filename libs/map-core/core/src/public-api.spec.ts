@@ -12,9 +12,10 @@
  * Experimental list here + stable-api.md.
  */
 import { describe, expect, it } from 'vitest';
+
 import * as basemapApi from './basemap';
-import * as devtoolsApi from './devtools';
 import * as crsApi from './crs';
+import * as devtoolsApi from './devtools';
 import * as eventApi from './event';
 import * as imageApi from './image';
 import * as api from './index';

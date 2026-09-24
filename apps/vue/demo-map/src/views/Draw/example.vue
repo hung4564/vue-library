@@ -1,21 +1,22 @@
 ﻿<script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getMap } from '@hungpvq/map-core';
 import {
   DrawingType,
   getFirstFeatureByMap,
-  sameFeature,
   type MapDrawOption,
+  sameFeature,
 } from '@hungpvq/map-draw';
-import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
-import { DrawControl, useMapDraw } from '@hungpvq/vue-map-draw';
 import { loggerFactory } from '@hungpvq/shared-log';
+import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
+import { DrawControl, useMapDraw } from '@hungpvq/vue-map-draw';
 import type { Feature, FeatureCollection } from 'geojson';
 import type { GeoJSONSource } from 'maplibre-gl';
-import AsideControl from '../../layout/aside-control.vue';
+
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../../layout/aside-control.vue';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:draw', 2);
 const MAP_ID = 'draw-demo';
@@ -50,11 +51,7 @@ function ensureResultLayers(map: MapSimple) {
     id: RESULT_LAYERS[1],
     type: 'line',
     source: RESULT_SOURCE,
-    filter: [
-      'any',
-      ['==', '$type', 'LineString'],
-      ['==', '$type', 'Polygon'],
-    ],
+    filter: ['any', ['==', '$type', 'LineString'], ['==', '$type', 'Polygon']],
     paint: { 'line-color': '#3bb2d0', 'line-width': 2 },
   });
   map.addLayer({
@@ -136,5 +133,3 @@ function onMapLoaded(map: MapSimple) {
     <DemoHelpPanel />
   </Map>
 </template>
-
-

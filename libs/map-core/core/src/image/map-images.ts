@@ -1,10 +1,9 @@
 import type { StyleImage } from 'maplibre-gl';
+
 import type { MapSimple } from '../types';
 
 /** Snapshot style images currently registered on a map instance. */
-export function listMapStyleImages(
-  map: MapSimple,
-): Record<string, StyleImage> {
+export function listMapStyleImages(map: MapSimple): Record<string, StyleImage> {
   if (!map) return {};
   try {
     // listImages/getImage require an active Style; mid-swap throws or NPE

@@ -2,6 +2,7 @@ import { isCreateControlCrsMismatch } from '@hungpvq/map-dataset/create-control'
 import { GEOJSON_STYLE_AUTO } from '@hungpvq/map-dataset/geojson';
 import { InputCrs, InputSelect } from '@hungpvq/react-map-core/fields';
 import { useMemo } from 'react';
+
 import type { CreateConfigFormProps } from './types';
 
 /** GeoJSON layer settings — mirrors Vue `geojson-settings.vue`. */
@@ -13,7 +14,10 @@ export function GeojsonSettings({
 }: CreateConfigFormProps) {
   const styleItems = useMemo(
     () => [
-      { value: GEOJSON_STYLE_AUTO, text: trans('map.layer-control.field.style-type-auto') },
+      {
+        value: GEOJSON_STYLE_AUTO,
+        text: trans('map.layer-control.field.style-type-auto'),
+      },
       { value: 'point', text: 'point' },
       { value: 'line', text: 'line' },
       { value: 'area', text: 'area' },

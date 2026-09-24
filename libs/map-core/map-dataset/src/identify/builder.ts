@@ -1,8 +1,5 @@
+import { addFieldBuilder, type WithFieldBuilder } from '../extra/field';
 import type { IIdentifyView } from '../interfaces/dataset.parts';
-import {
-  addFieldBuilder,
-  type WithFieldBuilder,
-} from '../extra/field';
 import { addMenuBuilder } from '../menu/builder';
 import type { WithMenuBuilder } from '../menu/types';
 import type { IdentifyHitAction } from './hit-action';

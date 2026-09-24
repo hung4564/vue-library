@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="layer-item__icon-content"
-    :class="kindClass"
-    :title="kindTitle"
-  >
+  <div class="layer-item__icon-content" :class="kindClass" :title="kindTitle">
     <SvgIcon
       size="14"
       type="mdi"
@@ -16,8 +12,8 @@
 </template>
 <script setup lang="ts">
 import {
-  getDatasetSourceKind,
   type DatasetSourceKind,
+  getDatasetSourceKind,
   type IDataset,
 } from '@hungpvq/map-dataset';
 import SvgIcon from '@jamescoyle/vue-icon';

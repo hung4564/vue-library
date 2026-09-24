@@ -9,6 +9,7 @@ import {
 } from '@hungpvq/map-core/crs';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+
 import { useMapCrsItems } from '../extra/crs/useMapCrsItems';
 import { useMap } from '../hooks/useMap';
 
@@ -70,7 +71,10 @@ export function InputCrs({
     [items, storeItems],
   );
 
-  const catalog = useMemo(() => buildCrsSearchCatalog(sourceItems), [sourceItems]);
+  const catalog = useMemo(
+    () => buildCrsSearchCatalog(sourceItems),
+    [sourceItems],
+  );
 
   const selectedItem = useMemo(
     () => lookupCrsItem(value, catalog),

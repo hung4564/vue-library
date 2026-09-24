@@ -1,5 +1,5 @@
-import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
 import type { LayerListGroupTree } from '@hungpvq/map-dataset';
+import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
 import {
   mdiChevronDown,
   mdiChevronUp,
@@ -9,13 +9,14 @@ import {
 } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
+  type ChangeEvent,
+  type KeyboardEvent,
   useEffect,
   useRef,
   useState,
-  type ChangeEvent,
-  type KeyboardEvent,
 } from 'react';
 import type Sortable from 'sortablejs';
+
 import { ListItem } from '../../../List/ListItem';
 
 const ICON_SIZE = '14px';

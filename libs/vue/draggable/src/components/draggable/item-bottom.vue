@@ -6,7 +6,8 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { computed, inject, ref, Ref } from 'vue';
+import { computed, inject, Ref, ref } from 'vue';
+
 import {
   useInitAction,
   useShow,

@@ -1,4 +1,5 @@
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
+
 import type { DataRecord, ID, NormalizeOptions } from './types';
 
 const DEFAULT_GEOMETRY_FIELDS = ['geometry', 'geom', 'geo'];
@@ -79,10 +80,7 @@ export function toRecord(
       feature.properties && typeof feature.properties === 'object'
         ? { ...(feature.properties as Record<string, unknown>) }
         : {};
-    const id = resolveRecordId(
-      { id: feature.id, properties: props },
-      idField,
-    );
+    const id = resolveRecordId({ id: feature.id, properties: props }, idField);
     const geometry =
       parseGeometryValue(feature.geometry) ??
       pickGeometry(props, geometryFields);
@@ -104,7 +102,9 @@ export function toRecord(
   return record;
 }
 
-export function toFeature(record: DataRecord | undefined | null): Feature | undefined {
+export function toFeature(
+  record: DataRecord | undefined | null,
+): Feature | undefined {
   if (!record) return undefined;
   const { geometry, id, ...rest } = record;
   const properties: Record<string, unknown> = { ...rest };
@@ -122,7 +122,9 @@ export function toFeature(record: DataRecord | undefined | null): Feature | unde
 
 export function normalizeInitData(
   initData: unknown,
-  options: NormalizeOptions & { format?: 'auto' | 'feature-collection' | 'list' } = {},
+  options: NormalizeOptions & {
+    format?: 'auto' | 'feature-collection' | 'list';
+  } = {},
 ): DataRecord[] {
   if (initData == null) return [];
   const format = options.format ?? 'auto';

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import './story-telling.css';
+
 import { getMap, type MapSimple } from '@hungpvq/map-core';
-import { BaseMapControl } from '@hungpvq/vue-map-core';
+import { loggerFactory } from '@hungpvq/shared-log';
 import {
   CrsControl,
   FullScreenControl,
@@ -12,14 +12,17 @@ import {
   Map,
   MouseCoordinatesControl,
   SettingControl,
-  ZoomControl
+  ZoomControl,
 } from '@hungpvq/vue-map-core';
-import {
-  MapCard
-} from '@hungpvq/vue-map-core/fields';
 import { MeasurementControl } from '@hungpvq/vue-map-core';
-import { loggerFactory } from '@hungpvq/shared-log';
+import { BaseMapControl } from '@hungpvq/vue-map-core';
+import { MapCard } from '@hungpvq/vue-map-core/fields';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { ref } from 'vue';
+
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../../layout/aside-control.vue';
 import {
   createCustomAction,
   createDrawRouteAction,
@@ -31,13 +34,8 @@ import {
   createZoomAction,
 } from './helper-action';
 import { useMapStorytelling } from './useStorytelling';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
-import AsideControl from '../../layout/aside-control.vue';
-import './story-telling.css';
 
-const storyLog = loggerFactory
-  .createLogger()
-  .setNamespace('demo:story', 0);
+const storyLog = loggerFactory.createLogger().setNamespace('demo:story', 0);
 
 const mapRef = ref();
 const mapId = ref('');
@@ -179,5 +177,3 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
     </MapCard>
   </div>
 </template>
-
-

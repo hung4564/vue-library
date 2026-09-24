@@ -1,8 +1,10 @@
+import './VList.scss';
+
 import { defineComponent, h } from 'vue';
+
 import { makeComponentProps } from '../../composables/component';
 import { makeSizeProps, useSize } from '../../composables/size';
 import { makeTagProps } from '../../composables/tag';
-import './VList.scss';
 const VList = defineComponent({
   props: {
     ...makeComponentProps(),

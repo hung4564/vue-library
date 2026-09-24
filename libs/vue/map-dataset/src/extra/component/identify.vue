@@ -26,13 +26,18 @@
 </template>
 
 <script setup lang="ts">
-import { IDENTIFY_CONTROL, isListIdentifyActive, subscribeIdentifyScope, toggleListIdentifyScope } from '@hungpvq/map-dataset/identify';
+import {
+  IDENTIFY_CONTROL,
+  isListIdentifyActive,
+  subscribeIdentifyScope,
+  toggleListIdentifyScope,
+} from '@hungpvq/map-dataset/identify';
 import { resolveMenuItemLocation } from '@hungpvq/map-dataset/menu';
 import { MapControlButton, UniversalRegistry } from '@hungpvq/vue-map-core';
-
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer } from '@mdi/js';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+
 import type { WithLayerItemMenuComponentType } from './types';
 
 const props = defineProps<WithLayerItemMenuComponentType>();

@@ -1,10 +1,10 @@
 /**
  * Framework-agnostic store types
  */
-import { MapStore } from '../store';
-import { MAP_STORE_KEY } from './constants';
 import { MittTypeMapCrs, MittTypeMapCrsEventKey } from '../crs/types';
 import { MittTypeMapEvent, MittTypeMapEventEventKey } from '../event/types';
+import { MapStore } from '../store';
+import { MAP_STORE_KEY } from './constants';
 import type { MapSimple } from './index';
 import { MittTypeMapLang, MittTypeMapLangEventKey } from './lang';
 

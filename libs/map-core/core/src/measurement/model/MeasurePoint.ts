@@ -4,13 +4,13 @@
 
 import { point } from '@turf/helpers';
 import type { Feature } from 'geojson';
-import type { CoordinatesNumber } from '../../types';
 
 import { enrichCrsItemProjection } from '../../crs/crs-catalog';
 import type { CrsItem } from '../../crs/types';
+import type { CoordinatesNumber } from '../../types';
+import { formatCoordinate } from '../../utils/coordinate';
 import { IViewSetting } from '../types';
 import { getMeasurementLabelPrefs } from '../utils';
-import { formatCoordinate } from '../../utils/coordinate';
 import { Measure } from './Measure';
 
 /**

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ATTRIBUTE_TABLE_COMPONENT_KEY } from '@hungpvq/map-dataset/attribute-table';
 import type { AttributeTableToolbarProps } from '@hungpvq/map-dataset/attribute-table';
+import { ATTRIBUTE_TABLE_COMPONENT_KEY } from '@hungpvq/map-dataset/attribute-table';
 import { AttributeTableToolbar } from '@hungpvq/vue-map-dataset';
 
 defineOptions({ name: 'SampleAttributeTableToolbar' });

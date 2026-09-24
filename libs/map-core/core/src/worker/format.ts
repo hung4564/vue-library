@@ -1,8 +1,4 @@
-import type {
-  WorkerLogEntry,
-  WorkerProgress,
-  WorkerSnapshot,
-} from './types';
+import type { WorkerLogEntry, WorkerProgress, WorkerSnapshot } from './types';
 
 export function formatWorkerDuration(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return '0ms';
@@ -47,9 +43,7 @@ export function anyWorkerHasHistory(
   return workers.some(workerHasHistory);
 }
 
-export function countBusyWorkers(
-  workers: readonly WorkerSnapshot[],
-): number {
+export function countBusyWorkers(workers: readonly WorkerSnapshot[]): number {
   return workers.filter(isWorkerBusy).length;
 }
 

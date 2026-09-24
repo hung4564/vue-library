@@ -1,5 +1,6 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { describe, expect, it, vi } from 'vitest';
+
 import type { IListViewUI } from '../../model/list/types';
 import {
   applyAllLayerVisibility,

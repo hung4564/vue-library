@@ -6,7 +6,10 @@ export function LayerLegendLinearGradient({
     items: { color: string; value: string }[];
   };
 }) {
-  const item = value || { text: '', items: [] as { color: string; value: string }[] };
+  const item = value || {
+    text: '',
+    items: [] as { color: string; value: string }[],
+  };
   const items = item.items || [];
   const colors = items.map((x) => x.color);
   return (

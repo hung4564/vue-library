@@ -1,13 +1,14 @@
 ﻿<script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { loggerFactory } from '@hungpvq/shared-log';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
 import { Map } from '@hungpvq/vue-map-core';
 import { MeasureActionItem, MeasurementControl } from '@hungpvq/vue-map-core';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { mdiPlus } from '@mdi/js';
-import AsideControl from '../../layout/aside-control.vue';
+
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../../layout/aside-control.vue';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:measurement', 2);
 
@@ -37,4 +38,3 @@ const actions: MeasureActionItem[] = [
     <DemoHelpPanel />
   </Map>
 </template>
-

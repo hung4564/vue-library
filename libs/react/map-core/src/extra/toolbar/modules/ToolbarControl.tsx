@@ -14,7 +14,15 @@ import {
   toolbarOverflowPanelClassName,
 } from '@hungpvq/map-core/toolbar';
 import { mdiDotsHorizontal } from '@mdi/js';
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
 import { MapContext } from '../../../context/MapContext';
@@ -113,7 +121,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
     setMenuUsedByCorner(nextUsed);
   }, [findMapContainer, mapId, menuMode]);
 
-useEffect(() => {
+  useEffect(() => {
     const store = createToolbarStoreApi(toolbarStore);
     const syncButtons = () => {
       setButtons(store.getAll().map((btn) => ({ ...btn })));

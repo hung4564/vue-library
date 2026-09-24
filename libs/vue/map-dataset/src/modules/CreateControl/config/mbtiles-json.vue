@@ -23,7 +23,11 @@
               {{ loadedSource.detail }}
             </p>
           </div>
-          <MapControlButton type="button" variant="outlined" @click="clearLoaded">
+          <MapControlButton
+            type="button"
+            variant="outlined"
+            @click="clearLoaded"
+          >
             {{ trans('map.layer-control.create.clear-data') }}
           </MapControlButton>
         </div>

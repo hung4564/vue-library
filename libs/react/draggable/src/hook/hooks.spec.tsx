@@ -1,25 +1,30 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { act, render, renderHook, cleanup } from '@testing-library/react';
+import { act, cleanup, render, renderHook } from '@testing-library/react';
 import React from 'react';
-import { WithMobileHandle } from '../hoc/mobile-handle';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { ContainerProvider } from '../context/ContainerContext';
+import { WithMobileHandle } from '../hoc/mobile-handle';
+import { useComponent } from '../hook/useComponent';
+import { useContainerSize } from '../hook/useContainerSize';
+import { useInitAction } from '../hook/useInit';
+import { useInitBottom } from '../hook/useInitBottom';
+import { useInitDrawer } from '../hook/useInitDrawer';
 import {
+  useContainerOrder,
+  useInitItem,
+  useManagement,
+} from '../hook/useInitItem';
+import { useInitSidebar } from '../hook/useInitSidebar';
+import { useExpand, useHighlight, useShow } from '../hook/useShow';
+import { useSideBarContainer } from '../hook/useSideBarContainer';
+import {
+  useBottomItem,
   useDragCommands,
   useDragContainer,
   useDragItem,
   useDragStore,
-  useBottomItem,
   useSidebarItem,
 } from '../store';
-import { useInitItem, useContainerOrder, useManagement } from '../hook/useInitItem';
-import { useInitBottom } from '../hook/useInitBottom';
-import { useInitSidebar } from '../hook/useInitSidebar';
-import { useInitDrawer } from '../hook/useInitDrawer';
-import { useInitAction } from '../hook/useInit';
-import { useShow, useHighlight, useExpand } from '../hook/useShow';
-import { useSideBarContainer } from '../hook/useSideBarContainer';
-import { useComponent } from '../hook/useComponent';
-import { useContainerSize } from '../hook/useContainerSize';
 
 const storeSubscribers = new Set<() => void>();
 
@@ -55,10 +60,7 @@ describe('useShow / useExpand / useHighlight', () => {
     const onUpdate = vi.fn();
     const onClose = vi.fn();
     const { result } = renderHook(() =>
-      useShow(
-        { show: false },
-        { 'update:show': onUpdate, close: onClose },
-      ),
+      useShow({ show: false }, { 'update:show': onUpdate, close: onClose }),
     );
     act(() => result.current.open());
     expect(result.current.show).toBe(true);
@@ -72,10 +74,7 @@ describe('useShow / useExpand / useHighlight', () => {
     const onUpdate = vi.fn();
     const onClose = vi.fn();
     const { result } = renderHook(() =>
-      useShow(
-        { show: true },
-        { 'update:show': onUpdate, close: onClose },
-      ),
+      useShow({ show: true }, { 'update:show': onUpdate, close: onClose }),
     );
     act(() => result.current.setShow(false));
     expect(result.current.show).toBe(false);
@@ -254,9 +253,7 @@ describe('useInitSidebar / useInitDrawer / useInitAction', () => {
       setShow: vi.fn(),
     });
     const open = vi.fn();
-    const { unmount } = renderHook(() =>
-      useInitAction(CID, 'x', { open }),
-    );
+    const { unmount } = renderHook(() => useInitAction(CID, 'x', { open }));
     expect(useDragContainer(CID).getItemAction('x')?.open).toBe(open);
     unmount();
   });
@@ -413,10 +410,7 @@ describe('useDragCommands', () => {
     useDragContainer(CID).initContainer();
     const onUpdateShow = vi.fn();
     const { result } = renderHook(() => {
-      const showApi = useShow(
-        { show: true },
-        { 'update:show': onUpdateShow },
-      );
+      const showApi = useShow({ show: true }, { 'update:show': onUpdateShow });
       const init = useInitItem(
         CID,
         showApi.show,

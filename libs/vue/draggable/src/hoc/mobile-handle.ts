@@ -1,12 +1,5 @@
-import {
-  Component,
-  Ref,
-  computed,
-  defineComponent,
-  h,
-  inject,
-  ref,
-} from 'vue';
+import { Component, computed, defineComponent, h, inject, Ref, ref } from 'vue';
+
 import { useDragIsMobile } from '../store';
 
 function getComponentName(component: Component): string {

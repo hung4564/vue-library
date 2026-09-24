@@ -43,9 +43,11 @@ describe('warnIfDatasetRegistryMissing', () => {
   });
 
   it('does not warn when component is registered', () => {
-    const getComponent = vi.fn().mockImplementation((key) =>
-      key === LIST_VIEW_MENU_COMPONENT_KEY.toggleShowButton ? {} : undefined,
-    );
+    const getComponent = vi
+      .fn()
+      .mockImplementation((key) =>
+        key === LIST_VIEW_MENU_COMPONENT_KEY.toggleShowButton ? {} : undefined,
+      );
 
     warnIfDatasetRegistryMissing(getComponent, 'vue-map-dataset');
     expect(mockWarn).not.toHaveBeenCalled();

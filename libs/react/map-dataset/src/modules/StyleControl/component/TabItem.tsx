@@ -1,6 +1,7 @@
+import type { Tab } from '@hungpvq/map-dataset/style';
 import { MapControlButton } from '@hungpvq/react-map-core';
 import type { ComponentType } from 'react';
-import type { Tab } from '@hungpvq/map-dataset/style';
+
 import { resolveTabProps } from '../style/type/tab-utils';
 
 function resolveComponent(
@@ -39,7 +40,9 @@ export function TabItem({
       className={`tab-item${active ? ' tab-item-active' : ''}${
         disabled ? ' tab-item-disabled' : ''
       }`}
-      disabled={disabled} variant="text">
+      disabled={disabled}
+      variant="text"
+    >
       <div className="tab-item-title" title={String(text ?? '')}>
         {String(text ?? '')}
       </div>

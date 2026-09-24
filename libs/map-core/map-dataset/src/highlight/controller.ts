@@ -8,15 +8,16 @@ import {
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
 import type { Feature } from 'geojson';
-import { Popup, type MapMouseEvent, type PointLike } from 'maplibre-gl';
+import { type MapMouseEvent, type PointLike, Popup } from 'maplibre-gl';
+
 import type { IDataset } from '../interfaces/dataset.base';
 import { loggerHighlight } from '../logger';
 import { handleMenuAction } from '../menu/handle';
 import { LIST_VIEW_MENU_ID } from '../menu/items';
-import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
-import { convertFeatureToItem } from '../utils/convert';
-import { isListView } from '../utils/check';
 import type { IListViewUI } from '../model/list/types';
+import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
+import { isListView } from '../utils/check';
+import { convertFeatureToItem } from '../utils/convert';
 import {
   DEFAULT_HIGHLIGHT_DATA,
   DEFAULT_HIGHLIGHT_PRESENTATION,
@@ -25,15 +26,9 @@ import {
   findHighlightPart,
   resolveShowConfig,
 } from './cascade';
+import { destroyHighlightMittBridge, ensureHighlightMittBridge } from './mitt';
 import { createHighlightPainter } from './paint';
-import {
-  destroyHighlightMittBridge,
-  ensureHighlightMittBridge,
-} from './mitt';
-import {
-  pointerEventFromEntry,
-  resolvePopupLngLat,
-} from './popup';
+import { pointerEventFromEntry, resolvePopupLngLat } from './popup';
 import {
   datasetsFromHighlightParts,
   filterDatasetsForPointerEvent,
@@ -170,8 +165,7 @@ function applyPresentationShow(
 
   const popupOpt = presentation.popup;
   if (!popupOpt) return;
-  const kind =
-    popupOpt === true ? 'maplibre' : (popupOpt.kind ?? 'maplibre');
+  const kind = popupOpt === true ? 'maplibre' : (popupOpt.kind ?? 'maplibre');
   if (kind === 'none') return;
   if (kind === 'maplibre') {
     state.maplibrePopup?.remove();
@@ -180,11 +174,9 @@ function applyPresentationShow(
         ? typeof popupOpt.content === 'function'
           ? popupOpt.content(entry)
           : popupOpt.content
-        : String(
-            (entry.feature as Feature).properties?.['name'] ?? entry.id,
-          );
+        : String((entry.feature as Feature).properties?.['name'] ?? entry.id);
     const popup = new Popup({
-      offset: typeof popupOpt === 'object' ? popupOpt.offset ?? 12 : 12,
+      offset: typeof popupOpt === 'object' ? (popupOpt.offset ?? 12) : 12,
       closeOnClick: true,
     });
     const lngLat = resolvePopupLngLat(entry, presentation, map);
@@ -272,7 +264,9 @@ function createController(mapId: string): HighlightController {
     if (!map) {
       loggerHighlight
         .with({ fn: 'show', span: 'highlight.paint' })
-        .warn('Highlight show skipped because the map instance is not ready.', { mapId });
+        .warn('Highlight show skipped because the map instance is not ready.', {
+          mapId,
+        });
       return;
     }
 

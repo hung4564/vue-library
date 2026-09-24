@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
-import {
-  getMap,
-  type MapSimple } from '@hungpvq/map-core';
+import './story-telling.css';
+
+import { getMap, type MapSimple } from '@hungpvq/map-core';
+import { loggerFactory } from '@hungpvq/shared-log';
 import {
   BaseMapControl,
   CrsControl,
@@ -15,21 +14,20 @@ import {
   MeasurementControl,
   MouseCoordinatesControl,
   SettingControl,
-  ZoomControl
+  ZoomControl,
 } from '@hungpvq/vue-map-core';
-import {
-  MapCard
-} from '@hungpvq/vue-map-core/fields';
+import { MapCard } from '@hungpvq/vue-map-core/fields';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import * as turf from '@turf/turf';
-import { loggerFactory } from '@hungpvq/shared-log';
 import { GeoJSONSource, Marker } from 'maplibre-gl';
 import { ref } from 'vue';
+
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../../layout/aside-control.vue';
 import { createZoomAction } from './helper-action';
 import { withMapReady } from './helper-global';
 import { Chapter, useMapStorytelling } from './useStorytelling';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
-import AsideControl from '../../layout/aside-control.vue';
-import './story-telling.css';
 
 const storyGpsLog = loggerFactory
   .createLogger()
@@ -257,5 +255,3 @@ const isSameCoord = (a: [number, number], b: [number, number]) =>
     </MapCard>
   </div>
 </template>
-
-

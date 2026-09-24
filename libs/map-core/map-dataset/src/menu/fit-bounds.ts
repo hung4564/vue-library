@@ -1,4 +1,5 @@
 import { fitBounds, type MapSimple } from '@hungpvq/map-core';
+
 import type { MenuClickFitBounds } from './builder';
 
 /**

@@ -1,9 +1,9 @@
 import {
+  type MapBreakpointConfig,
   mapBreakpointGreaterOrEqual,
+  type MapBreakpointName,
   mapBreakpointSmallerOrEqual,
   resolveMapBreakpointFlags,
-  type MapBreakpointConfig,
-  type MapBreakpointName,
 } from '@hungpvq/map-core';
 import { useEffect, useState } from 'react';
 

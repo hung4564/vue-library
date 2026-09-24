@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   ATTRIBUTE_TABLE_ROW_HEIGHT,
   getVirtualRowWindow,

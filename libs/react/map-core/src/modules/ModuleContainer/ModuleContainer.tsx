@@ -1,14 +1,15 @@
-import React, { useLayoutEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
 import {
   buildModuleBindPosition,
   isModuleCornerChromeVisible,
   moduleBtnContainerClassName,
   moduleCornerHostSelector,
   moduleDraggableHostSelector,
-  queryModuleHostElement,
   type Position,
+  queryModuleHostElement,
 } from '@hungpvq/map-core';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
+
 import { useMapContext } from '../../context/MapContext';
 
 export interface ModuleContainerProps {
@@ -57,7 +58,10 @@ function useModuleHostElement(selector: string | null): HTMLElement | null {
     }
 
     setHost(null);
-    if (typeof document === 'undefined' || typeof MutationObserver === 'undefined') {
+    if (
+      typeof document === 'undefined' ||
+      typeof MutationObserver === 'undefined'
+    ) {
       return;
     }
 
@@ -124,7 +128,9 @@ export function ModuleContainer({
     controlVisible && hasCornerChrome && showCornerChrome && !!btnSelector;
   const needDragHost = !!containerId && hasDraggable && !!draggableSelector;
 
-  const btnPortalTarget = useModuleHostElement(needBtnHost ? btnSelector : null);
+  const btnPortalTarget = useModuleHostElement(
+    needBtnHost ? btnSelector : null,
+  );
   const draggablePortalTarget = useModuleHostElement(
     needDragHost ? draggableSelector : null,
   );

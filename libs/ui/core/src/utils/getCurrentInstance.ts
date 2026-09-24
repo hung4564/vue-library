@@ -1,7 +1,8 @@
 import {
-  getCurrentInstance as _getCurrentInstance,
   ComponentInternalInstance,
+  getCurrentInstance as _getCurrentInstance,
 } from 'vue';
+
 import { toKebabCase } from './helpers';
 
 export function getCurrentInstance(name: string, message?: string) {

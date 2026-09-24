@@ -5,9 +5,9 @@ const INERT_MARK = 'data-draggable-inert';
 const MODAL_COUNT = 'data-draggable-modal-count';
 
 export function getFocusableElements(root: HTMLElement): HTMLElement[] {
-  return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-    (el) => !el.hasAttribute('disabled') && el.tabIndex !== -1,
-  );
+  return Array.from(
+    root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+  ).filter((el) => !el.hasAttribute('disabled') && el.tabIndex !== -1);
 }
 
 /** Focus the first focusable element inside root, or root itself. */

@@ -1,11 +1,11 @@
+import { attachViewSourceMenuToLists } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getMap } from '@hungpvq/map-core';
 import {
   DatasetService,
-  notifyMapDatasetStore,
   type IDataset,
+  notifyMapDatasetStore,
 } from '@hungpvq/map-dataset';
-import { attachViewSourceMenuToLists } from '@hungpvq/demo-map-datasets';
 import { useMapDatasetStore } from '@hungpvq/vue-map-dataset';
 
 export async function addDatasetToMap(mapId: string, dataset: IDataset) {

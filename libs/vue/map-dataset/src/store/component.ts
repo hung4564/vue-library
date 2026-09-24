@@ -1,13 +1,13 @@
 ﻿import { logHelper } from '@hungpvq/map-core';
 import {
+  type DatasetComponentItem,
   removeDatasetComponent,
   upsertDatasetComponent,
-  type DatasetComponentItem,
 } from '@hungpvq/map-dataset';
+import { logger } from '@hungpvq/map-dataset';
 import { createMapScopedStore } from '@hungpvq/vue-map-core';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
-import { logger } from '@hungpvq/map-dataset';
 
 const KEY = 'dataset-component' as const;
 

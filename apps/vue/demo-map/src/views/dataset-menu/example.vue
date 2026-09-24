@@ -1,27 +1,28 @@
 ﻿<script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import { DEMO_LAYER_TOGGLE_SHOW_KEY } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
-import { DEMO_LAYER_TOGGLE_SHOW_KEY } from '@hungpvq/demo-map-datasets';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
 import {
   BaseMapCard,
   BaseMapControl,
   Map,
-  UniversalRegistry,
   ThemeControl,
+  UniversalRegistry,
 } from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { ref } from 'vue';
+
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { loadMenuDemoDatasets } from '../../data/loaders';
 import AsideControl from '../../layout/aside-control.vue';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 import SampleLayerToggleShow from './sample-layer-toggle-show.vue';
 import SampleToggleShowButton from './sample-toggle-show-button.vue';
 
@@ -68,5 +69,3 @@ function onMapLoaded(map: MapSimple) {
     <DemoHelpPanel />
   </Map>
 </template>
-
-

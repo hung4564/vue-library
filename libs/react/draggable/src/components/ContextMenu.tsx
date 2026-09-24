@@ -7,17 +7,17 @@ import {
   trapTabKey,
 } from '@hungpvq/draggable';
 import {
+  type CSSProperties,
   forwardRef,
+  type MouseEvent as ReactMouseEvent,
+  type ReactNode,
+  type Ref,
   useCallback,
   useEffect,
   useImperativeHandle,
   useLayoutEffect,
   useRef,
   useState,
-  type CSSProperties,
-  type MouseEvent as ReactMouseEvent,
-  type ReactNode,
-  type Ref,
 } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -72,7 +72,9 @@ const ContextMenu = forwardRef(function ContextMenu(
     () => ({
       open(e: ReactMouseEvent | MouseEvent) {
         const ev =
-          'nativeEvent' in e ? (e as ReactMouseEvent).nativeEvent : (e as MouseEvent);
+          'nativeEvent' in e
+            ? (e as ReactMouseEvent).nativeEvent
+            : (e as MouseEvent);
         lastOpenEventRef.current = ev;
         previousFocusRef.current = document.activeElement as HTMLElement | null;
         setIsOpen(true);

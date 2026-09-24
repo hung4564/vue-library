@@ -8,13 +8,10 @@ import {
   isIdentifyAbortError,
   runIdentifyShowFirst,
 } from '@hungpvq/map-dataset/identify';
-import {
-  defaultMapProps,
-  useEventMap,
-  useMap,
-} from '@hungpvq/react-map-core';
+import { defaultMapProps, useEventMap, useMap } from '@hungpvq/react-map-core';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { useEffect, useMemo, useRef, useState } from 'react';
+
 import { useMapDataset } from '../../store/dataset-api';
 
 export function IdentifyShowFirstControl(props: WithMapPropType) {

@@ -45,11 +45,19 @@ export function ShowStatusDragItem({
               </DragButton>
             )}
             {!show ? (
-              <DragButton onClick={() => onOpen(item)} title="Show" aria-label="Show">
+              <DragButton
+                onClick={() => onOpen(item)}
+                title="Show"
+                aria-label="Show"
+              >
                 <ShowIcon size={16} />
               </DragButton>
             ) : (
-              <DragButton onClick={() => onClose(item)} title="Hide" aria-label="Hide">
+              <DragButton
+                onClick={() => onClose(item)}
+                title="Hide"
+                aria-label="Hide"
+              >
                 <HideIcon size={16} />
               </DragButton>
             )}

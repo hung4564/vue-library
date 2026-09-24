@@ -1,11 +1,9 @@
 import {
   COOKBOOK_CHECKLIST,
-  runCookbookScenario,
   type CookbookScenarioId,
+  runCookbookScenario,
 } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
-import { getUUIDv4 } from '@hungpvq/shared';
-import { loggerFactory } from '@hungpvq/shared-log';
 import { BaseMapCard, BaseMapControl, Map } from '@hungpvq/react-map-core';
 import {
   ComponentManagementControl,
@@ -14,7 +12,10 @@ import {
   LayerControl,
 } from '@hungpvq/react-map-dataset';
 import { DevtoolsControl } from '@hungpvq/react-map-devtools';
+import { getUUIDv4 } from '@hungpvq/shared';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { useCallback, useMemo, useState } from 'react';
+
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';

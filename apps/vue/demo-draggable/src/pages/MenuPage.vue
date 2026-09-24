@@ -59,8 +59,8 @@ function onSelect(id: MenuAction) {
           </li>
           <li><strong>Active</strong> item uses <code>active</code> prop.</li>
           <li>
-            <strong>Disabled</strong> item uses <code>disabled</code> (skipped by
-            keyboard).
+            <strong>Disabled</strong> item uses <code>disabled</code> (skipped
+            by keyboard).
           </li>
           <li>After open, try Arrow keys then Enter to activate.</li>
         </ul>

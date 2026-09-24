@@ -1,10 +1,8 @@
-import {
-  moduleCornerHostId,
-  moduleDraggableHostId,
-} from '@hungpvq/map-core';
+import { moduleCornerHostId, moduleDraggableHostId } from '@hungpvq/map-core';
 import { mount } from '@vue/test-utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, provide } from 'vue';
+
 import ModuleContainer from './ModuleContainer/ModuleContainer.vue';
 
 const MAP_ID = 'module-container-vue';

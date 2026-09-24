@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import type { IDraftRecord } from '@hungpvq/map-draw';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import { MapControlButton, useLang, useRegisterMapControl } from '@hungpvq/vue-map-core';
-
+import {
+  MapControlButton,
+  useLang,
+  useRegisterMapControl,
+} from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiDeleteOutline } from '@mdi/js';
-import type { IDraftRecord } from '@hungpvq/map-draw';
 import type { Feature } from 'geojson';
 import { computed, type Ref } from 'vue';
 
@@ -86,7 +89,8 @@ const path = {
             {{ trans('map.draw-control.draftList.type.' + item.status) }}
           </td>
           <td class="table-col-action">
-            <MapControlButton variant="plain"
+            <MapControlButton
+              variant="plain"
               type="button"
               v-if="item.modified"
               @click="emit('fly-to', item.modified as any)"
@@ -100,7 +104,8 @@ const path = {
                 :title="trans('map.draw-control.draftList.action.fillBound')"
               />
             </MapControlButton>
-            <MapControlButton variant="plain"
+            <MapControlButton
+              variant="plain"
               type="button"
               @click="emit('discard-item', item)"
               class="menu-item"

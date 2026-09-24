@@ -1,5 +1,6 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import type { SourceSpecification } from 'maplibre-gl';
+
 import { createWithDataHelper } from '../../extra/data';
 import type { IMapboxSourceView } from '../../interfaces/dataset.parts';
 import { createNamedComponent } from '../base';

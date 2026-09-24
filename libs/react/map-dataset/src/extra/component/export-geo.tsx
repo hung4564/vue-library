@@ -2,17 +2,17 @@ import { errorHandler, MapError } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import {
   createGeoExportController,
+  type ExportGeoGetCollection,
   GEO_EXPORT_COMPONENT_KEY,
   GEO_EXPORT_DEFAULT_CRS,
   GEO_EXPORT_FORMAT_META,
   GEO_EXPORT_FORMATS,
-  resolveGeoExportCrs,
-  resolveGeoExportUiSlot,
-  type ExportGeoGetCollection,
   type GeoExportController,
   type GeoExportFormat,
   type GeoExportHandler,
   type GeoExportScope,
+  resolveGeoExportCrs,
+  resolveGeoExportUiSlot,
 } from '@hungpvq/map-dataset/geo-export';
 import { DraggableModal } from '@hungpvq/react-draggable';
 import {
@@ -23,6 +23,7 @@ import {
 } from '@hungpvq/react-map-core';
 import type { ComponentType } from 'react';
 import { useEffect, useMemo, useState } from 'react';
+
 import { ExportGeoForm } from './export-geo-form';
 
 export type ExportGeoProps = {
@@ -77,15 +78,11 @@ export function ExportGeo(props: ExportGeoProps) {
   const { moduleContainerProps } = useMap({ mapId: props.mapId });
   const [show, toggleShow] = useShow(true);
   const formats = useMemo(
-    () =>
-      props.formats?.length ? props.formats : [...GEO_EXPORT_FORMATS],
+    () => (props.formats?.length ? props.formats : [...GEO_EXPORT_FORMATS]),
     [props.formats],
   );
   const scopes = useMemo(
-    () =>
-      props.scopes?.length
-        ? props.scopes
-        : (['all'] as GeoExportScope[]),
+    () => (props.scopes?.length ? props.scopes : (['all'] as GeoExportScope[])),
     [props.scopes],
   );
 
@@ -176,7 +173,6 @@ export function ExportGeo(props: ExportGeoProps) {
     return scopes.map((value) => ({ value, text: labels[value] }));
   }, [scopes]);
 
-
   const formSlot = useMemo(() => {
     const opts = controller.getOptions();
     const slot = resolveGeoExportUiSlot(
@@ -187,8 +183,7 @@ export function ExportGeo(props: ExportGeoProps) {
     return {
       componentKey: slot.componentKey,
       defaultComponent: slot.defaultComponent as
-        | ComponentType<Record<string, unknown>>
-        | undefined,
+        ComponentType<Record<string, unknown>> | undefined,
     };
   }, [controller, props.formComponent]);
 

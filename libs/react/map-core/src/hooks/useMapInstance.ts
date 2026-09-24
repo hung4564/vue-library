@@ -1,14 +1,15 @@
-import { getUUIDv4 } from '@hungpvq/shared';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   errorHandler,
+  type MapEventCallbacks,
   MapInitializationError,
   MapInitializer,
-  type MapEventCallbacks,
 } from '@hungpvq/map-core';
 import { patchMapStyleImageAccessors } from '@hungpvq/map-core/image';
+import { getUUIDv4 } from '@hungpvq/shared';
 import type { Map as MaplibreMap, MapOptions } from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
+
 import { useMapContainer } from '../store/store';
 
 export interface UseMapInstanceProps {

@@ -1,6 +1,7 @@
+import { getUUIDv4 } from '@hungpvq/shared';
 import booleanIntersects from '@turf/boolean-intersects';
 import { point as pointTurf } from '@turf/helpers';
-import { getUUIDv4 } from '@hungpvq/shared';
+
 import { toFeatureCollection } from '../utils/feature-collection';
 import { normalizeInitData, toRecord } from './normalize';
 import type {
@@ -94,7 +95,9 @@ function applyIdsFilter(
   const ids = (Array.isArray(raw) ? raw : [raw]).map(String);
   if (!ids.length) return items;
   const requested = new Set(ids);
-  return items.filter((item) => item.id != null && requested.has(String(item.id)));
+  return items.filter(
+    (item) => item.id != null && requested.has(String(item.id)),
+  );
 }
 
 function applySort(
@@ -138,11 +141,14 @@ function paginate(
   query?: PageQuery,
 ): PageResult<DataRecord> {
   const total = items.length;
-  if (query?.pageSize === 'all' || query?.pageSize == null && query?.page == null) {
+  if (
+    query?.pageSize === 'all' ||
+    (query?.pageSize == null && query?.page == null)
+  ) {
     const pageSize = total || 1;
     return { items, total, page: 1, pageSize };
   }
-  if (query?.pageSize === -1 as unknown as number) {
+  if (query?.pageSize === (-1 as unknown as number)) {
     return { items, total, page: 1, pageSize: total || 1 };
   }
   const pageSize =

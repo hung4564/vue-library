@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import {
   applyGotoSetting,
+  type GotoSetting,
   gotoSettingFromCoordinateText,
   readGotoSetting,
-  type GotoSetting,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
 import { ref, watch } from 'vue';
+
 import MapCommonButton from '../../components/MapCommonButton.vue';
+import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
 import { useToolbarControl } from '../../extra/toolbar/helper';
@@ -18,7 +20,6 @@ import { InputText } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
-import MapControlButton from '../../components/MapControlButton.vue';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
@@ -134,10 +135,17 @@ watch(show, () => control.sync());
           </div>
 
           <div class="map-goto-control__actions">
-            <map-control-button @click="onPasteCoordinates()" variant="outlined">
+            <map-control-button
+              @click="onPasteCoordinates()"
+              variant="outlined"
+            >
               {{ trans('map.goto-control.btn.paste') }}
             </map-control-button>
-            <map-control-button class="map-goto-control__btn" @click="onSetSetting()" variant="filled">
+            <map-control-button
+              class="map-goto-control__btn"
+              @click="onSetSetting()"
+              variant="filled"
+            >
               {{ trans('map.goto-control.btn.apply') }}
             </map-control-button>
           </div>

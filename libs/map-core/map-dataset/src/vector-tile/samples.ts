@@ -1,12 +1,7 @@
 import type { LayerStyleType } from '../style/layer-simple-builder';
 
 export type CreateControlLayerKind =
-  | 'geojson'
-  | 'filegdb'
-  | 'xyz'
-  | 'mbtiles'
-  | 'pmtiles'
-  | 'tilejson';
+  'geojson' | 'filegdb' | 'xyz' | 'mbtiles' | 'pmtiles' | 'tilejson';
 
 export type CreateControlSample = {
   id: string;

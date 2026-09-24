@@ -4,8 +4,9 @@
  */
 
 import type { MapLayerEventType } from 'maplibre-gl';
-import type { MapSimple } from '../../types';
+
 import { Base } from '../../model/Base';
+import type { MapSimple } from '../../types';
 
 /**
  * Interface for event models

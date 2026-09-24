@@ -1,9 +1,10 @@
-export { useComponent, withShareComponent } from './useComponent';
+export { useBottomContainer } from './useBottomContainer';
 export type {
   PropsShareComponent,
   ShareCardComponent,
   ShareHeaderComponent,
 } from './useComponent';
+export { useComponent, withShareComponent } from './useComponent';
 export { useIcon } from './useIcon';
 export { useInitAction } from './useInit';
 export { useInitBottom } from './useInitBottom';
@@ -26,4 +27,3 @@ export {
   withShowProps,
 } from './useShow';
 export { useSideBarContainer } from './useSideBarContainer';
-export { useBottomContainer } from './useBottomContainer';

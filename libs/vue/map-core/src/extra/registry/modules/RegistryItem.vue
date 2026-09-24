@@ -2,7 +2,8 @@
   <component :is="resolvedComponent" v-bind="$attrs" :mapId="mapId"></component>
 </template>
 <script lang="ts" setup>
-import { computed, markRaw, type Component } from 'vue';
+import { type Component, computed, markRaw } from 'vue';
+
 import { useMap } from '../../../hooks/useMap';
 import { useUniversalRegistry } from '../plugin';
 

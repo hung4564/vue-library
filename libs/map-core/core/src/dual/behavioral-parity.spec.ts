@@ -5,6 +5,7 @@
  * as the dual checklist.
  */
 import { describe, expect, it } from 'vitest';
+
 import {
   createMeasurementSession,
   resolveMeasurementModeToggle,

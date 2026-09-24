@@ -10,10 +10,10 @@ import { type MapSimple } from '@hungpvq/map-core';
 import { EventClick, EventMouseMove } from '@hungpvq/map-core/event';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  renderPopup as _renderPopup,
   brightColor,
   generateInspectStyle,
   InspectController,
+  renderPopup as _renderPopup,
 } from '@hungpvq/map-draw';
 import {
   defaultMapProps,
@@ -27,6 +27,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
 import { ref } from 'vue';
+
 import { useEnsureDrawBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import type { InspectControlProps } from './InspectControl.props';
 

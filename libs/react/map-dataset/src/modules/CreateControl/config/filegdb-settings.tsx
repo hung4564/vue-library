@@ -1,6 +1,6 @@
 import {
-  SourceLayerOptionsList,
   type SourceLayerOptionRow,
+  SourceLayerOptionsList,
 } from './source-layer-options';
 import type { CreateConfigFormProps } from './types';
 

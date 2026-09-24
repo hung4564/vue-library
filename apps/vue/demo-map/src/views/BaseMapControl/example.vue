@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
@@ -9,9 +7,12 @@ import {
   Map,
 } from '@hungpvq/vue-map-core';
 import { MapCard } from '@hungpvq/vue-map-core/fields';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
+
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../../layout/aside-control.vue';
 const mapId = ref('');
 function onMapLoaded(map: MapSimple) {
   mapId.value = map.id;

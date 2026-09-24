@@ -85,9 +85,7 @@ export function createIdentifyDemoFeatureCollection(
 ): FeatureCollection {
   return {
     type: 'FeatureCollection',
-    features: features.map((f) =>
-      polygonFromBounds(f.id, f.name, f.bounds),
-    ),
+    features: features.map((f) => polygonFromBounds(f.id, f.name, f.bounds)),
   };
 }
 
@@ -124,7 +122,10 @@ function buildIdentifyDemoLayer(options: IdentifyDemoLayerOptions) {
   ];
   if (withOutline) {
     styles.push(
-      new LayerSimpleMapboxBuild().setStyleType('line').setColor('#000').build(),
+      new LayerSimpleMapboxBuild()
+        .setStyleType('line')
+        .setColor('#000')
+        .build(),
     );
   }
   const layer = createMultiMapboxLayerComponent(

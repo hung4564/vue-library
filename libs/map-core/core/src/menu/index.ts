@@ -15,6 +15,11 @@ export {
   pointWkt,
   zoomInMapHere,
 } from './actions';
+export type {
+  AddGeojsonHerePayload,
+  MapAddGeojsonHereDef,
+  MapAddGeojsonHereLayerType,
+} from './add-geojson-here';
 export {
   clearAddGeojsonHereItems,
   createAddGeojsonHereDef,
@@ -30,6 +35,7 @@ export {
   handleMapMenuAction,
   resolveMapMenuCondition,
 } from './handle';
+export type { CreateDefaultMapContextMenuOptions } from './items';
 export {
   createDefaultMapContextMenuItems,
   createMenuItemCenterMapHere,
@@ -42,14 +48,6 @@ export {
   createMenuItemQuickAnalysis,
   createMenuItemZoomInHere,
 } from './items';
-export { MAP_CONTEXT_MENU_ID } from './types';
-
-export type {
-  AddGeojsonHerePayload,
-  MapAddGeojsonHereDef,
-  MapAddGeojsonHereLayerType,
-} from './add-geojson-here';
-export type { CreateDefaultMapContextMenuOptions } from './items';
 export type {
   MapContextMenuAction,
   MapContextMenuDivider,
@@ -64,3 +62,4 @@ export type {
   MapMenuItemClick,
   MapMenuItemProps,
 } from './types';
+export { MAP_CONTEXT_MENU_ID } from './types';

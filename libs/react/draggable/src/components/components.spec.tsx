@@ -1,6 +1,7 @@
-import { render, cleanup, act, waitFor } from '@testing-library/react';
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { act, cleanup, render, waitFor } from '@testing-library/react';
 import React from 'react';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+
 import { ContextMenu, type ContextMenuRef } from '../components/ContextMenu';
 import { ContextMenuItem } from '../components/ContextMenuItem';
 import { DraggableContainer } from '../components/draggable/draggable-container';

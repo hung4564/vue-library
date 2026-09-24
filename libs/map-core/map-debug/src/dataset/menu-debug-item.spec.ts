@@ -1,4 +1,3 @@
-import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import {
   isMapDevtoolsInstalled,
   setDevtoolActiveTab,
@@ -14,6 +13,8 @@ import {
   MENU_CONTROL_ID,
 } from '@hungpvq/map-dataset/menu';
 import { GlobalStoreService } from '@hungpvq/shared-store';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import {
   getDatasetDebugApi,
   installDatasetDebug,

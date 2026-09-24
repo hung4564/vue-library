@@ -1,10 +1,3 @@
-import React, {
-  useState,
-  useCallback,
-  useRef,
-  useEffect,
-  useMemo,
-} from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import {
@@ -14,10 +7,18 @@ import {
   zoomOut,
 } from '@hungpvq/map-core';
 import {
-  mdiIcon,
   type MapControlButtonUIState,
+  mdiIcon,
 } from '@hungpvq/map-core/toolbar';
 import { mdiMinus, mdiPlus } from '@mdi/js';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
 import { useLang } from '../../extra/lang/hook';
@@ -161,8 +162,7 @@ export function ZoomControl({
   );
 
   const moduleState = state as
-    | Record<string, MapControlButtonUIState | undefined>
-    | undefined;
+    Record<string, MapControlButtonUIState | undefined> | undefined;
 
   return (
     <ModuleContainer

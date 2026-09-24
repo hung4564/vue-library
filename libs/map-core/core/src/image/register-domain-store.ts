@@ -1,9 +1,9 @@
-import { getMap } from '../store/map-platform-registry';
-import { MAP_STORE_KEY } from '../types/constants';
 import {
   ensureMapDomainStore,
   registerMapDomainStoreFactory,
 } from '../store/map-domain-store';
+import { getMap } from '../store/map-platform-registry';
+import { MAP_STORE_KEY } from '../types/constants';
 import { createMapImageStoreApi } from './store-api';
 import { createDefaultImageStore, type MapImageStore } from './types';
 

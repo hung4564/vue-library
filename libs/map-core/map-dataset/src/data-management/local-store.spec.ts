@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
 import { createLocalStore } from './local-store';
 
 const KEY = 'dm-local-store-test';

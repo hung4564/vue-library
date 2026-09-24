@@ -1,10 +1,22 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
-import type { MenuClickAddComponent, MenuClickFitBounds, MenuClickHighlight, MenuItemProps } from '@hungpvq/map-dataset/menu';
-import { addListViewsToGroup, addListViewsToNewGroup, canMoveListView, type IListViewUI, moveListView, syncListViewLayerOrder } from '@hungpvq/map-dataset';
 import {
-  paintHighlight,
+  addListViewsToGroup,
+  addListViewsToNewGroup,
+  canMoveListView,
+  type IListViewUI,
+  moveListView,
+  syncListViewLayerOrder,
+} from '@hungpvq/map-dataset';
+import {
   type HighlightSessionIntent,
+  paintHighlight,
 } from '@hungpvq/map-dataset/identify';
+import type {
+  MenuClickAddComponent,
+  MenuClickFitBounds,
+  MenuClickHighlight,
+  MenuItemProps,
+} from '@hungpvq/map-dataset/menu';
 import {
   LIST_VIEW_MENU_ID,
   runFitBoundsMenuAction,
@@ -15,9 +27,10 @@ import {
   useMap,
 } from '@hungpvq/react-map-core';
 import { useLayoutEffect, useRef } from 'react';
+
+import { useMapDatasetComponent } from '../store/component';
 import { useMapDataset } from '../store/dataset-api';
 import { notifyMapDatasetStore } from '../store/dataset-store';
-import { useMapDatasetComponent } from '../store/component';
 
 export function LayerMenuDefaultHandle(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };

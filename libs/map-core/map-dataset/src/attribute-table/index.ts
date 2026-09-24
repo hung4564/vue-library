@@ -2,18 +2,19 @@
  * Public entry for `@hungpvq/map-dataset/attribute-table`.
  * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
  */
-export {
-  createAttributeTableController,
-} from './controller';
 export type {
+  AttributeTableColumnFilterOptions,
   AttributeTableController,
   AttributeTableControllerEvent,
   AttributeTableControllerReason,
   AttributeTableControllerState,
-  AttributeTableColumnFilterOptions,
   CreateAttributeTableControllerOptions,
 } from './controller';
-
+export { createAttributeTableController } from './controller';
+export type {
+  AttributeTablePart,
+  CreateDatasetPartAttributeTableOptions,
+} from './dataset-part';
 export {
   createDatasetPartAttributeTable,
   isAttributeTableView,
@@ -21,21 +22,43 @@ export {
   resolveAttributeTableUiOption,
 } from './dataset-part';
 export type {
-  AttributeTablePart,
-  CreateDatasetPartAttributeTableOptions,
-} from './dataset-part';
-
+  AttributeTableColumnFilter,
+  AttributeTableColumnFilterEntry,
+  AttributeTableColumnFilterMode,
+  AttributeTableColumnFilters,
+  AttributeTableColumnTextFilter,
+  AttributeTableColumnTextFilterMode,
+  AttributeTableColumnTextFilters,
+} from './filter';
+export {
+  ATTRIBUTE_TABLE_COLUMN_FILTER_MODES,
+  filterAttributeTableRowsByColumnText,
+  getAttributeTableColumnFilterMode,
+  getAttributeTableColumnFilterQuery,
+  getAttributeTableColumnFilterQueryEnd,
+  matchAttributeTableColumnFilter,
+  matchAttributeTableColumnText,
+  resolveAttributeTableVisibleColumns,
+} from './filter';
 export {
   ATTRIBUTE_TABLE_LOCALE,
   formatAttributeTableSelectionStatus,
 } from './locale';
-
+export type { AttributeTableMenuOptions } from './menu';
 export {
   createMenuItemAttributeTable,
   isAttributeTableMenuHidden,
 } from './menu';
-export type { AttributeTableMenuOptions } from './menu';
-
+export type {
+  AttributeTableCellFormatContext,
+  AttributeTableCellProps,
+  AttributeTableColumn,
+  AttributeTableColumnDef,
+  AttributeTableColumnsOption,
+  AttributeTableHeaderProps,
+  AttributeTableRow,
+  AttributeTableSelectRowsPayload,
+} from './model';
 export {
   ATTRIBUTE_TABLE_CONTROL,
   ATTRIBUTE_TABLE_GEOMETRY_KEY,
@@ -53,22 +76,6 @@ export {
   takePendingAttributeTableSelectRows,
 } from './model';
 export type {
-  AttributeTableCellFormatContext,
-  AttributeTableCellProps,
-  AttributeTableColumn,
-  AttributeTableColumnDef,
-  AttributeTableColumnsOption,
-  AttributeTableHeaderProps,
-  AttributeTableRow,
-  AttributeTableSelectRowsPayload,
-} from './model';
-
-export {
-  ATTRIBUTE_TABLE_COMPONENT_KEY,
-  ATTRIBUTE_TABLE_UI_DEFAULTS,
-  resolveAttributeTableUi,
-} from './props';
-export type {
   AttributeTableComponentKey,
   AttributeTableGridProps,
   AttributeTablePagerProps,
@@ -80,44 +87,17 @@ export type {
   AttributeTableViewLabels,
   AttributeTableViewProps,
 } from './props';
-
 export {
-  ATTRIBUTE_TABLE_COLUMN_FILTER_MODES,
-  filterAttributeTableRowsByColumnText,
-  getAttributeTableColumnFilterMode,
-  getAttributeTableColumnFilterQuery,
-  getAttributeTableColumnFilterQueryEnd,
-  matchAttributeTableColumnFilter,
-  matchAttributeTableColumnText,
-  resolveAttributeTableVisibleColumns,
-} from './filter';
-export type {
-  AttributeTableColumnFilter,
-  AttributeTableColumnFilterEntry,
-  AttributeTableColumnFilterMode,
-  AttributeTableColumnFilters,
-  AttributeTableColumnTextFilter,
-  AttributeTableColumnTextFilterMode,
-  AttributeTableColumnTextFilters,
-} from './filter';
-
+  ATTRIBUTE_TABLE_COMPONENT_KEY,
+  ATTRIBUTE_TABLE_UI_DEFAULTS,
+  resolveAttributeTableUi,
+} from './props';
+export type { AttributeTableSortDir, AttributeTableSortState } from './sort';
 export {
   sortAttributeTableRows,
   toggleAttributeTableMultiSort,
   toggleAttributeTableSort,
 } from './sort';
-export type {
-  AttributeTableSortDir,
-  AttributeTableSortState,
-} from './sort';
-
-export {
-  ATTRIBUTE_TABLE_DEFAULT_PAGE_SIZE,
-  ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
-  createAttributeTableStoreFromDataset,
-  createDataManagementAttributeTableStore,
-  createLocalAttributeTableStore,
-} from './store';
 export type {
   AttributeTableListIntent,
   AttributeTableStore,
@@ -125,9 +105,15 @@ export type {
   AttributeTableStoreQuery,
   CreateAttributeTableStoreOptions,
 } from './store';
-
+export {
+  ATTRIBUTE_TABLE_DEFAULT_PAGE_SIZE,
+  ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
+  createAttributeTableStoreFromDataset,
+  createDataManagementAttributeTableStore,
+  createLocalAttributeTableStore,
+} from './store';
+export type { VirtualRowWindow } from './virtual-rows';
 export {
   ATTRIBUTE_TABLE_ROW_HEIGHT,
   getVirtualRowWindow,
 } from './virtual-rows';
-export type { VirtualRowWindow } from './virtual-rows';

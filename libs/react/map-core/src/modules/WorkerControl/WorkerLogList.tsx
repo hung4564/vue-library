@@ -1,7 +1,4 @@
-import {
-  formatWorkerLogTime,
-  type WorkerLogEntry,
-} from '@hungpvq/map-core';
+import { formatWorkerLogTime, type WorkerLogEntry } from '@hungpvq/map-core';
 import { memo, useLayoutEffect, useRef } from 'react';
 
 export interface WorkerLogListProps {

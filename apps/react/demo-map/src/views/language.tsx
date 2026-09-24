@@ -14,15 +14,16 @@ import {
   MeasurementControl,
   MouseCoordinatesControl,
   ThemeControl,
-  ZoomControl,
   useLang,
   useMapContext,
+  ZoomControl,
 } from '@hungpvq/react-map-core';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useCallback, useMemo, useState } from 'react';
+
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 const FR_LOCALE: MapLangLocale = {
   map: {

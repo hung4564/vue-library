@@ -1,11 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import type { MapSimple } from '../types';
 import {
-  MEASUREMENT_DEFAULT_HIGHLIGHT_COLOR,
-  MEASUREMENT_MAP_VIEW_IMAGE,
   createMeasurementMapView,
   createMeasurementMapViewEmptySource,
   createMeasurementMapViewLayers,
+  MEASUREMENT_DEFAULT_HIGHLIGHT_COLOR,
+  MEASUREMENT_MAP_VIEW_IMAGE,
 } from './map-view-layers';
 
 describe('measurement MapView layer bootstrap', () => {

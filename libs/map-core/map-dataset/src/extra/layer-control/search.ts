@@ -15,9 +15,9 @@ export function layerNameMatchesSearch(
     .includes(q);
 }
 
-export function layerGroupName(
-  view: { group?: { name?: string } | string | null },
-): string | undefined {
+export function layerGroupName(view: {
+  group?: { name?: string } | string | null;
+}): string | undefined {
   const group = view.group;
   if (!group) return undefined;
   if (typeof group === 'string') return group;

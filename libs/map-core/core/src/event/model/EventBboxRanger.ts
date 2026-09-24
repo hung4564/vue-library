@@ -2,11 +2,11 @@
  * Framework-agnostic bounding box selection event model
  */
 
-import type { MapSimple } from '../../types';
-import type { EventBboxRangerHandle, EventBboxRangerOption } from '../types';
 import { MapEventError } from '../../errors';
 import { errorHandler } from '../../services/error-handler.service';
-import { startBoxRangerMap, type BoxRangerHandle } from '../bbox-selector';
+import type { MapSimple } from '../../types';
+import { type BoxRangerHandle, startBoxRangerMap } from '../bbox-selector';
+import type { EventBboxRangerHandle, EventBboxRangerOption } from '../types';
 import { Event } from './Event';
 
 /**
@@ -68,6 +68,7 @@ export class EventBboxRanger extends Event<
         dragPan: map.dragPan.isEnabled(),
         boxZoom: map.boxZoom.isEnabled(),
       };
+      console.log('test', this._originalHandlers);
 
       // Disable map interactions
       if (map.scrollZoom.isEnabled()) map.scrollZoom.disable();

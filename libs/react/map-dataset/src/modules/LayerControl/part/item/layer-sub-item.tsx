@@ -6,8 +6,8 @@ import type {
 } from '@hungpvq/map-dataset/menu';
 import { getResolvedMenus } from '@hungpvq/map-dataset/menu';
 import { RegistryItem } from '@hungpvq/react-map-core';
-
 import { useMemo } from 'react';
+
 import { DatasetMenus } from '../../../../extra/menu/dataset-menus';
 
 export function LayerSubItem({

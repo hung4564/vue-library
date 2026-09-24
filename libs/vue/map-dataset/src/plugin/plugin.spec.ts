@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest';
 import { GEO_EXPORT_COMPONENT_KEY } from '@hungpvq/map-dataset/geo-export';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { UniversalRegistry } from '@hungpvq/vue-map-core';
+import { describe, expect, it } from 'vitest';
+
 import { createDatasetRegistryPlugin } from './index';
 
 const REGISTERED_KEYS = [

@@ -1,7 +1,13 @@
 <script setup lang="ts">
-
-import { onMounted, Ref, ref, shallowRef } from 'vue';
-
+import { MapSimple } from '@hungpvq/map-core';
+import {
+  ComponentType,
+  findSiblingOrNearestLeaf,
+  IDataset,
+  IMapboxLayerView,
+  isMapboxLayerView,
+} from '@hungpvq/map-dataset';
+import { copyByJson } from '@hungpvq/shared';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   ModuleContainer,
@@ -11,11 +17,7 @@ import {
   useRegisterMapControl,
   useShow,
 } from '@hungpvq/vue-map-core';
-
-import { MapSimple } from '@hungpvq/map-core';
-import { ComponentType, findSiblingOrNearestLeaf, IDataset, IMapboxLayerView, isMapboxLayerView } from '@hungpvq/map-dataset';
-
-import { copyByJson } from '@hungpvq/shared';
+import { onMounted, Ref, ref, shallowRef } from 'vue';
 
 const emit = defineEmits(['close']);
 const props = defineProps<{ item: IDataset }>();

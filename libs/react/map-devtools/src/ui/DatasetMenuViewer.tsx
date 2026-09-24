@@ -176,7 +176,11 @@ export function DatasetMenuViewer() {
   }, []);
 
   const previewMenus = useCallback(
-    (opts?: { control?: string; target?: 'layer' | 'item'; menuId?: string }) => {
+    (opts?: {
+      control?: string;
+      target?: 'layer' | 'item';
+      menuId?: string;
+    }) => {
       const d = getApi();
       if (!d) return;
       const ctl = opts?.control ?? control;
@@ -507,7 +511,11 @@ export function DatasetMenuViewer() {
     let nextPane: PaneId = 'roots';
     if (!did) {
       nextPane = 'roots';
-    } else if (s.pane === 'roots' || s.pane === 'inspect' || s.pane === 'menus') {
+    } else if (
+      s.pane === 'roots' ||
+      s.pane === 'inspect' ||
+      s.pane === 'menus'
+    ) {
       nextPane = s.pane;
     } else if (s.pane === 'tree' || s.pane === 'find') {
       nextPane = 'inspect';
@@ -648,10 +656,7 @@ export function DatasetMenuViewer() {
     <div className="dataset-viewer">
       <div className="dataset-viewer__toolbar">
         {snapshot ? (
-          <div
-            className="dataset-viewer__current"
-            title={snapshot.identity.id}
-          >
+          <div className="dataset-viewer__current" title={snapshot.identity.id}>
             <span
               className="dataset-viewer__kind"
               data-kind={snapshot.identity.kind}
@@ -896,164 +901,170 @@ export function DatasetMenuViewer() {
                 className="dataset-viewer__detail"
                 aria-label="Dataset details"
               >
-              {snapshot ? (
-                <>
-                  <section className="dataset-viewer__section">
-                    <h3 className="dataset-viewer__section-h">Identity</h3>
-                    <DetailRow label="Name" copyValue={snapshot.identity.name}>
-                      <span>{snapshot.identity.name}</span>
-                    </DetailRow>
-                    <DetailRow label="ID" copyValue={snapshot.identity.id}>
-                      <code className="dataset-viewer__mono">
-                        {snapshot.identity.id}
-                      </code>
-                    </DetailRow>
-                    <DetailRow label="Type" copyValue={snapshot.identity.type}>
-                      <span>{snapshot.identity.type}</span>
-                    </DetailRow>
-                    <DetailRow label="Kind">
-                      <span
-                        className="dataset-viewer__kind"
-                        data-kind={snapshot.identity.kind}
+                {snapshot ? (
+                  <>
+                    <section className="dataset-viewer__section">
+                      <h3 className="dataset-viewer__section-h">Identity</h3>
+                      <DetailRow
+                        label="Name"
+                        copyValue={snapshot.identity.name}
                       >
-                        {snapshot.identity.kind}
-                      </span>
-                    </DetailRow>
-                  </section>
+                        <span>{snapshot.identity.name}</span>
+                      </DetailRow>
+                      <DetailRow label="ID" copyValue={snapshot.identity.id}>
+                        <code className="dataset-viewer__mono">
+                          {snapshot.identity.id}
+                        </code>
+                      </DetailRow>
+                      <DetailRow
+                        label="Type"
+                        copyValue={snapshot.identity.type}
+                      >
+                        <span>{snapshot.identity.type}</span>
+                      </DetailRow>
+                      <DetailRow label="Kind">
+                        <span
+                          className="dataset-viewer__kind"
+                          data-kind={snapshot.identity.kind}
+                        >
+                          {snapshot.identity.kind}
+                        </span>
+                      </DetailRow>
+                    </section>
 
-                  <section className="dataset-viewer__section">
-                    <h3 className="dataset-viewer__section-h">Hierarchy</h3>
-                    <DetailRow label="Root">
-                      <MapControlButton
-                        variant="text"
-                        size="small"
-                        title={snapshot.hierarchy.rootId}
-                        onClick={() =>
-                          selectDataset(snapshot.hierarchy.rootId)
-                        }
-                      >
-                        {snapshot.hierarchy.rootName}
-                      </MapControlButton>
-                    </DetailRow>
-                    <DetailRow label="Parent">
-                      {snapshot.hierarchy.parentId ? (
+                    <section className="dataset-viewer__section">
+                      <h3 className="dataset-viewer__section-h">Hierarchy</h3>
+                      <DetailRow label="Root">
                         <MapControlButton
                           variant="text"
                           size="small"
-                          title={snapshot.hierarchy.parentId}
+                          title={snapshot.hierarchy.rootId}
                           onClick={() =>
-                            selectDataset(
-                              snapshot.hierarchy.parentId as string,
-                            )
+                            selectDataset(snapshot.hierarchy.rootId)
                           }
                         >
-                          {snapshot.hierarchy.parentName || '—'}
+                          {snapshot.hierarchy.rootName}
                         </MapControlButton>
-                      ) : (
-                        <span>(none — this is a root)</span>
-                      )}
-                    </DetailRow>
-                    <DetailRow label="Children">
-                      <span>{snapshot.hierarchy.childCount}</span>
-                    </DetailRow>
-                    {snapshot.hierarchy.children.length > 0 ? (
-                      <ul className="dataset-viewer__child-list">
-                        {snapshot.hierarchy.children.map((c) => (
-                          <li key={c.id}>
-                            <MapControlButton
-                              variant="text"
-                              size="small"
-                              onClick={() => selectDataset(c.id)}
-                            >
-                              {c.name}
-                              <span className="dataset-viewer__muted">
-                                {c.type}
-                              </span>
-                            </MapControlButton>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : null}
-                    <DetailRow label="Depth">
-                      <span>{snapshot.hierarchy.depth}</span>
-                    </DetailRow>
-                    <DetailRow
-                      label="Path"
-                      copyValue={snapshot.hierarchy.pathLabel}
-                    >
-                      <code className="dataset-viewer__mono">
-                        {snapshot.hierarchy.pathLabel}
-                      </code>
-                    </DetailRow>
-                  </section>
-
-                  <section className="dataset-viewer__section">
-                    <h3 className="dataset-viewer__section-h">Runtime</h3>
-                    <DetailRow label="isComposite">
-                      <span>{String(snapshot.runtime.isComposite)}</span>
-                    </DetailRow>
-                    <DetailRow label="addToMap">
-                      <span>{flag(snapshot.runtime.hasAddToMap)}</span>
-                    </DetailRow>
-                    <DetailRow label="removeFromMap">
-                      <span>{flag(snapshot.runtime.hasRemoveFromMap)}</span>
-                    </DetailRow>
-                    <DetailRow label="getData">
-                      <span>{flag(snapshot.runtime.hasGetData)}</span>
-                    </DetailRow>
-                    <DetailRow label="getMenus">
-                      <span>{flag(snapshot.runtime.hasGetMenus)}</span>
-                    </DetailRow>
-                    {snapshot.runtime.show !== undefined ? (
-                      <DetailRow label="show">
-                        <span>{String(snapshot.runtime.show)}</span>
                       </DetailRow>
-                    ) : null}
-                    {snapshot.runtime.opacity !== undefined ? (
-                      <DetailRow label="opacity">
-                        <span>{String(snapshot.runtime.opacity)}</span>
+                      <DetailRow label="Parent">
+                        {snapshot.hierarchy.parentId ? (
+                          <MapControlButton
+                            variant="text"
+                            size="small"
+                            title={snapshot.hierarchy.parentId}
+                            onClick={() =>
+                              selectDataset(
+                                snapshot.hierarchy.parentId as string,
+                              )
+                            }
+                          >
+                            {snapshot.hierarchy.parentName || '—'}
+                          </MapControlButton>
+                        ) : (
+                          <span>(none — this is a root)</span>
+                        )}
                       </DetailRow>
-                    ) : null}
-                    {snapshot.runtime.selected !== undefined ? (
-                      <DetailRow label="selected">
-                        <span>{String(snapshot.runtime.selected)}</span>
+                      <DetailRow label="Children">
+                        <span>{snapshot.hierarchy.childCount}</span>
                       </DetailRow>
-                    ) : null}
-                  </section>
-
-                  {snapshot.dependsOn?.length ? (
-                    <section className="dataset-viewer__section">
-                      <h3 className="dataset-viewer__section-h">dependsOn</h3>
-                      <code className="dataset-viewer__mono">
-                        {snapshot.dependsOn.join(', ')}
-                      </code>
+                      {snapshot.hierarchy.children.length > 0 ? (
+                        <ul className="dataset-viewer__child-list">
+                          {snapshot.hierarchy.children.map((c) => (
+                            <li key={c.id}>
+                              <MapControlButton
+                                variant="text"
+                                size="small"
+                                onClick={() => selectDataset(c.id)}
+                              >
+                                {c.name}
+                                <span className="dataset-viewer__muted">
+                                  {c.type}
+                                </span>
+                              </MapControlButton>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                      <DetailRow label="Depth">
+                        <span>{snapshot.hierarchy.depth}</span>
+                      </DetailRow>
+                      <DetailRow
+                        label="Path"
+                        copyValue={snapshot.hierarchy.pathLabel}
+                      >
+                        <code className="dataset-viewer__mono">
+                          {snapshot.hierarchy.pathLabel}
+                        </code>
+                      </DetailRow>
                     </section>
-                  ) : null}
 
-                  {snapshot.dataPreview !== undefined ? (
+                    <section className="dataset-viewer__section">
+                      <h3 className="dataset-viewer__section-h">Runtime</h3>
+                      <DetailRow label="isComposite">
+                        <span>{String(snapshot.runtime.isComposite)}</span>
+                      </DetailRow>
+                      <DetailRow label="addToMap">
+                        <span>{flag(snapshot.runtime.hasAddToMap)}</span>
+                      </DetailRow>
+                      <DetailRow label="removeFromMap">
+                        <span>{flag(snapshot.runtime.hasRemoveFromMap)}</span>
+                      </DetailRow>
+                      <DetailRow label="getData">
+                        <span>{flag(snapshot.runtime.hasGetData)}</span>
+                      </DetailRow>
+                      <DetailRow label="getMenus">
+                        <span>{flag(snapshot.runtime.hasGetMenus)}</span>
+                      </DetailRow>
+                      {snapshot.runtime.show !== undefined ? (
+                        <DetailRow label="show">
+                          <span>{String(snapshot.runtime.show)}</span>
+                        </DetailRow>
+                      ) : null}
+                      {snapshot.runtime.opacity !== undefined ? (
+                        <DetailRow label="opacity">
+                          <span>{String(snapshot.runtime.opacity)}</span>
+                        </DetailRow>
+                      ) : null}
+                      {snapshot.runtime.selected !== undefined ? (
+                        <DetailRow label="selected">
+                          <span>{String(snapshot.runtime.selected)}</span>
+                        </DetailRow>
+                      ) : null}
+                    </section>
+
+                    {snapshot.dependsOn?.length ? (
+                      <section className="dataset-viewer__section">
+                        <h3 className="dataset-viewer__section-h">dependsOn</h3>
+                        <code className="dataset-viewer__mono">
+                          {snapshot.dependsOn.join(', ')}
+                        </code>
+                      </section>
+                    ) : null}
+
+                    {snapshot.dataPreview !== undefined ? (
+                      <section className="dataset-viewer__section">
+                        <h3 className="dataset-viewer__section-h">
+                          Data preview
+                        </h3>
+                        <TreeItem data={snapshot.dataPreview} />
+                      </section>
+                    ) : null}
+
                     <section className="dataset-viewer__section">
                       <h3 className="dataset-viewer__section-h">
-                        Data preview
+                        Methods (generic)
                       </h3>
-                      <TreeItem data={snapshot.dataPreview} />
+                      <code className="dataset-viewer__mono dataset-viewer__methods">
+                        {snapshot.identity.methodNames.join(', ') || '—'}
+                      </code>
                     </section>
-                  ) : null}
-
-                  <section className="dataset-viewer__section">
-                    <h3 className="dataset-viewer__section-h">
-                      Methods (generic)
-                    </h3>
-                    <code className="dataset-viewer__mono dataset-viewer__methods">
-                      {snapshot.identity.methodNames.join(', ') || '—'}
-                    </code>
-                  </section>
-                </>
-              ) : (
-                <p className="dataset-viewer__empty">
-                  Chọn dataset từ tree hoặc search.
-                </p>
-              )}
-            </section>
+                  </>
+                ) : (
+                  <p className="dataset-viewer__empty">
+                    Chọn dataset từ tree hoặc search.
+                  </p>
+                )}
+              </section>
             </div>
           </div>
         ) : null}
@@ -1090,7 +1101,10 @@ export function DatasetMenuViewer() {
             </div>
 
             <div className="dataset-viewer__menus-layout">
-              <div className="dataset-viewer__buckets" aria-label="Menu buckets">
+              <div
+                className="dataset-viewer__buckets"
+                aria-label="Menu buckets"
+              >
                 {visibleBuckets.length === 0 ? (
                   <p className="dataset-viewer__empty">
                     No menus for this target / control.

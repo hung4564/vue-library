@@ -9,10 +9,7 @@ export type GotoSetting = {
 export function readGotoSetting(map: MapSimple): GotoSetting {
   return {
     zoom: map.getZoom(),
-    center: [
-      +map.getCenter().lng.toFixed(6),
-      +map.getCenter().lat.toFixed(6),
-    ],
+    center: [+map.getCenter().lng.toFixed(6), +map.getCenter().lat.toFixed(6)],
   };
 }
 

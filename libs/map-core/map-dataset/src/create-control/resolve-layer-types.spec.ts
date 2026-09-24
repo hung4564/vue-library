@@ -1,15 +1,14 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   LAYER_TYPES,
-  resolveCreateControlLayerTypes,
   type LayerType,
+  resolveCreateControlLayerTypes,
 } from './form-create';
 
 describe('resolveCreateControlLayerTypes', () => {
   it('returns all types when allowed is undefined', () => {
-    expect(resolveCreateControlLayerTypes()).toEqual(
-      Object.keys(LAYER_TYPES),
-    );
+    expect(resolveCreateControlLayerTypes()).toEqual(Object.keys(LAYER_TYPES));
   });
 
   it('filters and preserves caller order', () => {

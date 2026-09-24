@@ -4,18 +4,19 @@ import {
   buildCreateControlLoadedMetaChips,
   collectFileGdbFilesFromDataTransfer,
   createControlGeojsonPreviewPatch,
+  type CreateControlLoadedSource,
   FILEGDB_FILE_ACCEPT,
   formatCreateControlParseStatus,
   looksLikeFileGdbFiles,
   parseCreateControlUploadedFiles,
   subscribeCreateControlParseProgress,
   summarizeCreateControlUploadFiles,
-  type CreateControlLoadedSource,
 } from '@hungpvq/map-dataset/create-control';
 import { terminateGeojsonWorker } from '@hungpvq/map-dataset/geojson';
 import { MapControlButton } from '@hungpvq/react-map-core';
 import { DragDropFile } from '@hungpvq/react-map-core/fields';
 import { useMemo, useRef, useState } from 'react';
+
 import type { CreateConfigFormProps } from './types';
 
 function filterGdbUploadFiles(files: File[]): File[] {
@@ -131,7 +132,9 @@ export function ConfigFilegdbUpload({
     const { totalBytes } = summarizeCreateControlUploadFiles(files);
     const parsingLabel = trans('map.layer-control.create.parsing');
     setParsing(true);
-    setParseStatusText(formatCreateControlParseStatus(parsingLabel, totalBytes));
+    setParseStatusText(
+      formatCreateControlParseStatus(parsingLabel, totalBytes),
+    );
     const unsubProgress = subscribeCreateControlParseProgress(
       parsingLabel,
       totalBytes,

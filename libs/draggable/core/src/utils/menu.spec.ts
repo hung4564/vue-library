@@ -2,11 +2,8 @@
  * @vitest-environment jsdom
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import {
-  clearMenuTypeahead,
-  getMenuItems,
-  handleMenuKeydown,
-} from './menu';
+
+import { clearMenuTypeahead, getMenuItems, handleMenuKeydown } from './menu';
 
 describe('menu helpers', () => {
   afterEach(() => {

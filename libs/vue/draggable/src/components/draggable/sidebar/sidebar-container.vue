@@ -4,8 +4,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import ContextMenu from '../../ContextMenu.vue';
-import ContextMenuItem from '../../ContextMenuItem.vue';
+import type { LocationSideBar } from '@hungpvq/draggable';
 import { focusFirst, restoreFocus } from '@hungpvq/draggable';
 import {
   computed,
@@ -13,11 +12,11 @@ import {
   nextTick,
   onBeforeUnmount,
   PropType,
-  ref,
   Ref,
+  ref,
   watch,
 } from 'vue';
-import type { LocationSideBar } from '@hungpvq/draggable';
+
 import {
   useComponent,
   useContainerSize,
@@ -25,7 +24,13 @@ import {
   withShareComponent,
 } from '../../../hook';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
-import { useDragComponent, useDragContainer, useSidebarItem } from '../../../store';
+import {
+  useDragComponent,
+  useDragContainer,
+  useSidebarItem,
+} from '../../../store';
+import ContextMenu from '../../ContextMenu.vue';
+import ContextMenuItem from '../../ContextMenuItem.vue';
 import DragButton from '../../parts/DragButton.vue';
 import DragSidebarToggle from '../../parts/DragSidebarToggle.vue';
 import { useSidebarBehavior } from './useSidebarBehavior';
@@ -112,21 +117,18 @@ function onKeydown(event: KeyboardEvent) {
   onClose();
 }
 
-watch(
-  show,
-  async (visible) => {
-    document.removeEventListener('keydown', onKeydown);
-    if (!visible) {
-      restoreFocus(previousFocus);
-      previousFocus = null;
-      return;
-    }
-    previousFocus = document.activeElement as HTMLElement | null;
-    document.addEventListener('keydown', onKeydown);
-    await nextTick();
-    if (shellRoot.value) focusFirst(shellRoot.value);
-  },
-);
+watch(show, async (visible) => {
+  document.removeEventListener('keydown', onKeydown);
+  if (!visible) {
+    restoreFocus(previousFocus);
+    previousFocus = null;
+    return;
+  }
+  previousFocus = document.activeElement as HTMLElement | null;
+  document.addEventListener('keydown', onKeydown);
+  await nextTick();
+  if (shellRoot.value) focusFirst(shellRoot.value);
+});
 
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown);

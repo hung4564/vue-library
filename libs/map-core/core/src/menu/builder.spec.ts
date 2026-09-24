@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { createMapMenuBuilder } from './builder';
 
 describe('createMapMenuBuilder', () => {

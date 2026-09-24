@@ -1,5 +1,6 @@
 import { ensureMapMitt } from '@hungpvq/map-core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import {
   bindHighlightMittBridge,
   cleanHighlightMittBridge,
@@ -7,8 +8,8 @@ import {
   emitHighlightClear,
   ensureHighlightMittBridge,
   MAP_DATASET_EVENT,
-  releaseHighlightMittBridge,
   type MapDatasetEvent,
+  releaseHighlightMittBridge,
 } from './mitt';
 
 const hideIfSource = vi.fn();
@@ -95,14 +96,11 @@ describe('highlight mitt bridge', () => {
 
   it('DETAIL_CLOSE clears detail + feature entry', () => {
     ensureHighlightMittBridge('m1');
-    ensureMapMitt<MapDatasetEvent>('m1').emit(
-      MAP_DATASET_EVENT.DETAIL_CLOSE,
-      {
-        mapId: 'm1',
-        item: { id: 'f1' },
-        dataset: { id: 'layer-1' } as never,
-      },
-    );
+    ensureMapMitt<MapDatasetEvent>('m1').emit(MAP_DATASET_EVENT.DETAIL_CLOSE, {
+      mapId: 'm1',
+      item: { id: 'f1' },
+      dataset: { id: 'layer-1' } as never,
+    });
     expect(hideIfSource).toHaveBeenCalledWith('detail');
     expect(hideEntry).toHaveBeenCalledWith('f1');
   });

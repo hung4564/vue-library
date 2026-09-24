@@ -1,15 +1,15 @@
-﻿import {
+import {
   ensureMapDrawStore,
+  type IDraftRecord,
   MAP_DRAW_EVENT,
+  type MapDrawEvent,
+  type MapDrawOption,
+  type MapDrawStore,
   runDrawCommit,
   runDrawDiscard,
   runDrawSave,
   runDrawSetFeature,
   runDrawStart,
-  type IDraftRecord,
-  type MapDrawEvent,
-  type MapDrawOption,
-  type MapDrawStore,
 } from '@hungpvq/map-draw';
 import { getMapMittStore } from '@hungpvq/react-map-core';
 import type { Feature, FeatureCollection } from 'geojson';
@@ -25,7 +25,12 @@ export const getMapDrawStore = useMapDrawStore;
 export function useMapDraw(mapId: string) {
   return {
     start(config: MapDrawOption) {
-      runDrawStart(getMapDrawStore(mapId), getMapMittStore(mapId), config, mapId);
+      runDrawStart(
+        getMapDrawStore(mapId),
+        getMapMittStore(mapId),
+        config,
+        mapId,
+      );
     },
   };
 }

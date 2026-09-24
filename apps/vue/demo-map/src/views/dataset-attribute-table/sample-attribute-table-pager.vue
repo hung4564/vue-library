@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ATTRIBUTE_TABLE_COMPONENT_KEY } from '@hungpvq/map-dataset/attribute-table';
 import type { AttributeTablePagerProps } from '@hungpvq/map-dataset/attribute-table';
+import { ATTRIBUTE_TABLE_COMPONENT_KEY } from '@hungpvq/map-dataset/attribute-table';
 import { AttributeTablePager } from '@hungpvq/vue-map-dataset';
 
 defineOptions({ name: 'SampleAttributeTablePager' });

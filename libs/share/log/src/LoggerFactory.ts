@@ -1,14 +1,14 @@
-import { getUUIDv4 } from './uuid';
 import { ConsoleAdapter } from './adapters/ConsoleAdapter';
-import { Logger } from './Logger';
 import {
   bumpMethodIndex,
   compactLogContext,
   type LogZoneState,
 } from './log-zone-state';
-import type { LogAdapter, LogContext } from './types';
-import type { LogDataStore } from './store/types';
+import { Logger } from './Logger';
 import { noopLogDataStore } from './store/noop-store';
+import type { LogDataStore } from './store/types';
+import type { LogAdapter, LogContext } from './types';
+import { getUUIDv4 } from './uuid';
 import {
   getLogZoneStorage,
   resetZoneContextStorageForTests,
@@ -35,8 +35,7 @@ export function sanitizeHttpUrl(url: string | undefined): string | undefined {
   }
   const q = url.indexOf('?');
   const h = url.indexOf('#');
-  const cut =
-    q >= 0 && h >= 0 ? Math.min(q, h) : q >= 0 ? q : h >= 0 ? h : -1;
+  const cut = q >= 0 && h >= 0 ? Math.min(q, h) : q >= 0 ? q : h >= 0 ? h : -1;
   return cut >= 0 ? url.slice(0, cut) : url;
 }
 
@@ -174,10 +173,7 @@ export class LoggerFactory {
   /**
    * Run `fn` with merged ambient context on this async chain's zone.
    */
-  runWithContext<T>(
-    ctx: LogContext,
-    fn: () => T | Promise<T>,
-  ): T | Promise<T> {
+  runWithContext<T>(ctx: LogContext, fn: () => T | Promise<T>): T | Promise<T> {
     const parent = this.getZoneState();
     const merged: LogContext = compactLogContext({
       ...(parent?.context ?? {}),

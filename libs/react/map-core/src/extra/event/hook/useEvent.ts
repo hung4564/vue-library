@@ -1,3 +1,16 @@
+import {
+  logHelper,
+  type MapSimple,
+  subscribeMapReady,
+} from '@hungpvq/map-core';
+import {
+  type AnyIEvent,
+  EventManager,
+  logger,
+  type MittTypeMapEvent,
+  MittTypeMapEventEventKey,
+} from '@hungpvq/map-core/event';
+import type { MapEventType } from 'maplibre-gl';
 import React, {
   useCallback,
   useEffect,
@@ -5,21 +18,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  logHelper,
-  subscribeMapReady,
-  type MapSimple,
-} from '@hungpvq/map-core';
-import {
-  type AnyIEvent,
-  EventManager,
-  type MittTypeMapEvent,
-  MittTypeMapEventEventKey,
-  logger,
-} from '@hungpvq/map-core/event';
-import type { MapEventType } from 'maplibre-gl';
-import { getMap } from '../../../store/store';
+
 import { useMapMittStore } from '../../../store/mitt-store';
+import { getMap } from '../../../store/store';
 import { useMapEventStore } from '../store';
 
 type ReactComponentType = {
@@ -114,22 +115,15 @@ export function useEventMap(
 
   const manager = useMemo(
     () =>
-      new EventManager(
-        mapId,
-        store,
-        emitter,
-        (id, level, msg, data) => {
-          logHelper(logger, id, 'hook', 'useEventMap')
-            .with({ fn: 'useEventMap', span: 'hook.add' })
-            [level](msg, data);
-        },
-      ),
+      new EventManager(mapId, store, emitter, (id, level, msg, data) => {
+        logHelper(logger, id, 'hook', 'useEventMap')
+          .with({ fn: 'useEventMap', span: 'hook.add' })
+          [level](msg, data);
+      }),
     [mapId, store, emitter],
   );
 
-  const [isActive, setIsActive] = useState(() =>
-    manager.isActive(event.id),
-  );
+  const [isActive, setIsActive] = useState(() => manager.isActive(event.id));
 
   const add = useCallback(() => {
     manager.add(eventRef.current, componentNameRef.current);

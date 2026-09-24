@@ -3,6 +3,8 @@ export default { name: 'devtools-control' };
 </script>
 <script setup lang="ts">
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { DEVTOOLS_CONTROL } from '@hungpvq/map-core';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
   MapControlButton,
@@ -12,26 +14,18 @@ import {
   useShow,
   type WithShowProps,
 } from '@hungpvq/vue-map-core';
-import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiTools } from '@mdi/js';
 import { watch } from 'vue';
-import { DEVTOOLS_CONTROL } from '@hungpvq/map-core';
-import {
-  setDevtoolOpen,
-  toggleDevtoolOpen,
-  useDevtoolState,
-} from '../store';
+
+import { setDevtoolOpen, toggleDevtoolOpen, useDevtoolState } from '../store';
 import DevtoolsPanelBody from './DevtoolsPanelBody.vue';
 
-const props = withDefaults(
-  defineProps<WithMapPropType & WithShowProps>(),
-  {
-    ...defaultMapProps,
-    show: false,
-    position: 'bottom-right',
-  },
-);
+const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
+  ...defaultMapProps,
+  show: false,
+  position: 'bottom-right',
+});
 
 const { mapId, moduleContainerProps } = useMap(props);
 const { isOpen } = useDevtoolState();

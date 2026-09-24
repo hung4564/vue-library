@@ -1,5 +1,6 @@
-import type { BBox } from 'geojson';
 import { isValidBbox } from '@hungpvq/map-core';
+import type { BBox } from 'geojson';
+
 import type { IDataset } from '../interfaces/dataset.base';
 import type { IBoundView, IMetadataView } from '../interfaces/dataset.parts';
 import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
@@ -32,9 +33,8 @@ export function resolveDatasetBbox(
   ) as (IDataset & IMetadataView) | undefined;
   if (isValidBbox(metadata?.metadata?.bbox)) return metadata.metadata.bbox;
 
-  const info = (
-    layer as IDataset & { info?: { metadata?: { bbox?: BBox } } }
-  ).info;
+  const info = (layer as IDataset & { info?: { metadata?: { bbox?: BBox } } })
+    .info;
   if (isValidBbox(info?.metadata?.bbox)) return info.metadata.bbox;
 
   return undefined;

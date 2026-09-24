@@ -3,6 +3,7 @@
  */
 
 import type { Emitter } from 'mitt';
+
 import type { LoggerFunction } from '../store/interface';
 import { BasemapService } from './basemap.service';
 import type { BaseMapItem, BaseMapStore, MittTypeBaseMap } from './types';
@@ -86,10 +87,8 @@ export class BasemapManager {
 
     if (this.store.current && String(this.store.current.id) === String(id)) {
       const fallback =
-        this.store.adapter.getIndexDefault(
-          next,
-          this.store.defaultBaseMap,
-        ) || next[0];
+        this.store.adapter.getIndexDefault(next, this.store.defaultBaseMap) ||
+        next[0];
       if (fallback) {
         void this.setCurrent(fallback);
       } else {

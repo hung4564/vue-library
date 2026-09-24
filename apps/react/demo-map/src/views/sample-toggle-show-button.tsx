@@ -12,7 +12,8 @@ export function SampleToggleShowButton({
   onToggle: () => void;
 }) {
   return (
-    <MapControlButton variant="text"
+    <MapControlButton
+      variant="text"
       disabled={disabled}
       title={title}
       active={show}

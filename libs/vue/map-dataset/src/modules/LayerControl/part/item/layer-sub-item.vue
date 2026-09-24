@@ -36,8 +36,8 @@ import type {
 } from '@hungpvq/map-dataset/menu';
 import { getResolvedMenus } from '@hungpvq/map-dataset/menu';
 import { RegistryItem } from '@hungpvq/vue-map-core';
-
 import { computed } from 'vue';
+
 import DatasetMenus from '../../../../extra/menu/dataset-menus.vue';
 
 const props = defineProps<{

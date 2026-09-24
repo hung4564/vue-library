@@ -111,4 +111,3 @@ export const MENU_DEMO_HELP = helpI18n(
     },
   ],
 );
-

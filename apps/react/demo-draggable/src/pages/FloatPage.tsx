@@ -11,9 +11,7 @@ export function FloatPage() {
       <DraggableItemSideBar show title="Controls" location="left">
         <div className="panel">
           <h2>Float demo</h2>
-          <p>
-            Floating panels with optional bottom header and order controls.
-          </p>
+          <p>Floating panels with optional bottom header and order controls.</p>
           <ManagementControl />
         </div>
       </DraggableItemSideBar>

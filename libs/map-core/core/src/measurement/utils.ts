@@ -69,8 +69,7 @@ export function getMeasurementSettingUiFlags(
     showDistanceUnit: t === 'distance' || t === 'radius' || t === 'area',
     showAreaUnit: t === 'area',
     showVertexLabelToggle: t === 'distance',
-    showEdgeLabelToggle:
-      t === 'distance' || t === 'area' || t === 'radius',
+    showEdgeLabelToggle: t === 'distance' || t === 'area' || t === 'radius',
     showResultLabelToggle:
       t === 'area' || t === 'angle' || t === 'point' || t === 'azimuth',
   };
@@ -112,8 +111,7 @@ export function formatDistanceText(
   unit: DistanceUnit = preferredDistanceUnit,
 ): string {
   const km = value;
-  const resolved =
-    unit === 'auto' ? (km < 1 ? 'm' : 'km') : unit;
+  const resolved = unit === 'auto' ? (km < 1 ? 'm' : 'km') : unit;
 
   switch (resolved) {
     case 'm':
@@ -137,8 +135,7 @@ export function formatAreaText(
   unit: AreaUnit = preferredAreaUnit,
 ): string {
   const m2 = value;
-  const resolved =
-    unit === 'auto' ? (m2 < 1_000_000 ? 'm2' : 'km2') : unit;
+  const resolved = unit === 'auto' ? (m2 < 1_000_000 ? 'm2' : 'km2') : unit;
 
   switch (resolved) {
     case 'km2':

@@ -2,23 +2,24 @@ import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import type {
   ButtonInMobile,
   ControlLayout,
-  WithMapPropType,
   Position,
   ResolvedControlLayout,
+  WithMapPropType,
 } from '@hungpvq/map-core';
 import { resolveControlLayout, subscribeMapReady } from '@hungpvq/map-core';
 import {
   computed,
+  type ComputedRef,
   inject,
+  type MaybeRefOrGetter,
   onMounted,
   onUnmounted,
   ref,
   shallowRef,
   toValue,
   unref,
-  type ComputedRef,
-  type MaybeRefOrGetter,
 } from 'vue';
+
 import { getMap } from '../store/store';
 
 export function useResolvedControlLayout(
@@ -63,9 +64,7 @@ export const useMap = (
     registerOrder
   ) {
     const key =
-      resolvedLayout.value === 'toolbar'
-        ? 'toolbar'
-        : `${props.position}`;
+      resolvedLayout.value === 'toolbar' ? 'toolbar' : `${props.position}`;
     autoOrder.value = registerOrder(key);
   }
 

@@ -1,8 +1,14 @@
 import { vi } from 'vitest';
+
 import type { MapSimple } from '../types';
 
 type StyleState = {
-  layers: Array<{ id: string; type?: string; source?: string; [k: string]: unknown }>;
+  layers: Array<{
+    id: string;
+    type?: string;
+    source?: string;
+    [k: string]: unknown;
+  }>;
   sources: Record<string, unknown>;
 };
 
@@ -28,9 +34,7 @@ export function createFakeMap(
     _handlers: handlers,
     getStyle: () => ({
       ...style,
-      layers: [...layers.values()].length
-        ? [...layers.values()]
-        : style.layers,
+      layers: [...layers.values()].length ? [...layers.values()] : style.layers,
       sources: Object.fromEntries(sources),
     }),
     getSource: (id: string) => sources.get(id),

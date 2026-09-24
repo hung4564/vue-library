@@ -1,7 +1,7 @@
 import {
   ConsoleAdapter,
-  LoggerFactory,
   type LogAdapter,
+  LoggerFactory,
 } from '@hungpvq/shared-log';
 
 import { errorHandler } from '../services/error-handler.service';

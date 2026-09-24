@@ -1,12 +1,13 @@
 import { getMap, type MapSimple } from '@hungpvq/map-core';
+
 import { createNamedComponent } from '../model/base';
 import { createDatasetLeaf } from '../model/dataset.base.function';
 import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import { isDatasetSourceMap } from '../utils/check';
+import { toFeatureCollection } from '../utils/feature-collection';
 import { createHttpStore } from './http-store';
 import { createLocalStore } from './local-store';
 import { createDataManager } from './manager';
-import { toFeatureCollection } from '../utils/feature-collection';
 import type {
   CreateDataManagementOptions,
   DataManagementPart,
@@ -25,13 +26,14 @@ function resolveStore<T extends DataRecord>(
   }
   if (options.store === 'http') {
     if (!options.http) {
-      throw new Error('createDataManagement: http options required when store is "http"');
+      throw new Error(
+        'createDataManagement: http options required when store is "http"',
+      );
     }
     return createHttpStore({
       ...options.http,
       idField: options.http.idField ?? options.idField,
-      geometryFields:
-        options.http.geometryFields ?? options.geometryFields,
+      geometryFields: options.http.geometryFields ?? options.geometryFields,
       geometryField: options.http.geometryField,
     }) as DataStore<T>;
   }

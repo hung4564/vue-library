@@ -28,18 +28,18 @@
 </template>
 
 <script lang="ts">
-import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiLoading } from '@mdi/js';
 import {
   isMapButtonSize,
   isMapButtonSquareVariant,
   isMapButtonVariant,
+  type MapButtonSize,
   mapButtonSizeClass,
+  type MapButtonVariant,
   mapButtonVariantClass,
   resolveMapButtonSizePx,
-  type MapButtonSize,
-  type MapButtonVariant,
 } from '@hungpvq/map-core';
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiLoading } from '@mdi/js';
 
 export default {
   name: 'MapButton',

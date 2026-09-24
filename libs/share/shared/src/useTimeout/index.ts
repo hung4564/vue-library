@@ -1,5 +1,6 @@
 import type { ComputedRef } from 'vue';
 import { computed } from 'vue';
+
 import type { UseTimeoutFnOptions } from '../useTimeoutFn';
 import { useTimeoutFn } from '../useTimeoutFn';
 import type { Fn, MaybeRefOrGetter, Stoppable } from '../utils';

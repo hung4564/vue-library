@@ -2,14 +2,15 @@
  * Framework-agnostic basemap layer (raster / vector / none).
  */
 
+import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
+
+import type { MapSimple } from '../../types';
 import type {
   BaseMapItem,
   BaseMapRasterItem,
   BaseMapVectorItem,
   IBaseMapLayer,
 } from '../types';
-import type { MapSimple } from '../../types';
-import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
 
 type LoaderReturn = {
   layers: LayerSpecification[];
@@ -36,8 +37,9 @@ export class BaseMapLayer implements IBaseMapLayer {
   }
 
   async setBaseMap(baseMap: BaseMapItem): Promise<void> {
-    const { sources, layers, glyphs, sprite } =
-      await getLoader(baseMap.type)(baseMap);
+    const { sources, layers, glyphs, sprite } = await getLoader(baseMap.type)(
+      baseMap,
+    );
     this.layers = layers;
     this.sources = sources;
     this.glyphs = glyphs;

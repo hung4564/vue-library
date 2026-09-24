@@ -2,23 +2,24 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
 import {
   buildMapCrsCatalog,
+  type CrsItem,
   formatCrsLabel,
   searchCrsCatalog,
-  type CrsItem,
 } from '@hungpvq/map-core/crs';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
 import { computed, ref, watch } from 'vue';
+
 import MapCommonButton from '../../../components/MapCommonButton.vue';
-import { useLang } from '../../lang/hook';
 import { Collapse, InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow, type WithShowProps } from '../../../hooks/useShow';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useLang } from '../../lang/hook';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../useMapCrsItems';
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
@@ -59,7 +60,9 @@ const filteredCatalog = computed(() => {
   if (!q) return catalogItems.value;
   return searchCrsCatalog(catalogItems.value, q);
 });
-const customItems = computed(() => crs_items.value.filter((item) => !item.default));
+const customItems = computed(() =>
+  crs_items.value.filter((item) => !item.default),
+);
 
 const unit_items = [
   { text: 'degree', value: 'degree' },
@@ -172,13 +175,17 @@ watch(show, () => control.sync());
                     "
                   />
                 </label>
-                <span class="crs-catalog__label">{{ formatCrsLabel(item) }}</span>
+                <span class="crs-catalog__label">{{
+                  formatCrsLabel(item)
+                }}</span>
               </li>
             </ul>
           </div>
 
           <div v-if="customItems.length" class="crs-custom">
-            <div class="crs-custom__title">{{ trans('map.crs-control.custom') }}</div>
+            <div class="crs-custom__title">
+              {{ trans('map.crs-control.custom') }}
+            </div>
             <div class="crs-custom__list">
               <Collapse
                 v-for="(crs_item, index) in customItems"
@@ -206,21 +213,27 @@ watch(show, () => control.sync());
                     <InputText
                       :model-value="crs_item.name"
                       :label="trans('map.crs-control.field.name')"
-                      @update:model-value="patchCustomItem(crs_item, { name: $event })"
+                      @update:model-value="
+                        patchCustomItem(crs_item, { name: $event })
+                      "
                     />
                   </div>
                   <div>
                     <InputText
                       :model-value="crs_item.epsg"
                       :label="trans('map.crs-control.field.epsg')"
-                      @update:model-value="patchCustomItem(crs_item, { epsg: $event })"
+                      @update:model-value="
+                        patchCustomItem(crs_item, { epsg: $event })
+                      "
                     />
                   </div>
                   <div>
                     <InputText
                       :model-value="crs_item.proj4js"
                       :label="trans('map.crs-control.field.proj4js')"
-                      @update:model-value="patchCustomItem(crs_item, { proj4js: $event })"
+                      @update:model-value="
+                        patchCustomItem(crs_item, { proj4js: $event })
+                      "
                     />
                   </div>
                   <div>

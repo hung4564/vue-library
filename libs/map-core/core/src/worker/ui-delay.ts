@@ -90,8 +90,7 @@ export function createWorkerUiDelayState() {
       let track = tracks.get(worker.id);
       if (!track) {
         track = {
-          calmStatus:
-            worker.status === 'busy' ? 'idle' : worker.status,
+          calmStatus: worker.status === 'busy' ? 'idle' : worker.status,
           busySince: null,
           shownBusySince: null,
           displayBusy: false,
@@ -130,9 +129,7 @@ export function createWorkerUiDelayState() {
       }
 
       if (track.displayBusy) anyDisplayBusy = true;
-      out.push(
-        toDisplayWorker(worker, track.displayBusy, track.calmStatus),
-      );
+      out.push(toDisplayWorker(worker, track.displayBusy, track.calmStatus));
     }
 
     for (const id of [...tracks.keys()]) {

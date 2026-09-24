@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
+
 import type { AttributeTableRow } from './model';
 import {
+  type AttributeTableSortState,
   sortAttributeTableRows,
   toggleAttributeTableMultiSort,
   toggleAttributeTableSort,
-  type AttributeTableSortState,
 } from './sort';
 
 describe('attribute-table sort', () => {

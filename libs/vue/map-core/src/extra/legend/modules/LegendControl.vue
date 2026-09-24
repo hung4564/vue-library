@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import {
   getLegendName,
@@ -9,15 +8,16 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';
+
 import MapCommonButton from '../../../components/MapCommonButton.vue';
-import { useEventListener } from '../../event/hook/useEvent';
-import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl } from '../../toolbar/helper';
 import { InputCheckbox } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
+import { useEventListener } from '../../event/hook/useEvent';
+import { useLang } from '../../lang/hook';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
 import { useLayerLegend } from '../lib/useLayerLegend';
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,

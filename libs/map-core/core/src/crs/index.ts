@@ -2,6 +2,7 @@
  * Public entry for `@hungpvq/map-core/crs`.
  * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
  */
+export type { CoordinateFormatter } from './coordinate-formatter';
 export {
   createCoordinateFormatter,
   createMapDisplayCoordinateFormatter,
@@ -23,12 +24,10 @@ export {
 export { CRS_CONTROL_LOCALE } from './locale';
 export { logger } from './logger';
 export { ensureMapCrsStore } from './register-domain-store';
+export type { CrsItem, MapCrsStore, MittTypeMapCrs } from './types';
 export {
   createDefaultCrsStore,
   DEFAULT_CRS_ITEMS,
   INITIAL_MAP_CRS_ITEMS,
   MittTypeMapCrsEventKey,
 } from './types';
-
-export type { CoordinateFormatter } from './coordinate-formatter';
-export type { CrsItem, MapCrsStore, MittTypeMapCrs } from './types';

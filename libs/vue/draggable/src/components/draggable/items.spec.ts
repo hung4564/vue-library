@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, nextTick, ref } from 'vue';
+
 import { useDragContainer, useDragStore } from '../../store';
 import DraggableItemBottom from './item-bottom.vue';
 import DraggableDrawer from './item-drawer.vue';
@@ -111,9 +112,9 @@ describe('Stable item shells register into store', () => {
     const wrapper = await mountItem(DraggableItemBottom);
     const c = useDragStore().container[CID];
     expect(c.bottom.items.length).toBe(1);
-    expect(typeof c.bottom.show === 'string' || c.bottom.show === undefined).toBe(
-      true,
-    );
+    expect(
+      typeof c.bottom.show === 'string' || c.bottom.show === undefined,
+    ).toBe(true);
     expect(c.bottom.show).toBe(c.bottom.items[0]);
     expect(c.actions[c.bottom.items[0]]?.type).toBe('item-bottom');
     wrapper.unmount();
@@ -206,7 +207,8 @@ describe('Stable item shells register into store', () => {
     expect(center).toBeTruthy();
     if (!center) return;
     expect(
-      center.hasAttribute('inert') || center.getAttribute('aria-hidden') === 'true',
+      center.hasAttribute('inert') ||
+        center.getAttribute('aria-hidden') === 'true',
     ).toBe(true);
 
     await wrapper.setProps({ show: false });

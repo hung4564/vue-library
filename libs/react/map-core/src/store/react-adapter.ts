@@ -8,8 +8,9 @@ import type {
   LoggerFunction,
   MapRootStore,
 } from '@hungpvq/map-core';
-import { logHelper, getMapCoreRootStore } from '@hungpvq/map-core';
+import { getMapCoreRootStore, logHelper } from '@hungpvq/map-core';
 import type { Emitter, EventType } from 'mitt';
+
 import { logger } from './logger';
 import { getMapMittStore } from './mitt-store';
 

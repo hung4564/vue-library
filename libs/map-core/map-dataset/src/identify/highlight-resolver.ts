@@ -1,14 +1,15 @@
 import { createMapCoreMetaRegistry, FallbackResolver } from '@hungpvq/map-core';
 import type { Feature } from 'geojson';
+
 import type { HighlightSource } from '../highlight/types';
 import type { IDataset } from '../interfaces/dataset.base';
 import type { IdentifyMultiResult } from '../interfaces/dataset.parts';
 import { convertItemToFeature } from '../utils/convert';
 import {
   clearHighlight,
+  type HighlightSessionIntent,
   paintHighlight,
   paintHighlights,
-  type HighlightSessionIntent,
 } from './highlight-session';
 import type { IdentifyResolvedHitAction } from './hit-action';
 

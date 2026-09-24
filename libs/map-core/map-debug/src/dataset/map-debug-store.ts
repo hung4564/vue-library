@@ -1,9 +1,10 @@
-import type { DatasetDebugApi } from './types';
 import {
-  MAP_DEBUG_STORE_KEY,
   getMapDebugStore as getMapDebugStoreCore,
+  MAP_DEBUG_STORE_KEY,
   type MapDebugStore as MapDebugStoreCore,
 } from '@hungpvq/map-core/devtools';
+
+import type { DatasetDebugApi } from './types';
 
 export { MAP_DEBUG_STORE_KEY };
 

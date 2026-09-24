@@ -1,13 +1,17 @@
-﻿import type { MeasureActionItem } from '@hungpvq/map-core/measurement';
-import { BaseMapControl, Map, MeasurementControl } from '@hungpvq/react-map-core';
+import type { MeasureActionItem } from '@hungpvq/map-core/measurement';
+import {
+  BaseMapControl,
+  Map,
+  MeasurementControl,
+} from '@hungpvq/react-map-core';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { mdiPlus } from '@mdi/js';
 
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:measurement', 2);
 

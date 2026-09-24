@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ATTRIBUTE_TABLE_COMPONENT_KEY } from '@hungpvq/map-dataset/attribute-table';
 import type { AttributeTableViewProps } from '@hungpvq/map-dataset/attribute-table';
+import { ATTRIBUTE_TABLE_COMPONENT_KEY } from '@hungpvq/map-dataset/attribute-table';
 import { MapControlButton } from '@hungpvq/vue-map-core';
 import { computed, ref, watch } from 'vue';
 
@@ -49,9 +49,7 @@ function onRowClick(id: string) {
         :value="state.search"
         :placeholder="props.labels.search"
         @input="
-          props.controller.setSearch(
-            ($event.target as HTMLInputElement).value,
-          )
+          props.controller.setSearch(($event.target as HTMLInputElement).value)
         "
       />
       <MapControlButton

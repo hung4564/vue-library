@@ -1,7 +1,11 @@
-import { describe, expect, it, vi } from 'vitest';
 import type { FeatureCollection } from 'geojson';
+import { describe, expect, it, vi } from 'vitest';
+
 import type { IDataset } from '../interfaces/dataset.base';
-import { setGeoExportActiveSource, clearGeoExportActiveSource } from './active-source';
+import {
+  clearGeoExportActiveSource,
+  setGeoExportActiveSource,
+} from './active-source';
 import { createGeoExportController } from './controller';
 
 const fc: FeatureCollection = {
@@ -128,9 +132,11 @@ describe('createGeoExportController', () => {
       getCollection: async () => fc,
     });
     const signal = AbortSignal.abort();
-    await expect(ctrl.run({ format: 'geojson', signal })).rejects.toMatchObject({
-      name: 'AbortError',
-    });
+    await expect(ctrl.run({ format: 'geojson', signal })).rejects.toMatchObject(
+      {
+        name: 'AbortError',
+      },
+    );
     expect(ctrl.getState().busy).toBe(false);
     ctrl.dispose();
   });

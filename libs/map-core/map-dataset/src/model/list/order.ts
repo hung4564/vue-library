@@ -1,5 +1,6 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
+
 import { hasMoveLayer } from '../../utils/check';
 import { traverseTree } from '../visitors/traverse';
 import type { IGroupListViewUI, IListViewUI } from './types';
@@ -86,7 +87,9 @@ function locate(
   for (let i = 0; i < tree.length; i++) {
     const node = tree[i];
     if (isGroupNode(node)) {
-      const childIndex = node.children.findIndex((child) => child.id === itemId);
+      const childIndex = node.children.findIndex(
+        (child) => child.id === itemId,
+      );
       if (childIndex !== -1) {
         return { kind: 'group', groupIndex: i, childIndex };
       }

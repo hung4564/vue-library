@@ -91,10 +91,26 @@ function reg(
 }
 
 // —— list ——
-reg('Default list', 'List demo — bare LayerControl row', createListOnlyDefaultDataset);
-reg('Custom simple list', 'List demo — custom color/opacity', createCustomColorListDataset);
-reg('List with legend', 'List demo — multi legend', createListWithLegendDataset);
-reg('Custom menu list', 'List demo — menus in every location slot', createListWithMenuDataset);
+reg(
+  'Default list',
+  'List demo — bare LayerControl row',
+  createListOnlyDefaultDataset,
+);
+reg(
+  'Custom simple list',
+  'List demo — custom color/opacity',
+  createCustomColorListDataset,
+);
+reg(
+  'List with legend',
+  'List demo — multi legend',
+  createListWithLegendDataset,
+);
+reg(
+  'Custom menu list',
+  'List demo — menus in every location slot',
+  createListWithMenuDataset,
+);
 reg(
   'Menu with setComponentMenuKey',
   'List demo — custom menu component key',
@@ -110,8 +126,16 @@ reg(
   'List demo — two lists in one group',
   createListWithGroupDataset,
 );
-reg('Vector point list', 'List demo — GeoJSON points', createVectorPointListDataset);
-reg('Vector line list', 'List demo — GeoJSON lines', createVectorLineListDataset);
+reg(
+  'Vector point list',
+  'List demo — GeoJSON points',
+  createVectorPointListDataset,
+);
+reg(
+  'Vector line list',
+  'List demo — GeoJSON lines',
+  createVectorLineListDataset,
+);
 reg(
   'Raster list (World Imagery)',
   'List demo — raster tiles',
@@ -131,7 +155,11 @@ reg(
 );
 
 // —— menu ——
-reg('Default menu support', 'Menu demo — default layer menus', createDefaultMenuSupportDataset);
+reg(
+  'Default menu support',
+  'Menu demo — default layer menus',
+  createDefaultMenuSupportDataset,
+);
 reg(
   'Custom toggle button (per layer)',
   'Menu demo — per-layer toggle component',
@@ -142,9 +170,21 @@ reg(
   'Menu demo — Fill bound + Update bbox',
   createDynamicBoundMenuDataset,
 );
-reg('Layer identify menu', 'Menu demo — identify icon + ⋮', createIdentifyMenuDataset);
-reg('Shared dataset menus', 'Menu demo — shared menu part', createSharedDatasetMenuDataset);
-reg('Custom menu support', 'Menu demo — custom click handlers', createCustomSupportDataset);
+reg(
+  'Layer identify menu',
+  'Menu demo — identify icon + ⋮',
+  createIdentifyMenuDataset,
+);
+reg(
+  'Shared dataset menus',
+  'Menu demo — shared menu part',
+  createSharedDatasetMenuDataset,
+);
+reg(
+  'Custom menu support',
+  'Menu demo — custom click handlers',
+  createCustomSupportDataset,
+);
 reg(
   'Custom menu with multi action',
   'Menu demo — multi-action click chain',
@@ -158,7 +198,11 @@ reg(
 
 // —— identify ——
 reg('Simple identify', 'Identify demo — basic', createSimpleIdentifyDataset);
-reg('Identify with menu', 'Identify demo — with item menus', createIdentifyWithMenuDataset);
+reg(
+  'Identify with menu',
+  'Identify demo — with item menus',
+  createIdentifyWithMenuDataset,
+);
 reg(
   'Other Dataset but same group',
   'Identify demo — same group, other dataset',
@@ -174,7 +218,11 @@ reg(
   'Identify demo — no group',
   createNoGroupIdentifyDataset,
 );
-reg('Identify API detail', 'Identify demo — API detail fetch', createIdentifyApiDetailDataset);
+reg(
+  'Identify API detail',
+  'Identify demo — API detail fetch',
+  createIdentifyApiDetailDataset,
+);
 reg(
   ['Identify API merge 1', 'Identify API merge 2'],
   'Identify demo — API merge',
@@ -224,15 +272,19 @@ reg(
 );
 
 // —— all-map ——
-reg('World Imagery', 'All-map — Esri World Imagery raster', createRasterDataset);
 reg(
-  'test area',
-  'All-map — group list (area)',
-  createGroupListDemoDataset,
+  'World Imagery',
+  'All-map — Esri World Imagery raster',
+  createRasterDataset,
 );
+reg('test area', 'All-map — group list (area)', createGroupListDemoDataset);
 reg('test point', 'All-map — point dataset', createDatasetPoint);
 reg('test line string', 'All-map — line string', createDatasetLineString);
-reg('Geojson With Identify', 'All-map — geojson + identify', createDatasetGeojsonWithIdentify);
+reg(
+  'Geojson With Identify',
+  'All-map — geojson + identify',
+  createDatasetGeojsonWithIdentify,
+);
 reg(
   ['Example Group list', 'Sub list 1', 'Sub list 2'],
   'All-map — example group + sublists',

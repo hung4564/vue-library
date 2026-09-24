@@ -59,7 +59,12 @@ function squareFeature(
   extra?: Record<string, unknown>,
 ): Feature<Polygon> {
   const h = size / 2;
-  return polygonFromBounds(id, name, [lng - h, lat - h, lng + h, lat + h], extra);
+  return polygonFromBounds(
+    id,
+    name,
+    [lng - h, lat - h, lng + h, lat + h],
+    extra,
+  );
 }
 
 function bboxOf(zone: Zone): [number, number, number, number] {
@@ -85,19 +90,13 @@ function featuresInZone(
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       n += 1;
-      const x =
-        cols === 1 ? lng : lng - span + (col / (cols - 1)) * span * 2;
-      const y =
-        rows === 1 ? lat : lat - span + (row / (rows - 1)) * span * 2;
+      const x = cols === 1 ? lng : lng - span + (col / (cols - 1)) * span * 2;
+      const y = rows === 1 ? lat : lat - span + (row / (rows - 1)) * span * 2;
       features.push(
-        squareFeature(
-          `${prefix}-${n}`,
-          `${label} #${n}`,
-          x,
-          y,
-          size,
-          { zone: label, index: n },
-        ),
+        squareFeature(`${prefix}-${n}`, `${label} #${n}`, x, y, size, {
+          zone: label,
+          index: n,
+        }),
       );
     }
   }
@@ -121,9 +120,7 @@ function featuresInZone(
   return features;
 }
 
-function collection(
-  features: Feature<Polygon>[],
-): FeatureCollection<Polygon> {
+function collection(features: Feature<Polygon>[]): FeatureCollection<Polygon> {
   return { type: 'FeatureCollection', features };
 }
 
@@ -132,11 +129,9 @@ function configurePresentMenus(
   options: PresentOptions,
 ): IDataset {
   const list = findPartByType(dataset, 'list') as
-    | (IDataset & WithMenuHelper)
-    | undefined;
+    (IDataset & WithMenuHelper) | undefined;
   const identify = findPartByType(dataset, 'identify') as
-    | IIdentifyView
-    | undefined;
+    IIdentifyView | undefined;
 
   list?.addMenus([createMenuItemIdentifyForList({ location: 'menu' })]);
 
@@ -216,9 +211,7 @@ export function createIdentifyPresentDetailAndTableDataset() {
     type: 'area',
     color: '#2980b9',
     opacity: 0.45,
-    geojson: collection(
-      featuresInZone('dt', 'Q1 HCMC', ZONE_DETAIL_TABLE),
-    ),
+    geojson: collection(featuresInZone('dt', 'Q1 HCMC', ZONE_DETAIL_TABLE)),
     bbox: bboxOf(ZONE_DETAIL_TABLE),
   });
   return configurePresentMenus(dataset, {
@@ -234,9 +227,7 @@ export function createIdentifyPresentTableOnlyDataset() {
     type: 'area',
     color: '#27ae60',
     opacity: 0.45,
-    geojson: collection(
-      featuresInZone('at', 'Bien Hoa', ZONE_TABLE_ONLY),
-    ),
+    geojson: collection(featuresInZone('at', 'Bien Hoa', ZONE_TABLE_ONLY)),
     bbox: bboxOf(ZONE_TABLE_ONLY),
   });
   return configurePresentMenus(dataset, {
@@ -252,9 +243,7 @@ export function createIdentifyPresentDetailOnlyDataset() {
     type: 'area',
     color: '#e67e22',
     opacity: 0.45,
-    geojson: collection(
-      featuresInZone('do', 'Vung Tau', ZONE_DETAIL_ONLY),
-    ),
+    geojson: collection(featuresInZone('do', 'Vung Tau', ZONE_DETAIL_ONLY)),
     bbox: bboxOf(ZONE_DETAIL_ONLY),
   });
   return configurePresentMenus(dataset, {
@@ -452,9 +441,7 @@ export function createIdentifyPresentResolverToggleDataset() {
     type: 'area',
     color: '#1abc9c',
     opacity: 0.45,
-    geojson: collection(
-      featuresInZone('rsl', 'Cu Chi', ZONE_RESOLVER_TOGGLE),
-    ),
+    geojson: collection(featuresInZone('rsl', 'Cu Chi', ZONE_RESOLVER_TOGGLE)),
     bbox: bboxOf(ZONE_RESOLVER_TOGGLE),
   });
   configurePresentMenus(dataset, {
@@ -465,8 +452,7 @@ export function createIdentifyPresentResolverToggleDataset() {
   });
 
   const list = findPartByType(dataset, 'list') as
-    | (IDataset & WithMenuHelper)
-    | undefined;
+    (IDataset & WithMenuHelper) | undefined;
 
   const LABEL_CUSTOM = 'Use custom global resolver';
   const LABEL_DEFAULT = 'Restore default global resolver';
@@ -512,6 +498,4 @@ export const IDENTIFY_PRESENT_DEMO_DATASET_FACTORIES = [
   createIdentifyPresentResolverToggleDataset,
 ] as const;
 
-export {
-  IDENTIFY_PRESENT_DEMO_HELP,
-} from './help';
+export { IDENTIFY_PRESENT_DEMO_HELP } from './help';

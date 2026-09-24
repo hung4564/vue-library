@@ -1,6 +1,7 @@
+import type { LocationSideBar, SidebarConfig } from '@hungpvq/draggable';
+
 import { useIcon } from '../../hook';
 import { useDragContainer } from '../../store';
-import type { LocationSideBar, SidebarConfig } from '@hungpvq/draggable';
 import { DragButton } from '../parts/DragButton';
 import { ItemList } from './ItemList';
 
@@ -44,7 +45,11 @@ export function ShowStatusSideBar({
             containerId={containerId}
             renderExtra={(item, show) =>
               !show ? (
-                <DragButton onClick={() => onOpen(item)} title="Show" aria-label="Show">
+                <DragButton
+                  onClick={() => onOpen(item)}
+                  title="Show"
+                  aria-label="Show"
+                >
                   <ShowIcon size={16} />
                 </DragButton>
               ) : null

@@ -99,30 +99,28 @@
 
 <script setup lang="ts">
 import {
-  createActionFeedback,
   type ActionFeedbackPhase,
+  createActionFeedback,
 } from '@hungpvq/map-core';
 import {
   getDevtoolLogDataStore,
   refreshDevtoolLogsFromStore,
 } from '@hungpvq/map-core/devtools';
+import { LEVEL_FILTERS, type LevelFilter } from '@hungpvq/map-debug';
 import {
-  LEVEL_FILTERS,
-  type LevelFilter,
-} from '@hungpvq/map-debug';
+  logMapId,
+  type LogRecord,
+  resolveMaybePromise,
+  rootNamespace,
+} from '@hungpvq/shared-log';
 import { MapControlButton } from '@hungpvq/vue-map-core';
 import {
   InputCheckbox,
   InputSelect,
   InputText,
 } from '@hungpvq/vue-map-core/fields';
-import {
-  logMapId,
-  resolveMaybePromise,
-  rootNamespace,
-  type LogRecord,
-} from '@hungpvq/shared-log';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+
 import { clearDevtoolLogs, useDevtoolState } from '../store';
 import LogDetailPanel from './LogDetailPanel.vue';
 import LogRenderNode from './LogRenderNode.vue';
@@ -190,9 +188,13 @@ async function reloadView() {
   namespaces.value = [...set].sort();
 }
 
-watch([filterQuery, logs], () => {
-  void reloadView();
-}, { immediate: true });
+watch(
+  [filterQuery, logs],
+  () => {
+    void reloadView();
+  },
+  { immediate: true },
+);
 
 const namespaceFilterItems = computed(() => [
   { value: 'all', text: 'All namespaces' },

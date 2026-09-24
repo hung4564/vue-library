@@ -1,7 +1,8 @@
 import { InputText } from '@hungpvq/react-map-core/fields';
+
 import {
-  SourceLayerOptionsList,
   type SourceLayerOptionRow,
+  SourceLayerOptionsList,
 } from './source-layer-options';
 import type { CreateConfigFormProps } from './types';
 
@@ -11,8 +12,9 @@ export function ConfigArchiveSettings({
   onChange,
   trans,
 }: CreateConfigFormProps) {
-  const bounds =
-    (config.bounds as number[]) || [-180, -85.051129, 180, 85.051129];
+  const bounds = (config.bounds as number[]) || [
+    -180, -85.051129, 180, 85.051129,
+  ];
   const options = Array.isArray(config.sourceLayerOptions)
     ? (config.sourceLayerOptions as SourceLayerOptionRow[])
     : [];

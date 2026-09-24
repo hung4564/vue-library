@@ -150,8 +150,7 @@ export function LogViewer() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [flowActionId, setFlowActionId] = useState<string | null>(null);
   const [autoScroll, setAutoScroll] = useState(true);
-  const [refreshPhase, setRefreshPhase] =
-    useState<ActionFeedbackPhase>('idle');
+  const [refreshPhase, setRefreshPhase] = useState<ActionFeedbackPhase>('idle');
   const refreshFeedbackRef = useRef(
     createActionFeedback({
       onChange: (phase) => setRefreshPhase(phase),

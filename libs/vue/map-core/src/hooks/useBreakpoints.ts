@@ -1,11 +1,11 @@
 import {
+  type MapBreakpointConfig,
   mapBreakpointGreaterOrEqual,
+  type MapBreakpointName,
   mapBreakpointSmallerOrEqual,
   resolveMapBreakpointFlags,
-  type MapBreakpointConfig,
-  type MapBreakpointName,
 } from '@hungpvq/map-core';
-import { computed, onMounted, onUnmounted, ref, type Ref } from 'vue';
+import { computed, onMounted, onUnmounted, type Ref, ref } from 'vue';
 
 export type { MapBreakpointConfig, MapBreakpointName };
 
@@ -13,9 +13,7 @@ export type { MapBreakpointConfig, MapBreakpointName };
  * Map layout breakpoints (resize width). Shared thresholds live in `@hungpvq/map-core`.
  */
 export function useBreakpoints(config: MapBreakpointConfig = {}) {
-  const width = ref(
-    typeof window !== 'undefined' ? window.innerWidth : 0,
-  );
+  const width = ref(typeof window !== 'undefined' ? window.innerWidth : 0);
 
   const onResize = () => {
     width.value = window.innerWidth;

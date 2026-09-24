@@ -1,22 +1,24 @@
 import { runWorkerMonitor } from '@hungpvq/map-core/worker';
-import type { LayerStyleType } from '../style/layer-simple-builder';
-import { detectGeojsonCrs, detectGeojsonStyleTypes } from './geojson-parse';
-import { asFeatureCollection } from '../utils/feature-collection';
+import type { GeoJSON } from 'geojson';
+
+// Vite workers cannot resolve workspace package names for most map-core
+// utilities and would leave them external; keep relative imports for those.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import type { GeojsonBbox } from '../../../core/src/utils/fillBound';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { bboxFromGeojson } from '../../../core/src/utils/fillBound';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { reprojectGeojson } from '../../../core/src/utils/geojson-reproject';
 import {
   parseGisFile,
   parseGisFiles,
   parseGisFromUrl,
   parseGisTextAsync,
 } from '../create-control/gis-parse';
-import type { GeoJSON } from 'geojson';
-// Vite workers cannot resolve workspace package names for most map-core
-// utilities and would leave them external; keep relative imports for those.
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { reprojectGeojson } from '../../../core/src/utils/geojson-reproject';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import type { GeojsonBbox } from '../../../core/src/utils/fillBound';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { bboxFromGeojson } from '../../../core/src/utils/fillBound';
+import type { LayerStyleType } from '../style/layer-simple-builder';
+import { asFeatureCollection } from '../utils/feature-collection';
+import { detectGeojsonCrs, detectGeojsonStyleTypes } from './geojson-parse';
 
 export type GeojsonWorkerRequest =
   | {
@@ -67,7 +69,10 @@ export type GeojsonWorkerResponse = {
   crs?: string | null;
   format?: string;
   /** FileGDB (and similar) per-layer FeatureCollections. */
-  layers?: Array<{ name: string; geojson: import('geojson').FeatureCollection }>;
+  layers?: Array<{
+    name: string;
+    geojson: import('geojson').FeatureCollection;
+  }>;
   styleTypes?: LayerStyleType[];
   bbox?: GeojsonBbox;
   error?: string;

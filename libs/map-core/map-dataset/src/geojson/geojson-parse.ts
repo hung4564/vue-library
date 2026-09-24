@@ -1,4 +1,5 @@
 import type { GeoJSON } from 'geojson';
+
 import type { LayerStyleType } from '../style/layer-simple-builder';
 
 /** Style mode: fixed layer type, or auto-detect all types in the data. */
@@ -45,10 +46,7 @@ function geometryTypeToStyleType(
 ): LayerStyleType | undefined {
   if (!geometryType) return undefined;
   if (geometryType === 'Point' || geometryType === 'MultiPoint') return 'point';
-  if (
-    geometryType === 'LineString' ||
-    geometryType === 'MultiLineString'
-  ) {
+  if (geometryType === 'LineString' || geometryType === 'MultiLineString') {
     return 'line';
   }
   if (geometryType === 'Polygon' || geometryType === 'MultiPolygon') {

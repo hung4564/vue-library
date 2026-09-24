@@ -1,7 +1,8 @@
-import { mount } from '@vue/test-utils';
 import { handleMenuKeydown } from '@hungpvq/draggable';
+import { mount } from '@vue/test-utils';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, inject, nextTick, type Ref } from 'vue';
+
 import ContextMenu from '../components/ContextMenu.vue';
 import ContextMenuItem from '../components/ContextMenuItem.vue';
 import DraggableContainer from '../components/draggable/draggable-container.vue';
@@ -69,9 +70,7 @@ describe('parts', () => {
 
   it('DragCard, DragHeader, and DragSidebarToggle mount', () => {
     expect(mount(DragCard).exists()).toBe(true);
-    expect(
-      mount(DragHeader, { slots: { title: 'T' } }).text(),
-    ).toContain('T');
+    expect(mount(DragHeader, { slots: { title: 'T' } }).text()).toContain('T');
     const toggle = mount(DragSidebarToggle, {
       props: { location: 'left', expand: true },
     });
@@ -180,7 +179,9 @@ describe('ContextMenu', () => {
     };
     vm.open(new MouseEvent('contextmenu', { clientX: 10, clientY: 20 }));
     await nextTick();
-    const menu = document.body.querySelector('[role="menu"]') as HTMLElement | null;
+    const menu = document.body.querySelector(
+      '[role="menu"]',
+    ) as HTMLElement | null;
     expect(menu).toBeTruthy();
     if (!menu) return;
     const items = document.body.querySelectorAll('[role="menuitem"]');

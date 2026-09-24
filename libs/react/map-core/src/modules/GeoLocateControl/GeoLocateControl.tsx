@@ -1,12 +1,13 @@
 import {
-  GeoLocateSession,
   type GeoLocateControlOptions,
+  GeoLocateSession,
   type GeoLocateUiState,
   type MapSimple,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { useEffect, useRef, useState } from 'react';
+
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';

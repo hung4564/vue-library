@@ -11,13 +11,14 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import {
+  type IListViewUI,
   isHasSetOpacity,
   runAllComponentsWithCheck,
   WithSetOpacity,
-  type IListViewUI,
 } from '@hungpvq/map-dataset';
 import { useMap } from '@hungpvq/vue-map-core';
 import { ref, watch } from 'vue';
+
 import LayerItemSlider from './layer-item-slider.vue';
 import type { WithLayerItemActionType } from './types';
 

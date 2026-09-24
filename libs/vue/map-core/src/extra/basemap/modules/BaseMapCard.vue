@@ -16,9 +16,7 @@
         }"
       >
         <map-image
-          v-if="
-            current_baseMaps && !isCustomPlaceholder(current_baseMaps)
-          "
+          v-if="current_baseMaps && !isCustomPlaceholder(current_baseMaps)"
           :src="current_baseMaps.thumbnail"
         />
         <button
@@ -80,12 +78,17 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import { logHelper } from '@hungpvq/map-core';
-import { INIT_BASEMAPS, isCustomBasemapItem, logger } from '@hungpvq/map-core/basemap';
+import type { BaseMapItem } from '@hungpvq/map-core/basemap';
+import {
+  INIT_BASEMAPS,
+  isCustomBasemapItem,
+  logger,
+} from '@hungpvq/map-core/basemap';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiPlus } from '@mdi/js';
 import { computed, onBeforeUnmount, ref } from 'vue';
+
 import MapControlButton from '../../../components/MapControlButton.vue';
 import MapImage from '../../../components/MapImage.vue';
 import { useLang } from '../../../extra/lang/hook';

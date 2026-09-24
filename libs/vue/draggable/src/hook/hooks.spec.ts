@@ -1,7 +1,9 @@
 import { mount } from '@vue/test-utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, nextTick, ref } from 'vue';
+
 import { WithMobileHandle } from '../hoc/mobile-handle';
+import { useComponent } from '../hook/useComponent';
 import { useInitAction } from '../hook/useInit';
 import { useInitBottom } from '../hook/useInitBottom';
 import { useInitDrawer } from '../hook/useInitDrawer';
@@ -12,16 +14,15 @@ import {
   useManagement,
 } from '../hook/useInitItem';
 import { useInitSidebar } from '../hook/useInitSidebar';
-import { useShow, useExpand, useHighlight } from '../hook/useShow';
+import { useExpand, useHighlight, useShow } from '../hook/useShow';
 import { useSideBarContainer } from '../hook/useSideBarContainer';
-import { useComponent } from '../hook/useComponent';
 import {
+  useBottomItem,
   useDragCommands,
   useDragContainer,
   useDragItem,
   useDragStore,
   useSidebarItem,
-  useBottomItem,
 } from '../store';
 
 const CID = 'vue-spec-container';
@@ -191,7 +192,12 @@ describe('init hooks', () => {
     useDragContainer(CID).initContainer();
     const show = ref(false);
     const { wrapper, api } = mountSetup(() =>
-      useInitItem(CID, show, { type: 'item-popup', title: 'P' }, 'stable-popup'),
+      useInitItem(
+        CID,
+        show,
+        { type: 'item-popup', title: 'P' },
+        'stable-popup',
+      ),
     );
     await nextTick();
     expect(api().itemId.value).toBe('stable-popup');

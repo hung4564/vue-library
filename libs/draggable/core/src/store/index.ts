@@ -1,15 +1,16 @@
 import { defineStore } from '@hungpvq/shared-store';
+
 import {
   ContainerStore,
   ContainerStoreAction,
   ContainerStoreOtherAction,
-  ItemGroupKey,
-  ItemLayoutState,
-  LocationSideBar,
-  PanelSnapshot,
   createEmptyContainer,
   createEmptyDrawer,
+  ItemGroupKey,
+  ItemLayoutState,
   itemTypeToGroup,
+  LocationSideBar,
+  PanelSnapshot,
 } from '../types';
 
 export type DragStoreNotify = (path?: string | string[]) => void;

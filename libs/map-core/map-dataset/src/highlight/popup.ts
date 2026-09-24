@@ -1,5 +1,6 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
+
 import type {
   HighlightEntry,
   HighlightGeoJson,

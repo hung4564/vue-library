@@ -1,5 +1,8 @@
-import { detectGeojsonCrs, detectGeojsonStyleType } from '../geojson/geojson-parse';
 import { fetchGeojsonFromUrl } from '../geojson/fetch-geojson';
+import {
+  detectGeojsonCrs,
+  detectGeojsonStyleType,
+} from '../geojson/geojson-parse';
 import type { CreateControlSample } from './presets';
 
 export async function applyCreateControlSample(

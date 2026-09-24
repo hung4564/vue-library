@@ -4,6 +4,7 @@
  */
 
 import type { MapOptions } from 'maplibre-gl';
+
 import { MapEventError, MapInitializationError } from '../errors';
 import type { MapSimple } from '../types';
 

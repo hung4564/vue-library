@@ -2,15 +2,16 @@
 export default { name: 'log-detail-panel' };
 </script>
 <script setup lang="ts">
-import type { LogRecord } from '@hungpvq/shared-log';
 import {
   formatLogTime,
   objectArgs,
   stringifyLogRecord,
   textMessage,
 } from '@hungpvq/map-debug';
+import type { LogRecord } from '@hungpvq/shared-log';
 import { MapCopyButton } from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
+
 import TreeItem from './TreeItem.vue';
 
 const props = defineProps<{
@@ -25,12 +26,15 @@ const emit = defineEmits<{
 
 const title = computed(() => {
   if (!props.log) return 'Log detail';
-  return textMessage(props.log) || props.log.header.fn || props.log.header.span || 'Log';
+  return (
+    textMessage(props.log) ||
+    props.log.header.fn ||
+    props.log.header.span ||
+    'Log'
+  );
 });
 
-const json = computed(() =>
-  props.log ? stringifyLogRecord(props.log) : '',
-);
+const json = computed(() => (props.log ? stringifyLogRecord(props.log) : ''));
 
 const objects = computed(() => (props.log ? objectArgs(props.log) : []));
 </script>

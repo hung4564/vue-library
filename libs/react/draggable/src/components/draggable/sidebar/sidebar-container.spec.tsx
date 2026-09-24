@@ -1,14 +1,15 @@
-import { render, cleanup, waitFor, act } from '@testing-library/react';
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { act, cleanup, render, waitFor } from '@testing-library/react';
 import React from 'react';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+
 import { ContainerProvider } from '../../../context/ContainerContext';
 import {
   useDragContainer as getDragContainer,
   useDragStore as getDragStore,
   useSidebarItem,
 } from '../../../store';
-import { SidebarContainer } from './sidebar-container';
 import { DraggableItemSideBar } from '../item-sidebar';
+import { SidebarContainer } from './sidebar-container';
 
 vi.mock('@hungpvq/shared-store/react', () => ({
   useStoreSubscribe: vi.fn(),
@@ -65,9 +66,7 @@ describe('SidebarContainer', () => {
       </ContainerProvider>,
     );
     expect(document.getElementById(`sidebar-title-${CID}-left`)).toBeTruthy();
-    expect(
-      document.getElementById(`sidebar-content-${CID}-left`),
-    ).toBeTruthy();
+    expect(document.getElementById(`sidebar-content-${CID}-left`)).toBeTruthy();
     unmount();
   });
 
@@ -206,9 +205,9 @@ describe('SidebarContainer', () => {
       expect(getDragStore().container[CID].sideBar.left.items).toEqual([
         'side-only',
       ]);
-      expect(
-        getDragStore().container[CID].actions['side-only']?.title,
-      ).toBe('Solo');
+      expect(getDragStore().container[CID].actions['side-only']?.title).toBe(
+        'Solo',
+      );
     });
     unmount();
   });

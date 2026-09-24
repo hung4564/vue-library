@@ -1,5 +1,9 @@
 import type { IListViewUI } from '@hungpvq/map-dataset';
-import type { ListViewGroupOption, MenuAction, MenuActionLocation } from '@hungpvq/map-dataset/menu';
+import type {
+  ListViewGroupOption,
+  MenuAction,
+  MenuActionLocation,
+} from '@hungpvq/map-dataset/menu';
 
 /**
  * Local props interfaces for `defineProps<>` — Vue SFC compiler cannot resolve

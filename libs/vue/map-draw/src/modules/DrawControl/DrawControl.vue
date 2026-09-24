@@ -7,9 +7,11 @@ export default {
 </script>
 <script setup lang="ts">
 import { fitBounds } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  DrawingTypeName,
   createMapDrawControl,
+  DrawingTypeName,
+  isDraftOption,
   type MapDrawConfig,
   type MapDrawOption,
 } from '@hungpvq/map-draw';
@@ -20,16 +22,6 @@ import {
   useMap,
   useToolbarControl,
 } from '@hungpvq/vue-map-core';
-import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-import type { Feature, FeatureCollection } from 'geojson';
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
-import { isDraftOption } from '@hungpvq/map-draw';
-import { useEnsureDrawBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
-import DrawDraftList from './components/DrawDraftList.vue';
-import DrawToolbar from './components/DrawToolbar.vue';
-import { useDrawDrafts } from './hooks/useDrawDrafts';
-import { useDrawEvents } from './hooks/useDrawEvents';
-import type { DrawControlProps } from './DrawControl.props';
 import {
   mdiClose,
   mdiContentSave,
@@ -40,6 +32,15 @@ import {
   mdiUndoVariant,
   mdiViewListOutline,
 } from '@mdi/js';
+import type { Feature, FeatureCollection } from 'geojson';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+
+import { useEnsureDrawBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
+import DrawDraftList from './components/DrawDraftList.vue';
+import DrawToolbar from './components/DrawToolbar.vue';
+import type { DrawControlProps } from './DrawControl.props';
+import { useDrawDrafts } from './hooks/useDrawDrafts';
+import { useDrawEvents } from './hooks/useDrawEvents';
 
 const props = withDefaults(defineProps<DrawControlProps>(), {
   ...defaultMapProps,

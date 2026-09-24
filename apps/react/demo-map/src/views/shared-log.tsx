@@ -6,12 +6,13 @@ import {
   type SharedLogScenarioId,
 } from '@hungpvq/demo-map-datasets';
 import {
-  loggerFactory,
   type LogAdapter,
+  loggerFactory,
   type LogRecord,
 } from '@hungpvq/shared-log';
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
+
 import { MapPageShell } from '../components/MapPageShell';
 
 loggerFactory.enableEverything();

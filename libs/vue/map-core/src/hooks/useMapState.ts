@@ -1,5 +1,5 @@
-import { computed } from 'vue';
 import { getMapCoreRootStore, type MapStore } from '@hungpvq/map-core';
+import { computed } from 'vue';
 
 /**
  * Hook to access the global state of a map instance.

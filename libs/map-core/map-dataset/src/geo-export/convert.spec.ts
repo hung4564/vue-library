@@ -1,5 +1,6 @@
 import type { FeatureCollection } from 'geojson';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { convertFeatureCollectionToFile } from './convert';
 
 const fc: FeatureCollection = {
@@ -41,7 +42,8 @@ describe('convertFeatureCollectionToFile', () => {
     vi.doMock('tokml', () => {
       throw new Error('Cannot find module');
     });
-    const { convertFeatureCollectionToFile: convert } = await import('./convert');
+    const { convertFeatureCollectionToFile: convert } =
+      await import('./convert');
     await expect(convert(fc, 'kml')).rejects.toThrow(
       'Install optional peer "tokml" to export KML',
     );
@@ -51,7 +53,8 @@ describe('convertFeatureCollectionToFile', () => {
     vi.doMock('@mapbox/shp-write', () => {
       throw new Error('Cannot find module');
     });
-    const { convertFeatureCollectionToFile: convert } = await import('./convert');
+    const { convertFeatureCollectionToFile: convert } =
+      await import('./convert');
     await expect(convert(fc, 'shapefile')).rejects.toThrow(
       'Install optional peer "@mapbox/shp-write" to export Shapefile',
     );

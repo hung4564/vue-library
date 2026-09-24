@@ -2,27 +2,28 @@
 export default { name: 'attribute-table-grid' };
 </script>
 <script setup lang="ts">
+import { convertFeatureToItem } from '@hungpvq/map-dataset';
 import {
-  getAttributeTableCellRaw,
-  resolveAttributeTableComponentRef,
   type AttributeTableColumn,
   type AttributeTableGridProps,
   type AttributeTableRow,
+  getAttributeTableCellRaw,
+  resolveAttributeTableComponentRef,
 } from '@hungpvq/map-dataset/attribute-table';
-import { convertFeatureToItem } from '@hungpvq/map-dataset';
 import { RegistryItem } from '@hungpvq/vue-map-core';
 import { InputText } from '@hungpvq/vue-map-core/fields';
-import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 import {
+  type Component,
+  computed,
+  markRaw,
   nextTick,
   onBeforeUnmount,
   onMounted,
-  computed,
-  markRaw,
   ref,
   watch,
-  type Component,
 } from 'vue';
+
+import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 
 const props = defineProps<AttributeTableGridProps>();
 const scrollEl = ref<HTMLElement | null>(null);
@@ -149,8 +150,7 @@ function headerSortMeta(column: AttributeTableColumn) {
         sortCount: props.sortStates.length,
       }
     : { sortable: true as const };
-  const onSort = (append?: boolean) =>
-    props.onSortColumn(column.key, !!append);
+  const onSort = (append?: boolean) => props.onSortColumn(column.key, !!append);
   return {
     ...base,
     onSort,
@@ -277,11 +277,7 @@ function columnFilterAria(column: AttributeTableColumn) {
       <table class="attribute-table__table" :aria-label="props.tableLabel">
         <thead>
           <tr>
-            <th
-              v-if="showCheckbox"
-              class="attribute-table__check"
-              scope="col"
-            >
+            <th v-if="showCheckbox" class="attribute-table__check" scope="col">
               <input
                 type="checkbox"
                 :checked="props.allVisibleSelected"
@@ -345,8 +341,9 @@ function columnFilterAria(column: AttributeTableColumn) {
               :key="'filter-' + column.key"
               scope="col"
               :class="{
-                'is-column-filtered': !!(props.columnFilters[column.key] ?? '')
-                  .trim(),
+                'is-column-filtered': !!(
+                  props.columnFilters[column.key] ?? ''
+                ).trim(),
               }"
             >
               <InputText
@@ -398,11 +395,7 @@ function columnFilterAria(column: AttributeTableColumn) {
             "
             @focus="focusedRowId = row.id"
           >
-            <td
-              v-if="showCheckbox"
-              class="attribute-table__check"
-              @click.stop
-            >
+            <td v-if="showCheckbox" class="attribute-table__check" @click.stop>
               <input
                 type="checkbox"
                 :checked="props.selectedIds.has(row.id)"

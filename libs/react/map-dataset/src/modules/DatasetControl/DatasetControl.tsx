@@ -1,8 +1,6 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
-
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import type { IDataset } from '@hungpvq/map-dataset';
-
 import {
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
@@ -22,10 +20,10 @@ import {
   useShow,
   useToolbarControl,
 } from '@hungpvq/react-map-core';
-
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useEffect, useState } from 'react';
+
 import { useMapDataset } from '../../store/dataset-api';
 
 const ICON_SIZE = 16 / 24;
@@ -55,7 +53,7 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
   const { getDatasets, removeDataset, datasetVersion } = useMapDataset(mapId);
   const [views, setViews] = useState<IDataset[]>([]);
 
-useEffect(() => {
+  useEffect(() => {
     const next = getDatasets();
     setViews((prev) => {
       if (

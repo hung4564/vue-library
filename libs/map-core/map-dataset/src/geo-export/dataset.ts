@@ -1,20 +1,18 @@
-import type { FeatureCollection } from 'geojson';
 import { loggerFactory } from '@hungpvq/shared-log';
-import type { IDataset } from '../interfaces/dataset.base';
+import type { FeatureCollection } from 'geojson';
+
 import { findGeojsonSource } from '../geojson/find-source';
+import type { IDataset } from '../interfaces/dataset.base';
 import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import { isDataManagementView } from '../utils/check';
-import { convertFeatureCollectionToFile } from './convert';
-import { reprojectFeatureCollectionForExport } from './crs';
-import { downloadBlob, sanitizeExportFilename } from './download';
 import {
   asFeatureCollection,
   recordsToFeatureCollection,
 } from '../utils/feature-collection';
-import {
-  GEO_EXPORT_FORMAT_META,
-  type GeoExportFormat,
-} from './types';
+import { convertFeatureCollectionToFile } from './convert';
+import { reprojectFeatureCollectionForExport } from './crs';
+import { downloadBlob, sanitizeExportFilename } from './download';
+import { GEO_EXPORT_FORMAT_META, type GeoExportFormat } from './types';
 
 export function hasGeojsonExportData(layer: IDataset): boolean {
   const management = findSiblingOrNearestLeaf(layer, isDataManagementView);
@@ -28,7 +26,12 @@ async function resolveGeojsonData(
 ): Promise<FeatureCollection | null> {
   if (typeof data === 'string') {
     return loggerFactory.trackRequest(
-      { url: data, method: 'GET', span: 'geo-export.fetch', fn: 'resolveGeojsonData' },
+      {
+        url: data,
+        method: 'GET',
+        span: 'geo-export.fetch',
+        fn: 'resolveGeojsonData',
+      },
       async () => {
         const response = await fetch(data);
         if (!response.ok) {

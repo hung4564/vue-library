@@ -2,16 +2,16 @@ import { type WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   getLayerControlTitleMenuState,
-  registerAddGeojsonHereForMap,
-  warnIfDatasetRegistryMissing,
   type GlobalVisibilityMode,
   type IDataset,
+  registerAddGeojsonHereForMap,
+  warnIfDatasetRegistryMissing,
 } from '@hungpvq/map-dataset';
 import type { LayerType } from '@hungpvq/map-dataset/create-control';
 import {
   MENU_CONTROL_ID,
-  resolveMenuContextSource,
   type MenuContextSource,
+  resolveMenuContextSource,
 } from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
@@ -26,13 +26,13 @@ import {
   useShow,
   useToolbarControl,
 } from '@hungpvq/react-map-core';
-
 import { mdiLayers, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { type ReactNode, useEffect, useMemo, useRef } from 'react';
+
+import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
-import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { useMapDataset } from '../../store/dataset-api';
 import { CreateControl } from '../CreateControl/CreateControl';
 import { LayerMenuDefaultHandle } from '../LayerMenuDefaultHandle';
@@ -116,7 +116,7 @@ export function LayerControl(props: LayerControlProps) {
     actions: [{ type: 'mapLayerControl', run: () => setShow() }],
   });
 
-const { state, control } = useToolbarControl(mapId, merged, {
+  const { state, control } = useToolbarControl(mapId, merged, {
     kind: 'single',
     id: 'mapLayerControl',
     getState: () =>
@@ -227,7 +227,8 @@ const { state, control } = useToolbarControl(mapId, merged, {
         onShowChange={toggleShowCreate}
         createLayerTypes={props.createLayerTypes}
         controlVisible={false}
-      />      {props.children}
+      />{' '}
+      {props.children}
       <LayerMenuDefaultHandle mapId={mapId} />
     </ModuleContainer>
   );

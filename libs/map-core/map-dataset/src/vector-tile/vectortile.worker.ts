@@ -1,4 +1,5 @@
 import { runWorkerMonitor } from '@hungpvq/map-core/worker';
+
 import {
   closeArchive,
   getArchiveTile,
@@ -82,7 +83,9 @@ runWorkerMonitor<VectorTileWorkerRequest>(
       }
       case 'open-pmtiles-file': {
         report(0, 1, 'open-pmtiles');
-        ctx.log(`open pmtiles file (${formatBytes(message.buffer.byteLength)})`);
+        ctx.log(
+          `open pmtiles file (${formatBytes(message.buffer.byteLength)})`,
+        );
         const open = await openPmtilesFromBuffer(
           message.buffer,
           message.archiveId,

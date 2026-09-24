@@ -1,7 +1,11 @@
 import { UniversalRegistry } from '@hungpvq/map-core';
 import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
+
 import type { IDataset } from '../interfaces/dataset.base';
-import type { IIdentifyView, MenuConditionContext } from '../interfaces/dataset.parts';
+import type {
+  IIdentifyView,
+  MenuConditionContext,
+} from '../interfaces/dataset.parts';
 import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import { IDENTIFY_RESULT_CONTROL } from './result';
 
@@ -148,7 +152,10 @@ export function toggleListIdentifyScope(
           }
 
           const current = getIdentifyScope(mapId);
-          if (current.listId === list.id && current.identifyId === identify.id) {
+          if (
+            current.listId === list.id &&
+            current.identifyId === identify.id
+          ) {
             clearIdentifyScope(mapId);
             return { active: false, identifyId: identify.id };
           }

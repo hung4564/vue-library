@@ -16,7 +16,8 @@ const drawerSize = ref(300);
       <div class="panel">
         <h2>Drawer demo</h2>
         <p>
-          Two drawers on the same edge share size and switch via the drawer menu.
+          Two drawers on the same edge share size and switch via the drawer
+          menu.
         </p>
         <ManagementControl />
       </div>

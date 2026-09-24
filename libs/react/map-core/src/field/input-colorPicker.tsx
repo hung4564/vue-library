@@ -1,5 +1,5 @@
-import type { CSSProperties } from 'react';
 import Sketch from '@uiw/react-color-sketch';
+import type { CSSProperties } from 'react';
 
 export interface ColorResult {
   hex: string;

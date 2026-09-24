@@ -5,8 +5,10 @@ export interface SelectItem {
   text: string;
 }
 
-export interface InputSelectProps<T = SelectItem>
-  extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'onChange' | 'value'> {
+export interface InputSelectProps<T = SelectItem> extends Omit<
+  React.SelectHTMLAttributes<HTMLSelectElement>,
+  'onChange' | 'value'
+> {
   label?: string;
   items?: T[];
   itemValue?: keyof T | string;
@@ -64,7 +66,9 @@ export function InputSelect<T = SelectItem>({
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value;
-    const selectedItem = items.find((item) => String(getValue(item)) === selectedValue);
+    const selectedItem = items.find(
+      (item) => String(getValue(item)) === selectedValue,
+    );
     if (selectedItem !== undefined) {
       onChange?.(getValue(selectedItem) as T | string | number);
     }

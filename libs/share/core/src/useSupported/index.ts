@@ -1,4 +1,5 @@
 import { computed } from 'vue';
+
 import { useMounted } from '../useMounted';
 
 export function useSupported(callback: () => unknown) {

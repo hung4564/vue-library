@@ -1,4 +1,5 @@
 import { defineComponent, h } from 'vue';
+
 import { makeComponentProps } from '../../composables/component';
 import { makeTagProps } from '../../composables/tag';
 

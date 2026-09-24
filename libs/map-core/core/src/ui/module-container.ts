@@ -3,11 +3,7 @@ import type { ResolvedControlLayout } from '../utils/control-layout';
 
 /** Layout values that hide per-control corner `#btn` chrome (toolbar / menu hosts own it). */
 export type ModuleCornerChromeLayout =
-  | ResolvedControlLayout
-  | 'button'
-  | 'standalone'
-  | 'toolbar'
-  | 'menu';
+  ResolvedControlLayout | 'button' | 'standalone' | 'toolbar' | 'menu';
 
 export type ModuleBindPosition = {
   top?: number;
@@ -18,10 +14,7 @@ export type ModuleBindPosition = {
 };
 
 /** Bare corner host id (`top-left-map-1`). */
-export function moduleCornerHostId(
-  position: Position,
-  mapId: string,
-): string {
+export function moduleCornerHostId(position: Position, mapId: string): string {
   return `${position}-${mapId}`;
 }
 

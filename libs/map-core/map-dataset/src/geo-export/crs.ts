@@ -1,5 +1,6 @@
 import { normalizeEpsgCode } from '@hungpvq/map-core/crs';
 import type { FeatureCollection } from 'geojson';
+
 import { detectGeojsonCrs } from '../geojson/geojson-parse';
 import { reprojectGeojsonAsync } from '../geojson/geojson-worker.client';
 
@@ -27,8 +28,7 @@ export function resolveGeoExportCrs(
     normalizeEpsgCode(options.sourceCrs) ??
     normalizeEpsgCode(detected) ??
     GEO_EXPORT_DEFAULT_CRS;
-  const targetCrs =
-    normalizeEpsgCode(options.targetCrs) ?? sourceCrs;
+  const targetCrs = normalizeEpsgCode(options.targetCrs) ?? sourceCrs;
   return { sourceCrs, targetCrs };
 }
 

@@ -1,13 +1,15 @@
+import type { LocationSideBar } from '@hungpvq/draggable';
 import { focusFirst, restoreFocus } from '@hungpvq/draggable';
 import {
-  type MouseEvent as ReactMouseEvent,
   type ComponentType,
   type CSSProperties,
+  type MouseEvent as ReactMouseEvent,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
+
 import { useContainerId } from '../../../context/ContainerContext';
 import { useComponent, useIcon } from '../../../hook';
 import { useContainerSize } from '../../../hook/useContainerSize';
@@ -18,7 +20,6 @@ import {
   useSidebarItem,
 } from '../../../store';
 import { useContainerReactive } from '../../../store/useStoreReactive';
-import type { LocationSideBar } from '@hungpvq/draggable';
 import { ContextMenu, type ContextMenuRef } from '../../ContextMenu';
 import { ContextMenuItem } from '../../ContextMenuItem';
 import { DragButton } from '../../parts/DragButton';

@@ -1,23 +1,23 @@
 import { type WithMapPropType } from '@hungpvq/map-core';
 import type { EventBboxRangerHandle } from '@hungpvq/map-core/event';
 import { EventBboxRanger, EventClick } from '@hungpvq/map-core/event';
-import { MAP_CONTEXT_MENU_ID } from '@hungpvq/map-core/menu';
 import type { MapMenuItemProps } from '@hungpvq/map-core/menu';
+import { MAP_CONTEXT_MENU_ID } from '@hungpvq/map-core/menu';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import {
+  bindHighlightMittBridge,
+  emitHighlightIdentifyClose,
+} from '@hungpvq/map-dataset/highlight';
 import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import {
   createIdentifySession,
   IDENTIFY_CONTROL,
   IDENTIFY_RESULT_CONTROL,
-  syncIdentifyPointerPick,
   type IdentifyLayerFilterPayload,
   type IdentifyResultUpdatePayload,
   type IdentifyScopeToggleResult,
+  syncIdentifyPointerPick,
 } from '@hungpvq/map-dataset/identify';
-import {
-  bindHighlightMittBridge,
-  emitHighlightIdentifyClose,
-} from '@hungpvq/map-dataset/highlight';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -33,8 +33,9 @@ import {
 import { mdiHandPointingUp } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useMapDataset } from '../../store/dataset-api';
+
 import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
+import { useMapDataset } from '../../store/dataset-api';
 import { IdentifyResultControl } from './IdentifyResultControl';
 
 function updateResultPanel(
@@ -84,9 +85,9 @@ export function IdentifyControl(
   const toggleShowStateRef = useRef(toggleShow);
   toggleShowStateRef.current = toggleShow;
   const controlSyncRef = useRef<() => void>(() => undefined);
-  const syncResultPanelRef = useRef<(extra?: IdentifyResultUpdatePayload) => void>(
-    () => undefined,
-  );
+  const syncResultPanelRef = useRef<
+    (extra?: IdentifyResultUpdatePayload) => void
+  >(() => undefined);
 
   const onMapClickRef = useRef<(e: MapMouseEvent) => void>(() => undefined);
   const onBboxSelectRef = useRef<EventBboxRangerHandle>(() => undefined);
@@ -135,8 +136,7 @@ export function IdentifyControl(
       getIdentifies: () => viewsRef.current,
       immediately: () => immediatelyRef.current,
       callMap: (fn) => callMapRef.current(fn),
-      translateAllLayers: () =>
-        transRef.current('map.identify.all_layers'),
+      translateAllLayers: () => transRef.current('map.identify.all_layers'),
       onStateChange: () => {
         const s = sessionRef.current!.getState();
         toggleShowStateRef.current(s.show);
@@ -186,7 +186,7 @@ export function IdentifyControl(
     loadingRef.current = s.loading;
   }, [session, toggleShow]);
 
-const syncResultPanel = useCallback(
+  const syncResultPanel = useCallback(
     (extra?: IdentifyResultUpdatePayload) => {
       updateResultPanel(mapId, session.buildResultPanelPayload(extra));
     },

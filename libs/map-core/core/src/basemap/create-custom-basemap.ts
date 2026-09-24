@@ -19,7 +19,10 @@ export type CreateCustomBasemapInput = {
 };
 
 function newId(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+  if (
+    typeof crypto !== 'undefined' &&
+    typeof crypto.randomUUID === 'function'
+  ) {
     return `custom-${crypto.randomUUID()}`;
   }
   return `custom-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;

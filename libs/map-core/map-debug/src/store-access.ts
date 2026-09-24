@@ -6,19 +6,15 @@ export type MapCoreBag = Record<string, Record<string, unknown>>;
 
 /** Process-wide mapId keys under `map:core`. */
 export function listMapIds(): string[] {
-  const root = GlobalStoreService.getInstance().getState()[
-    MAP_CORE_KEY
-  ] as MapCoreBag | undefined;
+  const root = GlobalStoreService.getInstance().getState()[MAP_CORE_KEY] as
+    MapCoreBag | undefined;
   return Object.keys(root ?? {}).sort();
 }
 
 /** Full store bag under `map:core[mapId]` (all keys for that map). */
-export function getMapBag(
-  mapId: string,
-): Record<string, unknown> | undefined {
-  const root = GlobalStoreService.getInstance().getState()[
-    MAP_CORE_KEY
-  ] as MapCoreBag | undefined;
+export function getMapBag(mapId: string): Record<string, unknown> | undefined {
+  const root = GlobalStoreService.getInstance().getState()[MAP_CORE_KEY] as
+    MapCoreBag | undefined;
   const bag = root?.[mapId];
   if (!bag || typeof bag !== 'object') return undefined;
   return bag;

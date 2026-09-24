@@ -1,8 +1,8 @@
 import {
   configureDevtoolLogStore,
   createDevtoolLogAdapter,
-  installDevtoolsCore,
   type DevtoolLogStoreConfig,
+  installDevtoolsCore,
 } from '@hungpvq/map-core/devtools';
 import { installMapDebug, uninstallMapDebug } from '@hungpvq/map-debug';
 import {

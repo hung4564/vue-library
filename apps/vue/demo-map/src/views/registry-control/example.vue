@@ -1,50 +1,48 @@
 ﻿<template>
-    <Map :mapId="mapId">
+  <Map :mapId="mapId">
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
-      <AsideControl position="top-left" />
-      <MeasurementControl position="top-right" />
-      <ComponentManagementControl />
+    <AsideControl position="top-left" />
+    <MeasurementControl position="top-right" />
+    <ComponentManagementControl />
 
-      <LayerControl position="top-left" show>
-        <template #endList="{ mapId: mid }">
-          <BaseMapCard :mapId="mid" />
-        </template>
-      </LayerControl>
-      <DatasetControl position="top-left" />
-      <EventManagementControl position="top-left" />
+    <LayerControl position="top-left" show>
+      <template #endList="{ mapId: mid }">
+        <BaseMapCard :mapId="mid" />
+      </template>
+    </LayerControl>
+    <DatasetControl position="top-left" />
+    <EventManagementControl position="top-left" />
 
-      <GotoControl position="top-right" />
-      <InfoControl position="top-right" />
-      <WorkerControl position="top-left" />
-      <IdentifyControl position="top-right" />
-      <DrawControl position="top-right" />
-      <InspectControl position="top-right" />
-      <GeoLocateControl position="top-right" />
+    <GotoControl position="top-right" />
+    <InfoControl position="top-right" />
+    <WorkerControl position="top-left" />
+    <IdentifyControl position="top-right" />
+    <DrawControl position="top-right" />
+    <InspectControl position="top-right" />
+    <GeoLocateControl position="top-right" />
 
-      <PrintAdvancedControl />
-      <PrintControl />
-      <LegendControl />
-      <CrsControl />
-      <SettingControl />
-      <GlobeControl />
-      <FullScreenControl />
-      <ZoomControl />
-      <HomeControl />
-      <MouseCoordinatesControl />
-      <MapContextMenuControl />
-      <BaseMapControl position="bottom-left" />
+    <PrintAdvancedControl />
+    <PrintControl />
+    <LegendControl />
+    <CrsControl />
+    <SettingControl />
+    <GlobeControl />
+    <FullScreenControl />
+    <ZoomControl />
+    <HomeControl />
+    <MouseCoordinatesControl />
+    <MapContextMenuControl />
+    <BaseMapControl position="bottom-left" />
 
-      <IdentifyShowFirstControl />
+    <IdentifyShowFirstControl />
 
-      <RegistryControl position="top-right" show />
-      <DemoHelpPanel />
-    </Map>
+    <RegistryControl position="top-right" show />
+    <DemoHelpPanel />
+  </Map>
 </template>
 
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
   BaseMapCard,
@@ -76,12 +74,13 @@ import {
   IdentifyShowFirstControl,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
+
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../../layout/aside-control.vue';
 
 const mapId = ref(getUUIDv4());
 </script>
-
-

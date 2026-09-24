@@ -6,7 +6,10 @@
     :aria-expanded="isGroupShow"
     :aria-label="layerGroup.name"
   >
-    <DraggableListItem :disabledDrag="disabledDrag" class="draggable-group__item">
+    <DraggableListItem
+      :disabledDrag="disabledDrag"
+      class="draggable-group__item"
+    >
       <div class="draggable-group__info">
         <input
           v-if="editing"
@@ -107,8 +110,8 @@ import {
   mdiPencil,
   mdiUngroup,
 } from '@mdi/js';
-
 import { computed, nextTick, ref } from 'vue';
+
 import DraggableListItem from './draggable-list-item.vue';
 
 const props = defineProps({

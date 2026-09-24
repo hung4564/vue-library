@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import {
-  formatWorkerLogTime,
-  type WorkerLogEntry,
-} from '@hungpvq/map-core';
+import { formatWorkerLogTime, type WorkerLogEntry } from '@hungpvq/map-core';
 import { computed, onBeforeUpdate, onUpdated, ref } from 'vue';
 
 const props = defineProps<{

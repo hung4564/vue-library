@@ -1,24 +1,25 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import type { LayerSpecification } from 'maplibre-gl';
+
 import type { WithDataHelper } from '../extra/data';
 import type { IDataset } from '../interfaces/dataset.base';
 import {
+  applyHighlightFeatureState,
+  clearHighlightFeatureState,
   createDefaultHighlightLayerIds,
   createDefaultHighlightLayers,
   createFeatureStateHighlightLayers,
   createShadowHighlightLayers,
-  defaultAnimate,
-  setPaintIfLayer,
-  applyHighlightFeatureState,
-  clearHighlightFeatureState,
   DEFAULT_HIGHLIGHT_FEATURE_STATE_KEY,
+  defaultAnimate,
   ensureHighlightLayers,
   ensureHighlightSource,
   featureStatePulseAnimate,
   type HighlightAnimState,
+  setPaintIfLayer,
 } from './paint-layers';
-import { markerCentroidCollection } from './popup';
 import type { IHighlightPart } from './part';
+import { markerCentroidCollection } from './popup';
 import { mergeEntriesToFeatureCollection } from './resolve-data';
 import type {
   HighlightAnimateFn,
@@ -207,9 +208,7 @@ function changeColorAnimate({
 export function createHighlightPainter(controllerId: string) {
   const anim = createPaintAnimationSession();
   let session: PaintSession | undefined;
-  const layerIds = createDefaultHighlightLayerIds(
-    `hl-ctrl-${controllerId}`,
-  );
+  const layerIds = createDefaultHighlightLayerIds(`hl-ctrl-${controllerId}`);
 
   function stop(map: MapSimple | null | undefined) {
     if (!map || typeof map.getLayer !== 'function') {
@@ -243,8 +242,7 @@ export function createHighlightPainter(controllerId: string) {
     const dataType = latest.data.type;
 
     const fc = mergeEntriesToFeatureCollection(entries.map((e) => e.feature));
-    const paintFc =
-      mode === 'marker' ? markerCentroidCollection(fc) : fc;
+    const paintFc = mode === 'marker' ? markerCentroidCollection(fc) : fc;
 
     if (
       dataType === 'vector-tile' &&
@@ -276,13 +274,10 @@ export function createHighlightPainter(controllerId: string) {
             : mode === 'custom' && style.animate
               ? style.animate
               : (featureStatePulseAnimate as HighlightAnimateFn);
-      anim.startAnimation(
-        map,
-        layerIds,
-        durationMs,
-        pulseAnimate,
-        { startTime: performance.now(), stateKey },
-      );
+      anim.startAnimation(map, layerIds, durationMs, pulseAnimate, {
+        startTime: performance.now(),
+        stateKey,
+      });
       session = {
         stop: (m) => anim.stopAnimation(m, layerIds),
         clearFeatureState: (m) =>
@@ -331,7 +326,8 @@ export function createHighlightPainter(controllerId: string) {
       filterCreator: style.filterCreator ?? part?.getFilterCreator?.(),
     });
 
-    let animateFn: HighlightAnimateFn | null = defaultAnimate as HighlightAnimateFn;
+    let animateFn: HighlightAnimateFn | null =
+      defaultAnimate as HighlightAnimateFn;
     let initialState: Record<string, unknown> = {
       radius: style.paint?.pointRadius ?? 6,
       dashOffset: 0,

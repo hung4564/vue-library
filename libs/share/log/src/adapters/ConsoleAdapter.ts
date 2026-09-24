@@ -1,6 +1,6 @@
-import type { LogAdapter, LogLevel, LogRecord } from '../types';
 import { noopLogDataStore } from '../store/noop-store';
 import type { LogDataStore } from '../store/types';
+import type { LogAdapter, LogLevel, LogRecord } from '../types';
 
 const LEVEL_STYLE: Record<LogLevel, string> = {
   debug: 'color:#9aa0a6;font-weight:600',
@@ -52,7 +52,12 @@ export class ConsoleAdapter implements LogAdapter {
     const meta = formatMeta(record);
     const fn = console[level].bind(console);
     if (meta) {
-      fn(`%c${levelTag}%c${meta}`, LEVEL_STYLE[level], META_STYLE, ...record.args);
+      fn(
+        `%c${levelTag}%c${meta}`,
+        LEVEL_STYLE[level],
+        META_STYLE,
+        ...record.args,
+      );
     } else {
       fn(`%c${levelTag}%c`, LEVEL_STYLE[level], RESET_STYLE, ...record.args);
     }

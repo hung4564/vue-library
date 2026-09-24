@@ -1,9 +1,10 @@
 import { getMapPointerProfile } from '@hungpvq/map-core';
-import type { IdentifyScopeToggleResult } from './scope';
+
 import {
   IDENTIFY_ALL_LAYERS_VALUE,
   type IdentifyResultUpdatePayload,
 } from './result';
+import type { IdentifyScopeToggleResult } from './scope';
 
 export type IdentifyControlModelState = {
   show: boolean;
@@ -217,4 +218,6 @@ export function createIdentifyControlModel(
   };
 }
 
-export type IdentifyControlModel = ReturnType<typeof createIdentifyControlModel>;
+export type IdentifyControlModel = ReturnType<
+  typeof createIdentifyControlModel
+>;

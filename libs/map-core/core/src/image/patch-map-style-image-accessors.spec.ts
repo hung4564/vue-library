@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { patchMapStyleImageAccessors } from './patch-map-style-image-accessors';
 
 describe('patchMapStyleImageAccessors', () => {

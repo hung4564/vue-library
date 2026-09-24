@@ -1,5 +1,6 @@
-import { MAP_STORE_KEY } from '../types/constants';
 import { loggerFactory } from '@hungpvq/shared-log';
+
+import { MAP_STORE_KEY } from '../types/constants';
 
 export const logger = loggerFactory
   .createLogger()

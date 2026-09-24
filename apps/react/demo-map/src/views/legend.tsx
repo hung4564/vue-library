@@ -1,4 +1,6 @@
-﻿import type { MapSimple } from '@hungpvq/map-core';
+import './legend.css';
+
+import type { MapSimple } from '@hungpvq/map-core';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import {
   BaseMapControl,
@@ -12,15 +14,14 @@ import {
   useLayerLegend,
   ZoomControl,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import type { LayerSpecification } from 'maplibre-gl';
-import { useCallback, useState, type ReactNode } from 'react';
+import { type ReactNode, useCallback, useState } from 'react';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import './legend.css';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function LegendPage() {
   const { getLayerLegendNode } = useLayerLegend();
@@ -85,9 +86,15 @@ export function LegendPage() {
             'text-halo-width': 2,
           },
         },
-        new LayerSimpleMapboxBuild().setStyleType('point').build() as LayerSpecification,
-        new LayerSimpleMapboxBuild().setStyleType('line').build() as LayerSpecification,
-        new LayerSimpleMapboxBuild().setStyleType('area').build() as LayerSpecification,
+        new LayerSimpleMapboxBuild()
+          .setStyleType('point')
+          .build() as LayerSpecification,
+        new LayerSimpleMapboxBuild()
+          .setStyleType('line')
+          .build() as LayerSpecification,
+        new LayerSimpleMapboxBuild()
+          .setStyleType('area')
+          .build() as LayerSpecification,
       ];
       setLegends(layers.map((layer) => getLayerLegendNode(map, layer)));
     },

@@ -1,5 +1,6 @@
 // Types
 import type { CSSProperties, Ref } from 'vue';
+
 import {
   getForeground,
   isCssColor,

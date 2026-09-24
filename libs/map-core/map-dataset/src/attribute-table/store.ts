@@ -1,28 +1,26 @@
-import { isDataManagementView } from '../utils/check';
-import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
-import {
-  filterAttributeTableRowsByColumnText,
-  type AttributeTableColumnFilters,
-} from './filter';
-import {
-  attributeTableIdentifyRowSelectKey,
-  buildAttributeTable,
-  filterAttributeTableRows,
-  type AttributeTableColumn,
-  type AttributeTableColumnsOption,
-  type AttributeTableRow,
-} from './model';
-import { GEOJSON_FEATURE_ID_KEY } from '../geojson/feature-id';
-import { resolveAttributeTableColumnsOption } from './dataset-part';
-import {
-  sortAttributeTableRows,
-  type AttributeTableSortState,
-} from './sort';
-import { toFeatureCollection } from '../utils/feature-collection';
+import type { Feature, FeatureCollection } from 'geojson';
+
 import type { DataManagementPart } from '../data-management/types';
 import { getDatasetFeatureCollection } from '../geo-export/dataset';
+import { GEOJSON_FEATURE_ID_KEY } from '../geojson/feature-id';
 import type { IDataset } from '../interfaces/dataset.base';
-import type { Feature, FeatureCollection } from 'geojson';
+import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
+import { isDataManagementView } from '../utils/check';
+import { toFeatureCollection } from '../utils/feature-collection';
+import { resolveAttributeTableColumnsOption } from './dataset-part';
+import {
+  type AttributeTableColumnFilters,
+  filterAttributeTableRowsByColumnText,
+} from './filter';
+import {
+  type AttributeTableColumn,
+  type AttributeTableColumnsOption,
+  attributeTableIdentifyRowSelectKey,
+  type AttributeTableRow,
+  buildAttributeTable,
+  filterAttributeTableRows,
+} from './model';
+import { type AttributeTableSortState, sortAttributeTableRows } from './sort';
 
 export const ATTRIBUTE_TABLE_DEFAULT_PAGE_SIZE = 50;
 
@@ -249,9 +247,10 @@ export function createDataManagementAttributeTableStore(
       return {
         columns: table.columns,
         rows,
-        total: query.columnFilters && Object.keys(query.columnFilters).length
-          ? rows.length
-          : result.total,
+        total:
+          query.columnFilters && Object.keys(query.columnFilters).length
+            ? rows.length
+            : result.total,
       };
     },
   };

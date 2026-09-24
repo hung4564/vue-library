@@ -8,11 +8,12 @@ import {
   useRef,
   useState,
 } from 'react';
+
 import { ContainerProvider } from '../../context/ContainerContext';
 import { useDragContainer, useDragStore } from '../../store';
 import { useContainerReactive } from '../../store/useStoreReactive';
-import { SidebarContainer } from './sidebar/sidebar-container';
 import { BottomContainer } from './bottom/bottom-container';
+import { SidebarContainer } from './sidebar/sidebar-container';
 
 /** Local debounce (avoids lodash CJS default-export issues in Vite consumers). */
 function debounce<TArgs extends unknown[]>(

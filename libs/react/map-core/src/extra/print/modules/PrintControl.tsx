@@ -4,6 +4,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { useEffect, useMemo, useRef, useState } from 'react';
+
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
@@ -20,13 +21,16 @@ export function PrintControl({
   ...mapProps
 }: PrintControlProps) {
   const merged = { ...defaultMapProps, ...mapProps };
-  const { callMap, mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapPrintControl' });
+  const { callMap, mapId, moduleContainerProps, order } = useMap({
+    ...merged,
+    controlId: 'mapPrintControl',
+  });
   const { trans } = useLang(mapId);
   const [loading, setLoading] = useState(false);
   const loadingRef = useRef(false);
   const controlRef = useRef<{ sync: () => void } | null>(null);
 
-const onPrint = useMemo(
+  const onPrint = useMemo(
     () => () => {
       callMap(async (map) => {
         loadingRef.current = true;

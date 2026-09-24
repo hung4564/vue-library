@@ -16,14 +16,12 @@ import {
 import { defaultMapProps, useEventMap, useMap } from '@hungpvq/vue-map-core';
 import { MapMouseEvent } from 'maplibre-gl';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
+
 import { useMapDataset } from '../../store/dataset-api';
 
-const props = withDefaults(
-  defineProps<WithMapPropType>(),
-  {
-    ...defaultMapProps,
-  },
-);
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
+});
 const { mapId, callMap } = useMap(props);
 const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
 const views = ref<Array<IIdentifyView & IDataset>>([]);

@@ -4,19 +4,23 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { clampBounds, focusFirst, setModalSiblingsInert, trapTabKey } from '@hungpvq/draggable';
+import {
+  clampBounds,
+  focusFirst,
+  setModalSiblingsInert,
+  trapTabKey,
+} from '@hungpvq/draggable';
 import {
   computed,
   inject,
   nextTick,
   onBeforeUnmount,
-  ref,
   Ref,
+  ref,
   watch,
 } from 'vue';
-import DragButton from '../parts/DragButton.vue';
-
 import VueDraggableResizable from 'vue-draggable-resizable';
+
 import {
   useComponent,
   useContainerOrder,
@@ -30,6 +34,7 @@ import {
   withShowProps,
 } from '../../hook';
 import { useDragLayout } from '../../store';
+import DragButton from '../parts/DragButton.vue';
 
 const MODAL_Z_INDEX = 10000;
 
@@ -355,10 +360,10 @@ function init() {
                 <template #extra-btn>
                   <slot name="extra-btn"></slot>
                   <drag-button
-                v-if="!disabledClose"
-                aria-label="Close dialog"
-                @click.stop="onClose"
-              >
+                    v-if="!disabledClose"
+                    aria-label="Close dialog"
+                    @click.stop="onClose"
+                  >
                     <CloseIcon :size="16" />
                   </drag-button>
                 </template>

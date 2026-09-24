@@ -41,7 +41,11 @@
         :disabled="checking || !canCheck"
         @click="onCheck"
       >
-        {{ checking ? trans('map.basemap.add-checking') : trans('map.basemap.add-check') }}
+        {{
+          checking
+            ? trans('map.basemap.add-checking')
+            : trans('map.basemap.add-check')
+        }}
       </MapControlButton>
       <MapControlButton
         variant="text"
@@ -59,12 +63,13 @@
 </template>
 <script setup lang="ts">
 import {
-  createCustomBasemapItem,
-  validateBasemapSource,
   type BaseMapItem,
   type BasemapSourceType,
+  createCustomBasemapItem,
+  validateBasemapSource,
 } from '@hungpvq/map-core/basemap';
 import { computed, ref } from 'vue';
+
 import MapControlButton from '../../../components/MapControlButton.vue';
 import { useLang } from '../../../extra/lang/hook';
 import { InputSelect, InputText } from '../../../field';
@@ -100,8 +105,14 @@ const checkOk = ref<boolean | null>(null);
 const statusMessage = ref('');
 
 const typeItems = computed(() => [
-  { value: 'raster' as const, text: trans.value('map.basemap.add-type-raster') },
-  { value: 'vector' as const, text: trans.value('map.basemap.add-type-vector') },
+  {
+    value: 'raster' as const,
+    text: trans.value('map.basemap.add-type-raster'),
+  },
+  {
+    value: 'vector' as const,
+    text: trans.value('map.basemap.add-type-vector'),
+  },
 ]);
 
 const urlHint = computed(() =>

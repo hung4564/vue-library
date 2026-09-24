@@ -1,14 +1,14 @@
 <script setup lang="ts">
-
-import type { IViewSettingField } from '@hungpvq/map-core/measurement';
 import {
   buildMapCrsCatalog,
   formatCrsLabel,
   resolveCrsDisplayItems,
 } from '@hungpvq/map-core/crs';
+import type { IViewSettingField } from '@hungpvq/map-core/measurement';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDeleteOutline } from '@mdi/js';
 import { computed } from 'vue';
+
 import MapControlButton from '../../../../components/MapControlButton.vue';
 import MapCopyButton from '../../../../components/MapCopyButton.vue';
 import { useLang } from '../../../../extra/lang/hook';

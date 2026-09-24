@@ -6,11 +6,9 @@ import type { Feature, FeatureCollection, GeoJSON } from 'geojson';
  */
 export const GEOJSON_FEATURE_ID_KEY = '_id';
 
-function existingFeatureId(
-  feature: Feature,
-  key: string,
-): string {
-  if (feature.id != null && String(feature.id) !== '') return String(feature.id);
+function existingFeatureId(feature: Feature, key: string): string {
+  if (feature.id != null && String(feature.id) !== '')
+    return String(feature.id);
   const props = feature.properties;
   if (props && typeof props === 'object') {
     const propId = props['id'];

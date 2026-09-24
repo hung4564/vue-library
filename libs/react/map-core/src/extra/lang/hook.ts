@@ -1,15 +1,16 @@
 import {
-  translateMapLang,
+  type MapLangFlatMessages,
   type MapLangLocale,
   type MapLanguageCode,
-  type MapLocaleLoader,
-  type MapLoadLocaleOptions,
   type MapLanguageRegisterOptions,
-  type MapLangFlatMessages,
+  type MapLoadLocaleOptions,
+  type MapLocaleLoader,
   type MittTypeMapLang,
   MittTypeMapLangEventKey,
+  translateMapLang,
 } from '@hungpvq/map-core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { useMapMittStore } from '../../store/mitt-store';
 import { useMapLocale } from './store';
 
@@ -39,7 +40,8 @@ export function useLang(mapId: string) {
   );
 
   const registerLocale = useCallback(
-    (lang: MapLanguageCode, tree: MapLangLocale) => api.registerLocale(lang, tree),
+    (lang: MapLanguageCode, tree: MapLangLocale) =>
+      api.registerLocale(lang, tree),
     [api],
   );
   const registerLocaleFlat = useCallback(

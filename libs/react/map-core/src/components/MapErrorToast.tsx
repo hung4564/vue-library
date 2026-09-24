@@ -1,6 +1,7 @@
+import './MapErrorToast.css';
+
 import { errorHandler, type MapError } from '@hungpvq/map-core';
 import { useEffect, useState } from 'react';
-import './MapErrorToast.css';
 
 const OPEN_DEVTOOLS_ERRORS_EVENT = 'hungpvq:map-open-devtools-errors';
 

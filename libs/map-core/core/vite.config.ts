@@ -1,7 +1,8 @@
 /// <reference types='vitest' />
+import * as fs from 'node:fs';
+
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-import * as fs from 'node:fs';
 import * as path from 'path';
 import { defineConfig, type Plugin } from 'vite';
 import dts from 'vite-plugin-dts';
@@ -39,7 +40,10 @@ function relativeBasemapAssetUrls(): Plugin {
           : path.resolve(__dirname, '../../../dist/libs/map-core/core');
       if (!fs.existsSync(root)) return;
       for (const name of fs.readdirSync(root)) {
-        if (!name.startsWith('basemap.') || (!name.endsWith('.js') && !name.endsWith('.cjs'))) {
+        if (
+          !name.startsWith('basemap.') ||
+          (!name.endsWith('.js') && !name.endsWith('.cjs'))
+        ) {
           continue;
         }
         const file = path.join(root, name);

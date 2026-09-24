@@ -1,14 +1,13 @@
-import type {
-  RasterSourceSpecification,
-} from 'maplibre-gl';
+import type { RasterSourceSpecification } from 'maplibre-gl';
+
 import type { IMapboxSourceView } from '../interfaces/dataset.parts';
+import { createNamedComponent } from '../model/base';
+import { createDatasetPartMapboxSourceComponent } from '../model/source/base';
 import { resolveDatasetBbox } from '../utils/bbox';
 import {
   buildTileSourceDataInfo,
   getTileSourceFieldsInfo,
 } from '../utils/map-source-info';
-import { createNamedComponent } from '../model/base';
-import { createDatasetPartMapboxSourceComponent } from '../model/source/base';
 
 export function createDatasetPartRasterSourceComponent(
   name: string,

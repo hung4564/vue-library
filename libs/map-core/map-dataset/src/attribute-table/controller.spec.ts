@@ -1,9 +1,10 @@
 import type { FeatureCollection } from 'geojson';
 import { describe, expect, it, vi } from 'vitest';
-import { createAttributeTableController } from './controller';
-import { createLocalAttributeTableStore } from './store';
-import type { AttributeTableStore } from './store';
+
 import type { IDataset } from '../interfaces/dataset.base';
+import { createAttributeTableController } from './controller';
+import type { AttributeTableStore } from './store';
+import { createLocalAttributeTableStore } from './store';
 
 const point = (id: string, name: string) => ({
   type: 'Feature' as const,
@@ -87,9 +88,9 @@ describe('createAttributeTableController', () => {
 
     const onlyPage = await controller.resolveFeaturesForSelection(['0:a']);
     expect(onlyPage).toHaveLength(1);
-    expect(list.mock.calls.filter((c) => c[0].intent === 'select')).toHaveLength(
-      0,
-    );
+    expect(
+      list.mock.calls.filter((c) => c[0].intent === 'select'),
+    ).toHaveLength(0);
 
     const mixed = await controller.resolveFeaturesForSelection(['0:a', 'c']);
     expect(mixed.map((r) => r.cells.name).sort()).toEqual(['A', 'C']);

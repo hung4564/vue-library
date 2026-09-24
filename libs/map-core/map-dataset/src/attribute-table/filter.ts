@@ -164,11 +164,7 @@ export function matchAttributeTableColumnFilter(
     return hay.includes(n);
   }
 
-  if (
-    mode === 'number_eq' ||
-    mode === 'number_gte' ||
-    mode === 'number_lte'
-  ) {
+  if (mode === 'number_eq' || mode === 'number_gte' || mode === 'number_lte') {
     const cellNum = parseNumber(cell ?? '');
     const qNum = parseNumber(needle);
     if (cellNum == null || qNum == null) return false;
@@ -270,9 +266,10 @@ export function filterAttributeTableRowsByColumnText(
 }
 
 /** Filter columns to `visibleKeys` (order preserved from `columns`). */
-export function resolveAttributeTableVisibleColumns<
-  T extends { key: string },
->(columns: T[], visibleKeys: string[] | null | undefined): T[] {
+export function resolveAttributeTableVisibleColumns<T extends { key: string }>(
+  columns: T[],
+  visibleKeys: string[] | null | undefined,
+): T[] {
   if (visibleKeys == null) return columns;
   const allowed = new Set(visibleKeys);
   return columns.filter((c) => allowed.has(c.key));

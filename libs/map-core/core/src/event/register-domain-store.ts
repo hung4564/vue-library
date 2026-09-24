@@ -1,8 +1,8 @@
-import { MAP_STORE_KEY } from '../types/constants';
 import {
   ensureMapDomainStore,
   registerMapDomainStoreFactory,
 } from '../store/map-domain-store';
+import { MAP_STORE_KEY } from '../types/constants';
 import { createDefaultEventStore, type MapEventStore } from './types';
 
 registerMapDomainStoreFactory(MAP_STORE_KEY.EVENT, {

@@ -1,8 +1,9 @@
 import mitt from 'mitt';
 import { describe, expect, it, vi } from 'vitest';
+
+import { EventManager, normalizeEventFrom } from './event-manager.service';
 import type { MapEventStore } from './types';
 import { MittTypeMapEventEventKey as EventKey } from './types';
-import { EventManager, normalizeEventFrom } from './event-manager.service';
 
 describe('normalizeEventFrom', () => {
   it('converts camelCase / spaces / underscores to kebab-case', () => {

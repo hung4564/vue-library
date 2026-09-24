@@ -1,4 +1,5 @@
 import type { RasterLayerSpecification } from 'maplibre-gl';
+
 import type { LayerTypeConfig } from './style';
 
 export const RASTER_CONFIG: LayerTypeConfig<RasterLayerSpecification> = {

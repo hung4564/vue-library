@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   applyCreateControlLayerName,
   layerNameFromFileName,
@@ -23,14 +24,16 @@ describe('create-control layer name helpers', () => {
   });
 
   it('applyCreateControlLayerName fills empty or default names only', () => {
+    expect(applyCreateControlLayerName('', 'roads', 'geojson')).toBe('roads');
     expect(
-      applyCreateControlLayerName('', 'roads', 'geojson'),
+      applyCreateControlLayerName(
+        suggestLayerName('geojson'),
+        'roads',
+        'geojson',
+      ),
     ).toBe('roads');
-    expect(
-      applyCreateControlLayerName(suggestLayerName('geojson'), 'roads', 'geojson'),
-    ).toBe('roads');
-    expect(
-      applyCreateControlLayerName('My layer', 'roads', 'geojson'),
-    ).toBe('My layer');
+    expect(applyCreateControlLayerName('My layer', 'roads', 'geojson')).toBe(
+      'My layer',
+    );
   });
 });

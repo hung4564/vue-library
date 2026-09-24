@@ -4,18 +4,17 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import ContextMenu from '../../ContextMenu.vue';
-import ContextMenuItem from '../../ContextMenuItem.vue';
 import { focusFirst, restoreFocus } from '@hungpvq/draggable';
 import {
   computed,
   inject,
   nextTick,
   onBeforeUnmount,
-  ref,
   Ref,
+  ref,
   watch,
 } from 'vue';
+
 import {
   useComponent,
   useExpand,
@@ -25,6 +24,8 @@ import {
 } from '../../../hook';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
 import { useBottomItem, useDragContainer } from '../../../store';
+import ContextMenu from '../../ContextMenu.vue';
+import ContextMenuItem from '../../ContextMenuItem.vue';
 import DragButton from '../../parts/DragButton.vue';
 
 const contextMenuRef = ref<
@@ -61,23 +62,16 @@ const activeAction = computed(() => {
 const { componentCard, componentCardHeader } = useComponent({
   containerId: containerId.value,
   get componentCard() {
-    return activeAction.value?.componentCard as
-      | undefined
-      | string
-      | object;
+    return activeAction.value?.componentCard as undefined | string | object;
   },
   get componentCardHeader() {
     return activeAction.value?.componentCardHeader as
-      | undefined
-      | string
-      | object;
+      undefined | string | object;
   },
 });
 
 const titleTo = computed(() => `bottom-title-${containerId.value}`);
-const afterTitleTo = computed(
-  () => `bottom-after-title-${containerId.value}`,
-);
+const afterTitleTo = computed(() => `bottom-after-title-${containerId.value}`);
 const contentTo = computed(() => `bottom-content-${containerId.value}`);
 
 const c_getShow = computed(() => getShow());

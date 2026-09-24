@@ -1,13 +1,13 @@
-import type { IViewSettingField } from '@hungpvq/map-core/measurement';
-
 import {
   buildMapCrsCatalog,
   formatCrsLabel,
   resolveCrsDisplayItems,
 } from '@hungpvq/map-core/crs';
+import type { IViewSettingField } from '@hungpvq/map-core/measurement';
 import { mdiDeleteOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useEffect, useMemo } from 'react';
+
 import { MapControlButton } from '../../../../components/MapControlButton';
 import { MapCopyButton } from '../../../../components/MapCopyButton';
 import { useMap } from '../../../../hooks/useMap';
@@ -22,16 +22,13 @@ export interface FieldPointCrsProps {
   onChange?: () => void;
 }
 
-export function FieldPointCrs({
-  fields = [],
-  onChange,
-}: FieldPointCrsProps) {
+export function FieldPointCrs({ fields = [], onChange }: FieldPointCrsProps) {
   const { mapId } = useMap();
   const { trans } = useLang(mapId);
   const { items: crsItems } = useMapCrsItems(mapId);
   const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId);
 
-const catalog = useMemo(() => buildMapCrsCatalog(crsItems), [crsItems]);
+  const catalog = useMemo(() => buildMapCrsCatalog(crsItems), [crsItems]);
   const displayItems = useMemo(
     () => resolveCrsDisplayItems(displayEpsgs, catalog),
     [displayEpsgs, catalog],

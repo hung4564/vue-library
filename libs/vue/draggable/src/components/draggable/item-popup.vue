@@ -4,11 +4,15 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { clampBounds, focusFirst, restoreFocus, trapTabKey } from '@hungpvq/draggable';
-import { inject, nextTick, onBeforeUnmount, ref, Ref, watch } from 'vue';
-import DragButton from '../parts/DragButton.vue';
-
+import {
+  clampBounds,
+  focusFirst,
+  restoreFocus,
+  trapTabKey,
+} from '@hungpvq/draggable';
+import { inject, nextTick, onBeforeUnmount, Ref, ref, watch } from 'vue';
 import VueDraggableResizable from 'vue-draggable-resizable';
+
 import {
   useComponent,
   useContainerOrder,
@@ -26,6 +30,7 @@ import {
   withShowProps,
 } from '../../hook';
 import { useDragLayout } from '../../store';
+import DragButton from '../parts/DragButton.vue';
 const {
   CloseIcon,
   CloseExpandedIcon,

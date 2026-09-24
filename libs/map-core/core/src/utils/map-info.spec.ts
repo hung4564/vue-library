@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import {
-  EMPTY_MAP_VIEW_INFO,
   createActionFeedback,
+  EMPTY_MAP_VIEW_INFO,
   formatCoordPair,
   formatDegree,
   formatLngLatBounds,

@@ -1,7 +1,10 @@
-import type { MenuAction, MenuActionLocation } from '../interfaces/dataset.parts';
-import type { MenuConditionContext } from './types';
+import type {
+  MenuAction,
+  MenuActionLocation,
+} from '../interfaces/dataset.parts';
 import { isMenuItemHidden } from './condition';
 import { applyMenuControlPlacement } from './placement';
+import type { MenuConditionContext } from './types';
 
 /** Location on a menu item, if present. */
 export function getMenuItemLocation(

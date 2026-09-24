@@ -17,7 +17,8 @@ const GIS_UPLOAD_EXTS = new Set(
 export function isGisUploadFileName(name?: string): boolean {
   if (!name) return false;
   const normalized = name.replace(/\\/g, '/');
-  if (isFileGdbZipName(normalized) || isFileGdbPartName(normalized)) return true;
+  if (isFileGdbZipName(normalized) || isFileGdbPartName(normalized))
+    return true;
   const ext = fileExtension(normalized);
   if (!ext) return false;
   if (GIS_UPLOAD_EXTS.has(ext)) return true;
@@ -91,7 +92,9 @@ async function entryToFiles(entry: FileSystemEntryLike): Promise<File[]> {
   if (entry.isDirectory && typeof entry.createReader === 'function') {
     const reader = entry.createReader();
     const children = await readAllDirectoryEntries(reader);
-    const nested = await Promise.all(children.map((child) => entryToFiles(child)));
+    const nested = await Promise.all(
+      children.map((child) => entryToFiles(child)),
+    );
     return nested.flat();
   }
   return [];
@@ -100,9 +103,12 @@ async function entryToFiles(entry: FileSystemEntryLike): Promise<File[]> {
 async function collectRawFilesFromDataTransfer(
   dataTransfer: DataTransfer,
 ): Promise<File[]> {
-  const items = Array.from(dataTransfer.items || []) as DataTransferItemWithEntry[];
+  const items = Array.from(
+    dataTransfer.items || [],
+  ) as DataTransferItemWithEntry[];
   const hasEntries = items.some(
-    (item) => item.kind === 'file' && typeof item.webkitGetAsEntry === 'function',
+    (item) =>
+      item.kind === 'file' && typeof item.webkitGetAsEntry === 'function',
   );
 
   if (hasEntries) {
@@ -156,7 +162,10 @@ export async function collectFileGdbFilesFromDataTransfer(
   }
 
   const gdbFiles = files.filter((file) => {
-    const path = (file.webkitRelativePath || file.name || '').replace(/\\/g, '/');
+    const path = (file.webkitRelativePath || file.name || '').replace(
+      /\\/g,
+      '/',
+    );
     return isFileGdbPartName(path) || path.toLowerCase().includes('.gdb/');
   });
   if (gdbFiles.length) return gdbFiles;
@@ -171,7 +180,9 @@ export async function collectFileGdbFilesFromDataTransfer(
 /**
  * Resolve paste payload: clipboard files (GIS) and/or text.
  */
-export function readClipboardGisPaste(clipboardData: DataTransfer | null | undefined): {
+export function readClipboardGisPaste(
+  clipboardData: DataTransfer | null | undefined,
+): {
   files: File[];
   text: string;
 } {
@@ -179,6 +190,7 @@ export function readClipboardGisPaste(clipboardData: DataTransfer | null | undef
   const files = Array.from(clipboardData.files || []).filter((file) =>
     isGisUploadFileName(file.name),
   );
-  const text = clipboardData.getData('text') || clipboardData.getData('text/plain') || '';
+  const text =
+    clipboardData.getData('text') || clipboardData.getData('text/plain') || '';
   return { files, text };
 }

@@ -1,6 +1,6 @@
-import type { LayerTypeConfig, Tab } from './style';
-
 import type { SymbolLayerSpecification } from 'maplibre-gl';
+
+import type { LayerTypeConfig, Tab } from './style';
 
 const TEXT_STYLE: Tab<SymbolLayerSpecification>[] = [
   {

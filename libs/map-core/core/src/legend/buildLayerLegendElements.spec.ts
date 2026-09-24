@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   buildLayerLegendElements,
   LAYER_LEGEND_FALLBACK_PATHS,

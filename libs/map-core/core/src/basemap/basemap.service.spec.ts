@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { BaseMapAdapter } from './adapter/BaseMapAdapter';
-import type { BaseMapItem } from './types';
 import { BasemapService } from './basemap.service';
+import type { BaseMapItem } from './types';
 
 class StubAdapter extends BaseMapAdapter {
   applied: BaseMapItem[] = [];

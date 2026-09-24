@@ -3,7 +3,11 @@
  * Hosts still add SDF images + wire onStart / onReset / marker / form views.
  */
 
-import type { GeoJSONSourceSpecification, LayerSpecification } from 'maplibre-gl';
+import type {
+  GeoJSONSourceSpecification,
+  LayerSpecification,
+} from 'maplibre-gl';
+
 import type { MapSimple } from '../types';
 import { MapView } from './model/viewMap';
 
@@ -142,8 +146,7 @@ export function createMeasurementMapView(
   map: MapSimple,
   options?: { highlightColor?: string },
 ): MapView {
-  const color =
-    options?.highlightColor ?? MEASUREMENT_DEFAULT_HIGHLIGHT_COLOR;
+  const color = options?.highlightColor ?? MEASUREMENT_DEFAULT_HIGHLIGHT_COLOR;
   return new MapView(map).init(
     createMeasurementMapViewLayers(color),
     createMeasurementMapViewEmptySource(),

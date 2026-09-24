@@ -1,14 +1,15 @@
-﻿import type { MapSimple } from '@hungpvq/map-core';
+import type { MapSimple } from '@hungpvq/map-core';
 import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import { BaseMapControl, Map, PrintControl } from '@hungpvq/react-map-core';
 import { LayerControl, useMapDataset } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import type { FeatureCollection } from 'geojson';
+
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 const SAMPLE: FeatureCollection = {
   type: 'FeatureCollection',

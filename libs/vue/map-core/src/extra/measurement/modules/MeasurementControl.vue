@@ -38,40 +38,23 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { MapMouseEvent } from 'maplibre-gl';
-import { computed, nextTick, reactive, watch } from 'vue';
-
-import {
-  MapSimple,
-  logHelper,
-} from '@hungpvq/map-core';
+import { logHelper, MapSimple } from '@hungpvq/map-core';
 import {
   buildMapCrsCatalog,
   resolveCrsDisplayItems,
 } from '@hungpvq/map-core/crs';
 import { EventClick } from '@hungpvq/map-core/event';
-import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
-  MEASUREMENT_MAP_VIEW_IMAGE,
   createMeasurementSession,
-  resolveMeasurementToolbarStatus,
   type MeasureActionItem,
+  MEASUREMENT_MAP_VIEW_IMAGE,
   type MeasurementModeType,
   type MeasurementUiState,
+  resolveMeasurementToolbarStatus,
 } from '@hungpvq/map-core/measurement';
-
-import MapCommonButton from '../../../components/MapCommonButton.vue';
-import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
-import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
-import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../../crs/useMapCrsItems';
-import { useEventMap } from '../../event/hook/useEvent';
-import { useMapImage } from '../../image/store';
-import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { logger } from '@hungpvq/map-core/measurement';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { type ToolbarButtonConfig } from '@hungpvq/map-core/toolbar';
-import { useToolbarControl } from '../../toolbar/helper';
-
 import {
   mdiAngleAcute,
   mdiClose,
@@ -84,13 +67,26 @@ import {
   mdiRulerSquareCompass,
   mdiTableHeadersEye,
 } from '@mdi/js';
+import { MapMouseEvent } from 'maplibre-gl';
+import { computed, nextTick, reactive, watch } from 'vue';
 
-import { logger } from '@hungpvq/map-core/measurement';
-import MeasurementSettingPopup from './MeasurementSettingPopup.vue';
-import type { MeasurementControlProps } from './MeasurementControl.props';
-
+import MapCommonButton from '../../../components/MapCommonButton.vue';
+import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
+import {
+  useMapCrsDisplayEpsgs,
+  useMapCrsItems,
+} from '../../crs/useMapCrsItems';
+import { useEventMap } from '../../event/hook/useEvent';
+import { useMapImage } from '../../image/store';
+import { useLang } from '../../lang/hook';
+import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useToolbarControl } from '../../toolbar/helper';
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
+import type { MeasurementControlProps } from './MeasurementControl.props';
+import MeasurementSettingPopup from './MeasurementSettingPopup.vue';
 
 const path = {
   distance: mdiRuler,
@@ -338,14 +334,24 @@ watch(
 );
 
 function onInit(map: MapSimple) {
-  imageHandle.addImage(map.id!, MEASUREMENT_MAP_VIEW_IMAGE.azimuthArrow, imageArrow, {
-    sdf: true,
-  });
-  imageHandle.addImage(map.id!, MEASUREMENT_MAP_VIEW_IMAGE.round, imageRounded, {
-    content: [4, 4, 12, 12],
-    stretchX: [[6, 10]],
-    stretchY: [[6, 10]],
-  });
+  imageHandle.addImage(
+    map.id!,
+    MEASUREMENT_MAP_VIEW_IMAGE.azimuthArrow,
+    imageArrow,
+    {
+      sdf: true,
+    },
+  );
+  imageHandle.addImage(
+    map.id!,
+    MEASUREMENT_MAP_VIEW_IMAGE.round,
+    imageRounded,
+    {
+      content: [4, 4, 12, 12],
+      stretchX: [[6, 10]],
+      stretchY: [[6, 10]],
+    },
+  );
   session.attachToMap(map);
   logHelper(logger, mapId.value, 'control', 'MeasurementControl')
     .with({ fn: 'onInit', span: 'control.init' })

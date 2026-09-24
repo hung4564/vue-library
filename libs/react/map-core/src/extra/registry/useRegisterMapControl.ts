@@ -7,6 +7,7 @@ import {
   type Position,
 } from '@hungpvq/map-core';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { UniversalRegistry } from './plugin';
 
 export type UseRegisterMapControlOptions = {
@@ -28,9 +29,9 @@ export function useRegisterMapControl(
   options: UseRegisterMapControlOptions,
 ) {
   const [panelPosition, setPanelPositionState] =
-    useState<MapControlPanelPosition>(
-      () => ({ ...(options.initialPanelPosition ?? {}) }),
-    );
+    useState<MapControlPanelPosition>(() => ({
+      ...(options.initialPanelPosition ?? {}),
+    }));
 
   const optionsRef = useRef(options);
   optionsRef.current = options;

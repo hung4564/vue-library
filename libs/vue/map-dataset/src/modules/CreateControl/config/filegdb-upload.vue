@@ -12,7 +12,11 @@
               {{ loadedSource.detail }}
             </p>
           </div>
-          <MapControlButton type="button" @click="clearLoadedData" variant="outlined">
+          <MapControlButton
+            type="button"
+            @click="clearLoadedData"
+            variant="outlined"
+          >
             {{ trans('map.layer-control.create.clear-data') }}
           </MapControlButton>
         </div>
@@ -26,7 +30,11 @@
           </li>
         </ul>
         <div class="create-control-loaded__actions">
-          <MapControlButton type="button" @click="replaceFileMode = true" variant="outlined">
+          <MapControlButton
+            type="button"
+            @click="replaceFileMode = true"
+            variant="outlined"
+          >
             {{ trans('map.layer-control.create.replace-file') }}
           </MapControlButton>
         </div>
@@ -40,14 +48,27 @@
             :resolve-drop-files="collectFileGdbFilesFromDataTransfer"
             @change="onChangeFile"
           />
-          <div class="create-control-loaded__actions" style="margin-top: 0.75rem">
-            <MapControlButton type="button" variant="outlined" @click="openFolderPicker">
+          <div
+            class="create-control-loaded__actions"
+            style="margin-top: 0.75rem"
+          >
+            <MapControlButton
+              type="button"
+              variant="outlined"
+              @click="openFolderPicker"
+            >
               {{ trans('map.layer-control.create.filegdb-choose-folder') }}
             </MapControlButton>
           </div>
           <div v-if="parsing" class="create-control-status--busy">
-            <span>{{ parseStatusText || trans('map.layer-control.create.parsing') }}</span>
-            <MapControlButton type="button" @click="cancelParsing" variant="outlined">
+            <span>{{
+              parseStatusText || trans('map.layer-control.create.parsing')
+            }}</span>
+            <MapControlButton
+              type="button"
+              @click="cancelParsing"
+              variant="outlined"
+            >
               {{ trans('map.layer-control.create.cancel') }}
             </MapControlButton>
           </div>
@@ -64,8 +85,6 @@
 </template>
 
 <script setup>
-import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
-import { DragDropFile } from '@hungpvq/vue-map-core/fields';
 import {
   applyCreateControlLayerName,
   assertCreateControlFileSize,
@@ -80,6 +99,8 @@ import {
   summarizeCreateControlUploadFiles,
 } from '@hungpvq/map-dataset/create-control';
 import { terminateGeojsonWorker } from '@hungpvq/map-dataset/geojson';
+import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
+import { DragDropFile } from '@hungpvq/vue-map-core/fields';
 import { computed, markRaw, ref } from 'vue';
 
 const form = defineModel();
@@ -201,7 +222,10 @@ async function onChangeFile(input) {
   const { totalBytes } = summarizeCreateControlUploadFiles(files);
   const parsingLabel = trans.value('map.layer-control.create.parsing');
   parsing.value = true;
-  parseStatusText.value = formatCreateControlParseStatus(parsingLabel, totalBytes);
+  parseStatusText.value = formatCreateControlParseStatus(
+    parsingLabel,
+    totalBytes,
+  );
   const unsubProgress = subscribeCreateControlParseProgress(
     parsingLabel,
     totalBytes,

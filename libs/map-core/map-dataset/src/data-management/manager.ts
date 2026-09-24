@@ -1,4 +1,5 @@
 import { getUUIDv4 } from '@hungpvq/shared';
+
 import type {
   DataHook,
   DataHookAction,
@@ -27,12 +28,19 @@ async function runBefore(
   let payload = ctx.payload;
   for (const hook of hooks) {
     const handler = hook[key] as
-      | ((c: DataHookContext) => DataHookBeforeResult | Promise<DataHookBeforeResult>)
+      | ((
+          c: DataHookContext,
+        ) => DataHookBeforeResult | Promise<DataHookBeforeResult>)
       | undefined;
     if (!handler) continue;
     const result = await handler({ ...ctx, payload });
     if (result === false) return { cancel: true, payload };
-    if (result && typeof result === 'object' && 'cancel' in result && result.cancel) {
+    if (
+      result &&
+      typeof result === 'object' &&
+      'cancel' in result &&
+      result.cancel
+    ) {
       return { cancel: true, payload, returnValue: result.returnValue };
     }
     if (result && typeof result === 'object') {
@@ -49,8 +57,7 @@ async function runAfter(
 ): Promise<void> {
   for (const hook of hooks) {
     const handler = hook[key] as
-      | ((c: DataHookContext) => void | Promise<void>)
-      | undefined;
+      ((c: DataHookContext) => void | Promise<void>) | undefined;
     if (!handler) continue;
     await handler(ctx);
   }
@@ -58,7 +65,8 @@ async function runAfter(
 
 function resolveId(input: ID | RecordId | Partial<DataRecord>): ID {
   if (typeof input === 'string' || typeof input === 'number') return input;
-  if (input && typeof input === 'object' && input.id != null) return input.id as ID;
+  if (input && typeof input === 'object' && input.id != null)
+    return input.id as ID;
   throw new Error('delete requires an id');
 }
 
@@ -76,11 +84,19 @@ export function createDataManager<T extends DataRecord = DataRecord>(
     payload: unknown,
     executor: (payload: unknown) => Promise<R>,
   ): Promise<R | void> {
-    const ctx: DataHookContext<T> = { action, payload, store: store as DataStore<T> };
+    const ctx: DataHookContext<T> = {
+      action,
+      payload,
+      store: store as DataStore<T>,
+    };
     const before = await runBefore(hooks, beforeKey, ctx);
     if (before.cancel) return before.returnValue as R | void;
     const result = await executor(before.payload);
-    await runAfter(hooks, afterKey, { ...ctx, payload: before.payload, result });
+    await runAfter(hooks, afterKey, {
+      ...ctx,
+      payload: before.payload,
+      result,
+    });
     return result;
   }
 
@@ -109,13 +125,25 @@ export function createDataManager<T extends DataRecord = DataRecord>(
 
     async delete(idOrRecord: ID | RecordId | Partial<T>) {
       const id = resolveId(idOrRecord);
-      await withHooks('Delete', 'beforeDelete', 'afterDelete', { id }, async () => {
-        await store.delete(id);
-      });
+      await withHooks(
+        'Delete',
+        'beforeDelete',
+        'afterDelete',
+        { id },
+        async () => {
+          await store.delete(id);
+        },
+      );
     },
 
     async cancel(item?: Partial<T>) {
-      await withHooks('Cancel', 'beforeCancel', 'afterCancel', item, async (p) => p);
+      await withHooks(
+        'Cancel',
+        'beforeCancel',
+        'afterCancel',
+        item,
+        async (p) => p,
+      );
     },
   };
 

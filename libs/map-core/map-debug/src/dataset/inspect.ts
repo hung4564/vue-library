@@ -1,5 +1,6 @@
 import type { IDataset } from '@hungpvq/map-dataset';
 import { findRoot, isComposite } from '@hungpvq/map-dataset';
+
 import { describeDataset, listTypesInSubtree } from './describe';
 import {
   buildDatasetTree,
@@ -50,7 +51,10 @@ function peekData(node: IDataset): unknown {
       const v = (data as Record<string, unknown>)[key];
       if (v == null || typeof v !== 'object') out[key] = v;
       else if (Array.isArray(v)) out[key] = `[Array(${v.length})]`;
-      else out[key] = `{${Object.keys(v as object).slice(0, 6).join(', ')}}`;
+      else
+        out[key] = `{${Object.keys(v as object)
+          .slice(0, 6)
+          .join(', ')}}`;
     }
     if (keys.length > 12) out['_moreKeys'] = keys.length - 12;
     return out;

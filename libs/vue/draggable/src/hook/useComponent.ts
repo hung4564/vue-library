@@ -1,4 +1,4 @@
-import { computed, type Component } from 'vue';
+import { type Component, computed } from 'vue';
 
 import DragCard from '../components/parts/DragCard.vue';
 import DragHeader from '../components/parts/DragHeader.vue';

@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { Collapse, InputSlider } from '@hungpvq/vue-map-core/fields';
 import {
   applyStyleTabValue,
   applyStyleZoom,
   convertTabWithDefaultConfig,
   DEFAULT_VALUE,
-  TABS,
   type Tab,
   type TabConfig,
+  TABS,
 } from '@hungpvq/map-dataset/style';
+import { Collapse, InputSlider } from '@hungpvq/vue-map-core/fields';
 import { LayerSpecification } from 'maplibre-gl';
 import { computed, onMounted, ref } from 'vue';
+
 import TabContent from '../component/tab-content.vue';
 import TabItem from '../component/tab-item.vue';
 import { CONFIG_TABS } from './type/default';

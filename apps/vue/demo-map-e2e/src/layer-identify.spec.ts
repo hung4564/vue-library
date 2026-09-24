@@ -33,7 +33,9 @@ test.describe('vue-demo-map layer + identify smoke', () => {
       await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
     }
     await expect(
-      page.locator('.identify-control-container, .draggable-popup-wrapper').first(),
+      page
+        .locator('.identify-control-container, .draggable-popup-wrapper')
+        .first(),
     ).toBeVisible({ timeout: 30_000 });
   });
 });

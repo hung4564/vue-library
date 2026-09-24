@@ -118,7 +118,8 @@ export function detectGisFormat(
     return 'filegdb';
   }
 
-  if (mime.includes('google-earth.kmz') || mime.includes('vnd.kmz')) return 'kmz';
+  if (mime.includes('google-earth.kmz') || mime.includes('vnd.kmz'))
+    return 'kmz';
   if (mime.includes('google-earth') || mime.includes('vnd.kml')) return 'kml';
   if (mime.includes('gpx')) return 'gpx';
   if (mime.includes('csv')) return 'csv';
@@ -134,7 +135,10 @@ export function sniffGisText(text: string): GisFormat | null {
   if (!trimmed) return null;
   if (trimmed[0] === '<') {
     const head = trimmed.slice(0, 400).toLowerCase();
-    if (head.includes('<gpx') || head.includes('http://www.topografix.com/gpx')) {
+    if (
+      head.includes('<gpx') ||
+      head.includes('http://www.topografix.com/gpx')
+    ) {
       return 'gpx';
     }
     if (head.includes('<kml') || head.includes('opengis.net/kml')) {
@@ -143,12 +147,15 @@ export function sniffGisText(text: string): GisFormat | null {
     return 'kml';
   }
   if (trimmed[0] === '{' || trimmed[0] === '[') {
-    if (/"type"\s*:\s*"Topology"/i.test(trimmed.slice(0, 2000))) return 'topojson';
+    if (/"type"\s*:\s*"Topology"/i.test(trimmed.slice(0, 2000)))
+      return 'topojson';
     return 'geojson';
   }
-  if (/^(GEOMETRYCOLLECTION|MULTI(POINT|LINESTRING|POLYGON)|POINT|LINESTRING|POLYGON)\s*\(/i.test(
-    trimmed,
-  )) {
+  if (
+    /^(GEOMETRYCOLLECTION|MULTI(POINT|LINESTRING|POLYGON)|POINT|LINESTRING|POLYGON)\s*\(/i.test(
+      trimmed,
+    )
+  ) {
     return 'wkt';
   }
   const firstLine = trimmed.split(/\r?\n/, 1)[0] || '';
@@ -218,12 +225,19 @@ export function isIgnoredZipEntry(name: string): boolean {
   return base === 'Thumbs.db' || base === 'desktop.ini';
 }
 
-export function isZipMemberFormat(format: GisFormat | null): format is GisFormat {
+export function isZipMemberFormat(
+  format: GisFormat | null,
+): format is GisFormat {
   return !!format && ZIP_MEMBER_FORMATS.has(format);
 }
 
 function isLikelyGeojsonl(text: string): boolean {
-  const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
   if (lines.length < 2) return false;
-  return lines.slice(0, 3).every((line) => line.startsWith('{') && line.endsWith('}'));
+  return lines
+    .slice(0, 3)
+    .every((line) => line.startsWith('{') && line.endsWith('}'));
 }

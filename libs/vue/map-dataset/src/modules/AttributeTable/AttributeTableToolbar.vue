@@ -3,8 +3,8 @@ export default { name: 'attribute-table-toolbar' };
 </script>
 <script setup lang="ts">
 import {
-  resolveAttributeTableUi,
   type AttributeTableToolbarProps,
+  resolveAttributeTableUi,
 } from '@hungpvq/map-dataset/attribute-table';
 import {
   GEO_EXPORT_FORMAT_META,

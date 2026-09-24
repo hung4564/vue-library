@@ -15,9 +15,7 @@ import { TreeItem } from './TreeItem';
 const ALL = 'all';
 
 function dumpStore(mapId: string): Record<string, unknown> {
-  return mapId === ALL
-    ? snapshotGlobalStore()
-    : snapshotMapScopedStore(mapId);
+  return mapId === ALL ? snapshotGlobalStore() : snapshotMapScopedStore(mapId);
 }
 
 function refreshActionLabel(phase: ActionFeedbackPhase): string {
@@ -30,8 +28,7 @@ function refreshActionLabel(phase: ActionFeedbackPhase): string {
 export function StoreViewer() {
   const { filterMapId } = useDevtoolState();
   const [storeState, setStoreState] = useState<Record<string, unknown>>({});
-  const [refreshPhase, setRefreshPhase] =
-    useState<ActionFeedbackPhase>('idle');
+  const [refreshPhase, setRefreshPhase] = useState<ActionFeedbackPhase>('idle');
   const refreshFeedbackRef = useRef(
     createActionFeedback({
       onChange: (phase) => setRefreshPhase(phase),

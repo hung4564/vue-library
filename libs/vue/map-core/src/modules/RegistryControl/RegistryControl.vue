@@ -13,6 +13,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiConsole } from '@mdi/js';
 import { computed, onUnmounted, ref, watch } from 'vue';
+
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra/lang/hook';
@@ -43,9 +44,7 @@ const selectedId = ref('');
 const actionType = ref('');
 let refreshTimer: ReturnType<typeof setInterval> | undefined;
 
-const filtered = computed(() =>
-  filterMapControls(controls.value, query.value),
-);
+const filtered = computed(() => filterMapControls(controls.value, query.value));
 
 const selected = computed(
   () => controls.value.find((ctrl) => ctrl.id === selectedId.value) ?? null,

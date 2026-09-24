@@ -1,5 +1,6 @@
-import { useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
+import { type ReactNode, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+
 import { useBottomContainer } from '../../../hook/useBottomContainer';
 import { useDragContainer } from '../../../store';
 import { useContainerReactive } from '../../../store/useStoreReactive';
@@ -52,8 +53,7 @@ export function BottomModule({
 
     const resolveTargets = () => {
       const nextTitle = document.getElementById(titleTo) ?? undefined;
-      const nextAfterTitle =
-        document.getElementById(afterTitleTo) ?? undefined;
+      const nextAfterTitle = document.getElementById(afterTitleTo) ?? undefined;
       const nextContent = document.getElementById(contentTo) ?? undefined;
       setPortalTargets({
         title: nextTitle,
@@ -82,9 +82,7 @@ export function BottomModule({
 
   return (
     <div className="module-bottom__container">
-      {title &&
-        portalTargets.title &&
-        createPortal(title, portalTargets.title)}
+      {title && portalTargets.title && createPortal(title, portalTargets.title)}
       {afterTitle &&
         portalTargets.afterTitle &&
         createPortal(afterTitle, portalTargets.afterTitle)}

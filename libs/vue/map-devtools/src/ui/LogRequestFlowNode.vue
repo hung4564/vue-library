@@ -8,6 +8,7 @@ import {
   type RequestFlowTreeNode,
 } from '@hungpvq/map-debug';
 import { computed, ref } from 'vue';
+
 import LogRequestFlowNode from './LogRequestFlowNode.vue';
 
 const props = defineProps<{
@@ -26,9 +27,7 @@ const emit = defineEmits<{
 const expanded = ref(true);
 const depthVal = computed(() => props.depth ?? 0);
 
-const isFrame = computed(
-  () => !props.flat && props.node.phase === 'START',
-);
+const isFrame = computed(() => !props.flat && props.node.phase === 'START');
 
 const frameParts = computed(() => {
   if (!isFrame.value) {
@@ -173,10 +172,7 @@ function toggleExpand(event: MouseEvent) {
         v-for="closer in frameParts.closers"
         :key="closer.id"
         class="log-request-flow__step"
-        :class="[
-          `log-request-flow__step--${closer.level}`,
-          phaseClass(closer),
-        ]"
+        :class="[`log-request-flow__step--${closer.level}`, phaseClass(closer)]"
         role="button"
         tabindex="0"
         @click="emit('select', closer.id)"
@@ -200,8 +196,8 @@ function toggleExpand(event: MouseEvent) {
           </span>
           <span class="log-request-flow__sub">
             <template v-if="closer.index != null"
-              >#{{ closer.index }} · </template
-            >
+              >#{{ closer.index }} ·
+            </template>
             {{ formatLogTime(closer.ts) }}
             <template v-if="closer.namespace">
               · {{ closer.namespace }}</template

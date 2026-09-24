@@ -1,9 +1,7 @@
 import type { Feature, FeatureCollection, GeoJSON } from 'geojson';
 import { describe, expect, it } from 'vitest';
-import {
-  ensureGeojsonFeatureIds,
-  GEOJSON_FEATURE_ID_KEY,
-} from './feature-id';
+
+import { ensureGeojsonFeatureIds, GEOJSON_FEATURE_ID_KEY } from './feature-id';
 
 describe('ensureGeojsonFeatureIds', () => {
   it('stamps _id and feature.id when missing (world-cities shape)', () => {

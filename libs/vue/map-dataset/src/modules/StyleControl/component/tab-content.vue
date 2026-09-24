@@ -22,7 +22,9 @@
       <MapControlButton
         @click="onSetDefaultValue()"
         :disabled="form == null || form == default_value"
-        class="map-button text-center full-width" variant="text">
+        class="map-button text-center full-width"
+        variant="text"
+      >
         {{ trans('map.style-control.back-to-default') }}
       </MapControlButton>
     </div>
@@ -31,7 +33,6 @@
 <script setup lang="ts">
 import { copyByJson } from '@hungpvq/shared';
 import { MapControlButton } from '@hungpvq/vue-map-core';
-
 import { computed } from 'vue';
 const props = defineProps({
   value: {},

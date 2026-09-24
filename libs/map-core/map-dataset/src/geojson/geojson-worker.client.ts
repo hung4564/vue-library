@@ -1,31 +1,32 @@
 import {
   bboxFromGeojson,
   connectWorkerMonitor,
+  type GeojsonBbox,
   isCallStackOverflow,
   MapError,
   reprojectGeojson,
   toPlainJson,
-  type GeojsonBbox,
 } from '@hungpvq/map-core';
 import { normalizeEpsgCode } from '@hungpvq/map-core/crs';
 import { getOrCreateStore } from '@hungpvq/shared-store';
 import type { GeoJSON } from 'geojson';
+
+import { looksLikeFileGdbFiles } from '../create-control/gis-format';
 import type { GisLoadResult } from '../create-control/gis-parse';
 import {
   parseGisFiles,
   parseGisFromUrl,
   parseGisTextAsync,
 } from '../create-control/gis-parse';
-import { looksLikeFileGdbFiles } from '../create-control/gis-format';
 import type { LayerStyleType } from '../style/layer-simple-builder';
-import {
-  detectGeojsonStyleTypes,
-  shouldUseGisWorkerForGeojson,
-} from './geojson-parse';
 import type {
   GeojsonWorkerRequest,
   GeojsonWorkerResponse,
 } from './geojson.worker';
+import {
+  detectGeojsonStyleTypes,
+  shouldUseGisWorkerForGeojson,
+} from './geojson-parse';
 
 const GEOJSON_WORKER_ID = 'geojson';
 

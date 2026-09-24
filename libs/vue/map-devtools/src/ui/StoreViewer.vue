@@ -19,8 +19,8 @@
 
 <script setup lang="ts">
 import {
-  createActionFeedback,
   type ActionFeedbackPhase,
+  createActionFeedback,
 } from '@hungpvq/map-core';
 import {
   listMapIds,
@@ -37,6 +37,7 @@ import {
   shallowRef,
   watch,
 } from 'vue';
+
 import { useDevtoolState } from '../store';
 import TreeItem from './TreeItem.vue';
 
@@ -62,9 +63,7 @@ const refreshLabel = computed(() => {
 });
 
 function dump(mapId: string): Record<string, unknown> {
-  return mapId === ALL
-    ? snapshotGlobalStore()
-    : snapshotMapScopedStore(mapId);
+  return mapId === ALL ? snapshotGlobalStore() : snapshotMapScopedStore(mapId);
 }
 
 function refreshQuiet() {

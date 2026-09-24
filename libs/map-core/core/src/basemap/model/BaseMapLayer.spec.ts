@@ -1,4 +1,5 @@
-import { describe, expect, it, vi, afterEach } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { createFakeMap } from '../../test/fake-map';
 import { BASEMAP_PREFIX, BaseMapLayer } from './BaseMapLayer';
 

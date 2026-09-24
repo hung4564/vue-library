@@ -1,5 +1,6 @@
 import type { MapGeoJSONFeature } from 'maplibre-gl';
 import { describe, expect, it, vi } from 'vitest';
+
 import { GEOJSON_FEATURE_ID_KEY } from '../geojson/feature-id';
 import * as findSource from '../geojson/find-source';
 import {
@@ -47,10 +48,7 @@ describe('identify rows / _id', () => {
     const a = hit({ [GEOJSON_FEATURE_ID_KEY]: 'f:0', name: 'a' });
     const b = hit({ [GEOJSON_FEATURE_ID_KEY]: 'f:0', name: 'b' });
     const c = hit({ [GEOJSON_FEATURE_ID_KEY]: 'f:1', name: 'c' });
-    const out = dedupeRenderedFeaturesById(
-      [a, b, c],
-      GEOJSON_FEATURE_ID_KEY,
-    );
+    const out = dedupeRenderedFeaturesById([a, b, c], GEOJSON_FEATURE_ID_KEY);
     expect(out).toHaveLength(2);
     expect(out[0].properties?.name).toBe('a');
     expect(out[1].properties?.name).toBe('c');
@@ -63,9 +61,9 @@ describe('identify rows / _id', () => {
       'name',
     );
     expect(rows[0].id).toBe('f:9');
-    expect(primaryIdentifyRowId({ [GEOJSON_FEATURE_ID_KEY]: 'f:9' }, 'id')).toBe(
-      'f:9',
-    );
+    expect(
+      primaryIdentifyRowId({ [GEOJSON_FEATURE_ID_KEY]: 'f:9' }, 'id'),
+    ).toBe('f:9');
   });
 
   it('buildIdentifyFeatureRows uses getFeature → Feature[] after dedupe', async () => {

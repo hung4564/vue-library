@@ -1,5 +1,5 @@
-import { MAP_BUTTON_SIZE_PX } from '../ui/map-button';
 import type { Position } from '../types';
+import { MAP_BUTTON_SIZE_PX } from '../ui/map-button';
 import {
   cornerVerticalMenuBudgetsPx,
   groupToolbarButtons,

@@ -1,6 +1,7 @@
 import type { IDataset } from '@hungpvq/map-dataset';
 import { findPartByType, findRoot, isComposite } from '@hungpvq/map-dataset';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
+
 import type { DatasetDescribe } from './types';
 
 /** Common `IDataset.type` values — Find-part suggestions when the tree is empty. */
@@ -94,8 +95,7 @@ export function getMenusRaw(dataset: IDataset): MenuAction[] {
 
 export function getMenuPartData(dataset: IDataset): unknown {
   const part = findPartByType(dataset, 'menu') as
-    | (IDataset & { getData?: () => unknown })
-    | undefined;
+    (IDataset & { getData?: () => unknown }) | undefined;
   if (!part || typeof part.getData !== 'function') return undefined;
   return part.getData();
 }

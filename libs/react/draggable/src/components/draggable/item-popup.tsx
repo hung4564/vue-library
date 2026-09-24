@@ -1,4 +1,9 @@
-import { clampBounds, focusFirst, restoreFocus, trapTabKey } from '@hungpvq/draggable';
+import {
+  clampBounds,
+  focusFirst,
+  restoreFocus,
+  trapTabKey,
+} from '@hungpvq/draggable';
 import {
   type MouseEvent,
   type ReactNode,
@@ -9,6 +14,7 @@ import {
   useState,
 } from 'react';
 import { Rnd } from 'react-rnd';
+
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,

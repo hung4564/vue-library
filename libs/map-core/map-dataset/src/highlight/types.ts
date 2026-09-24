@@ -6,15 +6,13 @@ import type {
   MapGeoJSONFeature,
   PointLike,
 } from 'maplibre-gl';
+
 import type { IDataset } from '../interfaces/dataset.base';
 
 export type HighlightGeoJson = Feature | FeatureCollection | GeoJSONFeature;
 
 export type HighlightFilterCreator =
-  | string
-  | ((
-      feature?: HighlightGeoJson,
-    ) => FilterSpecification | undefined);
+  string | ((feature?: HighlightGeoJson) => FilterSpecification | undefined);
 
 export type HighlightLayerIds = {
   point: string;
@@ -84,7 +82,11 @@ export type HighlightDataContext = {
   input?:
     | HighlightGeoJson
     | MapGeoJSONFeature
-    | { id: string | number; properties?: object; geometry?: Feature['geometry'] };
+    | {
+        id: string | number;
+        properties?: object;
+        geometry?: Feature['geometry'];
+      };
   source?: HighlightSource;
   signal?: AbortSignal;
 };
@@ -155,10 +157,7 @@ export type HighlightPopupPositionFn = (
 
 /** Where to place the MapLibre popup. Default: `pointer`. */
 export type HighlightPopupPosition =
-  | 'pointer'
-  | 'feature'
-  | HighlightLngLat
-  | HighlightPopupPositionFn;
+  'pointer' | 'feature' | HighlightLngLat | HighlightPopupPositionFn;
 
 export type HighlightClickAction = 'popup' | 'detail' | 'none';
 
@@ -167,9 +166,7 @@ export type HighlightPresentation = {
     | boolean
     | {
         kind?: 'maplibre' | 'none';
-        content?:
-          | string
-          | ((entry: HighlightEntry) => string | HTMLElement);
+        content?: string | ((entry: HighlightEntry) => string | HTMLElement);
         offset?: number;
         /**
          * Popup anchor. Default `pointer` (click/hover lngLat).

@@ -5,47 +5,32 @@
  * Do not reintroduce `export *`. See libs/map-core/core/docs/core/stable-api.md.
  * Direct leaf imports (no internal-barrel).
  */
-export { DatasetError } from './errors/index';
-
-export { MAP_DATASET_STORE_KEY } from './store-key';
-export type { MapDatasetStoreKey } from './store-key';
-
+export { createDataManagement, isDataManagementView } from './data-management';
+export type { MapDatasetStore } from './dataset-store';
 export {
   createDefaultMapDatasetStore,
   notifyMapDatasetStore,
 } from './dataset-store';
-export type { MapDatasetStore } from './dataset-store';
-export { ensureMapDatasetStore } from './register-domain-store';
-
+export { DatasetError } from './errors/index';
 export { createWithDataHelper } from './extra/data/index';
-
 export { DATASET_CONTROL_LOCALE } from './extra/dataset-control/locale';
-
-export { MAP_DATASET_LOCALE_EN } from './locale/locale.en';
-export { MAP_DATASET_LOCALE_VI } from './locale/locale.vi';
-export { registerMapDatasetBuiltinLocales } from './locale/register-builtin-locales';
-
 export { getDatasetDetailInfo } from './extra/detail/info';
-
 export {
   LAYER_DETAIL_FIELD_LOCALE,
   LAYER_DETAIL_LOCALE,
 } from './extra/detail/locale';
-
 export {
   addDatasetWithEvent,
   createWithEventHelper,
 } from './extra/event/model';
-
 export { addFieldBuilder } from './extra/field/index';
-
+export { registerAddGeojsonHereForMap } from './extra/layer-control/add-geojson-here';
 export {
   LAYER_CONTROL_CREATE_LOCALE,
   LAYER_CONTROL_FIELD_LOCALE,
   LAYER_CONTROL_LOCALE,
   LAYER_CONTROL_TOGGLE_LOCALE,
 } from './extra/layer-control/locale';
-
 export {
   layerGroupName,
   layerMatchesSearch,
@@ -53,21 +38,9 @@ export {
   normalizeLayerSearchQuery,
   splitSearchHighlight,
 } from './extra/layer-control/search';
-
-export { getLayerControlTitleMenuState } from './extra/layer-control/title-menus';
 export type { LayerControlTitleMenuState } from './extra/layer-control/title-menus';
-
-export { registerAddGeojsonHereForMap } from './extra/layer-control/add-geojson-here';
-
-export {
-  applyAllLayerVisibility,
-  applyGlobalLayerVisibility,
-  applyListViewMapVisibility,
-  setListViewIntendedShow,
-  syncAllLayerIntendedShow,
-} from './extra/layer-control/visibility';
-export type { GlobalVisibilityMode } from './extra/layer-control/visibility';
-
+export { getLayerControlTitleMenuState } from './extra/layer-control/title-menus';
+export type { ToggleShowLayerEvent } from './extra/layer-control/toggle-show-action';
 export {
   applyToggleShowIntent,
   bindToggleShowAction,
@@ -77,12 +50,19 @@ export {
   readToggleShowEvent,
   TOGGLE_SHOW_LAYER_EVENT,
 } from './extra/layer-control/toggle-show-action';
-export type { ToggleShowLayerEvent } from './extra/layer-control/toggle-show-action';
-
+export type { GlobalVisibilityMode } from './extra/layer-control/visibility';
+export {
+  applyAllLayerVisibility,
+  applyGlobalLayerVisibility,
+  applyListViewMapVisibility,
+  setListViewIntendedShow,
+  syncAllLayerIntendedShow,
+} from './extra/layer-control/visibility';
 export { setOpacity, toggleShow } from './interfaces/dataset.extra';
-
+export { MAP_DATASET_LOCALE_EN } from './locale/locale.en';
+export { MAP_DATASET_LOCALE_VI } from './locale/locale.vi';
+export { registerMapDatasetBuiltinLocales } from './locale/register-builtin-locales';
 export { createBase, createNamedComponent } from './model/base';
-
 export {
   createDataset,
   createGroupDataset,
@@ -90,29 +70,23 @@ export {
   DatasetComposite,
   DatasetLeaf,
 } from './model/dataset.base';
-
 export {
   addDatasetWithChildren,
   createDatasetComponent,
   createDatasetLeaf,
 } from './model/dataset.base.function';
-
 export { createDatasetPartMapboxLayerComponent } from './model/layer/base';
-
 export { createMultiMapboxLayerComponent } from './model/layer/model';
-
 export {
   createDatasetPartGroupSubListViewUiComponentBuilder,
   createDatasetPartListViewUiComponentBuilder,
   createDatasetPartSubListViewUiComponentBuilder,
 } from './model/list/builder';
-
 export {
   createDatasetPartGroupSubListViewUiComponent,
   createDatasetPartListViewUiComponent,
   createDatasetPartSubListViewUiComponent,
 } from './model/list/model';
-
 export {
   addListViewsToGroup,
   addListViewsToNewGroup,
@@ -123,13 +97,9 @@ export {
   sortListViews,
   syncListViewLayerOrder,
 } from './model/list/order';
-
 export { createDatasetPartBoundComponent } from './model/part-bound.model';
-
 export { createDatasetPartMetadataComponent } from './model/part-metadata.model';
-
 export { createDatasetPartMapboxSourceComponent } from './model/source/base';
-
 export {
   findAllComponentsByType,
   findPartByType,
@@ -137,17 +107,24 @@ export {
   findSiblingOrNearestLeaf,
   runAllComponentsWithCheck,
 } from './model/visitors/helpers';
-
 export {
   traverseTree,
   traverseTreeBFS,
   traverseTreeDFS,
 } from './model/visitors/traverse';
-
+export { ensureMapDatasetStore } from './register-domain-store';
 export { DatasetService } from './services/dataset.service';
-
+export type {
+  DatasetComponentItem,
+  DatasetComponentListState,
+} from './store/component-crud';
+export {
+  removeDatasetComponent,
+  upsertDatasetComponent,
+} from './store/component-crud';
+export type { MapDatasetStoreKey } from './store-key';
+export { MAP_DATASET_STORE_KEY } from './store-key';
 export { resolveDatasetBbox } from './utils/bbox';
-
 export {
   hasMoveLayer,
   isComposite,
@@ -161,11 +138,8 @@ export {
   isListView,
   isMapboxLayerView,
 } from './utils/check';
-
 export { convertFeatureToItem, convertItemToFeature } from './utils/convert';
-
 export { getDatasetSourceKind } from './utils/source-kind';
-
 export {
   convertListToTree,
   convertTreeToList,
@@ -173,18 +147,6 @@ export {
   isGroupNode,
   mergeEmptyGroups,
 } from './utils/tree';
-
-export { createDataManagement, isDataManagementView } from './data-management';
-
-export {
-  removeDatasetComponent,
-  upsertDatasetComponent,
-} from './store/component-crud';
-export type {
-  DatasetComponentItem,
-  DatasetComponentListState,
-} from './store/component-crud';
-
 export {
   resetDatasetRegistryWarnFlag,
   warnIfDatasetRegistryMissing,

@@ -6,6 +6,7 @@
  * Root and fields barrels must use **named** exports only (no public `export *`).
  */
 import { describe, expect, it } from 'vitest';
+
 import * as fieldsApi from './fields';
 import * as api from './index';
 

@@ -10,7 +10,6 @@ import './store';
  * Shell exports use import-then-export so Vite ESM binds names even when the
  * components graph is heavy (avoids "does not provide an export named …").
  */
-
 import {
   DraggableContainer,
   DraggableDrawer,
@@ -56,12 +55,12 @@ export {
   withShowEmit,
   withShowProps,
 } from './hook';
-export { useContainerOrder, useManagement } from './hook/useInitItem';
 export type {
   PropsShareComponent,
   ShareCardComponent,
   ShareHeaderComponent,
 } from './hook/useComponent';
+export { useContainerOrder, useManagement } from './hook/useInitItem';
 
 // --- Stable: store + React wiring ---
 export {
@@ -76,22 +75,15 @@ export {
   useDrawerItem,
   useSidebarItem,
 } from './store';
-export { useContainerReactive, useStoreReactive } from './store/useStoreReactive';
+export {
+  useContainerReactive,
+  useStoreReactive,
+} from './store/useStoreReactive';
 
 // --- Stable: React context ---
 export { ContainerProvider, useContainerId } from './context/ContainerContext';
 
 // --- Experimental ---
-export {
-  ContextMenu,
-  ContextMenuItem,
-  Item,
-  ItemList,
-  ManagementControl,
-  ShowStatusDragItem,
-  ShowStatusDrawer,
-  ShowStatusSideBar,
-} from './experimental';
 export type {
   ContextMenuItemProps,
   ContextMenuProps,
@@ -102,4 +94,14 @@ export type {
   ShowStatusDragItemProps,
   ShowStatusDrawerProps,
   ShowStatusSideBarProps,
+} from './experimental';
+export {
+  ContextMenu,
+  ContextMenuItem,
+  Item,
+  ItemList,
+  ManagementControl,
+  ShowStatusDragItem,
+  ShowStatusDrawer,
+  ShowStatusSideBar,
 } from './experimental';

@@ -1,4 +1,5 @@
 import { InputText } from '@hungpvq/react-map-core/fields';
+
 import type { CreateConfigFormProps } from './types';
 
 /** XYZ layer settings — mirrors Vue `xyz-settings.vue`. */
@@ -7,8 +8,9 @@ export function ConfigRasterSettings({
   onChange,
   trans,
 }: CreateConfigFormProps) {
-  const bounds =
-    (config.bounds as number[]) || [-180, -85.051129, 180, 85.051129];
+  const bounds = (config.bounds as number[]) || [
+    -180, -85.051129, 180, 85.051129,
+  ];
   return (
     <div className="map-row create-control-settings">
       <div className="map-col-6">

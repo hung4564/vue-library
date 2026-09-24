@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { getChartColorAt, getChartRandomColor } from './color';
 
 describe('color', () => {

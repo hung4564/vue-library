@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import type { MapControlHandle } from './control';
 import { runMapControlAction } from './control-action';
 import { UniversalRegistry } from './universal-registry';
@@ -149,7 +150,9 @@ describe('UniversalRegistry', () => {
       fakeControl('mapGotoControl', undefined, { open, close }),
     );
     UniversalRegistry.registerMethodForMap(mapId, 'spec-tool', () => 1);
-    UniversalRegistry.registerComponentForMap(mapId, 'spec-comp', { name: 'X' });
+    UniversalRegistry.registerComponentForMap(mapId, 'spec-comp', {
+      name: 'X',
+    });
 
     expect(UniversalRegistry.getKeysForMap(mapId, 'control')).toEqual([
       'mapGotoControl',

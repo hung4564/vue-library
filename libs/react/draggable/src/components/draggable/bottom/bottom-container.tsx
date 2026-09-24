@@ -6,13 +6,14 @@ import {
   useRef,
   useState,
 } from 'react';
+
 import { useContainerId } from '../../../context/ContainerContext';
 import {
+  type ShareCardComponent,
+  type ShareHeaderComponent,
   useComponent,
   useExpand,
   useIcon,
-  type ShareCardComponent,
-  type ShareHeaderComponent,
 } from '../../../hook';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
 import { useBottomItem, useDragContainer } from '../../../store';
@@ -38,11 +39,9 @@ export function BottomContainer() {
   const { componentCard: Card, componentCardHeader: Header } = useComponent({
     containerId,
     componentCard: activeAction?.componentCard as
-      | ShareCardComponent
-      | undefined,
+      ShareCardComponent | undefined,
     componentCardHeader: activeAction?.componentCardHeader as
-      | ShareHeaderComponent
-      | undefined,
+      ShareHeaderComponent | undefined,
   });
   const { CloseIcon, SidebarOpenMenu, FullscreenIcon, OffFullscreenIcon } =
     useIcon();

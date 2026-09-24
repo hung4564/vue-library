@@ -1,3 +1,4 @@
+import { loggerFactory } from '@hungpvq/shared-log';
 import type {
   Feature,
   FeatureCollection,
@@ -5,12 +6,18 @@ import type {
   Geometry,
   Position,
 } from 'geojson';
-import { loggerFactory } from '@hungpvq/shared-log';
-import { detectGeojsonCrs, isValidGeojson, parseGeojsonText } from '../geojson/geojson-parse';
+
+import {
+  detectGeojsonCrs,
+  isValidGeojson,
+  parseGeojsonText,
+} from '../geojson/geojson-parse';
 import { asFeatureCollection } from '../utils/feature-collection';
 import {
   detectGisFormat,
   fileExtension,
+  type GisFormat,
+  type GisSourceHint,
   isBinaryGisFormat,
   isFileGdbPartName,
   isFileGdbZipName,
@@ -19,8 +26,6 @@ import {
   isZipMemberFormat,
   looksLikeFileGdbFiles,
   sniffGisText,
-  type GisFormat,
-  type GisSourceHint,
 } from './gis-format';
 
 /**
@@ -46,7 +51,11 @@ function isGisWorkerRuntime(): boolean {
   );
 }
 
-export type GisProgress = (current: number, total?: number, message?: string) => void;
+export type GisProgress = (
+  current: number,
+  total?: number,
+  message?: string,
+) => void;
 
 export type GisLoadResult = {
   geojson: GeoJSON | null;
@@ -134,7 +143,9 @@ async function loadTopojsonClient() {
   }
 }
 
-export function asGisFeatureCollection(geojson: GeoJSON | null): FeatureCollection | null {
+export function asGisFeatureCollection(
+  geojson: GeoJSON | null,
+): FeatureCollection | null {
   return asFeatureCollection(geojson);
 }
 
@@ -210,14 +221,16 @@ export async function parseGisFile(
 
   const text = await file.text();
   report?.(1, 2, format || 'parse');
-  const result = await parseGisTextAsync(text, { ...hint, strict: true }, report);
+  const result = await parseGisTextAsync(
+    text,
+    { ...hint, strict: true },
+    report,
+  );
   report?.(2, 2, format || 'parse');
   return result;
 }
 
-function mergeGisFeatureCollections(
-  parts: GisLoadResult[],
-): GisLoadResult {
+function mergeGisFeatureCollections(parts: GisLoadResult[]): GisLoadResult {
   const features: Feature[] = [];
   let crs: string | null = null;
   let format: GisFormat | undefined;
@@ -238,7 +251,9 @@ function mergeGisFeatureCollections(
 }
 
 export async function parseGisFiles(
-  files: Array<Blob & { name?: string; type?: string; webkitRelativePath?: string }>,
+  files: Array<
+    Blob & { name?: string; type?: string; webkitRelativePath?: string }
+  >,
   report?: GisProgress,
 ): Promise<GisLoadResult> {
   if (!files.length) return { geojson: null, crs: null };
@@ -251,7 +266,10 @@ export async function parseGisFiles(
   if (files.length === 1) return parseGisFile(files[0], report);
 
   const shapefileParts = files.filter((file) => isShapefileSidecar(file.name));
-  if (shapefileParts.length === files.length && shapefileParts.some((file) => fileExtension(file.name) === 'shp')) {
+  if (
+    shapefileParts.length === files.length &&
+    shapefileParts.some((file) => fileExtension(file.name) === 'shp')
+  ) {
     report?.(0, 2, 'shapefile');
     const result = await parseShapefileParts(shapefileParts, report);
     report?.(2, 2, 'shapefile');
@@ -407,10 +425,7 @@ function parseJsonOrFallbackSync(text: string): GisLoadResult {
       return wrap(parsed, 'geojson');
     }
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.includes('parseGisTextAsync')
-    ) {
+    if (error instanceof Error && error.message.includes('parseGisTextAsync')) {
       throw error;
     }
     // try other text formats
@@ -511,10 +526,12 @@ async function xmlToGeojson(
   ]);
   const doc = new DOMParser().parseFromString(text, 'text/xml');
   const converted = kind === 'gpx' ? gpx(doc) : kml(doc);
-  return asFeatureCollection(converted as GeoJSON) ?? {
-    type: 'FeatureCollection',
-    features: [],
-  };
+  return (
+    asFeatureCollection(converted as GeoJSON) ?? {
+      type: 'FeatureCollection',
+      features: [],
+    }
+  );
 }
 
 async function parseKmzBuffer(
@@ -557,8 +574,7 @@ async function parseFileGdbFiles(
 
   if (
     files.length === 1 &&
-    (isFileGdbZipName(files[0].name) ||
-      fileExtension(files[0].name) === 'zip')
+    (isFileGdbZipName(files[0].name) || fileExtension(files[0].name) === 'zip')
   ) {
     return parseFileGdbZipBuffer(
       ensureArrayBuffer(await files[0].arrayBuffer()),
@@ -667,18 +683,17 @@ function mergeGisResults(results: GisLoadResult[]): GisLoadResult {
     if (!crs && result.crs) crs = result.crs;
   }
 
-  const format =
-    formats.size === 1 ? [...formats][0] : ('zip' as GisFormat);
+  const format = formats.size === 1 ? [...formats][0] : ('zip' as GisFormat);
 
-  return wrap(
-    { type: 'FeatureCollection', features },
-    format,
-    crs,
-  );
+  return wrap({ type: 'FeatureCollection', features }, format, crs);
 }
 
 async function parseShapefileParts(
-  files: Array<{ name?: string; buffer?: ArrayBuffer; arrayBuffer?: () => Promise<ArrayBuffer> }>,
+  files: Array<{
+    name?: string;
+    buffer?: ArrayBuffer;
+    arrayBuffer?: () => Promise<ArrayBuffer>;
+  }>,
   report?: GisProgress,
 ): Promise<GisLoadResult> {
   report?.(1, 2, 'shapefile');
@@ -686,8 +701,7 @@ async function parseShapefileParts(
   for (const file of files) {
     const ext = fileExtension(file.name);
     const buffer =
-      file.buffer ??
-      (file.arrayBuffer ? await file.arrayBuffer() : undefined);
+      file.buffer ?? (file.arrayBuffer ? await file.arrayBuffer() : undefined);
     if (!buffer || !ext) continue;
     parts[ext] = buffer;
   }
@@ -729,7 +743,9 @@ async function parseCsv(text: string): Promise<FeatureCollection> {
   const lngKey = findHeader(headers, LNG_KEYS);
   const wktKey = findHeader(headers, WKT_KEYS);
   if (!wktKey && !(latKey && lngKey)) {
-    throw new Error('CSV needs latitude/longitude columns or a WKT/geometry column');
+    throw new Error(
+      'CSV needs latitude/longitude columns or a WKT/geometry column',
+    );
   }
 
   const features: Feature[] = [];
@@ -760,12 +776,15 @@ async function parseCsv(text: string): Promise<FeatureCollection> {
       // skip invalid rows
     }
   }
-  if (!features.length) throw new Error('CSV did not contain valid coordinates');
+  if (!features.length)
+    throw new Error('CSV did not contain valid coordinates');
   return { type: 'FeatureCollection', features };
 }
 
 function findHeader(headers: string[], aliases: string[]): string | undefined {
-  const lower = headers.map((header) => header.toLowerCase().replace(/[^a-z]/g, ''));
+  const lower = headers.map((header) =>
+    header.toLowerCase().replace(/[^a-z]/g, ''),
+  );
   for (const alias of aliases) {
     const index = lower.indexOf(alias);
     if (index >= 0) return headers[index];
@@ -780,7 +799,8 @@ function parseGeojsonl(text: string): FeatureCollection {
     if (!trimmed) continue;
     const parsed = JSON.parse(trimmed) as GeoJSON;
     if (parsed.type === 'Feature') features.push(parsed);
-    else if (parsed.type === 'FeatureCollection') features.push(...parsed.features);
+    else if (parsed.type === 'FeatureCollection')
+      features.push(...parsed.features);
     else if (isValidGeojson(parsed) && 'coordinates' in parsed) {
       features.push({
         type: 'Feature',
@@ -795,7 +815,10 @@ function parseGeojsonl(text: string): FeatureCollection {
 
 function wktToGeojson(text: string): GeoJSON {
   const geometry = parseWktGeometry(text);
-  return { type: 'FeatureCollection', features: [{ type: 'Feature', geometry, properties: {} }] };
+  return {
+    type: 'FeatureCollection',
+    features: [{ type: 'Feature', geometry, properties: {} }],
+  };
 }
 
 function parseWktGeometry(text: string, depth = 0): Geometry {

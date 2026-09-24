@@ -1,6 +1,7 @@
-import { render, cleanup, waitFor, act } from '@testing-library/react';
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { act, cleanup, render, waitFor } from '@testing-library/react';
 import React from 'react';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+
 import { ContainerProvider } from '../../context/ContainerContext';
 import {
   useBottomItem,
@@ -127,12 +128,7 @@ describe('BottomContainer portal hosts', () => {
     const { unmount } = render(
       <ContainerProvider containerId={CID}>
         <BottomContainer />
-        <DraggableItemBottom
-          id="bot-a"
-          show
-          title="Alpha"
-          containerId={CID}
-        >
+        <DraggableItemBottom id="bot-a" show title="Alpha" containerId={CID}>
           <p>A body</p>
         </DraggableItemBottom>
         <DraggableItemBottom

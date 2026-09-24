@@ -1,6 +1,7 @@
-import { Ref } from 'vue';
-import { useExpand, useShow } from '../../../hook';
 import type { LocationSideBar } from '@hungpvq/draggable';
+import { Ref } from 'vue';
+
+import { useExpand, useShow } from '../../../hook';
 import { useSidebarTransition } from './useSidebarTransition';
 
 export function useSidebarBehavior(

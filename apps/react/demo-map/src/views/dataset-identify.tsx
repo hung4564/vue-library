@@ -1,23 +1,19 @@
-﻿import type { MapSimple } from '@hungpvq/map-core';
-import {
-  BaseMapCard,
-  BaseMapControl,
-  Map,
-} from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
+import type { MapSimple } from '@hungpvq/map-core';
+import { BaseMapCard, BaseMapControl, Map } from '@hungpvq/react-map-core';
 import {
   ComponentManagementControl,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { loadIdentifyDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function DatasetIdentifyPage() {
   useDatasetRegistry();

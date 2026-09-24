@@ -1,11 +1,12 @@
 import {
+  type MapSimple,
   registerMapAccessor,
   registerMapReadySubscriber,
-  type MapSimple,
 } from '@hungpvq/map-core';
 import { mount } from '@vue/test-utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent } from 'vue';
+
 import { useEventListener } from './useEvent';
 
 const MAP_ID = 'vue-use-event-listener';

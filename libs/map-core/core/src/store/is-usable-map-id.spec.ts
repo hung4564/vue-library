@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { isUsableMapId } from './is-usable-map-id';
 
 describe('isUsableMapId', () => {

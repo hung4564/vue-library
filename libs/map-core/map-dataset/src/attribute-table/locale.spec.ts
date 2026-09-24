@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
 import { diffLocaleKeys } from '@hungpvq/map-core';
+import { describe, expect, it } from 'vitest';
+
 import {
   ATTRIBUTE_TABLE_LOCALE,
   formatAttributeTableSelectionStatus,

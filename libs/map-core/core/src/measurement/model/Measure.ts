@@ -3,7 +3,6 @@
  */
 
 import type { CoordinatesNumber } from '../../types';
-
 import type { IViewSetting } from '../types';
 
 /**

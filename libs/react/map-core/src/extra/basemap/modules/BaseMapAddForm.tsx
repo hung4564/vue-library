@@ -1,10 +1,11 @@
 import {
-  createCustomBasemapItem,
-  validateBasemapSource,
   type BaseMapItem,
   type BasemapSourceType,
+  createCustomBasemapItem,
+  validateBasemapSource,
 } from '@hungpvq/map-core/basemap';
 import { useCallback, useMemo, useState } from 'react';
+
 import { MapControlButton } from '../../../components/MapControlButton';
 import { InputSelect, InputText } from '../../../field';
 import { useMap } from '../../../hooks/useMap';
@@ -90,7 +91,9 @@ export function BaseMapAddForm({
     <div className="base-map-add-form" onClick={(e) => e.stopPropagation()}>
       <div className="base-map-add-form__body">
         {showHeading ? (
-          <div className="base-map-add-form__title">{trans('map.basemap.add')}</div>
+          <div className="base-map-add-form__title">
+            {trans('map.basemap.add')}
+          </div>
         ) : null}
         <InputText
           label={trans('map.basemap.add-title')}

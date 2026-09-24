@@ -1,6 +1,6 @@
-import { LoggerFactory } from './LoggerFactory';
-import { compactLogContext, snapshotZoneState } from './log-zone-state';
 import type { LogZoneState } from './log-zone-state';
+import { compactLogContext, snapshotZoneState } from './log-zone-state';
+import { LoggerFactory } from './LoggerFactory';
 import type { LogContext } from './types';
 
 /**

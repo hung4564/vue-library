@@ -15,8 +15,7 @@ export function resolveMeasurementToolbarStatus(
 }
 
 export type MeasurementModeToggleResult =
-  | { start: false; nextType: undefined }
-  | { start: true; nextType: string };
+  { start: false; nextType: undefined } | { start: true; nextType: string };
 
 /**
  * Toggle / switch measure mode. Same type again → clear; otherwise start that type.

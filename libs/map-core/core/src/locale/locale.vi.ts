@@ -1,5 +1,3 @@
-import type { MapLangLocale } from '../types/lang';
-import { deepMergeLocale } from '../types/lang';
 import { BASEMAP_CONTROL_LOCALE_VI } from '../basemap/locale/locale.vi';
 import { CRS_CONTROL_LOCALE_VI } from '../crs/locale/locale.vi';
 import { EVENT_CONTROL_LOCALE_VI } from '../event/locale/locale.vi';
@@ -8,6 +6,8 @@ import { MEASUREMENT_CONTROL_LOCALE_VI } from '../measurement/locale/locale.vi';
 import { PRINT_CONTROL_LOCALE_VI } from '../print/locale/locale.vi';
 import { THEME_CONTROL_LOCALE_VI } from '../theme/locale/locale.vi';
 import { TOOLBAR_CONTROL_LOCALE_VI } from '../toolbar/locale/locale.vi';
+import type { MapLangLocale } from '../types/lang';
+import { deepMergeLocale } from '../types/lang';
 import {
   GLOBE_CONTROL_LOCALE_VI,
   GOTO_CONTROL_LOCALE_VI,

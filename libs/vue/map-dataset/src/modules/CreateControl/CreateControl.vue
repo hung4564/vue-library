@@ -4,13 +4,13 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   LAYER_TYPES,
   LayerHelper,
+  type LayerType,
   loadCreateControlDraft,
   normalizeLayerType,
   reportCreateLayerError,
   resolveCreateControlLayerTypes,
   saveCreateControlDraft,
   suggestLayerName,
-  type LayerType,
 } from '@hungpvq/map-dataset/create-control';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
@@ -24,19 +24,20 @@ import {
 } from '@hungpvq/vue-map-core';
 import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
 import { mdiPlus } from '@mdi/js';
-import { computed, onMounted, ref, watch, type Component, type Ref } from 'vue';
+import { type Component, computed, onMounted, type Ref, ref, watch } from 'vue';
+
 import { useMapDataset } from '../../store/dataset-api';
 import ConfigArchiveSettings from './config/archive-settings.vue';
 import ConfigFilegdbSettings from './config/filegdb-settings.vue';
 import ConfigFilegdbUpload from './config/filegdb-upload.vue';
+import GeojsonSettings from './config/geojson-settings.vue';
+import GeojsonUpload from './config/geojson-upload.vue';
 import ConfigMbtilesJson from './config/mbtiles-json.vue';
 import ConfigNo from './config/no-config.vue';
 import ConfigPmtilesJson from './config/pmtiles-json.vue';
+import ConfigTilejsonJson from './config/tilejson-json.vue';
 import ConfigRasterJson from './config/xyz-json.vue';
 import ConfigRasterSettings from './config/xyz-settings.vue';
-import ConfigTilejsonJson from './config/tilejson-json.vue';
-import GeojsonSettings from './config/geojson-settings.vue';
-import GeojsonUpload from './config/geojson-upload.vue';
 
 defineOptions({
   name: 'CreateLayerControl',
@@ -249,7 +250,9 @@ async function onAddLayer() {
   createError.value = '';
   try {
     addDataset(
-      await handle(form.value.config as Record<string, unknown> & { name: string }),
+      await handle(
+        form.value.config as Record<string, unknown> & { name: string },
+      ),
     );
     reset();
     cShow.value = false;
@@ -382,7 +385,9 @@ function close() {
             <MapControlButton
               :disabled="creating"
               @click="onAddLayer()"
-              class="btn-container" variant="filled">
+              class="btn-container"
+              variant="filled"
+            >
               {{ trans('map.layer-control.create-btn') }}
             </MapControlButton>
           </div>

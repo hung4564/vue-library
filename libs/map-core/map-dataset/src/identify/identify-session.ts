@@ -7,26 +7,27 @@
 import { bindMapLongPress, type MapSimple } from '@hungpvq/map-core';
 import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
 import type { MapMouseEvent, PointLike } from 'maplibre-gl';
+
 import type { IIdentifyView } from '../interfaces/dataset.parts';
 import {
   createIdentifyControlModel,
-  shouldBindIdentifyLongPress,
   type IdentifyControlModel,
   type IdentifyControlModelState,
   type IdentifyScopedSessionResult,
   type IdentifySessionToggleResult,
+  shouldBindIdentifyLongPress,
 } from './control-model';
-import {
-  resolveIdentifyLayerFilterId,
-  runIdentifyMulti,
-  buildIdentifyResultPanelBase,
-  isIdentifyAbortError,
-  type RunIdentifyResult,
-} from './run-identify';
 import {
   IDENTIFY_ALL_LAYERS_VALUE,
   type IdentifyResultUpdatePayload,
 } from './result';
+import {
+  buildIdentifyResultPanelBase,
+  isIdentifyAbortError,
+  resolveIdentifyLayerFilterId,
+  runIdentifyMulti,
+  type RunIdentifyResult,
+} from './run-identify';
 import {
   clearIdentifyScope,
   type IdentifyLayerFilterPayload,
@@ -37,10 +38,8 @@ export type IdentifyQueryInput =
   | { kind: 'point'; point: PointLike; event?: MapMouseEvent }
   | { kind: 'box'; box: [PointLike, PointLike] };
 
-export type IdentifyBboxCorners = [
-  { x: number; y: number },
-  { x: number; y: number },
-] | null | undefined;
+export type IdentifyBboxCorners =
+  [{ x: number; y: number }, { x: number; y: number }] | null | undefined;
 
 export type IdentifySessionOptions = {
   getIdentifies: () => IIdentifyView[];
@@ -114,11 +113,7 @@ export type IdentifySession = {
   teardownInputModes: (options?: { immediate?: boolean }) => void;
   onMapClick: (event: MapMouseEvent) => void;
   onBboxSelected: (bbox: IdentifyBboxCorners) => void;
-  onIdentifyHere: (
-    lng: number,
-    lat: number,
-    screenPoint?: PointLike,
-  ) => void;
+  onIdentifyHere: (lng: number, lat: number, screenPoint?: PointLike) => void;
   buildResultPanelPayload: (
     extra?: IdentifyResultUpdatePayload,
   ) => IdentifyResultUpdatePayload;
@@ -135,9 +130,7 @@ function emitState(
   onStateChange?.(model.getState());
 }
 
-function resolveImmediately(
-  immediately?: boolean | (() => boolean),
-): boolean {
+function resolveImmediately(immediately?: boolean | (() => boolean)): boolean {
   if (typeof immediately === 'function') return !!immediately();
   return !!immediately;
 }
@@ -200,8 +193,7 @@ export function createIdentifySession(
             mapId: options.mapId,
           },
           async () => {
-            const pointOrBox =
-              input.kind === 'point' ? input.point : input.box;
+            const pointOrBox = input.kind === 'point' ? input.point : input.box;
             const event = input.kind === 'point' ? input.event : undefined;
 
             queryAbort?.abort();
@@ -288,10 +280,7 @@ export function createIdentifySession(
           onLongPress: (point) => {
             if (boxSelectActive || destroyed) return;
             const lngLat = map.unproject([point.x, point.y]);
-            void session.runAtPoint(lngLat.lng, lngLat.lat, [
-              point.x,
-              point.y,
-            ]);
+            void session.runAtPoint(lngLat.lng, lngLat.lat, [point.x, point.y]);
           },
         });
       });
@@ -476,6 +465,7 @@ export function createIdentifySession(
     enableBoxSelectMode,
     disableBoxSelectMode,
     toggleBoxSelectMode() {
+      console.log(model.getState());
       if (model.getState().isSelectBbox) disableBoxSelectMode();
       else enableBoxSelectMode();
     },

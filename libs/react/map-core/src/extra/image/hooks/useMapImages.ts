@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
 import { subscribeMapReady } from '@hungpvq/map-core';
 import {
@@ -7,6 +6,7 @@ import {
   subscribeMapStyleImages,
 } from '@hungpvq/map-core/image';
 import type { StyleImage } from 'maplibre-gl';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export function useMapImages(mapId: string) {
   const [images, setImages] = useState<Record<string, StyleImage>>({});

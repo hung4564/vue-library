@@ -3,15 +3,16 @@
  * Implements IMapStoreAdapter for Vue framework
  */
 
-import { logHelper, getMapCoreRootStore } from '@hungpvq/map-core';
-import type { Emitter, EventType } from 'mitt';
 import type {
   IMapStoreAdapter,
   LoggerFunction,
   MapRootStore,
 } from '@hungpvq/map-core';
-import { useMapMittStore } from './mitt-store';
+import { getMapCoreRootStore, logHelper } from '@hungpvq/map-core';
+import type { Emitter, EventType } from 'mitt';
+
 import { logger } from './logger';
+import { useMapMittStore } from './mitt-store';
 
 /**
  * Vue store adapter
@@ -43,9 +44,11 @@ export class VueMapStoreAdapter implements IMapStoreAdapter {
     message: string,
     data?: any,
   ) => {
-    logHelper(logger, mapId, 'store').with({
-      fn: 'log',
-      span: 'store.update',
-    })[level](message, data);
+    logHelper(logger, mapId, 'store')
+      .with({
+        fn: 'log',
+        span: 'store.update',
+      })
+      [level](message, data);
   };
 }

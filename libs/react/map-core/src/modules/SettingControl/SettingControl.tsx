@@ -9,7 +9,9 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiCog } from '@mdi/js';
 import { useEffect, useRef, useState } from 'react';
+
 import { MapCommonButton } from '../../components/MapCommonButton';
+import { MapControlButton } from '../../components/MapControlButton';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
 import { useToolbarControl } from '../../extra/toolbar/helper';
@@ -17,7 +19,6 @@ import { InputText } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow } from '../../hooks/useShow';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
-import { MapControlButton } from '../../components/MapControlButton';
 
 export interface SettingControlProps extends WithMapPropType {
   show?: boolean;
@@ -32,7 +33,10 @@ type SettingState = {
 
 export function SettingControl(props: SettingControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
-  const { callMap, mapId, moduleContainerProps, order } = useMap({ ...mergedProps, controlId: 'mapSettingControl' });
+  const { callMap, mapId, moduleContainerProps, order } = useMap({
+    ...mergedProps,
+    controlId: 'mapSettingControl',
+  });
   const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const [setting, setSetting] = useState<SettingState>({
@@ -42,7 +46,7 @@ export function SettingControl(props: SettingControlProps) {
     glyphs: undefined,
   });
 
-function loadCurrentView() {
+  function loadCurrentView() {
     callMap((map) => {
       const next = readMapStyleSettings(map);
       setSetting({
@@ -195,7 +199,9 @@ function loadCurrentView() {
               </div>
               <MapControlButton
                 className="map-setting-control__apply"
-                onClick={onSetSetting} variant="filled">
+                onClick={onSetSetting}
+                variant="filled"
+              >
                 {trans('map.setting-control.btn.apply')}
               </MapControlButton>
             </div>

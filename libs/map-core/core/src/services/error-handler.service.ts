@@ -1,4 +1,5 @@
 import { loggerFactory } from '@hungpvq/shared-log';
+
 import { MapError } from '../errors';
 import { getMapCoreMetaStore } from '../store/map-core-meta';
 import { logHelper } from '../utils/log';
@@ -9,26 +10,23 @@ function defaultLogError(error: MapError): void {
   logHelper(errorLogger, 'global', 'ErrorHandler')
     .with({ fn: 'defaultLogError', span: 'error' })
     .error('Map error handled.', {
-    code: error.code,
-    message: error.message,
-    context: error.context,
-    stack: error.stack,
-  });
+      code: error.code,
+      message: error.message,
+      context: error.context,
+      stack: error.stack,
+    });
 }
 
 function defaultLogToService(error: MapError): void {
   // Still surface the error when no external sink is wired (avoid silent prod failures).
   logHelper(errorLogger, 'global', 'ErrorHandler')
     .with({ fn: 'defaultLogToService', span: 'error' })
-    .error(
-    'Map error handled (logToService sink not configured).',
-    {
+    .error('Map error handled (logToService sink not configured).', {
       code: error.code,
       message: error.message,
       context: error.context,
       stack: error.stack,
-    },
-  );
+    });
 }
 
 function isDevEnvironment(): boolean {
@@ -94,7 +92,9 @@ export class MapErrorHandler implements ErrorHandler {
       ...options,
       logError: options.logError ?? this.options.logError ?? defaultLogError,
       logToService:
-        options.logToService ?? this.options.logToService ?? defaultLogToService,
+        options.logToService ??
+        this.options.logToService ??
+        defaultLogToService,
     };
   }
 
@@ -140,10 +140,7 @@ export class MapErrorHandler implements ErrorHandler {
       } catch (listenerError) {
         logHelper(errorLogger, 'global', 'ErrorHandler')
           .with({ fn: 'handle', span: 'error' })
-          .error(
-          'Error in error listener',
-          { error: listenerError },
-        );
+          .error('Error in error listener', { error: listenerError });
       }
     });
   }

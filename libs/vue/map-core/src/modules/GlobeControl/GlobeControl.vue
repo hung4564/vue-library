@@ -8,6 +8,7 @@ import {
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiWeb } from '@mdi/js';
 import { ref } from 'vue';
+
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';

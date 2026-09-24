@@ -1,4 +1,5 @@
 import type { MapGeoJSONFeature } from 'maplibre-gl';
+
 import { GEOJSON_FEATURE_ID_KEY } from '../geojson/feature-id';
 import type {
   IdentifyFeatureRow,
@@ -40,11 +41,7 @@ export function primaryIdentifyRowId(
   fieldId = 'id',
   fallbackIndex = 0,
 ): string | number {
-  const candidates = [
-    data[fieldId],
-    data[GEOJSON_FEATURE_ID_KEY],
-    data['id'],
-  ];
+  const candidates = [data[fieldId], data[GEOJSON_FEATURE_ID_KEY], data['id']];
   for (const value of candidates) {
     if (value != null && String(value) !== '') {
       return value as string | number;

@@ -11,10 +11,10 @@ import {
   EMPTY_MAP_VIEW_INFO,
   latDMS,
   lngDMS,
-  parseCoordinateText,
-  readMapViewInfo,
   type MapSimple,
   type MapViewInfo,
+  parseCoordinateText,
+  readMapViewInfo,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { exportMapbox } from '@hungpvq/map-core/print';
@@ -27,13 +27,13 @@ import {
   mdiInformationOutline,
 } from '@mdi/js';
 import { computed, onUnmounted, ref, watch } from 'vue';
+
 import MapCommonButton from '../../components/MapCommonButton.vue';
+import MapControlButton from '../../components/MapControlButton.vue';
+import MapCopyButton from '../../components/MapCopyButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
 import { useToolbarControl } from '../../extra/toolbar/helper';
-import MapControlButton from '../../components/MapControlButton.vue';
-import MapCopyButton from '../../components/MapCopyButton.vue';
-
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
@@ -102,17 +102,35 @@ const rows = computed(() => [
   {
     key: 'center',
     label: trans.value('map.info-control.center'),
-    value: showDms.value ? centerDms.value || info.value.center : info.value.center,
+    value: showDms.value
+      ? centerDms.value || info.value.center
+      : info.value.center,
   },
-  { key: 'zoom', label: trans.value('map.info-control.zoom'), value: info.value.zoom },
-  { key: 'pitch', label: trans.value('map.info-control.pitch'), value: info.value.pitch },
-  { key: 'bearing', label: trans.value('map.info-control.bearing'), value: info.value.bearing },
+  {
+    key: 'zoom',
+    label: trans.value('map.info-control.zoom'),
+    value: info.value.zoom,
+  },
+  {
+    key: 'pitch',
+    label: trans.value('map.info-control.pitch'),
+    value: info.value.pitch,
+  },
+  {
+    key: 'bearing',
+    label: trans.value('map.info-control.bearing'),
+    value: info.value.bearing,
+  },
   {
     key: 'projection',
     label: trans.value('map.info-control.projection'),
     value: info.value.projection,
   },
-  { key: 'bounds', label: trans.value('map.info-control.bounds'), value: info.value.bounds },
+  {
+    key: 'bounds',
+    label: trans.value('map.info-control.bounds'),
+    value: info.value.bounds,
+  },
 ]);
 
 const { state, control } = useToolbarControl(mapId.value, props, {
@@ -130,18 +148,15 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   },
 });
 
-watch(
-  show,
-  (visible) => {
-    if (visible) {
-      syncInfo();
-      callMap(attachListeners);
-    } else {
-      detachListeners();
-    }
-    control.sync();
-  },
-);
+watch(show, (visible) => {
+  if (visible) {
+    syncInfo();
+    callMap(attachListeners);
+  } else {
+    detachListeners();
+  }
+  control.sync();
+});
 
 onUnmounted(() => {
   detachListeners();
@@ -218,13 +233,17 @@ async function onPasteGoTo() {
           <MapControlButton
             :title="trans('map.info-control.screenshot')"
             :disabled="capturing"
-            @click.stop="onScreenshot" variant="plain">
+            @click.stop="onScreenshot"
+            variant="plain"
+          >
             <SvgIcon :size="16" type="mdi" :path="mdiCameraOutline" />
           </MapControlButton>
           <MapControlButton
             :title="trans('map.info-control.copy-image')"
             :disabled="capturing"
-            @click.stop="onCopyImage" variant="plain">
+            @click.stop="onCopyImage"
+            variant="plain"
+          >
             <SvgIcon :size="16" type="mdi" :path="mdiContentCopy" />
           </MapControlButton>
         </template>
@@ -232,10 +251,18 @@ async function onPasteGoTo() {
           <div class="map-info-control__actions">
             <MapControlButton
               variant="outlined"
-              :title="showDms ? trans('map.info-control.decimal') : trans('map.info-control.dms')"
+              :title="
+                showDms
+                  ? trans('map.info-control.decimal')
+                  : trans('map.info-control.dms')
+              "
               @click.stop="toggleDms"
             >
-              {{ showDms ? trans('map.info-control.decimal') : trans('map.info-control.dms') }}
+              {{
+                showDms
+                  ? trans('map.info-control.decimal')
+                  : trans('map.info-control.dms')
+              }}
             </MapControlButton>
             <MapControlButton
               variant="outlined"

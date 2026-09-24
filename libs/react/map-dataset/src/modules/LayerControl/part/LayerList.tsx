@@ -1,5 +1,4 @@
 import type { MapSimple } from '@hungpvq/map-core';
-
 import type {
   GlobalVisibilityMode,
   IListViewUI,
@@ -11,6 +10,7 @@ import {
   listListViewGroups,
   syncListViewLayerOrder,
 } from '@hungpvq/map-dataset';
+import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
 import { InputText } from '@hungpvq/react-map-core/fields';
 import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
@@ -23,6 +23,7 @@ import {
   useRef,
   useState,
 } from 'react';
+
 import { MenuConditionProvider } from '../../../extra/menu/condition-context';
 import { useMapDataset } from '../../../store/dataset-api';
 import { ButtonToggleAllShow } from './ButtonToggleAllShow';
@@ -31,7 +32,6 @@ import {
   type DraggableGroupListRef,
 } from './DraggableList/DraggableGroupList';
 import { LayerItem } from './item/layer-item';
-import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 const HEADER_ICON = '16px';
 export function LayerList({
   mapId,
@@ -75,7 +75,7 @@ export function LayerList({
   const listDisabledDrag =
     Boolean(disabledDrag) || Boolean(debouncedSearch.trim());
   const groupRef = useRef<DraggableGroupListRef>(null);
-function refresh() {
+  function refresh() {
     const viewSource = getAllComponentsByType<IListViewUI>('list');
     const next = (viewSource.sort((a, b) => b.index - a.index) ||
       []) as LayerListItem[];
@@ -193,7 +193,8 @@ function refresh() {
             data-map-id={mapId}
           />
           {layerSearch.trim() ? (
-            <MapControlButton variant="plain"
+            <MapControlButton
+              variant="plain"
               className="layer-control__search-clear"
               title="Clear search"
               onClick={() => setLayerSearch('')}
@@ -212,14 +213,20 @@ function refresh() {
               globalVisibilityMode={globalVisibilityMode}
             />
             {!disabledCreateGroup && (
-              <MapControlButton onClick={addNewGroup} title="Create group" variant="plain">
+              <MapControlButton
+                onClick={addNewGroup}
+                title="Create group"
+                variant="plain"
+              >
                 <Icon path={mdiGroup} size={HEADER_ICON} />
               </MapControlButton>
             )}
             {!disabledDeleteAll && (
               <MapControlButton
                 onClick={onRemoveAllLayer}
-                title="Delete all layers" variant="plain">
+                title="Delete all layers"
+                variant="plain"
+              >
                 <Icon path={mdiDelete} size={HEADER_ICON} />
               </MapControlButton>
             )}
@@ -307,4 +314,3 @@ function refresh() {
     </MenuConditionProvider>
   );
 }
-

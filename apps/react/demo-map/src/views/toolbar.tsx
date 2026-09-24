@@ -1,4 +1,4 @@
-﻿import {
+import {
   BaseMapControl,
   CrsControl,
   EventManagementControl,
@@ -17,12 +17,12 @@
   ToolbarControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function ToolbarPage() {
   return (
@@ -44,7 +44,11 @@ export function ToolbarPage() {
         <MouseCoordinatesControl />
         <BaseMapControl position="bottom-left" />
         <GeoLocateControl position="top-right" />
-        <LegendControl position="top-left" controlLayout="toolbar" controlOrder={5} />
+        <LegendControl
+          position="top-left"
+          controlLayout="toolbar"
+          controlOrder={5}
+        />
         <PrintControl position="top-left" controlLayout="toolbar" />
         <PrintAdvancedControl position="top-left" controlLayout="toolbar" />
         <DemoHelpPanel />

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { createMapDrawControl } from './map-draw-lifecycle';
 
 describe('createMapDrawControl', () => {

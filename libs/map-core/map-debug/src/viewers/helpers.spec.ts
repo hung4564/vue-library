@@ -1,5 +1,6 @@
+import { type LogRecord, MemoryLogDataStore } from '@hungpvq/shared-log';
 import { describe, expect, it } from 'vitest';
-import { MemoryLogDataStore, type LogRecord } from '@hungpvq/shared-log';
+
 import {
   buildRequestFlowSteps,
   buildRequestFlowTree,

@@ -1,6 +1,7 @@
 import { MapInitializer, UniversalRegistry } from '@hungpvq/map-core';
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { Map } from './Map';
 
 beforeEach(() => {

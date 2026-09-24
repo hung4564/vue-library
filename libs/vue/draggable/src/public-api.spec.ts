@@ -4,6 +4,7 @@
  * `libs/draggable/core/docs/stable-api.md`.
  */
 import { describe, expect, it } from 'vitest';
+
 import * as api from './index';
 
 export const VUE_DRAGGABLE_STABLE_RUNTIME_EXPORTS = [

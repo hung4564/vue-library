@@ -1,4 +1,9 @@
-import { describe, expect, it, vi, afterEach } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+import {
+  createCustomBasemapItem,
+  isCustomBasemapItem,
+} from './create-custom-basemap';
 import {
   buildSampleRasterTileUrl,
   isAbsoluteHttpUrl,
@@ -6,7 +11,6 @@ import {
   isValidRasterTileTemplate,
   validateBasemapSource,
 } from './validate-basemap-source';
-import { createCustomBasemapItem, isCustomBasemapItem } from './create-custom-basemap';
 
 describe('validateBasemapSource helpers', () => {
   afterEach(() => {
@@ -22,12 +26,12 @@ describe('validateBasemapSource helpers', () => {
   });
 
   it('requires {z}/{x}/{y} for raster templates', () => {
-    expect(
-      isValidRasterTileTemplate('https://t.com/{z}/{x}/{y}.png'),
-    ).toBe(true);
-    expect(
-      isValidRasterTileTemplate('https://t.com/{z}/{y}/{x}.png'),
-    ).toBe(true);
+    expect(isValidRasterTileTemplate('https://t.com/{z}/{x}/{y}.png')).toBe(
+      true,
+    );
+    expect(isValidRasterTileTemplate('https://t.com/{z}/{y}/{x}.png')).toBe(
+      true,
+    );
     expect(isValidRasterTileTemplate('https://t.com/{z}/{x}.png')).toBe(false);
     expect(isValidRasterTileTemplate('https://t.com/style.json')).toBe(false);
   });
@@ -51,7 +55,9 @@ describe('validateBasemapSource helpers', () => {
   });
 
   it('validateBasemapSource rejects empty / bad raster template', async () => {
-    expect(await validateBasemapSource({ type: 'raster', url: '' })).toMatchObject({
+    expect(
+      await validateBasemapSource({ type: 'raster', url: '' }),
+    ).toMatchObject({
       ok: false,
       code: 'empty',
     });

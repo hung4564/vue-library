@@ -1,4 +1,5 @@
 import type { LayerSpecification } from 'maplibre-gl';
+
 import { logger } from '../../logger';
 import { CIRCLE_CONFIG } from './circle';
 import { FILL_CONFIG } from './fill';
@@ -7,6 +8,10 @@ import { RASTER_CONFIG } from './raster';
 import type { LayerTabsConfig, Tab } from './style';
 import { SYMBOL_CONFIG } from './symbol';
 
+export { CIRCLE_CONFIG } from './circle';
+export { FILL_CONFIG } from './fill';
+export { LINE_CONFIG } from './line';
+export { RASTER_CONFIG } from './raster';
 export type {
   ArrayIndexTab,
   ArrayXYTab,
@@ -26,10 +31,6 @@ export type {
   TabConfig,
   UnitTab,
 } from './style';
-export { CIRCLE_CONFIG } from './circle';
-export { FILL_CONFIG } from './fill';
-export { LINE_CONFIG } from './line';
-export { RASTER_CONFIG } from './raster';
 export { SYMBOL_CONFIG } from './symbol';
 
 export const TABS: Record<string, LayerTabsConfig<LayerSpecification>> = {
@@ -52,9 +53,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
-function mergeDeep(
-  ...sources: unknown[]
-): Record<string, unknown> {
+function mergeDeep(...sources: unknown[]): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const src of sources) {
     if (!isPlainObject(src)) continue;
@@ -85,8 +84,8 @@ export function convertTabWithDefaultConfig(
       logger
         .with({ fn: 'convertTabWithDefaultConfig', span: 'validation' })
         .info('Style tab conversion skipped because tab type is missing.', {
-        type: x.type,
-      });
+          type: x.type,
+        });
     }
     res.props = mergeDeep(
       {},

@@ -1,11 +1,11 @@
 import {
   ContextMenu,
   ContextMenuItem,
+  type ContextMenuRef,
   DraggableContainer,
   DraggableItemSideBar,
-  type ContextMenuRef,
 } from '@hungpvq/react-draggable';
-import { useRef, useState, type MouseEvent as ReactMouseEvent } from 'react';
+import { type MouseEvent as ReactMouseEvent, useRef, useState } from 'react';
 
 type MenuAction = 'open' | 'rename' | 'share' | 'delete' | 'disabled';
 

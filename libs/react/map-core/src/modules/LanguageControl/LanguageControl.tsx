@@ -1,17 +1,18 @@
 import {
   MAP_BUILTIN_LANGUAGES,
+  type MapLangLocale,
+  type MapLanguageCode,
   mapLanguageCodeLabel,
+  type MapLocaleLoader,
+  type MapTranslateFunction,
   nextMapLanguageInList,
   registerLanguageControlPacks,
   resolveInitialMapLanguage,
-  type MapLangLocale,
-  type MapLanguageCode,
-  type MapLocaleLoader,
-  type MapTranslateFunction,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { textButtonState } from '@hungpvq/map-core/toolbar';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
 import { useLang } from '../../extra/lang/hook';
@@ -184,10 +185,7 @@ export function LanguageControl({
     <ModuleContainer
       {...moduleContainerProps}
       btn={
-        <MapControlGroupButton
-          row
-          className="button-group-hover-expand"
-        >
+        <MapControlGroupButton row className="button-group-hover-expand">
           {/* DOM: current first (collapsed face), then all chips. Click current → cycle. */}
           {state ? (
             <MapCommonButton

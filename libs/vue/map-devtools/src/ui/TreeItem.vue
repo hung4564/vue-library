@@ -10,9 +10,11 @@
       </span>
       <span v-else class="tree-item__toggle" />
       <span class="tree-item__key" v-if="label">{{ label }}: </span>
-      <span class="tree-item__value" :class="`tree-item__value--${valueType}`">{{
-        displayValue
-      }}</span>
+      <span
+        class="tree-item__value"
+        :class="`tree-item__value--${valueType}`"
+        >{{ displayValue }}</span
+      >
       <span v-if="hasChildren && !isOpen" class="tree-item__preview">
         {{ previewValue }}
       </span>

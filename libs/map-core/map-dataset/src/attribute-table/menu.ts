@@ -1,16 +1,17 @@
 import { mdiTable } from '@mdi/js';
+
 import { hasGeojsonExportData } from '../geo-export/dataset';
 import type { IDataset } from '../interfaces/dataset.base';
-import type { MenuConditionContext, MenuItemBottomOrExtra } from '../interfaces/dataset.parts';
+import type {
+  MenuConditionContext,
+  MenuItemBottomOrExtra,
+} from '../interfaces/dataset.parts';
 import {
   createMenuBuilder,
   createMenuClickAddComponentBuilder,
   createMenuClickBuilder,
 } from '../menu/builder';
-import {
-  LIST_VIEW_MENU_COMPONENT_KEY,
-  LIST_VIEW_MENU_ID,
-} from '../menu/items';
+import { LIST_VIEW_MENU_COMPONENT_KEY, LIST_VIEW_MENU_ID } from '../menu/items';
 import { resolveAttributeTableUiOption } from './dataset-part';
 import type { AttributeTableColumnsOption } from './model';
 import type { AttributeTableRowFilter, AttributeTableUiOptions } from './props';

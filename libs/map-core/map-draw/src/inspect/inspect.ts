@@ -1,5 +1,6 @@
 import { logHelper, type MapSimple } from '@hungpvq/map-core';
 import { StyleSpecification } from 'maplibre-gl';
+
 import { logger } from '../logger';
 
 export type InspectStyleSpecification = StyleSpecification & {
@@ -75,10 +76,10 @@ export async function getSourcesFromMap(
           logHelper(logger, map.id, 'inspect')
             .with({ fn: 'getSourcesFromMap', span: 'inspect.warn' })
             .warn(
-            'Unable to retrieve tileJSON from ' +
-              url +
-              " using style's layers",
-          );
+              'Unable to retrieve tileJSON from ' +
+                url +
+                " using style's layers",
+            );
           sources[sourceId] = collectSourceLayersFromStyle(style, sourceId);
         }
       } else {

@@ -11,35 +11,32 @@ import {
   ATTRIBUTE_TABLE_CONTROL,
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
   attributeTableControlId,
-  clearPendingAttributeTableSelectRows,
-  createAttributeTableController,
-  resolveAttributeTableUi,
-  resolveAttributeTableUiOption,
-  takePendingAttributeTableSelectRows,
   type AttributeTableController,
   type AttributeTableProps,
   type AttributeTableRow,
   type AttributeTableSelectRowsPayload,
   type AttributeTableViewLabels,
   type AttributeTableViewProps,
+  clearPendingAttributeTableSelectRows,
+  createAttributeTableController,
+  resolveAttributeTableUi,
+  resolveAttributeTableUiOption,
+  takePendingAttributeTableSelectRows,
 } from '@hungpvq/map-dataset/attribute-table';
 import {
   clearGeoExportActiveSource,
+  type GeoExportFormat,
   openGeoExportModalFromAttributeTable,
   resolveAttributeTableGeoExport,
   runGeoExportClickFromAttributeTable,
   runGeoExportFormatFromAttributeTable,
   setGeoExportActiveSource,
-  type GeoExportFormat,
 } from '@hungpvq/map-dataset/geo-export';
-import {
-  getHighlightResolver,
-} from '@hungpvq/map-dataset/identify';
 import {
   bindHighlightMittBridge,
   emitHighlightAttributeTableClose,
 } from '@hungpvq/map-dataset/highlight';
-import { loggerFactory } from '@hungpvq/shared-log';
+import { getHighlightResolver } from '@hungpvq/map-dataset/identify';
 import {
   createMenuConditionContext,
   getItemMenuHost,
@@ -49,6 +46,7 @@ import {
   isMenuItemHidden,
   MENU_CONTROL_ID,
 } from '@hungpvq/map-dataset/menu';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   ModuleContainer,
@@ -59,6 +57,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import type { Feature } from 'geojson';
 import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
+
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 import AttributeTableView from './AttributeTableView.vue';

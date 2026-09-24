@@ -25,6 +25,7 @@ import {
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCheck, mdiContentCopy } from '@mdi/js';
 import { computed, onBeforeUnmount, ref } from 'vue';
+
 import MapControlButton from './MapControlButton.vue';
 
 /**
@@ -68,9 +69,7 @@ const copyFeedback = createCopyFeedback({
 
 onBeforeUnmount(() => copyFeedback.dispose());
 
-const text = computed(() =>
-  props.value == null ? '' : String(props.value),
-);
+const text = computed(() => (props.value == null ? '' : String(props.value)));
 
 const isDisabled = computed(() => {
   if (props.disabled) return true;

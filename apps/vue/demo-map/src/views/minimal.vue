@@ -10,18 +10,16 @@
 </template>
 
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
-import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
-import {
-  LayerControl,
-  useMapDataset,
-} from '@hungpvq/vue-map-dataset';
 import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
+import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
+import { LayerControl, useMapDataset } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import type { FeatureCollection } from 'geojson';
-import AsideControl from '../layout/aside-control.vue';
+
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
+import AsideControl from '../layout/aside-control.vue';
 
 const SAMPLE: FeatureCollection = {
   type: 'FeatureCollection',
@@ -51,5 +49,3 @@ function onMapLoaded(map: MapSimple) {
   );
 }
 </script>
-
-

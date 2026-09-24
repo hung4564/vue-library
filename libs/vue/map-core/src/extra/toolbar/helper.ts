@@ -1,28 +1,22 @@
+import type { WithMapPropType } from '@hungpvq/map-core';
 import { MAP_MODULE_CONTROL_ID_KEY, type Position } from '@hungpvq/map-core';
 import {
   type AnyToolbarOptions,
   type AnyToolbarStrategy,
   type ControlStrategy,
+  createLiveToolbarStrategy,
   type MapControlButtonState,
   type MapControlButtonUIState,
   type ModuleStrategy,
   type Toolbar,
+  type ToolbarKind,
   type ToolbarModuleOptions,
   type ToolbarSingleOptions,
-  createLiveToolbarStrategy,
-  type ToolbarKind,
 } from '@hungpvq/map-core/toolbar';
-import {
-  onMounted,
-  onUnmounted,
-  provide,
-  ref,
-  shallowRef,
-  watch,
-} from 'vue';
-import type { WithMapPropType } from '@hungpvq/map-core';
-import { useLang } from '../lang/hook';
+import { onMounted, onUnmounted, provide, ref, shallowRef, watch } from 'vue';
+
 import { useResolvedControlLayout } from '../../hooks/useMap';
+import { useLang } from '../lang/hook';
 import { useMapToolbarModule } from './store';
 
 export function useInitToolbarControl<T extends AnyToolbarStrategy>(

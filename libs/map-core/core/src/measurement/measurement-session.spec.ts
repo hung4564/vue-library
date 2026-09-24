@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createMeasurementSession } from './measurement-session';
+
 import type { MapSimple } from '../types';
+import { createMeasurementSession } from './measurement-session';
 
 function fakeMap(id = 'm1'): MapSimple {
   return {

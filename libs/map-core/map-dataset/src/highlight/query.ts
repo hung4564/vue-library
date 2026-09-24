@@ -1,15 +1,16 @@
 import type { MapSimple } from '@hungpvq/map-core';
+import { getMap, logHelper } from '@hungpvq/map-core';
 import type { Feature } from 'geojson';
 import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
+
 import type { IDataset } from '../interfaces/dataset.base';
 import type { IMapboxLayerView } from '../interfaces/dataset.parts';
+import { loggerHighlight } from '../logger';
 import { runAllComponentsWithCheck } from '../model/visitors/helpers';
-import { convertFeatureToItem, convertItemToFeature } from '../utils/convert';
 import { isMapboxLayerView } from '../utils/check';
+import { convertFeatureToItem, convertItemToFeature } from '../utils/convert';
 import { DEFAULT_HIGHLIGHT_POINTER, findHighlightPart } from './cascade';
 import type { IHighlightPart } from './part';
-import { getMap, logHelper } from '@hungpvq/map-core';
-import { loggerHighlight } from '../logger';
 
 export type HighlightHit = {
   feature: Feature;
@@ -58,8 +59,7 @@ export async function queryHighlightAtPoint(
 
   for (const ds of datasets) {
     const part =
-      findHighlightPart(ds) ??
-      (ds.type === 'highlight' ? ds : undefined);
+      findHighlightPart(ds) ?? (ds.type === 'highlight' ? ds : undefined);
     const root = part?.getParent?.() ?? ds.getParent?.() ?? ds;
     const results = runAllComponentsWithCheck(
       root,
@@ -90,8 +90,7 @@ export async function queryHighlightAtPoint(
 
   const features = await new Promise<MapGeoJSONFeature[]>((resolve) => {
     getMap(mapId, (map: MapSimple) => {
-      let queryBox: PointLike | [PointLike, PointLike] | undefined =
-        pointOrBox;
+      let queryBox: PointLike | [PointLike, PointLike] | undefined = pointOrBox;
       if (queryBox && isPointLike(queryBox)) {
         const point = getXY(queryBox);
         queryBox = [
@@ -120,10 +119,7 @@ export async function queryHighlightAtPoint(
   if (!item?.geometry) {
     logHelper(loggerHighlight, mapId, 'queryHighlightAtPoint')
       .with({ fn: 'queryHighlightAtPoint', span: 'highlight.query' })
-      .warn(
-      'hit missing geometry',
-      { layerId: raw.layer.id },
-    );
+      .warn('hit missing geometry', { layerId: raw.layer.id });
     return undefined;
   }
   const feature = convertItemToFeature({

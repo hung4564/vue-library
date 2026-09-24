@@ -4,18 +4,18 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import ContextMenu from '../ContextMenu.vue';
-import ContextMenuItem from '../ContextMenuItem.vue';
+import type { LocationSideBar } from '@hungpvq/draggable';
 import { focusFirst, restoreFocus } from '@hungpvq/draggable';
 import {
   computed,
   inject,
   nextTick,
   onBeforeUnmount,
-  ref,
   Ref,
+  ref,
   watch,
 } from 'vue';
+
 import {
   useComponent,
   useContainerSize,
@@ -29,7 +29,8 @@ import {
 } from '../../hook';
 import { useInitDrawer } from '../../hook/useInitDrawer';
 import { useDragLayout, useDrawerItem } from '../../store';
-import type { LocationSideBar } from '@hungpvq/draggable';
+import ContextMenu from '../ContextMenu.vue';
+import ContextMenuItem from '../ContextMenuItem.vue';
 import DragButton from '../parts/DragButton.vue';
 
 const { CloseIcon, SidebarOpenMenu } = useIcon();
@@ -107,9 +108,7 @@ let previousFocus: HTMLElement | null = null;
 
 const savedLayout = dragLayout.getItemLayout(itemId.value);
 const p_size = ref(savedLayout?.size ?? props.size);
-const slotTo = computed(
-  () => `#drawer-${location.value}-${containerId.value}`,
-);
+const slotTo = computed(() => `#drawer-${location.value}-${containerId.value}`);
 
 const availableDrawerItems = computed(() =>
   drawerStore.getItemsForLocation(location.value),
@@ -229,12 +228,7 @@ function closeContextMenu() {
 }
 
 function selectDrawer(nextId: string) {
-  drawerStore.registerDrawerShow(
-    nextId,
-    location.value,
-    true,
-    p_size.value,
-  );
+  drawerStore.registerDrawerShow(nextId, location.value, true, p_size.value);
   closeContextMenu();
 }
 

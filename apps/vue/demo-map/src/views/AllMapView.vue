@@ -57,6 +57,7 @@ import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { mdiPlus } from '@mdi/js';
 import { ref } from 'vue';
+
 import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import AsideControl from '../layout/aside-control.vue';
 

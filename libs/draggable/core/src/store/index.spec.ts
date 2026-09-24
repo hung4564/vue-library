@@ -1,7 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import type { ContainerStoreAction } from '../types';
 import {
   configureDragStore,
+  useBottomItem,
   useDragCommands,
   useDragComponent,
   useDragContainer,
@@ -11,7 +13,6 @@ import {
   useDragStore,
   useDrawerItem,
   useSidebarItem,
-  useBottomItem,
 } from './index';
 
 const CID = 'test-container';
@@ -645,9 +646,7 @@ describe('useDragLayout', () => {
     initTestContainer();
     const layout = useDragLayout(CID);
     expect(() =>
-      layout.applyLayout([
-        { id: 'ghost', type: 'item-popup', show: true },
-      ]),
+      layout.applyLayout([{ id: 'ghost', type: 'item-popup', show: true }]),
     ).not.toThrow();
   });
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useFileDialog } from '../useFileDialog';
-
-import { useFileReader } from '.';
 import { ref } from 'vue';
+
+import { useFileDialog } from '../useFileDialog';
+import { useFileReader } from '.';
 const { files, open, reset, onChange } = useFileDialog();
 const { read } = useFileReader();
 const text = ref('');

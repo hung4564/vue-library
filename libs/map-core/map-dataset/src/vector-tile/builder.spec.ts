@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { createVectorTileDataset } from './builder';
+
 import {
-  metaFromMbtilesRows,
   mbtilesLocalTilesUrl,
+  metaFromMbtilesRows,
   parseVectorTileProtocolUrl,
   pmtilesLocalTilesUrl,
   sourceLayerOptionsFromMeta,
 } from './archives';
+import { createVectorTileDataset } from './builder';
 
 describe('createVectorTileDataset', () => {
   it('builds root with vector source tiles and flat list for one source-layer', () => {
@@ -30,7 +31,12 @@ describe('createVectorTileDataset', () => {
           c.getName() === 'Countries' &&
           typeof (c as { getChildren?: () => unknown }).getChildren ===
             'function',
-      ) as { getChildren: () => Array<{ getName: () => string; getChildren?: () => unknown }> };
+      ) as {
+      getChildren: () => Array<{
+        getName: () => string;
+        getChildren?: () => unknown;
+      }>;
+    };
     expect(group).toBeTruthy();
     const parts = group.getChildren();
     // Flat list: list + mapbox layers — no nested GroupSubList children
@@ -53,9 +59,9 @@ describe('createVectorTileDataset', () => {
           c.getName() === 'Archive' &&
           typeof (c as { getChildren?: () => unknown }).getChildren ===
             'function' &&
-          (c as { getChildren: () => unknown[] }).getChildren().some(
-            (child) => child.getName() === 'Archive',
-          ),
+          (c as { getChildren: () => unknown[] })
+            .getChildren()
+            .some((child) => child.getName() === 'Archive'),
       );
     expect(parentGroup).toBeTruthy();
     const parentList = (
@@ -72,8 +78,7 @@ describe('createVectorTileDataset', () => {
     expect(parentList).toBeTruthy();
     expect(parentList!.config?.init_show_children).toBe(false);
     expect(typeof parentList!.getChildren).toBe('function');
-    const subNames = parentList!
-      .getChildren!()
+    const subNames = parentList!.getChildren!()
       .map((c) => c.getName())
       .sort();
     expect(subNames).toEqual(['buildings', 'roads']);
@@ -86,11 +91,14 @@ describe('createVectorTileDataset', () => {
       sourceLayers: ['only'],
       styleType: 'auto',
     });
-    const group = dataset.getChildren().find(
-      (c) =>
-        c.getName() === 'One' &&
-        typeof (c as { getChildren?: () => unknown }).getChildren === 'function',
-    ) as {
+    const group = dataset
+      .getChildren()
+      .find(
+        (c) =>
+          c.getName() === 'One' &&
+          typeof (c as { getChildren?: () => unknown }).getChildren ===
+            'function',
+      ) as {
       getChildren: () => Array<{
         getName: () => string;
         getChildren?: () => unknown[];

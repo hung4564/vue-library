@@ -1,7 +1,8 @@
-import { getUUIDv4 } from '@hungpvq/shared';
-import { Ref, computed, onMounted, onUnmounted, ref } from 'vue';
-import { useDragItem, useDrawerItem } from '../store';
 import type { LocationSideBar } from '@hungpvq/draggable';
+import { getUUIDv4 } from '@hungpvq/shared';
+import { computed, onMounted, onUnmounted, Ref, ref } from 'vue';
+
+import { useDragItem, useDrawerItem } from '../store';
 
 export function useInitDrawer(
   containerId: string,

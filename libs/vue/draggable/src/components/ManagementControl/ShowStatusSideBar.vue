@@ -1,10 +1,6 @@
 <template>
   <div class="mgmt-groups">
-    <div
-      v-for="(state, side) in filledSides"
-      :key="side"
-      class="mgmt-group"
-    >
+    <div v-for="(state, side) in filledSides" :key="side" class="mgmt-group">
       <div class="mgmt-group__title">
         <span>{{ capitalize(side) }}</span>
         <span class="mgmt__count">{{ state.items.length }}</span>
@@ -30,10 +26,11 @@
 </template>
 
 <script setup lang="ts">
+import type { LocationSideBar, SidebarConfig } from '@hungpvq/draggable';
 import { computed } from 'vue';
+
 import { useIcon } from '../../hook';
 import { useDragContainer } from '../../store';
-import type { LocationSideBar, SidebarConfig } from '@hungpvq/draggable';
 import DragButton from '../parts/DragButton.vue';
 import ItemList from './ItemList.vue';
 

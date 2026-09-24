@@ -1,12 +1,9 @@
-import type { MenuAction } from '../../interfaces/dataset.parts';
 import type { IDataset } from '../../interfaces/dataset.base';
+import type { MenuAction } from '../../interfaces/dataset.parts';
+import { getResolvedMenus } from '../../menu/dataset';
+import { getMenuItemLocation, mergeMenusById } from '../../menu/location';
 import type { IListViewUI } from '../../model/list/types';
 import { findAllComponentsByType } from '../../model/visitors/helpers';
-import { getResolvedMenus } from '../../menu/dataset';
-import {
-  getMenuItemLocation,
-  mergeMenusById,
-} from '../../menu/location';
 
 export type LayerControlTitleMenuState = {
   menus: MenuAction[];

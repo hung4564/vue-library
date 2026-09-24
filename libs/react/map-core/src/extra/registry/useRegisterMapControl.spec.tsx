@@ -1,6 +1,7 @@
 import { UniversalRegistry } from '@hungpvq/map-core';
 import { cleanup, render } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
+
 import { useRegisterMapControl } from './useRegisterMapControl';
 
 const MAP_ID = 'react-register-control';

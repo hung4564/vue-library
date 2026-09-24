@@ -1,9 +1,9 @@
 // Utilities
+import { propsFactory } from '@hungpvq/shared';
+// Types
+import type { Ref } from 'vue';
 import { computed, isRef } from 'vue';
 
-// Types
-import { propsFactory } from '@hungpvq/shared';
-import type { Ref } from 'vue';
 import { getCurrentInstanceName } from '../utils/getCurrentInstance';
 
 type RoundedValue = boolean | string | number | null | undefined;

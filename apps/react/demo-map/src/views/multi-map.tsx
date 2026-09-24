@@ -1,15 +1,16 @@
-﻿import type { MapSimple } from '@hungpvq/map-core';
+import type { MapSimple } from '@hungpvq/map-core';
 import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
-import { loggerFactory } from '@hungpvq/shared-log';
 import { BaseMapControl, Map } from '@hungpvq/react-map-core';
 import { LayerControl, useMapDataset } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
+import { loggerFactory } from '@hungpvq/shared-log';
 import type { FeatureCollection } from 'geojson';
-import { MapPageShell } from '../components/MapPageShell';
+
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
-import { AsideControl } from '../layout/AsideControl';
+import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
+import { AsideControl } from '../layout/AsideControl';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:multi-map', 2);
 

@@ -1,5 +1,6 @@
 import { getOrCreateStore } from '@hungpvq/shared-store';
 import { Component } from 'vue';
+
 import { MiddlewareFn } from '../types';
 
 const store = getOrCreateStore<{

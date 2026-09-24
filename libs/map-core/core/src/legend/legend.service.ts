@@ -2,10 +2,10 @@
  * Framework-agnostic legend service
  */
 
-import type { MapSimple } from '../types';
 import { MapError } from '../errors';
 import { errorHandler } from '../services/error-handler.service';
-import type { LegendItem, LayerConfig } from './types';
+import type { MapSimple } from '../types';
+import type { LayerConfig, LegendItem } from './types';
 
 /**
  * Service for managing legend operations

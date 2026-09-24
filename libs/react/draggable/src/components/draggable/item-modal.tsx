@@ -1,4 +1,9 @@
-import { clampBounds, focusFirst, setModalSiblingsInert, trapTabKey } from '@hungpvq/draggable';
+import {
+  clampBounds,
+  focusFirst,
+  setModalSiblingsInert,
+  trapTabKey,
+} from '@hungpvq/draggable';
 import {
   ReactNode,
   useCallback,
@@ -9,6 +14,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { Rnd } from 'react-rnd';
+
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,
@@ -21,8 +27,8 @@ import {
   useInitItem,
   useShow,
 } from '../../hook';
-import { DragButton } from '../parts/DragButton';
 import { useDragLayout } from '../../store';
+import { DragButton } from '../parts/DragButton';
 
 const MODAL_Z_INDEX = 10000;
 
@@ -445,7 +451,10 @@ export function DraggableModal({
                   <>
                     {extraBtn}
                     {!disabledClose && (
-                      <DragButton aria-label="Close dialog" onClick={handleClose}>
+                      <DragButton
+                        aria-label="Close dialog"
+                        onClick={handleClose}
+                      >
                         <CloseIcon size={'16px'} />
                       </DragButton>
                     )}

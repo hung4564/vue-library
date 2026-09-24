@@ -1,4 +1,5 @@
 import type { Emitter } from 'mitt';
+
 import type { BaseMapItem, MittTypeBaseMap } from './types';
 import { MittTypeBaseMapEventKey } from './types';
 

@@ -9,21 +9,25 @@
     <AsideControl position="top-left" />
     <DemoHelpPanel />
     <div class="basemap-error-note" role="status">
-      This map loads an invalid style URL so MapLibre / init failures flow through
+      This map loads an invalid style URL so MapLibre / init failures flow
+      through
       <code>errorHandler</code> → <code>MapErrorToast</code> (bottom center).
     </div>
   </Map>
 </template>
 
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { Map } from '@hungpvq/vue-map-core';
-import AsideControl from '../layout/aside-control.vue';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
+
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 import DemoLanguageControl from '../components/DemoLanguageControl.vue';
+import AsideControl from '../layout/aside-control.vue';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:basemap-error', 2);
+const logger = loggerFactory
+  .createLogger()
+  .setNamespace('demo:basemap-error', 2);
 
 const initOptions = {
   attributionControl: false,

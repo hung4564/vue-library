@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import {
   createDefaultToolbarStore,
   createLiveToolbarStrategy,
@@ -127,7 +128,10 @@ describe('toolbar', () => {
         { id: 'show', getState: () => ({ title: 'Print', visible: false }) },
         { id: 'save', getState: () => ({ title: 'Save', visible: true }) },
         { id: 'close', getState: () => ({ title: 'Close', visible: true }) },
-        { id: 'setting', getState: () => ({ title: 'Setting', visible: true }) },
+        {
+          id: 'setting',
+          getState: () => ({ title: 'Setting', visible: true }),
+        },
       ],
     });
     module.mount();

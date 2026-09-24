@@ -1,3 +1,5 @@
+import './demo-nav.css';
+
 import { getDemoAsideNavItems } from '@hungpvq/demo-map-datasets';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
@@ -13,7 +15,6 @@ import {
 import { mdiMenu } from '@mdi/js';
 import { useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
-import './demo-nav.css';
 
 const NAV_ITEMS = getDemoAsideNavItems('react');
 

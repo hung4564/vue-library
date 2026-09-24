@@ -20,11 +20,17 @@ test.describe('vue-demo-map measurement smoke', () => {
     });
 
     const distanceBtn = page
-      .locator('.map-measurement-control button, .map-measurement-control .map-control-button')
+      .locator(
+        '.map-measurement-control button, .map-measurement-control .map-control-button',
+      )
       .first();
     await distanceBtn.click();
     await expect(
-      page.locator('.map-measurement-control, .map-measurement-geometry, .map-measurement-fields').first(),
+      page
+        .locator(
+          '.map-measurement-control, .map-measurement-geometry, .map-measurement-fields',
+        )
+        .first(),
     ).toBeVisible({ timeout: 15_000 });
   });
 });

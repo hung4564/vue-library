@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   isMapButtonSize,
   isMapButtonVariant,
+  MAP_BUTTON_SIZE_PX,
   mapButtonSizeClass,
   mapButtonVariantClass,
-  MAP_BUTTON_SIZE_PX,
   resolveMapButtonSizeName,
   resolveMapButtonSizePx,
 } from './map-button';

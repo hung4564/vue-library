@@ -1,16 +1,17 @@
-import { computed, onMounted, onUnmounted, shallowRef, triggerRef } from 'vue';
 import {
-  translateMapLang,
-  type MapLangLocale,
-  type MapTranslateFunction,
-  type MapLanguageCode,
-  type MapLocaleLoader,
-  type MapLoadLocaleOptions,
-  type MapLanguageRegisterOptions,
   type MapLangFlatMessages,
+  type MapLangLocale,
+  type MapLanguageCode,
+  type MapLanguageRegisterOptions,
+  type MapLoadLocaleOptions,
+  type MapLocaleLoader,
+  type MapTranslateFunction,
   MittTypeMapLang,
   MittTypeMapLangEventKey,
+  translateMapLang,
 } from '@hungpvq/map-core';
+import { computed, onMounted, onUnmounted, shallowRef, triggerRef } from 'vue';
+
 import { useMapMittStore } from '../../store/mitt-store';
 import { useMapLocale } from './store';
 

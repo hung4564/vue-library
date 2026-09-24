@@ -1,4 +1,5 @@
 import type { FeatureCollection } from 'geojson';
+
 import type { AttributeTableSortState } from '../attribute-table/sort';
 import type { DataManagementPart } from '../data-management/types';
 import type { IDataset } from '../interfaces/dataset.base';
@@ -45,9 +46,7 @@ async function listFromDataManagement(
       page: 1,
       pageSize: 'all',
       search: input.search || undefined,
-      sort: primary
-        ? { field: primary.key, dir: primary.dir }
-        : undefined,
+      sort: primary ? { field: primary.key, dir: primary.dir } : undefined,
     });
     return recordsToFeatureCollection(result.items ?? []);
   }

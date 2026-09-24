@@ -1,4 +1,6 @@
+import type { LocationSideBar } from '@hungpvq/draggable';
 import type { ComponentType, ReactNode } from 'react';
+
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,
@@ -7,7 +9,6 @@ import {
   useInitSidebar,
   useShow,
 } from '../../hook';
-import type { LocationSideBar } from '@hungpvq/draggable';
 import { DragSidebarToggleProps } from '../parts/DragSidebarToggle';
 import { SidebarModule } from './sidebar/sidebar-module';
 

@@ -1,22 +1,32 @@
 ﻿<script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import { DEMO_SAMPLE_LAYER_MENU_KEY } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
-import { BaseMapCard, BaseMapControl, Map, UniversalRegistry, WorkerControl } from '@hungpvq/vue-map-core';
+import {
+  BaseMapCard,
+  BaseMapControl,
+  Map,
+  UniversalRegistry,
+  WorkerControl,
+} from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
-import { DEMO_SAMPLE_LAYER_MENU_KEY } from '@hungpvq/demo-map-datasets';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { reactive, ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
-import { loadListDemoDatasets } from '../../data/loaders';
-import SampleCustomMenu from './sample-custom-menu.vue';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
-UniversalRegistry.registerComponent(DEMO_SAMPLE_LAYER_MENU_KEY, SampleCustomMenu);
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import { loadListDemoDatasets } from '../../data/loaders';
+import AsideControl from '../../layout/aside-control.vue';
+import SampleCustomMenu from './sample-custom-menu.vue';
+
+UniversalRegistry.registerComponent(
+  DEMO_SAMPLE_LAYER_MENU_KEY,
+  SampleCustomMenu,
+);
 loggerFactory.enable('menu');
 const mapId = ref(getUUIDv4());
 const menuUi = reactive({
@@ -62,5 +72,3 @@ function onMapLoaded(map: MapSimple) {
     <DemoHelpPanel />
   </Map>
 </template>
-
-

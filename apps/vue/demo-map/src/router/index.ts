@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
+
 import HomeView from '../views/AllMapView.vue';
 
 const router = createRouter({
@@ -67,8 +68,7 @@ const router = createRouter({
     },
     {
       path: '/dataset-identify-present/',
-      component: () =>
-        import('../views/dataset-identify-present/example.vue'),
+      component: () => import('../views/dataset-identify-present/example.vue'),
     },
     {
       path: '/dataset-menu/',

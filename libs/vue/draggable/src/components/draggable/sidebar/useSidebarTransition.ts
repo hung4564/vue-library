@@ -1,5 +1,5 @@
-import { computed, Ref } from 'vue';
 import type { LocationSideBar } from '@hungpvq/draggable';
+import { computed, Ref } from 'vue';
 
 export function useSidebarTransition(
   props: { location: LocationSideBar },

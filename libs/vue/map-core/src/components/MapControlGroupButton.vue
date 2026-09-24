@@ -32,14 +32,15 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
-import MapButton from './MapButton.vue';
-import MapIcon from './MapIcon.vue';
 import {
   isMapButtonSize,
-  resolveMapButtonSizePx,
   type MapButtonSize,
+  resolveMapButtonSizePx,
 } from '@hungpvq/map-core';
+import type { PropType } from 'vue';
+
+import MapButton from './MapButton.vue';
+import MapIcon from './MapIcon.vue';
 
 interface ButtonItem {
   title: string;

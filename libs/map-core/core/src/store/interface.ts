@@ -3,6 +3,7 @@
  */
 
 import type { Emitter, EventType } from 'mitt';
+
 import type { MapRootStore } from './types';
 
 // MapFCOnUseMap is exported from ../utils/types

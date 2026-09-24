@@ -1,6 +1,7 @@
+import type { DrawerConfig, LocationSideBar } from '@hungpvq/draggable';
+
 import { useIcon } from '../../hook';
 import { useDragContainer } from '../../store';
-import type { DrawerConfig, LocationSideBar } from '@hungpvq/draggable';
 import { DragButton } from '../parts/DragButton';
 import { ItemList } from './ItemList';
 
@@ -52,11 +53,19 @@ export function ShowStatusDrawer({
             containerId={containerId}
             renderExtra={(item, show) =>
               !show ? (
-                <DragButton onClick={() => onOpen(item)} title="Show" aria-label="Show">
+                <DragButton
+                  onClick={() => onOpen(item)}
+                  title="Show"
+                  aria-label="Show"
+                >
                   <ShowIcon size={16} />
                 </DragButton>
               ) : (
-                <DragButton onClick={() => onClose(item)} title="Hide" aria-label="Hide">
+                <DragButton
+                  onClick={() => onClose(item)}
+                  title="Hide"
+                  aria-label="Hide"
+                >
                   <HideIcon size={16} />
                 </DragButton>
               )

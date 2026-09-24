@@ -1,7 +1,11 @@
 import type { Feature } from 'geojson';
-import type { IDataset } from '../interfaces/dataset.base';
-import type { MenuAction, MenuActionLocation, MenuByControl } from '../interfaces/dataset.parts';
 
+import type { IDataset } from '../interfaces/dataset.base';
+import type {
+  MenuAction,
+  MenuActionLocation,
+  MenuByControl,
+} from '../interfaces/dataset.parts';
 import type {
   MenuCondition,
   MenuItemClick,
@@ -115,9 +119,7 @@ export function createMenuBuilder<T = IDataset>() {
           state.click =
             typeof (click as { build?: unknown }).build === 'function'
               ? (
-                  click as ReturnType<
-                    typeof createMenuClickBuilder<unknown, T>
-                  >
+                  click as ReturnType<typeof createMenuClickBuilder<unknown, T>>
                 ).build()
               : click;
           return this;

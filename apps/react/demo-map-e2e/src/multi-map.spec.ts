@@ -9,7 +9,9 @@ test.describe('react-demo-map multi-map smoke', () => {
     });
 
     const containers = page.locator('.map-container');
-    const canvases = page.locator('.map-content canvas, canvas.maplibregl-canvas');
+    const canvases = page.locator(
+      '.map-content canvas, canvas.maplibregl-canvas',
+    );
     const containerCount = await containers.count();
     const canvasCount = await canvases.count();
     expect(containerCount >= 2 || canvasCount >= 2).toBeTruthy();

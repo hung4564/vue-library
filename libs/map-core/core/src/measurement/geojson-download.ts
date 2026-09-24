@@ -4,10 +4,8 @@
  */
 
 import type { Feature, Position } from 'geojson';
-import type {
-  CoordinatesNumber,
-  DraftCoordinatesNumber,
-} from '../types';
+
+import type { CoordinatesNumber, DraftCoordinatesNumber } from '../types';
 
 function toPointFeature(coordinates: Position): Feature {
   return {

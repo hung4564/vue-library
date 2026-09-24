@@ -5,8 +5,9 @@ import {
   findRoot,
   isComposite,
 } from '@hungpvq/map-dataset';
-import type { ExplainStep } from './types';
+
 import { toDatasetSummary } from './tree';
+import type { ExplainStep } from './types';
 
 export function debugFindPartByType(
   from: IDataset,

@@ -3,9 +3,9 @@ import {
   getToggleShowTitleKey,
   performToggleShowAction,
 } from '@hungpvq/map-dataset';
-
 import { useLang, useMap } from '@hungpvq/vue-map-core';
-import { computed, ref, watch, type Ref } from 'vue';
+import { computed, type Ref, ref, watch } from 'vue';
+
 import { useMapDatasetStore } from '../../store/dataset-store';
 import type { WithLayerItemActionType } from './types';
 
@@ -54,4 +54,4 @@ export function useToggleShowAction(props: WithLayerItemActionType) {
     title,
     onToggleShow,
   };
-};
+}

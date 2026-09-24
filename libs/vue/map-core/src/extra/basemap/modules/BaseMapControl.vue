@@ -1,11 +1,7 @@
 <template>
   <ModuleContainer v-bind="moduleContainerProps" :btnWidth="70">
     <template #btn>
-      <MapControlButton
-        v-if="current_baseMaps"
-        :tooltip="title"
-        :active="show"
-      >
+      <MapControlButton v-if="current_baseMaps" :tooltip="title" :active="show">
         <template #content>
           <map-card
             class="clickable base-map-button__container"
@@ -41,9 +37,7 @@
         v-model:show="show"
         :is-resizable="false"
         :title="
-          showAddForm
-            ? trans('map.basemap.add')
-            : trans('map.basemap.setting')
+          showAddForm ? trans('map.basemap.add') : trans('map.basemap.setting')
         "
         :width="showAddForm ? 280 : sizeBaseMap * 3 + 24"
       >
@@ -138,18 +132,19 @@
   </ModuleContainer>
 </template>
 <script lang="ts" setup>
-import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
-import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import type { BaseMapItem } from '@hungpvq/map-core/basemap';
 import {
   INIT_BASEMAPS,
   isCustomBasemapItem,
   logger,
 } from '@hungpvq/map-core/basemap';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiLayersOutline, mdiPlus } from '@mdi/js';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+
 import MapCard from '../../../components/MapCard.vue';
 import MapControlButton from '../../../components/MapControlButton.vue';
 import MapIcon from '../../../components/MapIcon.vue';
@@ -241,8 +236,7 @@ const showAddForm = ref(false);
 const popupHeight = computed(() => {
   // Header (~48) + fields + sticky actions; tall enough to avoid outer scroll.
   if (showAddForm.value) return 420;
-  const tileCount =
-    c_baseMaps.value.length + (props.allowAddBasemap ? 1 : 0);
+  const tileCount = c_baseMaps.value.length + (props.allowAddBasemap ? 1 : 0);
   return (
     sizeBaseMap.value * (Math.floor(tileCount / 3) + 1) +
     48 +

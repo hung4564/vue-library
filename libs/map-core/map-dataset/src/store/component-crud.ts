@@ -26,7 +26,9 @@ export function upsertDatasetComponent(
   component: Omit<DatasetComponentItem, 'id'>,
 ): string {
   if (component.check) {
-    const index = store.components.findIndex((x) => x.check === component.check);
+    const index = store.components.findIndex(
+      (x) => x.check === component.check,
+    );
     if (index >= 0) {
       const existing = store.components[index];
       const id = existing.id;

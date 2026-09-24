@@ -8,9 +8,7 @@ export function resolveTabProps(
 ): Record<string, unknown> {
   if (!props) return {};
   if (typeof props === 'function') {
-    return (
-      (props as (item: Tab) => Record<string, unknown>)(tab) ?? {}
-    );
+    return (props as (item: Tab) => Record<string, unknown>)(tab) ?? {};
   }
   return { ...(props as Record<string, unknown>) };
 }

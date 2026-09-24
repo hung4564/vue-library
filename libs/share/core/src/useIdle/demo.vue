@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useIdle } from '.';
+
 import { useTimestamp } from '../useTimestamp';
+import { useIdle } from '.';
 
 const { idle, lastActive } = useIdle(5000);
 

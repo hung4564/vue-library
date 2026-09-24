@@ -1,9 +1,13 @@
+import type { InitOption } from '@hungpvq/draggable';
 import { checkIsFirst, checkIsLast, itemTypeToGroup } from '@hungpvq/draggable';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
+
 import { useDragItem, useDragStore } from '../store';
-import { useContainerReactive, useStoreReactive } from '../store/useStoreReactive';
-import type { InitOption } from '@hungpvq/draggable';
+import {
+  useContainerReactive,
+  useStoreReactive,
+} from '../store/useStoreReactive';
 
 export function useInitItem(
   containerId: string,
@@ -14,9 +18,7 @@ export function useInitItem(
   },
   stableId?: string,
 ) {
-  const [itemId] = useState(
-    () => stableId || `draggable-item-${getUUIDv4()}`,
-  );
+  const [itemId] = useState(() => stableId || `draggable-item-${getUUIDv4()}`);
   const [zIndex, setZIndexState] = useState(10);
 
   function setZIndex(value: number) {

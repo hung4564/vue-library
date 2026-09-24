@@ -1,11 +1,12 @@
-﻿import { loggerFactory } from '@hungpvq/shared-log';
 import { Map } from '@hungpvq/react-map-core';
-import { MapPageShell } from '../components/MapPageShell';
 import { DevtoolsControl } from '@hungpvq/react-map-devtools';
+import { loggerFactory } from '@hungpvq/shared-log';
+
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
-import { AsideControl } from '../layout/AsideControl';
+import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
+import { AsideControl } from '../layout/AsideControl';
 
 const logger = loggerFactory
   .createLogger()

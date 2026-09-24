@@ -1,4 +1,3 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   attachGlobeProjectionListener,
@@ -6,8 +5,10 @@ import {
   toggleGlobeProjection,
   type WithMapPropType,
 } from '@hungpvq/map-core';
-import { mdiWeb } from '@mdi/js';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import { mdiWeb } from '@mdi/js';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra/lang/hook';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';

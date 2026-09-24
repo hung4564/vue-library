@@ -6,6 +6,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose, mdiDelete, mdiPlus } from '@mdi/js';
 import { LayerSpecification } from 'maplibre-gl';
 import { computed, nextTick, ref, watch } from 'vue';
+
 import SingleStyle from './single-style.vue';
 defineExpose({
   SvgIcon,
@@ -107,12 +108,16 @@ const onShowAddStyle = (value: boolean) => {
       <MapControlButton
         class="tab-item tab-add clickable"
         @click="onRemoveStyleLayer(tab)"
-        :disabled="!tab" variant="text">
+        :disabled="!tab"
+        variant="text"
+      >
         <SvgIcon size="14" type="mdi" :path="path.delete" :disabled="!tab" />
       </MapControlButton>
       <MapControlButton
         class="tab-item tab-add clickable"
-        @click="onShowAddStyle(!showAdd)" variant="text">
+        @click="onShowAddStyle(!showAdd)"
+        variant="text"
+      >
         <SvgIcon
           size="14"
           type="mdi"

@@ -1,19 +1,24 @@
+import './DemoHelpPanel.css';
+
 import type { DemoHelpSection } from '@hungpvq/demo-map-datasets';
-import { getDemoHelpChrome, type DemoPageGuide } from '@hungpvq/demo-map-datasets';
+import {
+  type DemoPageGuide,
+  getDemoHelpChrome,
+} from '@hungpvq/demo-map-datasets';
 import { getStoredMapLanguage } from '@hungpvq/map-core';
 import { useLang, useMapContext } from '@hungpvq/react-map-core';
 import {
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
-  type PointerEvent as ReactPointerEvent,
 } from 'react';
 import { useLocation } from 'react-router';
+
 import { getDemoPageGuide } from '../demo-guides';
-import './DemoHelpPanel.css';
 
 const MOBILE_MQ = '(max-width: 640px)';
 const DRAG_THRESHOLD_PX = 4;
@@ -63,11 +68,16 @@ export function DemoHelpPanel(props?: {
       return { intro: props.intro, sections: props.sections };
     }
     return getDemoPageGuide(location.pathname, guideLang);
-  }, [props?.guide, props?.intro, props?.sections, location.pathname, guideLang]);
+  }, [
+    props?.guide,
+    props?.intro,
+    props?.sections,
+    location.pathname,
+    guideLang,
+  ]);
 
   const [isMobile, setIsMobile] = useState(
-    () =>
-      typeof window !== 'undefined' && window.matchMedia(MOBILE_MQ).matches,
+    () => typeof window !== 'undefined' && window.matchMedia(MOBILE_MQ).matches,
   );
   const [open, setOpen] = useState(() => !isMobile);
   const [pos, setPos] = useState<Pos | null>(null);

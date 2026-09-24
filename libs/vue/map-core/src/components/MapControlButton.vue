@@ -42,13 +42,14 @@
 </template>
 
 <script>
-import MapButton from './MapButton.vue';
-import MapIcon from './MapIcon.vue';
 import {
   isMapButtonFluidVariant,
   isMapButtonSize,
   isMapButtonVariant,
 } from '@hungpvq/map-core';
+
+import MapButton from './MapButton.vue';
+import MapIcon from './MapIcon.vue';
 
 export default {
   name: 'MapControlButton',

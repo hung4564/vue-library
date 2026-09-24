@@ -7,8 +7,8 @@ import {
   type SharedLogScenarioId,
 } from '@hungpvq/demo-map-datasets';
 import {
-  loggerFactory,
   type LogAdapter,
+  loggerFactory,
   type LogRecord,
 } from '@hungpvq/shared-log';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
@@ -204,5 +204,3 @@ function clear() {
   word-break: break-word;
 }
 </style>
-
-

@@ -1,13 +1,14 @@
 import { logHelper } from '@hungpvq/map-core';
 import {
   type BaseMapItem,
-  MittTypeBaseMap,
   getOrCreateBasemapManager,
-  subscribeBasemapMirror,
   logger,
+  MittTypeBaseMap,
+  subscribeBasemapMirror,
 } from '@hungpvq/map-core/basemap';
-import { useMapMittStore } from '../../../store/mitt-store';
 import { onUnmounted, ref } from 'vue';
+
+import { useMapMittStore } from '../../../store/mitt-store';
 import { useMapBaseMapStore } from '../store';
 
 function basemapHookLogger(
@@ -18,10 +19,12 @@ function basemapHookLogger(
 ) {
   const fn =
     typeof message === 'string' && message.length > 0 ? message : 'useBaseMap';
-  logHelper(logger, mapIdParam, 'hook', 'useBaseMap').with({
-    fn,
-    span: `hook.${fn}`,
-  })[level](message, data);
+  logHelper(logger, mapIdParam, 'hook', 'useBaseMap')
+    .with({
+      fn,
+      span: `hook.${fn}`,
+    })
+    [level](message, data);
 }
 
 export function useBaseMap(mapId: string) {

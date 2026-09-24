@@ -16,14 +16,15 @@ import {
 import { mdiDotsHorizontal } from '@mdi/js';
 import {
   computed,
+  type ComputedRef,
   inject,
   onMounted,
   onUnmounted,
   ref,
   unref,
   watch,
-  type ComputedRef,
 } from 'vue';
+
 import MapCommonButton from '../../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
@@ -208,9 +209,7 @@ const overflowOpen = computed(
 );
 
 const overflowPanelClass = computed(() =>
-  toolbarOverflowPanelClassName(
-    (props.position || 'bottom-right') as Position,
-  ),
+  toolbarOverflowPanelClassName((props.position || 'bottom-right') as Position),
 );
 
 const moreOption = computed(() =>
@@ -241,8 +240,7 @@ function onOverflowAction(btn: MapControlButtonState, e: MouseEvent) {
 }
 
 function toggleCornerMore(position: Position) {
-  moreOpenCorner.value =
-    moreOpenCorner.value === position ? null : position;
+  moreOpenCorner.value = moreOpenCorner.value === position ? null : position;
 }
 </script>
 
@@ -275,11 +273,7 @@ function toggleCornerMore(position: Position) {
             @click.stop="moreOpen = !moreOpen"
           />
         </MapControlGroupButton>
-        <div
-          v-if="overflowOpen"
-          :class="overflowPanelClass"
-          role="menu"
-        >
+        <div v-if="overflowOpen" :class="overflowPanelClass" role="menu">
           <MapControlGroupButton
             v-for="group in toolbarSplit.overflow"
             :key="group.id"

@@ -1,4 +1,4 @@
-import { useMemo, type ChangeEvent } from 'react';
+import { type ChangeEvent, useMemo } from 'react';
 
 export interface MapRangeSliderProps {
   value?: number;

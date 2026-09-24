@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
+
 import { BASEMAP_CONTROL_LOCALE } from '../basemap/locale';
 import { MEASUREMENT_CONTROL_LOCALE } from '../measurement/locale';
 import { PRINT_CONTROL_LOCALE } from '../print/locale';
 import { diffLocaleKeys } from '../types/lang';
-import { HOME_CONTROL_LOCALE, INFO_CONTROL_LOCALE, MAP_ACTION_LOCALE } from './index';
+import {
+  HOME_CONTROL_LOCALE,
+  INFO_CONTROL_LOCALE,
+  MAP_ACTION_LOCALE,
+} from './index';
 import { CORE_EN_SLICES, MAP_CORE_LOCALE_EN } from './locale.en';
 import { CORE_VI_SLICES, MAP_CORE_LOCALE_VI } from './locale.vi';
 
@@ -56,7 +61,9 @@ describe('locale smoke', () => {
   });
 
   it.each(
-    CORE_SLICE_NAMES.map((name, i) => [name, CORE_EN_SLICES[i], CORE_VI_SLICES[i]] as const),
+    CORE_SLICE_NAMES.map(
+      (name, i) => [name, CORE_EN_SLICES[i], CORE_VI_SLICES[i]] as const,
+    ),
   )('keeps %s EN↔VI slice key parity', (_name, en, vi) => {
     const { missingInA, missingInB } = diffLocaleKeys(en, vi);
     expect(missingInB).toEqual([]);

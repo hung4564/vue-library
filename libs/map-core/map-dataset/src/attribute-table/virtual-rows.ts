@@ -20,10 +20,7 @@ export function getVirtualRowWindow(
   if (rowCount === 0 || viewportHeight <= 0) {
     return { start: 0, end: 0, offsetY: 0, totalHeight };
   }
-  const start = Math.max(
-    0,
-    Math.floor(scrollTop / safeRowHeight) - overscan,
-  );
+  const start = Math.max(0, Math.floor(scrollTop / safeRowHeight) - overscan);
   const visibleCount = Math.ceil(viewportHeight / safeRowHeight) + overscan * 2;
   const end = Math.min(rowCount, start + visibleCount);
   return {

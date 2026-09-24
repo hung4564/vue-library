@@ -3,10 +3,13 @@ import {
   getToggleShowTitleKey,
   performToggleShowAction,
 } from '@hungpvq/map-dataset';
-
-import { LIST_VIEW_MENU_COMPONENT_KEY, type WithLayerItemActionType } from '@hungpvq/map-dataset/menu';
+import {
+  LIST_VIEW_MENU_COMPONENT_KEY,
+  type WithLayerItemActionType,
+} from '@hungpvq/map-dataset/menu';
 import { RegistryItem, useLang, useMap } from '@hungpvq/react-map-core';
 import { type ReactNode, useEffect, useState } from 'react';
+
 import { useMapDataset } from '../../store/dataset-api';
 import {
   ToggleShowButton,
@@ -21,7 +24,7 @@ export function useToggleShowAction(props: WithLayerItemActionType) {
   const store = getStoreDataset();
   const [showValue, setShowValue] = useState(!!props.data.show);
 
-useEffect(
+  useEffect(
     () =>
       bindToggleShowAction(props.data, (show) => {
         setShowValue(show);

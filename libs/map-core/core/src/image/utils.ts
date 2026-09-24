@@ -3,6 +3,7 @@
  */
 
 import type { StyleImage } from 'maplibre-gl';
+
 import type { MapSimple } from '../types';
 
 /**

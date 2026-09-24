@@ -23,7 +23,11 @@
               {{ loadedSource.detail }}
             </p>
           </div>
-          <MapControlButton type="button" variant="outlined" @click="clearLoaded">
+          <MapControlButton
+            type="button"
+            variant="outlined"
+            @click="clearLoaded"
+          >
             {{ trans('map.layer-control.create.clear-data') }}
           </MapControlButton>
         </div>
@@ -90,12 +94,6 @@
 </template>
 
 <script setup>
-import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
-import {
-  DragDropFile,
-  InputActionRow,
-  InputText,
-} from '@hungpvq/vue-map-core/fields';
 import {
   buildCreateControlArchiveMetaChips,
   createControlLoadedSourceEyebrowKey,
@@ -105,7 +103,14 @@ import {
   loadCreateControlVectorTileFromUrl,
 } from '@hungpvq/map-dataset/create-control';
 import { closeVectorTileArchive } from '@hungpvq/map-dataset/vector-tile';
+import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
+import {
+  DragDropFile,
+  InputActionRow,
+  InputText,
+} from '@hungpvq/vue-map-core/fields';
 import { computed, ref } from 'vue';
+
 import DataSourceTabs from './DataSourceTabs.vue';
 
 const form = defineModel();

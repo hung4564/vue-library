@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FeatureCollection } from 'geojson';
 import { ref } from 'vue';
+
 import { SupportedFormat, useGeoConvertToFile } from '.';
 
 const { convert } = useGeoConvertToFile();

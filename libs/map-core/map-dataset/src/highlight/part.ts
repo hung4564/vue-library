@@ -2,11 +2,11 @@ import type { IDataset } from '../interfaces/dataset.base';
 import { createNamedComponent } from '../model/base';
 import { createDatasetLeaf } from '../model/dataset.base.function';
 import {
-  partOptionsToStyle,
   DEFAULT_HIGHLIGHT_DATA,
+  DEFAULT_HIGHLIGHT_POINTER,
   DEFAULT_HIGHLIGHT_PRESENTATION,
   DEFAULT_HIGHLIGHT_SELECTION,
-  DEFAULT_HIGHLIGHT_POINTER,
+  partOptionsToStyle,
 } from './cascade';
 import type {
   HighlightDataSource,

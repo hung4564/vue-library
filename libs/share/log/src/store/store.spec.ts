@@ -1,13 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
+
+import type { LogRecord } from '../types';
 import { DataStoreLogAdapter } from './data-store-adapter';
 import { IndexedDBLogDataStore } from './indexeddb-store';
 import { MemoryLogDataStore } from './memory-store';
 import { NoopLogDataStore } from './noop-store';
-import type { LogRecord } from '../types';
 
 function rec(
   id: string,
-  partial: Partial<LogRecord['header']> & { level?: LogRecord['header']['level'] } = {},
+  partial: Partial<LogRecord['header']> & {
+    level?: LogRecord['header']['level'];
+  } = {},
 ): LogRecord {
   return {
     id,

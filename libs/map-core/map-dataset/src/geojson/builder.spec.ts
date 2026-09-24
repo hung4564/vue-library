@@ -1,8 +1,13 @@
-import { describe, expect, it } from 'vitest';
 import type { FeatureCollection } from 'geojson';
+import { describe, expect, it } from 'vitest';
+
 import { LIST_VIEW_MENU_ID } from '../menu/items';
 import { findAllComponentsByType } from '../model/visitors/helpers';
-import { createGeoJsonDataset, createGeoJsonLayersDataset, splitGeojsonByGdbLayer } from './builder';
+import {
+  createGeoJsonDataset,
+  createGeoJsonLayersDataset,
+  splitGeojsonByGdbLayer,
+} from './builder';
 
 const pointCollection: FeatureCollection = {
   type: 'FeatureCollection',
@@ -245,8 +250,7 @@ describe('createGeoJsonLayersDataset', () => {
       expect(subMenuIds).toContain(LIST_VIEW_MENU_ID.layer.fillBound);
       if (subList?.color) listColors.push(String(subList.color));
       const layerNode = kids.find((k) => k.type === 'layer') as
-        | { getData?: () => unknown[] }
-        | undefined;
+        { getData?: () => unknown[] } | undefined;
       // auto: area fill + outline + line + point = 4 MapLibre layers
       expect(layerNode?.getData?.()?.length ?? 0).toBe(4);
     }

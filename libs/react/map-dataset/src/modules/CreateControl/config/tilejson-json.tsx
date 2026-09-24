@@ -1,12 +1,12 @@
 import {
-  CREATE_CONTROL_SAMPLE_NONE,
   buildCreateControlArchiveMetaChips,
+  CREATE_CONTROL_SAMPLE_NONE,
+  type CreateControlLoadedSource,
   createControlLoadedSourceEyebrowKey,
   getCreateControlSamples,
   loadCreateControlTileJsonFromUrl,
   resolveCreateControlSampleIdAfterUrlEdit,
   resolveCreateControlSampleSelection,
-  type CreateControlLoadedSource,
 } from '@hungpvq/map-dataset/create-control';
 import { MapControlButton } from '@hungpvq/react-map-core';
 import {
@@ -15,6 +15,7 @@ import {
   InputText,
 } from '@hungpvq/react-map-core/fields';
 import { useMemo, useState } from 'react';
+
 import type { CreateConfigFormProps } from './types';
 
 const CLEAR_PATCH = {
@@ -139,9 +140,7 @@ export function ConfigTilejsonJson({
                   )}
                 </p>
                 <p className="create-control-loaded__title">
-                  {loadedSource?.label ||
-                    (config.name as string) ||
-                    'TileJSON'}
+                  {loadedSource?.label || (config.name as string) || 'TileJSON'}
                 </p>
                 {loadedSource?.detail ? (
                   <p className="create-control-loaded__detail">
@@ -173,9 +172,7 @@ export function ConfigTilejsonJson({
               label={trans('map.layer-control.create.sample')}
               value={sampleId}
               items={sampleItems}
-              onChange={(v) =>
-                onSelectSample(typeof v === 'string' ? v : '')
-              }
+              onChange={(v) => onSelectSample(typeof v === 'string' ? v : '')}
             />
             <InputActionRow
               action={

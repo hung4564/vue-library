@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import {
   getLegendName,
@@ -10,6 +8,8 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import type { ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { MapCommonButton } from '../../../components/MapCommonButton';
 import { InputCheckbox } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
@@ -24,7 +24,10 @@ import { useLayerLegend } from '../lib/useLayerLegend';
 export function LegendControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
   const [show, setShow] = useShow(false);
-  const { callMap, mapId, moduleContainerProps, order } = useMap({ ...merged, controlId: 'mapLegendControl' });
+  const { callMap, mapId, moduleContainerProps, order } = useMap({
+    ...merged,
+    controlId: 'mapLegendControl',
+  });
   const { trans } = useLang(mapId);
   const { panelBind } = useRegisterMapControl(mapId, {
     id: 'mapLegendControl',
@@ -47,7 +50,7 @@ export function LegendControl(props: WithMapPropType) {
   const onlyRenderRef = useRef(onlyRender);
   onlyRenderRef.current = onlyRender;
 
-const updateLegend = useCallback(
+  const updateLegend = useCallback(
     (map: MapSimple) => {
       if (!map) return;
       let layers: ReturnType<MapSimple['getStyle']>['layers'] = [];

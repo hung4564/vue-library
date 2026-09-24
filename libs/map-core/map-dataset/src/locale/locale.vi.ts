@@ -1,10 +1,9 @@
 import { deepMergeLocale } from '@hungpvq/map-core';
+
 import { ATTRIBUTE_TABLE_LOCALE_VI } from '../attribute-table/locale/locale.vi';
 import { DATASET_CONTROL_LOCALE_VI } from '../extra/dataset-control/locale/locale.vi';
 import { LAYER_DETAIL_LOCALE_VI } from '../extra/detail/locale/locale.vi';
-import {
-  LAYER_CONTROL_LOCALE_VI,
-} from '../extra/layer-control/locale/locale.vi';
+import { LAYER_CONTROL_LOCALE_VI } from '../extra/layer-control/locale/locale.vi';
 import { IDENTIFY_CONTROL_LOCALE_VI } from '../identify/locale/locale.vi';
 import { STYLE_CONTROL_LOCALE_VI } from '../style/locale/locale.vi';
 

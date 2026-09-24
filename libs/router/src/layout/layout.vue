@@ -6,6 +6,7 @@ export default {
 <script setup lang="ts">
 import { markRaw, shallowRef, watch } from 'vue';
 import { RouterView, useRoute } from 'vue-router';
+
 import { getLayout } from '../store';
 const DefaultLayout = markRaw(getLayout('default')!);
 const route = useRoute();

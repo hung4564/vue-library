@@ -2,6 +2,7 @@
 
 // Types
 import type { App } from 'vue';
+
 import { getUid } from './utils/getCurrentInstance';
 
 export function createUI() {

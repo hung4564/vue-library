@@ -1,15 +1,10 @@
-import {
-  UniversalRegistry,
-  type MapControlHandle,
-} from '@hungpvq/map-core';
+import { type MapControlHandle, UniversalRegistry } from '@hungpvq/map-core';
 import type { FeatureCollection } from 'geojson';
 import { afterEach, describe, expect, it } from 'vitest';
+
 import { createGeoJsonDataset } from '../geojson/builder';
 import { findAllComponentsByType } from '../model/visitors/helpers';
-import {
-  IDENTIFY_CONTROL,
-  isIdentifyForListMenuHidden,
-} from './scope';
+import { IDENTIFY_CONTROL, isIdentifyForListMenuHidden } from './scope';
 
 const pointCollection: FeatureCollection = {
   type: 'FeatureCollection',

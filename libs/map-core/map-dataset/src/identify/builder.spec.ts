@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
+
+import { LIST_VIEW_MENU_ID } from '../menu/items';
 import { createDatasetPartIdentifyComponentBuilder } from './builder';
 import {
   createIdentifyMapboxComponent,
   createIdentifyMapboxMergedComponent,
   ensureIdentifyShowDetailMenu,
 } from './models';
-import { LIST_VIEW_MENU_ID } from '../menu/items';
 
 describe('identify model', () => {
   it('createIdentifyMapboxComponent sets type identify', () => {

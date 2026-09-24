@@ -1,7 +1,18 @@
 <script setup lang="ts">
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
-import { addListViewsToGroup, addListViewsToNewGroup, canMoveListView, type IListViewUI, moveListView, syncListViewLayerOrder } from '@hungpvq/map-dataset';
-import { paintHighlight, type HighlightSessionIntent } from '@hungpvq/map-dataset/identify';
+import {
+  addListViewsToGroup,
+  addListViewsToNewGroup,
+  canMoveListView,
+  type IListViewUI,
+  moveListView,
+  syncListViewLayerOrder,
+} from '@hungpvq/map-dataset';
+import { notifyMapDatasetStore } from '@hungpvq/map-dataset';
+import {
+  type HighlightSessionIntent,
+  paintHighlight,
+} from '@hungpvq/map-dataset/identify';
 import {
   LIST_VIEW_MENU_ID,
   MenuClickAddComponent,
@@ -16,9 +27,9 @@ import {
   useMap,
 } from '@hungpvq/vue-map-core';
 import { onUnmounted } from 'vue';
-import { useMapDataset } from '../store/dataset-api';
+
 import { useMapDatasetComponent } from '../store/component';
-import { notifyMapDatasetStore } from '@hungpvq/map-dataset';
+import { useMapDataset } from '../store/dataset-api';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,

@@ -9,11 +9,10 @@
 </template>
 
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
+
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import AsideControl from '../layout/aside-control.vue';
 </script>
-
-

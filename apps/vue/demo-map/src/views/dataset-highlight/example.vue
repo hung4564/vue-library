@@ -1,24 +1,30 @@
 ﻿<script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
-import type { MapSimple } from '@hungpvq/map-core';
 import {
   applyHighlightDemoGlobalResolver,
   restoreHighlightDemoGlobalResolver,
 } from '@hungpvq/demo-map-datasets';
+import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
-import { BaseMapCard, BaseMapControl, Map, ZoomControl } from '@hungpvq/vue-map-core';
+import {
+  BaseMapCard,
+  BaseMapControl,
+  Map,
+  ZoomControl,
+} from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
   IdentifyControl,
   LayerControl,
   useMapHighlight,
 } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { onMounted, onUnmounted, ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
-import { loadHighlightDemoDatasets } from '../../data/loaders';
+
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import { loadHighlightDemoDatasets } from '../../data/loaders';
+import AsideControl from '../../layout/aside-control.vue';
 
 loggerFactory.enable('map:highlight');
 loggerFactory.enable('demo:highlight');
@@ -59,5 +65,3 @@ function onMapLoaded(map: MapSimple) {
     <DemoHelpPanel />
   </Map>
 </template>
-
-

@@ -22,7 +22,6 @@ export type ControlLayout = 'standalone' | 'toolbar' | 'button';
  */
 export type ButtonInMobile = 'button' | 'toolbar' | 'menu';
 
-
 /**
  * Base interface for map-related props
  */
@@ -82,17 +81,6 @@ export type CoordinatesNumber = [number, number];
 export type DraftCoordinatesNumber = CoordinatesNumber | [null, null];
 
 export { MAP_STORE_KEY } from './constants';
-
-export {
-  MittTypeMapLangEventKey,
-  createDefaultLangStore,
-  createMapLocaleApi,
-  deepMergeLocale,
-  localeTreesEqual,
-  diffLocaleKeys,
-  flattenLocaleMessages,
-  unflattenLocaleMessages,
-} from './lang';
 export type {
   MapLangFlatMessages,
   MapLangLocale,
@@ -105,6 +93,15 @@ export type {
   MapTranslateFunction,
   MittTypeMapLang,
 } from './lang';
-
-export { MittTypeMapEventKey, hasMapInstance } from './store';
+export {
+  createDefaultLangStore,
+  createMapLocaleApi,
+  deepMergeLocale,
+  diffLocaleKeys,
+  flattenLocaleMessages,
+  localeTreesEqual,
+  MittTypeMapLangEventKey,
+  unflattenLocaleMessages,
+} from './lang';
 export type { MittTypeMap } from './store';
+export { hasMapInstance, MittTypeMapEventKey } from './store';

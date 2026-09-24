@@ -3,6 +3,7 @@ import type {
   MaybeRefOrGetter,
 } from '@hungpvq/shared';
 import { ref } from 'vue';
+
 import type { ConfigurableWindow } from '../_configurable';
 import { defaultWindow } from '../_configurable';
 import type { UseIntersectionObserverOptions } from '../useIntersectionObserver';

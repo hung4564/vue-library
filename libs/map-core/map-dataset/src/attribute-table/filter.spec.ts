@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import type { AttributeTableRow } from './model';
+
 import {
   filterAttributeTableRowsByColumnText,
   matchAttributeTableColumnFilter,
   matchAttributeTableColumnText,
   resolveAttributeTableVisibleColumns,
 } from './filter';
+import type { AttributeTableRow } from './model';
 
 const rows: AttributeTableRow[] = [
   {
@@ -48,9 +49,7 @@ describe('attribute-table column text filter', () => {
     expect(matchAttributeTableColumnText('Alpha', 'alpha', 'equals')).toBe(
       true,
     );
-    expect(matchAttributeTableColumnText('Alpha', 'alp', 'equals')).toBe(
-      false,
-    );
+    expect(matchAttributeTableColumnText('Alpha', 'alp', 'equals')).toBe(false);
   });
 
   it('filters by one column contains', () => {
@@ -80,15 +79,11 @@ describe('attribute-table column text filter', () => {
 
 describe('attribute-table numeric / date column filters', () => {
   it('matches number_eq / gte / lte', () => {
-    expect(matchAttributeTableColumnFilter('10', '10', 'number_eq')).toBe(
-      true,
-    );
+    expect(matchAttributeTableColumnFilter('10', '10', 'number_eq')).toBe(true);
     expect(matchAttributeTableColumnFilter('10', '11', 'number_eq')).toBe(
       false,
     );
-    expect(matchAttributeTableColumnFilter('10', '5', 'number_gte')).toBe(
-      true,
-    );
+    expect(matchAttributeTableColumnFilter('10', '5', 'number_gte')).toBe(true);
     expect(matchAttributeTableColumnFilter('10', '15', 'number_gte')).toBe(
       false,
     );
@@ -104,9 +99,7 @@ describe('attribute-table numeric / date column filters', () => {
     expect(matchAttributeTableColumnFilter('n/a', '10', 'number_eq')).toBe(
       false,
     );
-    expect(matchAttributeTableColumnFilter('10', 'x', 'number_eq')).toBe(
-      false,
-    );
+    expect(matchAttributeTableColumnFilter('10', 'x', 'number_eq')).toBe(false);
   });
 
   it('matches number_between via 1..10 query', () => {
@@ -132,32 +125,16 @@ describe('attribute-table numeric / date column filters', () => {
 
   it('matches date_eq / gte / lte', () => {
     expect(
-      matchAttributeTableColumnFilter(
-        '2020-01-15',
-        '2020-01-15',
-        'date_eq',
-      ),
+      matchAttributeTableColumnFilter('2020-01-15', '2020-01-15', 'date_eq'),
     ).toBe(true);
     expect(
-      matchAttributeTableColumnFilter(
-        '2020-01-15',
-        '2020-01-16',
-        'date_eq',
-      ),
+      matchAttributeTableColumnFilter('2020-01-15', '2020-01-16', 'date_eq'),
     ).toBe(false);
     expect(
-      matchAttributeTableColumnFilter(
-        '2021-06-01',
-        '2020-01-01',
-        'date_gte',
-      ),
+      matchAttributeTableColumnFilter('2021-06-01', '2020-01-01', 'date_gte'),
     ).toBe(true);
     expect(
-      matchAttributeTableColumnFilter(
-        '2020-01-15',
-        '2021-01-01',
-        'date_lte',
-      ),
+      matchAttributeTableColumnFilter('2020-01-15', '2021-01-01', 'date_lte'),
     ).toBe(true);
   });
 
@@ -192,9 +169,7 @@ describe('resolveAttributeTableVisibleColumns', () => {
   ];
 
   it('returns all when visibleKeys is null/undefined', () => {
-    expect(resolveAttributeTableVisibleColumns(columns, null)).toEqual(
-      columns,
-    );
+    expect(resolveAttributeTableVisibleColumns(columns, null)).toEqual(columns);
     expect(resolveAttributeTableVisibleColumns(columns, undefined)).toEqual(
       columns,
     );

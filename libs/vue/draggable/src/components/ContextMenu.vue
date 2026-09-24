@@ -172,9 +172,7 @@ function open(event: MouseEvent) {
     const x = ev?.clientX ?? 0;
     const y = ev?.clientY ?? 0;
     const left =
-      x + menuWidth.value >= window.innerWidth
-        ? x - menuWidth.value + 10
-        : x;
+      x + menuWidth.value >= window.innerWidth ? x - menuWidth.value + 10 : x;
     const top =
       y + menuHeight.value >= window.innerHeight
         ? y - menuHeight.value + 10

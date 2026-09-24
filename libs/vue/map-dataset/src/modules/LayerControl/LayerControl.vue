@@ -9,16 +9,16 @@ import { type WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   getLayerControlTitleMenuState,
-  registerAddGeojsonHereForMap,
-  warnIfDatasetRegistryMissing,
   type GlobalVisibilityMode,
   type IDataset,
+  registerAddGeojsonHereForMap,
+  warnIfDatasetRegistryMissing,
 } from '@hungpvq/map-dataset';
 import type { LayerType } from '@hungpvq/map-dataset/create-control';
 import {
   MENU_CONTROL_ID,
-  resolveMenuContextSource,
   type MenuContextSource,
+  resolveMenuContextSource,
 } from '@hungpvq/map-dataset/menu';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
@@ -34,10 +34,10 @@ import {
   useToolbarControl,
   type WithShowProps,
 } from '@hungpvq/vue-map-core';
-
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayers, mdiPlus } from '@mdi/js';
 import { computed, onUnmounted, watch } from 'vue';
+
 import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';

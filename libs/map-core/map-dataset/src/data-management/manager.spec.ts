@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { createDataManager } from './manager';
+
 import { createLocalStore } from './local-store';
+import { createDataManager } from './manager';
 import type { DataHook } from './types';
 
 describe('createDataManager', () => {

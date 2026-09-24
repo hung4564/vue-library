@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import {
   MAP_BUILTIN_LANGUAGES,
+  type MapLangLocale,
+  type MapLanguageCode,
   mapLanguageCodeLabel,
+  type MapLocaleLoader,
+  type MapTranslateFunction,
   nextMapLanguageInList,
   registerLanguageControlPacks,
   resolveInitialMapLanguage,
-  type MapLangLocale,
-  type MapLanguageCode,
-  type MapLocaleLoader,
-  type MapTranslateFunction,
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { textButtonState } from '@hungpvq/map-core/toolbar';
 import { computed, onMounted, watch } from 'vue';
+
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
 import { useLang } from '../../extra/lang/hook';

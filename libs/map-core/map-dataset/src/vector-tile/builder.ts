@@ -1,6 +1,11 @@
+import {
+  type Color,
+  getChartColorAt,
+  getChartRandomColor,
+} from '@hungpvq/map-core';
 import type { BBox } from 'geojson';
-import { getChartColorAt, getChartRandomColor, type Color } from '@hungpvq/map-core';
 import type { VectorSourceSpecification } from 'maplibre-gl';
+
 import type { IDataset, WithChildren } from '../interfaces/dataset.base';
 import {
   createMenuItemToBoundActionForList,
@@ -60,7 +65,9 @@ function resolveTiles(data: VectorTileDatasetOption): string[] {
   return [];
 }
 
-function resolveSourceLayers(data: VectorTileDatasetOption): Array<string | undefined> {
+function resolveSourceLayers(
+  data: VectorTileDatasetOption,
+): Array<string | undefined> {
   if (data.sourceLayers?.length) return data.sourceLayers;
   if (data.sourceLayer?.trim()) return [data.sourceLayer.trim()];
   return [undefined];

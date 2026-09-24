@@ -155,10 +155,10 @@ import {
   partitionMenuActions,
 } from '@hungpvq/map-dataset/menu';
 import { MapControlButton, RegistryItem, useShow } from '@hungpvq/vue-map-core';
-
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiMenuDown, mdiMenuLeft } from '@mdi/js';
 import { computed, onMounted, ref, watch } from 'vue';
+
 import { useMenuConditionSource } from '../../../../extra/menu/condition-context';
 import DatasetMenus from '../../../../extra/menu/dataset-menus.vue';
 import LayerSubItem from './layer-sub-item.vue';

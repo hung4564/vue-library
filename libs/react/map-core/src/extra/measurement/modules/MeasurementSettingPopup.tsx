@@ -6,27 +6,28 @@ import {
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import {
+  type AreaUnit,
+  type DistanceUnit,
   getMeasurementAreaUnit,
   getMeasurementDistanceUnit,
   getMeasurementLabelPrefs,
   getMeasurementSettingUiFlags,
+  type IViewSettingField,
+  type MeasurementLabelPrefs,
   setMeasurementAreaUnit,
   setMeasurementDistanceUnit,
   setMeasurementLabelPrefs,
-  type AreaUnit,
-  type DistanceUnit,
-  type IViewSettingField,
-  type MeasurementLabelPrefs,
 } from '@hungpvq/map-core/measurement';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { useEffect, useMemo, useState } from 'react';
+
 import { InputCheckbox, InputSelect } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
+import { CrsDisplaySettings } from '../../crs/CrsDisplaySettings';
 import { useLang } from '../../lang/hook';
 import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { CrsDisplaySettings } from '../../crs/CrsDisplaySettings';
 import { FieldGeometry } from './setting/field-geometry';
 import { FieldPointCrs } from './setting/field-point-crs';
 import { MeasurementSettingFields } from './setting/fields-show';
@@ -217,9 +218,7 @@ export function MeasurementSettingPopup({
                         <InputCheckbox
                           label={trans('map.measurement.field.label-vertex')}
                           checked={labelPrefs.showVertexLabels}
-                          onChange={(v) =>
-                            onLabelToggle('showVertexLabels', v)
-                          }
+                          onChange={(v) => onLabelToggle('showVertexLabels', v)}
                         />
                       ) : null}
                       {showEdgeLabelToggle ? (
@@ -233,9 +232,7 @@ export function MeasurementSettingPopup({
                         <InputCheckbox
                           label={trans('map.measurement.field.label-result')}
                           checked={labelPrefs.showResultLabel}
-                          onChange={(v) =>
-                            onLabelToggle('showResultLabel', v)
-                          }
+                          onChange={(v) => onLabelToggle('showResultLabel', v)}
                         />
                       ) : null}
                     </div>
@@ -258,7 +255,9 @@ export function MeasurementSettingPopup({
                   title=""
                   titleActionDownload={trans('map.measurement.action.download')}
                   titleActionFillBound={trans('map.measurement.action.fly-to')}
-                  titleActionAddPoint={trans('map.measurement.action.add-point')}
+                  titleActionAddPoint={trans(
+                    'map.measurement.action.add-point',
+                  )}
                 />
               </div>
             </div>

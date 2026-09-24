@@ -22,9 +22,8 @@
   </Map>
 </template>
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import { MapSimple } from '@hungpvq/map-core';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import {
   BaseMapControl,
   FullScreenControl,
@@ -37,9 +36,11 @@ import {
   useLayerLegend,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
-import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { shallowRef } from 'vue';
+
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import AsideControl from '../layout/aside-control.vue';
 const { getLayerLegendVNode } = useLayerLegend();
 const legends = shallowRef<any[]>([]);

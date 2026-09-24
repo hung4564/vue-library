@@ -1,12 +1,12 @@
 import { isUsableMapId, logHelper } from '@hungpvq/map-core';
 import {
+  type DatasetComponentItem,
   removeDatasetComponent,
   upsertDatasetComponent,
-  type DatasetComponentItem,
 } from '@hungpvq/map-dataset';
+import { logger } from '@hungpvq/map-dataset';
 import { createMapScopedStore } from '@hungpvq/react-map-core';
 import { useCallback, useEffect, useState } from 'react';
-import { logger } from '@hungpvq/map-dataset';
 
 const KEY = 'dataset-component' as const;
 

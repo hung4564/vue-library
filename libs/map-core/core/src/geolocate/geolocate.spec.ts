@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { GeoLocateSession } from './session';
-import { UserLocationOverlay } from './overlay';
+
 import type { MapSimple } from '../types';
+import { UserLocationOverlay } from './overlay';
+import { GeoLocateSession } from './session';
 import {
   GEOLOCATE_DEFAULT_MAX_ZOOM,
   lngLatAccuracyBounds,
@@ -171,7 +172,9 @@ describe('GeoLocateSession', () => {
     } as GeolocationPositionError);
 
     expect(session.getUiState().watchState).toBe('ACTIVE_ERROR');
-    expect(session.getUiState().errorMessage).toBe('Location request timed out');
+    expect(session.getUiState().errorMessage).toBe(
+      'Location request timed out',
+    );
     expect(session.getUiState().disabled).toBe(false);
     expect(session.getUiState().errorCode).toBe(3);
     expect(removeSpy).toHaveBeenCalled();
@@ -297,9 +300,7 @@ describe('GeoLocateSession', () => {
     } as GeolocationPositionError);
 
     expect(session.getUiState().disabled).toBe(false);
-    expect(onError).toHaveBeenCalledWith(
-      expect.objectContaining({ code: 3 }),
-    );
+    expect(onError).toHaveBeenCalledWith(expect.objectContaining({ code: 3 }));
     session.toggle();
     expect(session.getUiState().watchState).toBe('OFF');
     expect(onTrackEnd).toHaveBeenCalled();

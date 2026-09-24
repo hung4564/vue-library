@@ -2,6 +2,7 @@
  * Locks `@hungpvq/map-debug/dataset` runtime export surface (Experimental).
  */
 import { describe, expect, it } from 'vitest';
+
 import * as api from './index';
 
 export const MAP_DEBUG_DATASET_EXPERIMENTAL_RUNTIME_EXPORTS = [
@@ -50,9 +51,7 @@ export const MAP_DEBUG_DATASET_EXPERIMENTAL_RUNTIME_EXPORTS = [
 describe('dataset public API surface', () => {
   it('dataset runtime exports match Experimental allowlist', () => {
     const keys = Object.keys(api).sort();
-    const expected = [
-      ...MAP_DEBUG_DATASET_EXPERIMENTAL_RUNTIME_EXPORTS,
-    ].sort();
+    const expected = [...MAP_DEBUG_DATASET_EXPERIMENTAL_RUNTIME_EXPORTS].sort();
     expect(keys).toEqual(expected);
   });
 });

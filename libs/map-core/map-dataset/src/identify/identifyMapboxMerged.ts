@@ -1,5 +1,6 @@
 import { getMap } from '@hungpvq/map-core';
 import type { MapGeoJSONFeature, PointLike } from 'maplibre-gl';
+
 import type { IDataset } from '../interfaces/dataset.base';
 import type {
   IdentifyFeatureRow,

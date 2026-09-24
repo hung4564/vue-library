@@ -50,4 +50,3 @@ export function getOrCreateStore<T>(
   }
   return storeRegistry.get(id) as T;
 }
-

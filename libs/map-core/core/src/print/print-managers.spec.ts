@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { CrosshairManager } from './CrosshairManager';
 import { PrintableAreaManager } from './PrintableAreaManager';
 

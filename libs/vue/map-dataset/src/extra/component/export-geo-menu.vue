@@ -28,16 +28,17 @@
 </template>
 <script setup lang="ts">
 import {
+  createGeoExportController,
   GEO_EXPORT_FORMAT_META,
   GEO_EXPORT_FORMATS,
-  createGeoExportController,
-  resolveGeoExportOption,
   type GeoExportFormat,
   type GeoExportOptions,
+  resolveGeoExportOption,
 } from '@hungpvq/map-dataset/geo-export';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronRight, mdiDownload } from '@mdi/js';
 import { computed, ref } from 'vue';
+
 import type { WithLayerItemMenuComponentType } from './types';
 
 defineOptions({ name: 'LayerActionExportGeoMenu' });
@@ -51,12 +52,8 @@ const menuExtra = computed(() => props.item as Record<string, unknown>);
 const formats = computed((): GeoExportFormat[] => {
   const fromItem = menuExtra.value.formats as GeoExportFormat[] | undefined;
   if (fromItem?.length) return fromItem;
-  const resolved = props.data
-    ? resolveGeoExportOption(props.data)
-    : undefined;
-  return resolved?.formats?.length
-    ? resolved.formats
-    : [...GEO_EXPORT_FORMATS];
+  const resolved = props.data ? resolveGeoExportOption(props.data) : undefined;
+  return resolved?.formats?.length ? resolved.formats : [...GEO_EXPORT_FORMATS];
 });
 
 async function onFormat(format: GeoExportFormat) {

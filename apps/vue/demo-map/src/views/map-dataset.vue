@@ -1,5 +1,4 @@
 ﻿<script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
@@ -22,10 +21,12 @@ import {
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
-import DemoLanguageControl from '../components/DemoLanguageControl.vue';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
+
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
-import AsideControl from '../layout/aside-control.vue';
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import { loadAllMapDatasets } from '../data/loaders';
+import AsideControl from '../layout/aside-control.vue';
 
 /** Same as React `/map-dataset` — load all demo datasets on map ready. */
 function onMapLoaded(map: MapSimple) {
@@ -60,5 +61,3 @@ function onMapLoaded(map: MapSimple) {
     <DemoHelpPanel />
   </Map>
 </template>
-
-

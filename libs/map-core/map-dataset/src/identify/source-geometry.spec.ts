@@ -1,8 +1,9 @@
 import type { FeatureCollection } from 'geojson';
 import type { MapGeoJSONFeature } from 'maplibre-gl';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import * as findSource from '../geojson/find-source';
+
 import { GEOJSON_FEATURE_ID_KEY } from '../geojson/feature-id';
+import * as findSource from '../geojson/find-source';
 import {
   coerceIdentifyResolvedFeature,
   findSourceFeatureByMatchIds,
@@ -37,7 +38,9 @@ const sourceView = {
 };
 
 function mockSource(getFeature?: ReturnType<typeof vi.fn>) {
-  vi.spyOn(findSource, 'findGeojsonSource').mockReturnValue(sourceView as never);
+  vi.spyOn(findSource, 'findGeojsonSource').mockReturnValue(
+    sourceView as never,
+  );
   return getFeature;
 }
 
@@ -116,7 +119,10 @@ describe('identify source geometry', () => {
         source: sourceView,
       }),
     );
-    expect(flat.geometry).toEqual({ type: 'Point', coordinates: [104.0, 20.0] });
+    expect(flat.geometry).toEqual({
+      type: 'Point',
+      coordinates: [104.0, 20.0],
+    });
     expect(flat.name).toBe('ID');
   });
 

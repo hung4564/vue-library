@@ -17,6 +17,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
+import type { LocationSideBar } from '@hungpvq/draggable';
 import {
   computed,
   nextTick,
@@ -26,9 +27,9 @@ import {
   useSlots,
   watch,
 } from 'vue';
+
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
 import { useDragComponent } from '../../../store';
-import type { LocationSideBar } from '@hungpvq/draggable';
 
 const slots = useSlots();
 const props = defineProps({

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+
 import { Item } from './Item';
 
 export interface ItemListProps {
@@ -52,7 +53,9 @@ export function ItemList({
                   .join(' ')}
               />
             </div>
-            <div className="mgmt-row__actions">{renderExtra?.(item, isShow)}</div>
+            <div className="mgmt-row__actions">
+              {renderExtra?.(item, isShow)}
+            </div>
           </li>
         );
       })}

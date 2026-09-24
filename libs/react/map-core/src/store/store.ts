@@ -4,18 +4,19 @@
 
 import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import {
+  type AddStoreOptions,
   ensureMapDomainStore,
   hasMapDomainStoreFactory,
   isUsableMapId,
   MAP_PLATFORM_HOST,
   MAP_STORE_KEY,
+  type MapStore,
   MapStoreManager,
   registerMapAccessor,
   registerMapReadySubscriber,
   registerMapStoreCleanupRegistrar,
-  type AddStoreOptions,
-  type MapStore,
 } from '@hungpvq/map-core';
+
 import { ReactMapStoreAdapter } from './react-adapter';
 
 /**
@@ -68,10 +69,7 @@ export function getStore<T>(mapId: string, key: string): T | undefined {
 /**
  * Get map instance
  */
-export function getMap(
-  id: string,
-  cb?: MapFCOnUseMap,
-): MapSimple | undefined {
+export function getMap(id: string, cb?: MapFCOnUseMap): MapSimple | undefined {
   return storeManager.getMap(id, cb);
 }
 

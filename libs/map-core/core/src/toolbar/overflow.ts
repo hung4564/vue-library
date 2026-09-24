@@ -1,5 +1,5 @@
-import { MAP_BUTTON_SIZE_PX } from '../ui/map-button';
 import type { Position } from '../types';
+import { MAP_BUTTON_SIZE_PX } from '../ui/map-button';
 import type { MapControlButtonState } from './types';
 
 /** Minimum side inset for the mobile toolbar row (keep in sync with `_toolbar.scss`). */
@@ -59,7 +59,8 @@ export function maxVisibleToolbarButtons(
   availableWidth: number,
   buttonSize = MAP_BUTTON_SIZE_PX.medium,
 ): number {
-  if (!(availableWidth > 0) || !(buttonSize > 0)) return Number.POSITIVE_INFINITY;
+  if (!(availableWidth > 0) || !(buttonSize > 0))
+    return Number.POSITIVE_INFINITY;
   const pad = 20;
   const slot = buttonSize + 1;
   return Math.max(1, Math.floor((availableWidth - pad) / slot));
@@ -180,7 +181,10 @@ type CornerMeasurableChild = {
 function asCornerMeasurableChild(node: unknown): CornerMeasurableChild | null {
   if (!node || typeof node !== 'object') return null;
   const el = node as CornerMeasurableChild;
-  if (typeof el.offsetWidth !== 'number' || typeof el.offsetHeight !== 'number') {
+  if (
+    typeof el.offsetWidth !== 'number' ||
+    typeof el.offsetHeight !== 'number'
+  ) {
     return null;
   }
   return el;
@@ -199,14 +203,11 @@ export function measureCornerStandaloneReserved(
   for (const node of Array.from(cornerHost.children)) {
     const child = asCornerMeasurableChild(node);
     if (!child) continue;
-    const classList = (child as { classList?: { contains(c: string): boolean } })
-      .classList;
+    const classList = (
+      child as { classList?: { contains(c: string): boolean } }
+    ).classList;
     if (classList?.contains('map-toolbar-overflow')) continue;
-    if (
-      child.querySelector?.(
-        '.map-toolbar-corner, .map-toolbar-overflow',
-      )
-    ) {
+    if (child.querySelector?.('.map-toolbar-corner, .map-toolbar-overflow')) {
       continue;
     }
     if (child.offsetWidth <= 0 && child.offsetHeight <= 0) continue;

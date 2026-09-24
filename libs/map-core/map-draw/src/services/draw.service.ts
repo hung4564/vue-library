@@ -1,6 +1,7 @@
-import { getUUIDv4 } from '@hungpvq/shared';
 import { errorHandler, logHelper } from '@hungpvq/map-core';
+import { getUUIDv4 } from '@hungpvq/shared';
 import type { Feature, FeatureCollection } from 'geojson';
+
 import { DrawError } from '../errors';
 import { logger } from '../logger';
 import type { DrawSaveFc, DrawSaveFcParams, MapDrawStore } from '../types';
@@ -18,9 +19,9 @@ export class DrawService {
     logHelper(logger, mapId, 'DrawService')
       .with({ fn: 'setFeature', span: 'draw.set' })
       .debug('Recording draw feature change in store state.', {
-      changeType: type,
-      featureId: feature.id,
-    });
+        changeType: type,
+        featureId: feature.id,
+      });
     const featureId = feature.id ?? getUUIDv4();
     feature.id = featureId;
     switch (type) {
@@ -98,9 +99,9 @@ export class DrawService {
       logHelper(logger, mapId, 'DrawService')
         .with({ fn: 'saveDraw', span: 'draw.save' })
         .debug('Draw save started; converting feature collection.', {
-        featureCount: collection.features.length,
-        hasCallback: !!callback,
-      });
+          featureCount: collection.features.length,
+          hasCallback: !!callback,
+        });
       const action = store.config;
 
       if (callback && !(callback instanceof Function)) {
@@ -144,10 +145,10 @@ export class DrawService {
       logHelper(logger, mapId, 'DrawService')
         .with({ fn: 'saveDraw', span: 'draw.save' })
         .debug('Draw save persistence finished.', {
-        addedCount: Object.keys(result.added).length,
-        updatedCount: Object.keys(result.updated).length,
-        deletedCount: Object.keys(result.deleted).length,
-      });
+          addedCount: Object.keys(result.added).length,
+          updatedCount: Object.keys(result.updated).length,
+          deletedCount: Object.keys(result.deleted).length,
+        });
       callback && callback(result);
       DrawService.clearDraw(store);
     } catch (error) {

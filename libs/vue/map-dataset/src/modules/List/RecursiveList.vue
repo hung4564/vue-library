@@ -1,7 +1,7 @@
 <template>
   <!-- Group Item -->
   <ListGroupItem
-    :item="(item as GroupTree)"
+    :item="item as GroupTree"
     :disabled-drag="disabledDrag"
     v-if="isGroup(item)"
   >
@@ -46,6 +46,7 @@
 <script setup lang="ts">
 import { GroupTree, Item, TreeItem } from '@hungpvq/map-dataset';
 import { VNode } from 'vue';
+
 import ListGroupItem from './ListGroupItem.vue';
 import ListItem from './ListItem.vue';
 

@@ -1,14 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+
+import { createDefaultIdentifyResolver, identifyResolver } from './resolver';
 import {
   getGlobalIdentifyResolver,
   getIdentifyResolver,
   setGlobalIdentifyResolver,
   setIdentifyResolver,
 } from './resolver-registry';
-import {
-  createDefaultIdentifyResolver,
-  identifyResolver,
-} from './resolver';
 
 describe('identify resolver registry', () => {
   beforeEach(() => {

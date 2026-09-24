@@ -2,6 +2,7 @@
  * Locks `@hungpvq/map-debug` root **runtime** export surface (Experimental).
  */
 import { describe, expect, it } from 'vitest';
+
 import * as api from './index';
 
 export const MAP_DEBUG_EXPERIMENTAL_RUNTIME_EXPORTS = [

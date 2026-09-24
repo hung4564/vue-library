@@ -17,7 +17,7 @@
       </span>
     </div>
     <Map :button-in-mobile="buttonInMobile">
-    <DevtoolsControl position="bottom-right" />
+      <DevtoolsControl position="bottom-right" />
       <DemoLanguageControl />
       <AsideControl position="top-left" />
       <ToolbarControl />
@@ -37,7 +37,6 @@
 </template>
 
 <script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import type { ButtonInMobile } from '@hungpvq/map-core';
 import {
   BaseMapControl,
@@ -53,7 +52,9 @@ import {
   ToolbarControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { ref } from 'vue';
+
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import AsideControl from '../layout/aside-control.vue';

@@ -1,15 +1,13 @@
 import {
   MAP_DEFAULT_CATALOG_LANGUAGE,
-  registerMapStoreCleanup,
   type MapLangLocale,
   type MapLanguageCode,
+  registerMapStoreCleanup,
 } from '@hungpvq/map-core';
+
 import { MAP_DATASET_LOCALE_EN } from './locale.en';
 
-type RegisterLocaleFn = (
-  code: MapLanguageCode,
-  tree: MapLangLocale,
-) => unknown;
+type RegisterLocaleFn = (code: MapLanguageCode, tree: MapLangLocale) => unknown;
 
 const seededMapIds = new Set<string>();
 const CLEANUP_KEY = 'locale:map-dataset';

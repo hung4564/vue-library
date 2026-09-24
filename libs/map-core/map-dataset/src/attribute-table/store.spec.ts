@@ -1,14 +1,15 @@
 import type { FeatureCollection } from 'geojson';
 import { describe, expect, it, vi } from 'vitest';
+
 import { createDataManagement } from '../data-management';
 import { createDatasetPartGeojsonSourceComponent } from '../geojson/source';
 import { createRootDataset } from '../model/dataset.base';
 import { createDatasetPartListViewUiComponent } from '../model/list/model';
 import {
   ATTRIBUTE_TABLE_DEFAULT_PAGE_SIZE,
+  type AttributeTableStore,
   createAttributeTableStoreFromDataset,
   createLocalAttributeTableStore,
-  type AttributeTableStore,
 } from './store';
 
 const point = (id: string, name: string) => ({
@@ -30,12 +31,7 @@ describe('AttributeTableStore', () => {
 
   it('local store pages and selects by intent', async () => {
     const store = createLocalAttributeTableStore(
-      fc([
-        point('a', 'A'),
-        point('b', 'B'),
-        point('c', 'C'),
-        point('d', 'D'),
-      ]),
+      fc([point('a', 'A'), point('b', 'B'), point('c', 'C'), point('d', 'D')]),
     );
 
     const page1 = await store.list({

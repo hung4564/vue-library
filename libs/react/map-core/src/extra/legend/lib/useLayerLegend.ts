@@ -1,21 +1,17 @@
 import {
-  createElement,
-  useCallback,
-  type ReactNode,
-} from 'react';
-import type { LayerSpecification, Map } from 'maplibre-gl';
-import {
   buildLayerLegendElements,
   type LegendElement,
 } from '@hungpvq/map-core/legend';
+import type { LayerSpecification, Map } from 'maplibre-gl';
+import { createElement, type ReactNode, useCallback } from 'react';
 
 export function useLayerLegend() {
-  const getLayerLegendNode = useCallback((
-    map: Map,
-    layer: LayerSpecification,
-  ): ReactNode => {
-    return renderElement(buildLayerLegendElements(map, layer));
-  }, []);
+  const getLayerLegendNode = useCallback(
+    (map: Map, layer: LayerSpecification): ReactNode => {
+      return renderElement(buildLayerLegendElements(map, layer));
+    },
+    [],
+  );
   return { getLayerLegendNode };
 }
 

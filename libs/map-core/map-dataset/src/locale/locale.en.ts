@@ -1,10 +1,9 @@
 import { deepMergeLocale } from '@hungpvq/map-core';
+
 import { ATTRIBUTE_TABLE_LOCALE } from '../attribute-table/locale/locale.en';
 import { DATASET_CONTROL_LOCALE } from '../extra/dataset-control/locale/locale.en';
 import { LAYER_DETAIL_LOCALE } from '../extra/detail/locale/locale.en';
-import {
-  LAYER_CONTROL_LOCALE,
-} from '../extra/layer-control/locale/locale.en';
+import { LAYER_CONTROL_LOCALE } from '../extra/layer-control/locale/locale.en';
 import { IDENTIFY_CONTROL_LOCALE } from '../identify/locale/locale.en';
 import { STYLE_CONTROL_LOCALE } from '../style/locale/locale.en';
 

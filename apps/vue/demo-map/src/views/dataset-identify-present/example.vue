@@ -1,6 +1,4 @@
 ﻿<script setup lang="ts">
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
@@ -10,10 +8,13 @@ import {
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { ref } from 'vue';
+
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { loadIdentifyPresentDemoDatasets } from '../../data/loaders';
 import AsideControl from '../../layout/aside-control.vue';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 loggerFactory.enable('map:identify');
 const mapId = ref(getUUIDv4());
@@ -38,5 +39,3 @@ function onMapLoaded(map: MapSimple) {
     <DemoHelpPanel />
   </Map>
 </template>
-
-

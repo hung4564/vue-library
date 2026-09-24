@@ -5,13 +5,14 @@
 
 import type { Feature } from 'geojson';
 import type { MapMouseEvent } from 'maplibre-gl';
+
 import {
   classifyDrawCreateFeature,
+  type DrawMapClickResult,
   ensureFeatureId,
   getDrawCreateModeEffects,
   getDrawModeSelectEffects,
   handleDrawMapClick,
-  type DrawMapClickResult,
   type MapDrawEditControl,
 } from './draw-control-helpers';
 import { isDraftOption } from './is-draft-option';
@@ -32,10 +33,7 @@ export type DrawSessionOptions = {
   mapId: string;
   control: MapDrawEditControl;
   getDrawOption: () => MapDrawOption | undefined;
-  setFeature: (
-    type: 'added' | 'updated' | 'deleted',
-    feature: Feature,
-  ) => void;
+  setFeature: (type: 'added' | 'updated' | 'deleted', feature: Feature) => void;
   onStateChange?: (state: DrawSessionState) => void;
   /** Host wires useEventMap add/remove. */
   setMapClickActive?: (active: boolean) => void;
@@ -84,9 +82,7 @@ function cloneState(state: DrawSessionState): DrawSessionState {
 /**
  * Owns DrawControl event orchestration. Hosts keep chrome UI + EventClick.
  */
-export function createDrawSession(
-  options: DrawSessionOptions,
-): DrawSession {
+export function createDrawSession(options: DrawSessionOptions): DrawSession {
   const state: DrawSessionState = {
     method: '',
     isDraw: false,

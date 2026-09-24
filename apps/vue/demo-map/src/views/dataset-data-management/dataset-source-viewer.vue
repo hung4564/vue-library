@@ -3,7 +3,11 @@ export default { name: 'demo-dataset-source-viewer' };
 </script>
 <script setup lang="ts">
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import { MapControlButton, ModuleContainer, useMap } from '@hungpvq/vue-map-core';
+import {
+  MapControlButton,
+  ModuleContainer,
+  useMap,
+} from '@hungpvq/vue-map-core';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
@@ -19,14 +23,14 @@ const show = ref(true);
 const tab = ref<'definition' | 'example'>('definition');
 const copied = ref(false);
 
-const hasExampleData = computed(
-  () => Boolean(props.exampleData && props.exampleData.trim()),
+const hasExampleData = computed(() =>
+  Boolean(props.exampleData && props.exampleData.trim()),
 );
 
 const code = computed(() =>
   tab.value === 'example' && hasExampleData.value
-    ? props.exampleData ?? ''
-    : props.definition ?? '',
+    ? (props.exampleData ?? '')
+    : (props.definition ?? ''),
 );
 
 const popupTitle = computed(

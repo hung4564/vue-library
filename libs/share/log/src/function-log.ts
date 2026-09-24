@@ -1,12 +1,12 @@
-import { getUUIDv4 } from './uuid';
-import type { Logger } from './Logger';
-import { LoggerFactory } from './LoggerFactory';
 import {
   compactLogContext,
-  pushMethodFrame,
   type LogZoneState,
+  pushMethodFrame,
 } from './log-zone-state';
+import type { Logger } from './Logger';
+import { LoggerFactory } from './LoggerFactory';
 import type { LogContext, LogOutcome } from './types';
+import { getUUIDv4 } from './uuid';
 
 function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
   return (
@@ -25,7 +25,9 @@ function isAbortError(err: unknown): boolean {
   );
 }
 
-function safeErrorFields(err: unknown): Pick<LogContext, 'errorName' | 'errorMessage'> {
+function safeErrorFields(
+  err: unknown,
+): Pick<LogContext, 'errorName' | 'errorMessage'> {
   if (err instanceof Error) {
     return { errorName: err.name, errorMessage: err.message };
   }
@@ -71,8 +73,7 @@ export function runWithFunctionLog<T>(
 
   const spanId = ctx.spanId ?? getUUIDv4();
   const parentSpanId =
-    ctx.parentSpanId ??
-    (parentCtx?.spanId ? parentCtx.spanId : undefined);
+    ctx.parentSpanId ?? (parentCtx?.spanId ? parentCtx.spanId : undefined);
   const parentFn =
     ctx.parentFn ?? (parentCtx?.spanId ? parentCtx.fn : parentCtx?.parentFn);
   const flowDepth = parentCtx?.spanId ? (parentCtx.flowDepth ?? 0) + 1 : 0;

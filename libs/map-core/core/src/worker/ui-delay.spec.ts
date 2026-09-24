@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import type { WorkerSnapshot } from './types';
 import { createWorkerUiDelayState } from './ui-delay';
 
@@ -26,7 +27,15 @@ describe('createWorkerUiDelayState', () => {
     const busy = snap({
       id: 'geojson',
       status: 'busy',
-      pending: [{ id: '1', type: 'parse', status: 'running', engine: 'worker', startedAt: t0 }],
+      pending: [
+        {
+          id: '1',
+          type: 'parse',
+          status: 'running',
+          engine: 'worker',
+          startedAt: t0,
+        },
+      ],
     });
 
     const early = delay.project([busy], t0 + 50);

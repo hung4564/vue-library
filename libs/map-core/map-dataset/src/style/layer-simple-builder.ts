@@ -1,3 +1,5 @@
+import type { Color } from '@hungpvq/map-core';
+import { getChartRandomColor } from '@hungpvq/map-core';
 import type {
   CircleLayerSpecification,
   FillLayerSpecification,
@@ -7,9 +9,6 @@ import type {
   RasterLayerSpecification,
   SymbolLayerSpecification,
 } from 'maplibre-gl';
-
-import type { Color } from '@hungpvq/map-core';
-import { getChartRandomColor } from '@hungpvq/map-core';
 
 export interface ILayerMapboxBuild {
   build(): Omit<LayerMapbox, 'id' | 'source'>;

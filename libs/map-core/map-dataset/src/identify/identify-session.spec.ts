@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { createIdentifySession } from './identify-session';
 import * as runIdentify from './run-identify';
 
@@ -49,7 +50,9 @@ describe('createIdentifySession', () => {
       syncResultPanel: (p) => syncPanels.push(p),
     });
 
-    await expect(session.runAtPoint(105, 21, [10, 20])).resolves.toBeUndefined();
+    await expect(
+      session.runAtPoint(105, 21, [10, 20]),
+    ).resolves.toBeUndefined();
     expect(session.getState().loading).toBe(false);
     expect(syncPanels).toEqual(
       expect.arrayContaining([

@@ -1,14 +1,15 @@
+import { UniversalRegistry } from '@hungpvq/map-core';
 import {
+  type AddGeojsonHerePayload,
   clearAddGeojsonHereItems,
   getDefaultAddGeojsonHereItems,
   MAP_CONTEXT_MENU_ID,
-  setAddGeojsonHereItems,
-  type AddGeojsonHerePayload,
   type MapMenuItemProps,
+  setAddGeojsonHereItems,
 } from '@hungpvq/map-core/menu';
-import { UniversalRegistry } from '@hungpvq/map-core';
-import type { IDataset } from '../../interfaces/dataset.base';
+
 import { createGeojsonHereDataset } from '../../geojson/here';
+import type { IDataset } from '../../interfaces/dataset.base';
 
 /**
  * Register map-context "Add GeoJSON here" handler + default items.

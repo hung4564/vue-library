@@ -16,25 +16,23 @@ export const loggerFactory: LoggerFactory = new Proxy({} as LoggerFactory, {
   },
 });
 
-export { Logger } from './Logger';
-export { LoggerFactory } from './LoggerFactory';
-export type { TrackRequestMeta } from './LoggerFactory';
-export { sanitizeHttpUrl } from './LoggerFactory';
 export { ConsoleAdapter } from './adapters/ConsoleAdapter';
+export type { LogCallerSite } from './caller';
+export { captureLogCallerSite } from './caller';
+export type { FunctionLogContext } from './function-log';
 export {
-  BaseLogDataStore,
-  DataStoreLogAdapter,
-  IndexedDBLogDataStore,
-  MemoryLogDataStore,
-  NoopLogDataStore,
-  compareLogOrder,
-  entryText,
-  logActionId,
-  logMapId,
-  logSpanId,
-  noopLogDataStore,
-  rootNamespace,
-} from './store';
+  getFlowParentFn,
+  getFlowStackDepth,
+  runWithFunctionLog,
+} from './function-log';
+export type { LogEventPayload } from './log-event';
+export { isLogEventPayload, packLogEvent, runWithLogEvent } from './log-event';
+export type { LogZoneState } from './log-zone-state';
+export { compactLogContext } from './log-zone-state';
+export { Logger } from './Logger';
+export type { TrackRequestMeta } from './LoggerFactory';
+export { LoggerFactory } from './LoggerFactory';
+export { sanitizeHttpUrl } from './LoggerFactory';
 export type {
   IndexedDBLogDataStoreOptions,
   LogDataStore,
@@ -44,28 +42,21 @@ export type {
   MemoryLogDataStoreApi,
   MemoryLogDataStoreOptions,
 } from './store';
+export {
+  BaseLogDataStore,
+  compareLogOrder,
+  DataStoreLogAdapter,
+  entryText,
+  IndexedDBLogDataStore,
+  logActionId,
+  logMapId,
+  logSpanId,
+  MemoryLogDataStore,
+  NoopLogDataStore,
+  noopLogDataStore,
+  rootNamespace,
+} from './store';
 export { resolveMaybePromise } from './store';
-export { captureLogCallerSite } from './caller';
-export type { LogCallerSite } from './caller';
-export {
-  getFlowParentFn,
-  getFlowStackDepth,
-  runWithFunctionLog,
-} from './function-log';
-export type { FunctionLogContext } from './function-log';
-export {
-  isLogEventPayload,
-  packLogEvent,
-  runWithLogEvent,
-} from './log-event';
-export type { LogEventPayload } from './log-event';
-export { compactLogContext } from './log-zone-state';
-export type { LogZoneState } from './log-zone-state';
-export {
-  resetZoneContextStorageForTests,
-  useBrowserZoneStorageForTests,
-} from './zone-context-storage';
-export type { ZoneContextStorage } from './zone-context-storage';
 export type {
   LogAdapter,
   LogContext,
@@ -75,3 +66,8 @@ export type {
   LogOutcome,
   LogRecord,
 } from './types';
+export type { ZoneContextStorage } from './zone-context-storage';
+export {
+  resetZoneContextStorageForTests,
+  useBrowserZoneStorageForTests,
+} from './zone-context-storage';

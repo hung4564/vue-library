@@ -1,6 +1,6 @@
 import {
-  WorkerMonitor,
   createWorkerUiDelayState,
+  WorkerMonitor,
   type WorkerSnapshot,
 } from '@hungpvq/map-core';
 import { computed, onMounted, onUnmounted, ref, shallowRef } from 'vue';
@@ -13,9 +13,7 @@ export function useWorkerMonitor() {
   let tickTimer: ReturnType<typeof setInterval> | undefined;
   let delayTimer: ReturnType<typeof setTimeout> | undefined;
 
-  const projected = computed(() =>
-    delay.project(rawWorkers.value, now.value),
-  );
+  const projected = computed(() => delay.project(rawWorkers.value, now.value));
 
   const workers = computed(() => projected.value.workers);
   const busy = computed(() => projected.value.busy);

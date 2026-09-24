@@ -1,12 +1,12 @@
 import {
   buildCreateControlArchiveMetaChips,
+  type CreateControlDataTab,
+  type CreateControlLoadedSource,
   createControlLoadedSourceEyebrowKey,
   formatCreateControlBytes,
   getCreateControlDataTabs,
   loadCreateControlVectorTileFromFile,
   loadCreateControlVectorTileFromUrl,
-  type CreateControlDataTab,
-  type CreateControlLoadedSource,
 } from '@hungpvq/map-dataset/create-control';
 import { closeVectorTileArchive } from '@hungpvq/map-dataset/vector-tile';
 import { MapControlButton } from '@hungpvq/react-map-core';
@@ -16,6 +16,7 @@ import {
   InputText,
 } from '@hungpvq/react-map-core/fields';
 import { useState } from 'react';
+
 import { DataSourceTabs } from './DataSourceTabs';
 import type { CreateConfigFormProps } from './types';
 
@@ -169,9 +170,7 @@ export function ConfigPmtilesJson({
                   )}
                 </p>
                 <p className="create-control-loaded__title">
-                  {loadedSource?.label ||
-                    (config.name as string) ||
-                    'PMTiles'}
+                  {loadedSource?.label || (config.name as string) || 'PMTiles'}
                 </p>
                 {loadedSource?.detail ? (
                   <p className="create-control-loaded__detail">
@@ -229,7 +228,9 @@ export function ConfigPmtilesJson({
                     </div>
                   ) : null}
                   {urlError ? (
-                    <div className="create-control-sample-error">{urlError}</div>
+                    <div className="create-control-sample-error">
+                      {urlError}
+                    </div>
                   ) : null}
                 </>
               ),
@@ -250,7 +251,9 @@ export function ConfigPmtilesJson({
                     {trans('map.layer-control.create.file-hint-pmtiles')}
                   </p>
                   {fileError ? (
-                    <div className="create-control-sample-error">{fileError}</div>
+                    <div className="create-control-sample-error">
+                      {fileError}
+                    </div>
                   ) : null}
                 </>
               ),

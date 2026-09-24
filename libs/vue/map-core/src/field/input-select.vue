@@ -1,7 +1,10 @@
 <script
   setup
   lang="ts"
-  generic="TItem = { value: string | number; text: string }, TValue = string | number"
+  generic="
+    TItem = { value: string | number; text: string },
+    TValue = string | number
+  "
 >
 const model = defineModel<TValue>();
 
@@ -22,7 +25,11 @@ const props = withDefaults(
 );
 
 function getValue(item: TItem): TValue {
-  if (typeof item === 'string' || typeof item === 'number' || props.returnObject) {
+  if (
+    typeof item === 'string' ||
+    typeof item === 'number' ||
+    props.returnObject
+  ) {
     return item as unknown as TValue;
   }
   if (item && typeof item === 'object' && props.itemValue) {

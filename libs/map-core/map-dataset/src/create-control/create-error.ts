@@ -1,8 +1,4 @@
-import {
-  errorHandler,
-  isCallStackOverflow,
-  MapError,
-} from '@hungpvq/map-core';
+import { errorHandler, isCallStackOverflow, MapError } from '@hungpvq/map-core';
 
 export type CreateLayerErrorContext = {
   crs?: string | null;

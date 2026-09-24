@@ -1,18 +1,17 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-
-import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   LAYER_TYPES,
   LayerHelper,
+  type LayerType,
   loadCreateControlDraft,
   normalizeLayerType,
   reportCreateLayerError,
   resolveCreateControlLayerTypes,
   saveCreateControlDraft,
   suggestLayerName,
-  type LayerType,
 } from '@hungpvq/map-dataset/create-control';
+import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
   MapCommonButton,
@@ -25,20 +24,27 @@ import {
 } from '@hungpvq/react-map-core';
 import { InputSelect, InputText } from '@hungpvq/react-map-core/fields';
 import { mdiPlus } from '@mdi/js';
-import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
+import {
+  type ComponentType,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
 import { useMapDataset } from '../../store/dataset-api';
-import { GeojsonSettings } from './config/geojson-settings';
-import { GeojsonUpload } from './config/geojson-upload';
 import { ConfigArchiveSettings } from './config/archive-settings';
 import { ConfigFilegdbSettings } from './config/filegdb-settings';
 import { ConfigFilegdbUpload } from './config/filegdb-upload';
+import { GeojsonSettings } from './config/geojson-settings';
+import { GeojsonUpload } from './config/geojson-upload';
 import { ConfigMbtilesJson } from './config/mbtiles-json';
 import { ConfigNo } from './config/no-config';
-import type { CreateConfigFormProps } from './config/types';
 import { ConfigPmtilesJson } from './config/pmtiles-json';
+import { ConfigTilejsonJson } from './config/tilejson-json';
+import type { CreateConfigFormProps } from './config/types';
 import { ConfigRasterJson } from './config/xyz-json';
 import { ConfigRasterSettings } from './config/xyz-settings';
-import { ConfigTilejsonJson } from './config/tilejson-json';
 
 export interface CreateControlProps extends WithMapPropType {
   show: boolean;

@@ -18,7 +18,8 @@ import {
 } from '@hungpvq/map-dataset';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { useLang, useMap, useUniversalRegistry } from '@hungpvq/vue-map-core';
-import { computed, markRaw, watch, type Component } from 'vue';
+import { type Component, computed, markRaw, watch } from 'vue';
+
 import ToggleShowButton from '../../../extra/component/toggle-show-button.vue';
 import { useMapDataset } from '../../../store/dataset-api';
 

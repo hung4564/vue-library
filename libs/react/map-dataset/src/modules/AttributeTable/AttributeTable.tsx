@@ -5,35 +5,32 @@ import {
   ATTRIBUTE_TABLE_CONTROL,
   ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
   attributeTableControlId,
-  clearPendingAttributeTableSelectRows,
-  createAttributeTableController,
-  resolveAttributeTableUi,
-  resolveAttributeTableUiOption,
-  takePendingAttributeTableSelectRows,
   type AttributeTableController,
   type AttributeTableProps,
   type AttributeTableRow,
   type AttributeTableSelectRowsPayload,
   type AttributeTableViewLabels,
   type AttributeTableViewProps,
+  clearPendingAttributeTableSelectRows,
+  createAttributeTableController,
+  resolveAttributeTableUi,
+  resolveAttributeTableUiOption,
+  takePendingAttributeTableSelectRows,
 } from '@hungpvq/map-dataset/attribute-table';
 import {
   clearGeoExportActiveSource,
+  type GeoExportFormat,
   openGeoExportModalFromAttributeTable,
   resolveAttributeTableGeoExport,
   runGeoExportClickFromAttributeTable,
   runGeoExportFormatFromAttributeTable,
   setGeoExportActiveSource,
-  type GeoExportFormat,
 } from '@hungpvq/map-dataset/geo-export';
-import {
-  getHighlightResolver,
-} from '@hungpvq/map-dataset/identify';
 import {
   bindHighlightMittBridge,
   emitHighlightAttributeTableClose,
 } from '@hungpvq/map-dataset/highlight';
-import { loggerFactory } from '@hungpvq/shared-log';
+import { getHighlightResolver } from '@hungpvq/map-dataset/identify';
 import {
   createMenuConditionContext,
   getItemMenuHost,
@@ -53,8 +50,10 @@ import {
   useRegisterMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
+import { loggerFactory } from '@hungpvq/shared-log';
 import type { Feature } from 'geojson';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
 import { DatasetMenus } from '../../extra/menu/dataset-menus';
 import { AttributeTableView } from './AttributeTableView';

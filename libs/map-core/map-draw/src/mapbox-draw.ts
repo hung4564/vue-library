@@ -1,16 +1,16 @@
 /**
  * Re-export @mapbox/mapbox-gl-draw as MapDraw for a stable package surface.
  */
-export { default as MapDraw } from '@mapbox/mapbox-gl-draw';
 export type {
   DrawCreateEvent,
-  DrawDeleteEvent,
-  DrawUpdateEvent,
-  DrawSelectionChangeEvent,
-  DrawModeChangeEvent,
   DrawCustomMode,
+  DrawDeleteEvent,
+  DrawModeChangeEvent,
+  DrawSelectionChangeEvent,
+  DrawUpdateEvent,
   MapboxDrawOptions as MapDrawOptions,
 } from '@mapbox/mapbox-gl-draw';
+export { default as MapDraw } from '@mapbox/mapbox-gl-draw';
 
 /** Mode id strings used with `changeMode` / `drawSupports`. */
 export const DRAW_MODES = {

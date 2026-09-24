@@ -7,8 +7,9 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiConsole } from '@mdi/js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { MapControlButton } from '../../components/MapControlButton';
+
 import { MapCommonButton } from '../../components/MapCommonButton';
+import { MapControlButton } from '../../components/MapControlButton';
 import { useLang } from '../../extra/lang/hook';
 import { UniversalRegistry } from '../../extra/registry/plugin';
 import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
@@ -41,7 +42,7 @@ export function RegistryControl(props: RegistryControlProps) {
   const [selectedId, setSelectedId] = useState('');
   const [actionType, setActionType] = useState('');
 
-const refresh = useCallback(() => {
+  const refresh = useCallback(() => {
     if (!mapId) return;
     const next = UniversalRegistry.listControls(mapId);
     setControls(next);

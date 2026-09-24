@@ -42,16 +42,16 @@
   </li>
 </template>
 <script setup lang="ts">
-import type { MenuAction } from '@hungpvq/map-dataset/menu';
-import { createAddToGroupSubmenu, handleMenuAction } from '@hungpvq/map-dataset/menu';
 import { getListViewGroupInfo } from '@hungpvq/map-dataset';
-import SvgIcon from '@jamescoyle/vue-icon';
+import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import {
-  mdiChevronRight,
-  mdiCircleSmall,
-  mdiFolderPlusOutline,
-} from '@mdi/js';
+  createAddToGroupSubmenu,
+  handleMenuAction,
+} from '@hungpvq/map-dataset/menu';
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiChevronRight, mdiCircleSmall, mdiFolderPlusOutline } from '@mdi/js';
 import { computed, ref } from 'vue';
+
 import type { WithLayerItemMenuComponentType } from './types';
 
 defineOptions({ name: 'LayerActionAddToGroup' });

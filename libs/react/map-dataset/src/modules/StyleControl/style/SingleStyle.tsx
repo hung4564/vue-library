@@ -3,13 +3,14 @@ import {
   applyStyleZoom,
   convertTabWithDefaultConfig,
   DEFAULT_VALUE,
-  TABS,
   type Tab,
   type TabConfig,
+  TABS,
 } from '@hungpvq/map-dataset/style';
 import { BaseCollapse, InputSlider } from '@hungpvq/react-map-core/fields';
 import type { LayerSpecification } from 'maplibre-gl';
 import { useEffect, useMemo, useState } from 'react';
+
 import { TabContent } from '../component/TabContent';
 import { TabItem } from '../component/TabItem';
 import { CONFIG_TABS } from './type/default';
@@ -99,7 +100,11 @@ export function SingleStyle({
     onUpdateStyle?.(next);
   }
 
-  function emitInput(raw: unknown, currentTab: Tab, currentLayer: LayerSpecification) {
+  function emitInput(
+    raw: unknown,
+    currentTab: Tab,
+    currentLayer: LayerSpecification,
+  ) {
     emitLayer(applyStyleTabValue(currentLayer, currentTab, raw));
   }
 
@@ -140,7 +145,9 @@ export function SingleStyle({
             </div>
             <div className="label-config-item__input">
               <InputSlider
-                value={layerZoom['min-zoom'] != null ? layerZoom['min-zoom'] : 0}
+                value={
+                  layerZoom['min-zoom'] != null ? layerZoom['min-zoom'] : 0
+                }
                 onChange={(v) => onChangeMinZoom(v, layer)}
                 min={0}
                 max={24}
@@ -154,7 +161,9 @@ export function SingleStyle({
             </div>
             <div className="label-config-item__input">
               <InputSlider
-                value={layerZoom['max-zoom'] != null ? layerZoom['max-zoom'] : 24}
+                value={
+                  layerZoom['max-zoom'] != null ? layerZoom['max-zoom'] : 24
+                }
                 onChange={(v) => onChangeMaxZoom(v, layer)}
                 min={0}
                 max={24}

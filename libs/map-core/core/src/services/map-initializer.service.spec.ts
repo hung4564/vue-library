@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { createFakeMap } from '../test/fake-map';
 import { MapInitializer } from './map-initializer.service';
 

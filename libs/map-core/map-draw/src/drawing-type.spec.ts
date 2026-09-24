@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { DrawingType, DrawingTypeName } from './drawing-type';
 
 describe('DrawingType', () => {

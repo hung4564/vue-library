@@ -63,10 +63,7 @@ export function DevtoolsPanelBody({
         ) : null}
       </div>
       <div className="devtools-content">
-        <div
-          className="devtools-content__pane"
-          hidden={activeTab !== 'store'}
-        >
+        <div className="devtools-content__pane" hidden={activeTab !== 'store'}>
           <StoreViewer />
         </div>
         <div
@@ -78,10 +75,7 @@ export function DevtoolsPanelBody({
         <div className="devtools-content__pane" hidden={activeTab !== 'logs'}>
           <LogViewer />
         </div>
-        <div
-          className="devtools-content__pane"
-          hidden={activeTab !== 'errors'}
-        >
+        <div className="devtools-content__pane" hidden={activeTab !== 'errors'}>
           <ErrorViewer />
         </div>
       </div>

@@ -1,7 +1,12 @@
-import type { ComponentType, IDataset, IMapboxLayerView } from '@hungpvq/map-dataset';
-import { findSiblingOrNearestLeaf, isMapboxLayerView } from '@hungpvq/map-dataset';
-
-import { copyByJson } from '@hungpvq/shared';
+import type {
+  ComponentType,
+  IDataset,
+  IMapboxLayerView,
+} from '@hungpvq/map-dataset';
+import {
+  findSiblingOrNearestLeaf,
+  isMapboxLayerView,
+} from '@hungpvq/map-dataset';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
   ModuleContainer,
@@ -11,6 +16,7 @@ import {
   useRegisterMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
+import { copyByJson } from '@hungpvq/shared';
 import { useEffect, useRef, useState } from 'react';
 
 export function StyleControl({
@@ -50,10 +56,9 @@ export function StyleControl({
   }, [item]);
 
   function updateValue() {
-    const layerViewFound = findSiblingOrNearestLeaf<IMapboxLayerView & IDataset>(
-      item,
-      (dataset) => isMapboxLayerView(dataset),
-    );
+    const layerViewFound = findSiblingOrNearestLeaf<
+      IMapboxLayerView & IDataset
+    >(item, (dataset) => isMapboxLayerView(dataset));
     if (layerViewFound && isMapboxLayerView(layerViewFound)) {
       setLayerView(layerViewFound);
       setComponent(layerViewFound.getComponentUpdate());

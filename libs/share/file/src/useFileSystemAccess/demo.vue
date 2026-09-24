@@ -2,6 +2,7 @@
 import { stringify } from '@hungpvq/shared';
 import type { Ref } from 'vue';
 import { reactive, ref } from 'vue';
+
 import { useFileSystemAccess } from '.';
 
 const dataType = ref('Text') as Ref<'Text' | 'ArrayBuffer' | 'Blob'>;

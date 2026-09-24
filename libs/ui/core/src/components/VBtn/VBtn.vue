@@ -25,6 +25,7 @@ export default {
 <script lang="ts" setup>
 import { propsFactory } from '@hungpvq/shared';
 import { computed } from 'vue';
+
 import { makeComponentProps } from '../../composables/component';
 import { makeLoaderProps, useLoader } from '../../composables/loader';
 import { makeRoundedProps, useRounded } from '../../composables/rounded';

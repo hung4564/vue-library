@@ -1,7 +1,8 @@
 /* this implementation is original ported from https://github.com/logaretm/vue-use-web by Abdelrahman Awad */
 
 import { tryOnScopeDispose } from '@hungpvq/shared';
-import { ref, shallowRef, type Ref } from 'vue';
+import { type Ref, ref, shallowRef } from 'vue';
+
 import type { ConfigurableNavigator } from '../_configurable';
 import { defaultNavigator } from '../_configurable';
 import { useSupported } from '../useSupported';

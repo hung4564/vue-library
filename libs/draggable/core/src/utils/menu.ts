@@ -1,8 +1,11 @@
 /** Focusable menu items under a `role="menu"` root. */
 export function getMenuItems(root: HTMLElement): HTMLElement[] {
-  return Array.from(root.querySelectorAll<HTMLElement>('[role="menuitem"]')).filter(
+  return Array.from(
+    root.querySelectorAll<HTMLElement>('[role="menuitem"]'),
+  ).filter(
     (el) =>
-      el.getAttribute('aria-disabled') !== 'true' && !el.hasAttribute('disabled'),
+      el.getAttribute('aria-disabled') !== 'true' &&
+      !el.hasAttribute('disabled'),
   );
 }
 

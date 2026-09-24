@@ -1,10 +1,6 @@
 import type { MenuContextSource } from '@hungpvq/map-dataset/menu';
 import { resolveMenuContextSource } from '@hungpvq/map-dataset/menu';
-import {
-  createContext,
-  useContext,
-  type ReactNode,
-} from 'react';
+import { createContext, type ReactNode, useContext } from 'react';
 
 const MenuConditionContext = createContext<MenuContextSource>(undefined);
 

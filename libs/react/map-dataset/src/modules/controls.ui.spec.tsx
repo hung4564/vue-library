@@ -2,7 +2,16 @@ import { MapInitializer, UniversalRegistry } from '@hungpvq/map-core';
 import { IDENTIFY_CONTROL } from '@hungpvq/map-dataset/identify';
 import { Map } from '@hungpvq/react-map-core';
 import { cleanup, render, waitFor } from '@testing-library/react';
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
+
 import { createDatasetRegistryPlugin } from '../plugin';
 import { CreateControl } from './CreateControl/CreateControl';
 import { DOM_PARITY } from './dom-parity.fixture';

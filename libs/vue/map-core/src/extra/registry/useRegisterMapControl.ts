@@ -1,23 +1,24 @@
 import {
   buildMapControlHandle,
+  MAP_MODULE_CONTROL_ID_KEY,
   type MapControlAction,
   type MapControlHandle,
   type MapControlPanelKind,
   type MapControlPanelPosition,
   type Position,
-  MAP_MODULE_CONTROL_ID_KEY,
 } from '@hungpvq/map-core';
 import {
   computed,
+  type MaybeRefOrGetter,
   nextTick,
   onUnmounted,
   provide,
   reactive,
+  type Ref,
   toValue,
   watch,
-  type MaybeRefOrGetter,
-  type Ref,
 } from 'vue';
+
 import { UniversalRegistry } from './plugin';
 
 export type UseRegisterMapControlOptions = {

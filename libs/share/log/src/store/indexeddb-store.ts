@@ -126,7 +126,8 @@ export class IndexedDBLogDataStore extends BaseLogDataStore {
     return this.withStore('readonly', (store) => {
       return new Promise<LogRecord[]>((resolve, reject) => {
         const req = store.getAll();
-        req.onsuccess = () => resolve(sortNewestFirst(req.result as LogRecord[]));
+        req.onsuccess = () =>
+          resolve(sortNewestFirst(req.result as LogRecord[]));
         req.onerror = () => reject(req.error);
       });
     });
@@ -157,9 +158,7 @@ export class IndexedDBLogDataStore extends BaseLogDataStore {
    * Narrow candidates via IDB indexes when possible; otherwise full scan.
    * Residual filters still go through {@link matchLogRecords}.
    */
-  private async fetchCandidates(
-    query?: LogFilterQuery,
-  ): Promise<LogRecord[]> {
+  private async fetchCandidates(query?: LogFilterQuery): Promise<LogRecord[]> {
     const action = query?.actionId?.trim() ?? '';
     const ns =
       query?.namespace && query.namespace !== 'all' ? query.namespace : '';

@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { LoggerFactory } from './LoggerFactory';
+
 import { runWithFunctionLog } from './function-log';
 import { packLogEvent, runWithLogEvent } from './log-event';
+import { LoggerFactory } from './LoggerFactory';
 import type { LogAdapter, LogRecord } from './types';
 import { useBrowserZoneStorageForTests } from './zone-context-storage';
 
@@ -209,9 +210,7 @@ describe('LoggerFactory zone context', () => {
           httpReq = factory.getContext()?.requestId;
           expect(factory.getContext()?.actionId).toBe(action);
           expect(factory.getContext()?.span).toBe('http.request');
-          expect(factory.getContext()?.httpUrl).toBe(
-            'https://example.com/api',
-          );
+          expect(factory.getContext()?.httpUrl).toBe('https://example.com/api');
           return { status: 200, ok: true };
         },
       );

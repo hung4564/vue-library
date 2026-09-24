@@ -1,4 +1,4 @@
-﻿import {
+import {
   BaseMapControl,
   CrsControl,
   EventManagementControl,
@@ -16,12 +16,12 @@
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 export function MapCorePage() {
   return (

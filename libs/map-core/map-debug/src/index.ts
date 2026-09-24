@@ -6,27 +6,13 @@ export {
   isMapDebugInstalled,
   uninstallMapDebug,
 } from './install';
+export type { DatasetStoreLike, MapCoreBag } from './store-access';
 export {
   getDatasetStore,
   getMapBag,
   getMapScopedStore,
   listMapIds,
 } from './store-access';
-export type { DatasetStoreLike, MapCoreBag } from './store-access';
-
-export {
-  snapshotGlobalStore,
-  snapshotMapScopedStore,
-} from './viewers/store-helpers';
-export {
-  childKeys,
-  displayValue,
-  getValueType,
-  hasChildren,
-  previewValue,
-} from './viewers/tree-helpers';
-export type { TreeValueType } from './viewers/tree-helpers';
-
 export {
   collectErrorMapIds,
   errorMapId,
@@ -36,7 +22,11 @@ export {
   shortMapId as shortErrorMapId,
   shortMapId,
 } from './viewers/error-helpers';
-
+export type {
+  LevelFilter,
+  RequestFlowStep,
+  RequestFlowTreeNode,
+} from './viewers/log-helpers';
 export {
   buildRequestFlowSteps,
   buildRequestFlowTree,
@@ -48,8 +38,15 @@ export {
   stringifyLogRecord,
   textMessage,
 } from './viewers/log-helpers';
-export type {
-  LevelFilter,
-  RequestFlowStep,
-  RequestFlowTreeNode,
-} from './viewers/log-helpers';
+export {
+  snapshotGlobalStore,
+  snapshotMapScopedStore,
+} from './viewers/store-helpers';
+export type { TreeValueType } from './viewers/tree-helpers';
+export {
+  childKeys,
+  displayValue,
+  getValueType,
+  hasChildren,
+  previewValue,
+} from './viewers/tree-helpers';

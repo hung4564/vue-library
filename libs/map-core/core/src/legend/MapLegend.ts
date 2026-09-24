@@ -5,12 +5,13 @@ import {
   Map,
   SymbolLayerSpecification,
 } from 'maplibre-gl';
+
 import { styleImageToDataURL } from '../image/utils';
-import type { LegendElement, PropsLegendOption } from './types';
 import Circle from './part/Circle';
 import Fill from './part/Fill';
 import Line from './part/Line';
 import Symbol from './part/Symbol';
+import type { LegendElement, PropsLegendOption } from './types';
 import { exprHandler } from './util';
 
 type Layer =

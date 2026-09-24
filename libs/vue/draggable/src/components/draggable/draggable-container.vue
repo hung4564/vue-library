@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import { getUUIDv4 } from '@hungpvq/shared';
-import { computed, nextTick, onMounted, onUnmounted, provide, ref, watch } from 'vue';
+import {
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  provide,
+  ref,
+  watch,
+} from 'vue';
+
 import { useDragContainer, useDragStore } from '../../store';
-import SidebarContainer from './sidebar/sidebar-container.vue';
 import BottomContainer from './bottom/bottom-container.vue';
+import SidebarContainer from './sidebar/sidebar-container.vue';
 
 /** Local debounce (avoids lodash CJS default-export issues in Vite consumers). */
 function debounce<TArgs extends unknown[]>(
@@ -170,9 +179,6 @@ function onResize() {
       class="drawer-slot drawer-slot-bottom"
       :id="`drawer-bottom-${p_container_id}`"
     />
-    <div
-      class="draggable-modal-layer"
-      :id="`modal-layer-${p_container_id}`"
-    />
+    <div class="draggable-modal-layer" :id="`modal-layer-${p_container_id}`" />
   </div>
 </template>

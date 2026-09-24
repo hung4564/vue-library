@@ -103,12 +103,17 @@ export async function toggleElementFullscreen(
     ? document
     : (undefined as unknown as Document),
 ): Promise<boolean> {
-  if (isDocumentFullscreen(doc, element ?? null) || (!element && isDocumentFullscreen(doc))) {
+  if (
+    isDocumentFullscreen(doc, element ?? null) ||
+    (!element && isDocumentFullscreen(doc))
+  ) {
     await exitDocumentFullscreen(doc);
     return false;
   }
   await requestElementFullscreen(element);
-  return isDocumentFullscreen(doc, element ?? null) || isDocumentFullscreen(doc);
+  return (
+    isDocumentFullscreen(doc, element ?? null) || isDocumentFullscreen(doc)
+  );
 }
 
 const FULLSCREEN_EVENTS = [

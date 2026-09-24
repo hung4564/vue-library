@@ -5,11 +5,25 @@ export default {
 </script>
 
 <script setup lang="ts">
-
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { createMapDisplayCoordinateFormatter } from '@hungpvq/map-core/crs';
-import { findSiblingOrNearestLeaf, isListView, type IListViewUI } from '@hungpvq/map-dataset';
+import {
+  findSiblingOrNearestLeaf,
+  type IListViewUI,
+  isListView,
+} from '@hungpvq/map-dataset';
 import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
+import {
+  clearIdentifyResultHighlight,
+  IDENTIFY_ALL_LAYERS_VALUE,
+  IDENTIFY_CONTROL,
+  IDENTIFY_RESULT_CONTROL,
+  type IdentifyResultGrouped,
+  type IdentifyResultLayerItem,
+  type IdentifyResultUpdatePayload,
+  paintIdentifyResultFocus,
+  shouldApplyIdentifyRequest,
+} from '@hungpvq/map-dataset/identify';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import {
   createMenuConditionContext,
@@ -18,17 +32,6 @@ import {
   isMenuItemHidden,
   MENU_CONTROL_ID,
 } from '@hungpvq/map-dataset/menu';
-import {
-  clearIdentifyResultHighlight,
-  IDENTIFY_ALL_LAYERS_VALUE,
-  IDENTIFY_CONTROL,
-  IDENTIFY_RESULT_CONTROL,
-  paintIdentifyResultFocus,
-  shouldApplyIdentifyRequest,
-  type IdentifyResultGrouped,
-  type IdentifyResultLayerItem,
-  type IdentifyResultUpdatePayload,
-} from '@hungpvq/map-dataset/identify';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
@@ -44,6 +47,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';
 import { computed, reactive, ref, watch } from 'vue';
+
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 import { useMapDataset } from '../../store/dataset-api';
@@ -101,8 +105,7 @@ const hasSelectedPoint = computed(
 const titleLayer = computed(() => {
   void datasetVersion.value;
   if (selectedLayerId.value === IDENTIFY_ALL_LAYERS_VALUE) return undefined;
-  const identifies =
-    getAllComponentsByType<IIdentifyView>('identify') || [];
+  const identifies = getAllComponentsByType<IIdentifyView>('identify') || [];
   const identify = identifies.find((view) => view.id === selectedLayerId.value);
   if (!identify) return undefined;
   return (
@@ -289,7 +292,6 @@ function onResultKeydown(event: KeyboardEvent) {
           <MapControlButton
             @click.stop="onUseMapClick"
             :active="isEventClickActive"
-            :disabled="isEventClickActive"
             :title="trans('map.identify.map_click')"
             variant="plain"
           >
@@ -298,7 +300,6 @@ function onResultKeydown(event: KeyboardEvent) {
           <MapControlButton
             @click.stop="onUseBoxSelect"
             :active="isEventClickBox"
-            :disabled="isEventClickBox"
             :title="trans('map.identify.box_select')"
             variant="plain"
           >

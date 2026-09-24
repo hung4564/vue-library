@@ -1,9 +1,9 @@
-﻿import { isUsableMapId } from '@hungpvq/map-core';
+import { isUsableMapId } from '@hungpvq/map-core';
 import {
   createDefaultMapDatasetStore,
   ensureMapDatasetStore,
-  notifyMapDatasetStore,
   type MapDatasetStore,
+  notifyMapDatasetStore,
 } from '@hungpvq/map-dataset';
 
 /** @deprecated Prefer {@link MapDatasetStore} from `@hungpvq/map-dataset`. */

@@ -1,4 +1,5 @@
 import type { MapSimple } from '@hungpvq/map-core';
+
 import type { IDataset } from '../../interfaces/dataset.base';
 import type { WithToggleShow } from '../../interfaces/dataset.extra';
 import type { IMapboxLayerView } from '../../interfaces/dataset.parts';

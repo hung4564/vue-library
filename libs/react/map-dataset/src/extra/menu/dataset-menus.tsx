@@ -13,14 +13,12 @@ import {
   isMenuItemDisabled,
   partitionMenuActions,
 } from '@hungpvq/map-dataset/menu';
+import { ContextMenu, type ContextMenuRef } from '@hungpvq/react-draggable';
 import { MapControlButton, RegistryItem } from '@hungpvq/react-map-core';
-import {
-  ContextMenu,
-  type ContextMenuRef,
-} from '@hungpvq/react-draggable';
 import { mdiCircleSmall, mdiDotsVertical } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useMemo, useRef } from 'react';
+
 import { useMenuConditionContext } from './condition-context';
 import { DatasetMenuButton } from './dataset-menu-button';
 
@@ -192,9 +190,7 @@ export function DatasetMenus<T extends IDataset = IDataset>({
                             size="16px"
                           />
                         </div>
-                        <span>
-                          {('name' in option && option.name) || ''}
-                        </span>
+                        <span>{('name' in option && option.name) || ''}</span>
                       </>
                     )}
                   </li>

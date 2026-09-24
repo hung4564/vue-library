@@ -1,4 +1,5 @@
 import type { MapSimple } from '@hungpvq/map-core';
+
 import type { IListViewUI } from '../../model/list/types';
 import { setListViewIntendedShow } from './visibility';
 

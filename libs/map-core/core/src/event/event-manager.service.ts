@@ -3,10 +3,11 @@
  * Handles event operations, state management, and events
  */
 
+import type { Emitter } from 'mitt';
+
+import type { LoggerFunction } from '../store/interface';
 import type { AnyIEvent, MapEventStore, MittTypeMapEvent } from './types';
 import { MittTypeMapEventEventKey as EventKey } from './types';
-import type { Emitter } from 'mitt';
-import type { LoggerFunction } from '../store/interface';
 
 /** Normalize event `from` to kebab-case (Vue/React parity). */
 export function normalizeEventFrom(name: string): string {
@@ -117,10 +118,15 @@ export class EventManager {
       event.from = normalizeEventFrom(rawFrom);
     }
 
-    this.logger?.(this.mapId, 'debug', formatEventAction('add', event, { componentName }), {
-      event: summarizeEvent(event, { componentName }),
-      items: this.store.items.length + 1,
-    });
+    this.logger?.(
+      this.mapId,
+      'debug',
+      formatEventAction('add', event, { componentName }),
+      {
+        event: summarizeEvent(event, { componentName }),
+        items: this.store.items.length + 1,
+      },
+    );
 
     // Update core state (single source of truth)
     this.store.items.unshift(event);

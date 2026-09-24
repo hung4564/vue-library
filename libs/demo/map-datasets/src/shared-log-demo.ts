@@ -66,36 +66,49 @@ export async function runSharedLogScenario(
 ): Promise<{ ok: boolean; note?: string }> {
   switch (id) {
     case 'sync-action': {
-      await loggerFactory.ensureActionContext({ span: 'demo.sync' }, async () => {
-        log.with({ fn: 'syncAction', span: 'demo.sync' }).info('sync mid');
-      });
+      await loggerFactory.ensureActionContext(
+        { span: 'demo.sync' },
+        async () => {
+          log.with({ fn: 'syncAction', span: 'demo.sync' }).info('sync mid');
+        },
+      );
       return { ok: true };
     }
     case 'nested-spans': {
       await loggerFactory.ensureActionContext({ span: 'demo.nest' }, async () =>
-        runWithFunctionLog(log, { fn: 'outer', span: 'demo.nest' }, async () => {
-          await runWithFunctionLog(
-            log,
-            { fn: 'inner', span: 'demo.nest' },
-            async () => {
-              log.with({ fn: 'inner', span: 'demo.nest' }).debug('nested mid');
-            },
-          );
-        }),
+        runWithFunctionLog(
+          log,
+          { fn: 'outer', span: 'demo.nest' },
+          async () => {
+            await runWithFunctionLog(
+              log,
+              { fn: 'inner', span: 'demo.nest' },
+              async () => {
+                log
+                  .with({ fn: 'inner', span: 'demo.nest' })
+                  .debug('nested mid');
+              },
+            );
+          },
+        ),
       );
       return { ok: true };
     }
     case 'track-request': {
       await loggerFactory.ensureActionContext({ span: 'demo.http' }, async () =>
-        runWithFunctionLog(log, { fn: 'withHttp', span: 'demo.http' }, async () => {
-          await loggerFactory.trackRequest(
-            {
-              url: 'https://httpbin.org/get?token=demo-secret',
-              method: 'GET',
-            },
-            async () => fetch('https://httpbin.org/get'),
-          );
-        }),
+        runWithFunctionLog(
+          log,
+          { fn: 'withHttp', span: 'demo.http' },
+          async () => {
+            await loggerFactory.trackRequest(
+              {
+                url: 'https://httpbin.org/get?token=demo-secret',
+                method: 'GET',
+              },
+              async () => fetch('https://httpbin.org/get'),
+            );
+          },
+        ),
       );
       return { ok: true };
     }
@@ -105,10 +118,16 @@ export async function runSharedLogScenario(
     }
     case 'abort': {
       try {
-        await loggerFactory.ensureActionContext({ span: 'demo.abort' }, async () =>
-          runWithFunctionLog(log, { fn: 'abortable', span: 'demo.abort' }, async () => {
-            throw new DOMException('Aborted', 'AbortError');
-          }),
+        await loggerFactory.ensureActionContext(
+          { span: 'demo.abort' },
+          async () =>
+            runWithFunctionLog(
+              log,
+              { fn: 'abortable', span: 'demo.abort' },
+              async () => {
+                throw new DOMException('Aborted', 'AbortError');
+              },
+            ),
         );
         return { ok: false };
       } catch {
@@ -117,10 +136,12 @@ export async function runSharedLogScenario(
     }
     case 'error': {
       try {
-        await loggerFactory.ensureActionContext({ span: 'demo.error' }, async () =>
-          runWithFunctionLog(log, { fn: 'boom', span: 'demo.error' }, () => {
-            throw new Error('demo boom');
-          }),
+        await loggerFactory.ensureActionContext(
+          { span: 'demo.error' },
+          async () =>
+            runWithFunctionLog(log, { fn: 'boom', span: 'demo.error' }, () => {
+              throw new Error('demo boom');
+            }),
         );
         return { ok: false };
       } catch {

@@ -1,4 +1,4 @@
-﻿import type { DataManagementPart } from '@hungpvq/demo-map-datasets';
+import type { DataManagementPart } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
@@ -7,20 +7,20 @@ import {
   Map,
   WorkerControl,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useCallback, useMemo, useState } from 'react';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { loadDataManagementDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
 type PagerState = {
   label: string;

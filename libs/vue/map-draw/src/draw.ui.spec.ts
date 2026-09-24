@@ -3,6 +3,7 @@ import { Map as MapShell } from '@hungpvq/vue-map-core';
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent } from 'vue';
+
 import { DOM_PARITY } from './dom-parity.fixture';
 import DrawControl from './modules/DrawControl/DrawControl.vue';
 

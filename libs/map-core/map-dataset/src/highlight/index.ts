@@ -6,6 +6,38 @@
  * Paint-layer helpers are also package-internal; consumers use
  * `createHighlightPart` + controller APIs.
  */
+export { bindHighlightPickDatasets } from './bind-pick';
+export {
+  DEFAULT_HIGHLIGHT_DATA,
+  DEFAULT_HIGHLIGHT_POINTER,
+  DEFAULT_HIGHLIGHT_PRESENTATION,
+  DEFAULT_HIGHLIGHT_SELECTION,
+  DEFAULT_HIGHLIGHT_STYLE,
+} from './cascade';
+export {
+  destroyHighlightController,
+  getHighlightController,
+  type HighlightController,
+} from './controller';
+export type {
+  HighlightClearTarget,
+  MapDatasetClearPayload,
+  MapDatasetClosePayload,
+  MapDatasetEvent,
+} from './mitt';
+export {
+  bindHighlightMittBridge,
+  cleanHighlightMittBridge,
+  destroyHighlightMittBridge,
+  emitHighlightAttributeTableClose,
+  emitHighlightClear,
+  emitHighlightDetailClose,
+  emitHighlightIdentifyClose,
+  ensureHighlightMittBridge,
+  MAP_DATASET_EVENT,
+  releaseHighlightMittBridge,
+} from './mitt';
+export { createHighlightPart, type IHighlightPart } from './part';
 export type {
   HighlightAnimateFn,
   HighlightBindPointerOptions,
@@ -20,9 +52,9 @@ export type {
   HighlightMode,
   HighlightPartOptions,
   HighlightPickOptions,
-  HighlightPointOrBox,
   HighlightPointerEvent,
   HighlightPointerPolicy,
+  HighlightPointOrBox,
   HighlightPopupPosition,
   HighlightPopupPositionFn,
   HighlightPresentation,
@@ -32,37 +64,3 @@ export type {
   HighlightSource,
   HighlightStyle,
 } from './types';
-
-export {
-  DEFAULT_HIGHLIGHT_DATA,
-  DEFAULT_HIGHLIGHT_POINTER,
-  DEFAULT_HIGHLIGHT_PRESENTATION,
-  DEFAULT_HIGHLIGHT_SELECTION,
-  DEFAULT_HIGHLIGHT_STYLE,
-} from './cascade';
-
-export { createHighlightPart, type IHighlightPart } from './part';
-export {
-  destroyHighlightController,
-  getHighlightController,
-  type HighlightController,
-} from './controller';
-export { bindHighlightPickDatasets } from './bind-pick';
-export {
-  MAP_DATASET_EVENT,
-  bindHighlightMittBridge,
-  cleanHighlightMittBridge,
-  destroyHighlightMittBridge,
-  emitHighlightAttributeTableClose,
-  emitHighlightClear,
-  emitHighlightDetailClose,
-  emitHighlightIdentifyClose,
-  ensureHighlightMittBridge,
-  releaseHighlightMittBridge,
-} from './mitt';
-export type {
-  HighlightClearTarget,
-  MapDatasetClearPayload,
-  MapDatasetClosePayload,
-  MapDatasetEvent,
-} from './mitt';

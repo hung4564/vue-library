@@ -1,12 +1,10 @@
 import type { MapSimple } from '@hungpvq/map-core';
-import type {
-  GeoJSONSource,
-  GeoJSONSourceSpecification,
-} from 'maplibre-gl';
+import type { GeoJSONSource, GeoJSONSourceSpecification } from 'maplibre-gl';
+
 import type { IMapboxSourceView } from '../interfaces/dataset.parts';
-import { resolveDatasetBbox } from '../utils/bbox';
 import { createNamedComponent } from '../model/base';
 import { createDatasetPartMapboxSourceComponent } from '../model/source/base';
+import { resolveDatasetBbox } from '../utils/bbox';
 
 export function createDatasetPartGeojsonSourceComponent(
   name: string,

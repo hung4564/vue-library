@@ -5,17 +5,17 @@ export default { name: 'export-geo' };
 import { errorHandler, MapError } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import {
+  createGeoExportController,
+  type ExportGeoGetCollection,
   GEO_EXPORT_COMPONENT_KEY,
   GEO_EXPORT_DEFAULT_CRS,
   GEO_EXPORT_FORMAT_META,
   GEO_EXPORT_FORMATS,
-  createGeoExportController,
-  resolveGeoExportCrs,
-  resolveGeoExportUiSlot,
-  type ExportGeoGetCollection,
+  type GeoExportFormat,
   type GeoExportHandler,
   type GeoExportScope,
-  type GeoExportFormat,
+  resolveGeoExportCrs,
+  resolveGeoExportUiSlot,
 } from '@hungpvq/map-dataset/geo-export';
 import { DraggableModal } from '@hungpvq/vue-draggable';
 import {
@@ -24,7 +24,15 @@ import {
   useMap,
   useShow,
 } from '@hungpvq/vue-map-core';
-import { computed, markRaw, onMounted, onUnmounted, ref, type Component } from 'vue';
+import {
+  type Component,
+  computed,
+  markRaw,
+  onMounted,
+  onUnmounted,
+  ref,
+} from 'vue';
+
 import ExportGeoForm from './export-geo-form.vue';
 
 const props = withDefaults(
@@ -114,9 +122,7 @@ const format = ref<GeoExportFormat>(
     'geojson',
 );
 const scope = ref<GeoExportScope>(
-  props.defaultScope ??
-    controller.suggestDefaultScope(props.mapId) ??
-    'all',
+  props.defaultScope ?? controller.suggestDefaultScope(props.mapId) ?? 'all',
 );
 /** Local input state — not `filename` (collides with prop name). */
 const filenameInput = ref(controller.resolveFilename());
@@ -150,9 +156,7 @@ const scopeItems = computed(() => {
     filtered: 'Filtered (search / sort)',
     selected: 'Selected rows',
   };
-  const list: GeoExportScope[] = props.scopes?.length
-    ? props.scopes
-    : ['all'];
+  const list: GeoExportScope[] = props.scopes?.length ? props.scopes : ['all'];
   return list.map((value) => ({
     value,
     text: labels[value],

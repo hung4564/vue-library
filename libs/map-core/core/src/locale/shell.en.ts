@@ -12,7 +12,8 @@ export const MAP_ACTION_LOCALE = {
       'geolocate-control-location-not-available': 'Location not available',
       'geolocate-control-permission-denied': 'Location permission denied',
       'geolocate-control-timeout': 'Location request timed out',
-      'geolocate-control-tracking-background': 'Location tracking (map unlocked)',
+      'geolocate-control-tracking-background':
+        'Location tracking (map unlocked)',
       'fullscreen-control-enter': 'Enter fullscreen',
       'fullscreen-control-exit': 'Exit fullscreen',
     },
