@@ -100,9 +100,9 @@ export class EventManager {
    * @param eventId - Event ID to check
    * @returns true if event is active
    */
-  isActive(eventId: string): boolean {
-    const current = this.getCurrent();
-    return !!current && current.id === eventId;
+  isActive(event: AnyIEvent): boolean {
+    const current = this.getCurrent(event.event_map_type);
+    return !!current && current.id === event.id;
   }
 
   /**
@@ -117,7 +117,7 @@ export class EventManager {
     if (rawFrom) {
       event.from = normalizeEventFrom(rawFrom);
     }
-
+    event.setManager(this);
     this.logger?.(
       this.mapId,
       'debug',
@@ -143,6 +143,7 @@ export class EventManager {
    * @param event - Event to remove
    */
   remove(event: AnyIEvent): void {
+    event.setManager(undefined);
     if (!this.store?.items?.length) {
       this.logger?.(
         this.mapId,
@@ -191,7 +192,8 @@ export class EventManager {
    * @param key - Optional key for current event
    */
   setCurrent(event: AnyIEvent | undefined | null, key?: string): void {
-    const eventKey = key || event?.id || 'default';
+    // Current is keyed by event_map_type (one active listener per map event type).
+    const eventKey = key || event?.event_map_type || event?.id || 'default';
 
     // Update core state
     if (event) {

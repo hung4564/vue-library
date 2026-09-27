@@ -11,8 +11,6 @@ export type IdentifyControlModelState = {
   loading: boolean;
   filterIdentifyId?: string;
   origin: { latitude: number; longitude: number };
-  isUseClick: boolean;
-  isSelectBbox: boolean;
 };
 
 const clearedOrigin = (): { latitude: number; longitude: number } => ({
@@ -59,12 +57,13 @@ export type IdentifyScopedSessionResult =
 /**
  * Layer-item one-way scoped identify session (do not open result popup /
  * do not light IdentifyControl toolbar — toolbar tracks result panel only).
+ * `eventClickActive` = EventClick currently on the map (host useEventMap.isActive).
  */
 export function resolveIdentifyScopedSession(
   result: IdentifyScopeToggleResult | undefined,
   current: {
     filterIdentifyId?: string;
-    isUseClick: boolean;
+    eventClickActive: boolean;
   },
 ): IdentifyScopedSessionResult {
   const origin = clearedOrigin();
@@ -72,7 +71,7 @@ export function resolveIdentifyScopedSession(
     return {
       kind: 'activate',
       filterIdentifyId: result.identifyId,
-      startMapClick: !current.isUseClick,
+      startMapClick: !current.eventClickActive,
       panel: {
         selectedLayerId: result.identifyId,
         items: [],
@@ -109,21 +108,21 @@ export type IdentifySessionToggleResult = {
 
 export function resolveIdentifySessionToggle(
   show: boolean,
-  isUseClick: boolean,
+  eventClickActive: boolean,
 ): IdentifySessionToggleResult {
   const next = !show;
   return {
     show: next,
     panel: { show: next },
-    startMapClick: next && !isUseClick,
+    startMapClick: next && !eventClickActive,
     removeIdentify: !next,
   };
 }
 
 /**
  * Mutable IdentifyControl session model (framework-agnostic).
- * Adapters own event listeners, registry actions, and UI; this owns session state
- * + panel payloads for scoped / toggle / close.
+ * Input-mode active state lives on the host EventClick / EventBbox (useEventMap),
+ * not on this model.
  */
 export function createIdentifyControlModel(
   initial: Partial<IdentifyControlModelState> = {},
@@ -133,8 +132,6 @@ export function createIdentifyControlModel(
     loading: false,
     filterIdentifyId: undefined,
     origin: clearedOrigin(),
-    isUseClick: false,
-    isSelectBbox: false,
     ...initial,
   };
 
@@ -144,14 +141,6 @@ export function createIdentifyControlModel(
         ...state,
         origin: { ...state.origin },
       };
-    },
-
-    setUseClick(active: boolean) {
-      state.isUseClick = active;
-    },
-
-    setSelectBbox(active: boolean) {
-      state.isSelectBbox = active;
     },
 
     setLoading(loading: boolean) {
@@ -171,11 +160,12 @@ export function createIdentifyControlModel(
     },
 
     applyScopedSession(
-      result?: IdentifyScopeToggleResult,
+      result: IdentifyScopeToggleResult | undefined,
+      eventClickActive: boolean,
     ): IdentifyScopedSessionResult {
       const resolved = resolveIdentifyScopedSession(result, {
         filterIdentifyId: state.filterIdentifyId,
-        isUseClick: state.isUseClick,
+        eventClickActive,
       });
       if (resolved.kind === 'activate') {
         state.filterIdentifyId = resolved.filterIdentifyId;
@@ -189,10 +179,10 @@ export function createIdentifyControlModel(
       return resolved;
     },
 
-    toggleShow(): IdentifySessionToggleResult {
+    toggleShow(eventClickActive: boolean): IdentifySessionToggleResult {
       const resolved = resolveIdentifySessionToggle(
         state.show,
-        state.isUseClick,
+        eventClickActive,
       );
       state.show = resolved.show;
       return resolved;

@@ -63,7 +63,6 @@ export {
 } from './hit-action';
 export type {
   IdentifyBboxCorners,
-  IdentifyInputModeFlags,
   IdentifyQueryInput,
   IdentifySession,
   IdentifySessionOptions,

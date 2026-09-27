@@ -123,7 +123,7 @@ export function useEventMap(
     [mapId, store, emitter],
   );
 
-  const [isActive, setIsActive] = useState(() => manager.isActive(event.id));
+  const [isActive, setIsActive] = useState(() => manager.isActive(event));
 
   const add = useCallback(() => {
     manager.add(eventRef.current, componentNameRef.current);
@@ -134,7 +134,7 @@ export function useEventMap(
   }, [manager]);
 
   useEffect(() => {
-    const update = () => setIsActive(manager.isActive(eventRef.current.id));
+    const update = () => setIsActive(manager.isActive(eventRef.current));
     emitter.on(MittTypeMapEventEventKey.setCurrent, update);
     emitter.on(MittTypeMapEventEventKey.add, update);
     emitter.on(MittTypeMapEventEventKey.remove, update);

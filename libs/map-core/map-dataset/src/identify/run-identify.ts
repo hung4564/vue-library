@@ -74,16 +74,12 @@ export function buildIdentifyResultPanelBase(options: {
   views: IIdentifyView[];
   allLayersText: string;
   selectedLayerId?: string;
-  isEventClickActive: boolean;
-  isEventClickBox: boolean;
 }): IdentifyResultUpdatePayload {
   return {
     loading: options.loading,
     origin: options.origin,
     layerItems: buildIdentifyLayerItems(options.views, options.allLayersText),
     selectedLayerId: options.selectedLayerId ?? IDENTIFY_ALL_LAYERS_VALUE,
-    isEventClickActive: options.isEventClickActive,
-    isEventClickBox: options.isEventClickBox,
   };
 }
 

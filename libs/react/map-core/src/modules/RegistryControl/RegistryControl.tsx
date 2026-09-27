@@ -227,10 +227,8 @@ export function RegistryControl(props: RegistryControlProps) {
                         selectedId === ctrl.id ? ' is-selected' : ''
                       }`}
                     >
-                      <MapControlButton
-                        className="map-registry-control__select"
-                        variant="plain"
-                        size="small"
+                      <div
+                        className="map-registry-control__select clickable"
                         onClick={() => {
                           setSelectedId(ctrl.id);
                           setActionType('');
@@ -247,7 +245,7 @@ export function RegistryControl(props: RegistryControlProps) {
                               : trans('map.registry-control.closedState')}
                           </span>
                         ) : null}
-                      </MapControlButton>
+                      </div>
                     </li>
                   ))}
                 </ul>

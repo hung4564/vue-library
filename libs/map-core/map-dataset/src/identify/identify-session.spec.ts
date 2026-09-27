@@ -3,6 +3,25 @@ import { describe, expect, it, vi } from 'vitest';
 import { createIdentifySession } from './identify-session';
 import * as runIdentify from './run-identify';
 
+/** Simulate host useEventMap.isActive via onEvent* callbacks. */
+function withEventTracking(base: Parameters<typeof createIdentifySession>[0]) {
+  let clickActive = false;
+  let boxActive = false;
+  return createIdentifySession({
+    ...base,
+    onEventClickActive: (a) => {
+      clickActive = a;
+      base.onEventClickActive?.(a);
+    },
+    onEventBoxSelectActive: (a) => {
+      boxActive = a;
+      base.onEventBoxSelectActive?.(a);
+    },
+    getEventClickActive: () => clickActive,
+    getEventBoxSelectActive: () => boxActive,
+  });
+}
+
 describe('createIdentifySession', () => {
   it('runAtPoint sets origin and toggles loading around query', async () => {
     const states: boolean[] = [];
@@ -64,12 +83,12 @@ describe('createIdentifySession', () => {
     session.destroy();
   });
 
-  it('toggleShow and close update session flags', () => {
+  it('toggleShowAndApply and close update session flags', () => {
     const session = createIdentifySession({
       mapId: 'm1',
       getIdentifies: () => [],
     });
-    const opened = session.toggleShow();
+    const opened = session.toggleShowAndApply();
     expect(opened.show).toBe(true);
     expect(session.getState().show).toBe(true);
 
@@ -79,17 +98,15 @@ describe('createIdentifySession', () => {
     session.destroy();
   });
 
-  it('applyToggleShowEffects enables map click when opening', () => {
+  it('toggleShowAndApply enables map click when opening', () => {
     const clickActive: boolean[] = [];
-    const session = createIdentifySession({
+    const session = withEventTracking({
       mapId: 'm1',
       getIdentifies: () => [],
       onEventClickActive: (a) => clickActive.push(a),
     });
-    const opened = session.toggleShow();
-    session.applyToggleShowEffects(opened);
+    session.toggleShowAndApply();
     expect(clickActive).toEqual([true]);
-    expect(session.getInputModeFlags().mapClickActive).toBe(true);
     session.destroy();
   });
 
@@ -114,26 +131,32 @@ describe('createIdentifySession', () => {
   });
 
   it('destroy clears input modes and ignores further clicks', () => {
+    const matchMedia = vi.fn().mockReturnValue({
+      matches: false,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+    });
+    vi.stubGlobal('matchMedia', matchMedia);
+
     const clickActive: boolean[] = [];
-    const session = createIdentifySession({
+    const boxActive: boolean[] = [];
+    const session = withEventTracking({
       mapId: 'm1',
       getIdentifies: () => [],
       onEventClickActive: (a) => clickActive.push(a),
+      onEventBoxSelectActive: (a) => boxActive.push(a),
     });
-    // Drive flags without long-press / matchMedia.
-    session.setUseClick(true);
+    session.enableMapClickMode();
     session.enableBoxSelectMode();
-    expect(session.getInputModeFlags().boxSelectActive).toBe(true);
+    expect(boxActive.at(-1)).toBe(true);
     session.destroy();
     expect(clickActive.at(-1)).toBe(false);
-    expect(session.getInputModeFlags()).toEqual({
-      mapClickActive: false,
-      boxSelectActive: false,
-    });
+    expect(boxActive.at(-1)).toBe(false);
     session.onMapClick({
       lngLat: { lng: 1, lat: 2 },
       point: { x: 0, y: 0 },
     } as never);
+    vi.unstubAllGlobals();
   });
 
   it('runAtBox sets show and queries with box kind', async () => {
@@ -171,7 +194,7 @@ describe('createIdentifySession', () => {
       durationMs: 0,
       empty: true,
     });
-    const session = createIdentifySession({
+    const session = withEventTracking({
       mapId: 'm1',
       getIdentifies: () => [],
     });
@@ -206,7 +229,7 @@ describe('createIdentifySession', () => {
       durationMs: 0,
       empty: true,
     });
-    const session = createIdentifySession({
+    const session = withEventTracking({
       mapId: 'm1',
       getIdentifies: () => [],
     });
@@ -233,45 +256,41 @@ describe('createIdentifySession', () => {
   it('disableBoxSelectMode delayed vs immediate flags', () => {
     vi.useFakeTimers();
     const boxFlags: boolean[] = [];
-    const session = createIdentifySession({
+    const session = withEventTracking({
       mapId: 'm1',
       getIdentifies: () => [],
       onEventBoxSelectActive: (a) => boxFlags.push(a),
     });
     session.enableBoxSelectMode();
-    expect(session.getState().isSelectBbox).toBe(true);
-    expect(session.getInputModeFlags().boxSelectActive).toBe(true);
+    expect(boxFlags.at(-1)).toBe(true);
 
     session.disableBoxSelectMode();
-    expect(session.getState().isSelectBbox).toBe(false);
-    expect(session.getInputModeFlags().boxSelectActive).toBe(true);
+    // Event teardown lags 500ms — still active until timer fires.
+    expect(boxFlags.at(-1)).toBe(true);
     vi.advanceTimersByTime(500);
-    expect(session.getInputModeFlags().boxSelectActive).toBe(false);
     expect(boxFlags.at(-1)).toBe(false);
 
     session.enableBoxSelectMode();
     session.disableBoxSelectMode({ immediate: true });
-    expect(session.getInputModeFlags().boxSelectActive).toBe(false);
-    expect(session.getState().isSelectBbox).toBe(false);
+    expect(boxFlags.at(-1)).toBe(false);
 
     session.destroy();
     vi.useRealTimers();
   });
 
-  it('toggleBoxSelectMode round-trip', () => {
+  it('toggleBoxSelectMode round-trip uses immediate off', () => {
     const boxFlags: boolean[] = [];
-    const session = createIdentifySession({
+    const session = withEventTracking({
       mapId: 'm1',
       getIdentifies: () => [],
       onEventBoxSelectActive: (a) => boxFlags.push(a),
     });
     session.toggleBoxSelectMode();
-    expect(session.getState().isSelectBbox).toBe(true);
-    expect(session.getInputModeFlags().boxSelectActive).toBe(true);
+    expect(boxFlags.at(-1)).toBe(true);
     session.toggleBoxSelectMode();
-    expect(session.getState().isSelectBbox).toBe(false);
+    expect(boxFlags.at(-1)).toBe(false);
     session.destroy();
-    expect(boxFlags).toContain(true);
+    expect(boxFlags.at(0)).toBe(true);
     expect(boxFlags).toContain(false);
   });
 });

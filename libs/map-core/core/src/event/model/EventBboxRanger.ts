@@ -68,7 +68,6 @@ export class EventBboxRanger extends Event<
         dragPan: map.dragPan.isEnabled(),
         boxZoom: map.boxZoom.isEnabled(),
       };
-      console.log('test', this._originalHandlers);
 
       // Disable map interactions
       if (map.scrollZoom.isEnabled()) map.scrollZoom.disable();
@@ -80,7 +79,10 @@ export class EventBboxRanger extends Event<
 
       this.map_ranger = startBoxRangerMap(
         map.getCanvasContainer() as HTMLCanvasElement,
-        this.handler,
+        (e) => {
+          this.handler?.(e);
+          this.manager?.remove(this);
+        },
       );
     } catch (error) {
       errorHandler.handle(

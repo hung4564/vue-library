@@ -2,6 +2,9 @@
  * Framework-agnostic IdentifyControl session: model state + runIdentifyMulti
  * pipeline + map-click/bbox mode orchestration. Hosts wire EventClick /
  * EventBbox / registry / UI / highlight store.
+ *
+ * Click/bbox mode SoT = host useEventMap.isActive via getEventClickActive /
+ * getEventBoxSelectActive (not mirrored model flags).
  */
 
 import { bindMapLongPress, type MapSimple } from '@hungpvq/map-core';
@@ -13,7 +16,6 @@ import {
   createIdentifyControlModel,
   type IdentifyControlModel,
   type IdentifyControlModelState,
-  type IdentifyScopedSessionResult,
   type IdentifySessionToggleResult,
   shouldBindIdentifyLongPress,
 } from './control-model';
@@ -57,36 +59,30 @@ export type IdentifySessionOptions = {
   onEventClickActive?: (active: boolean) => void;
   /** Host: useEventMap add/remove for bbox ranger. */
   onEventBoxSelectActive?: (active: boolean) => void;
+  /** Host: EventClick currently registered (useEventMap.isActive). */
+  getEventClickActive?: () => boolean;
+  /** Host: EventBbox currently registered (useEventMap.isActive). */
+  getEventBoxSelectActive?: () => boolean;
   /** Host highlight / other side effects after closeAndCleanup. */
   onCloseSideEffects?: () => void;
-};
-
-export type IdentifyInputModeFlags = {
-  mapClickActive: boolean;
-  boxSelectActive: boolean;
 };
 
 export type IdentifySession = {
   getModel: () => IdentifyControlModel;
   getState: () => IdentifyControlModelState;
-  getInputModeFlags: () => IdentifyInputModeFlags;
-  /** Point identify: sets origin, shows panel loading, runs multi. */
   runAtPoint: (
     lng: number,
     lat: number,
     point: PointLike,
     event?: MapMouseEvent,
   ) => Promise<RunIdentifyResult | undefined>;
-  /** Bbox identify: opens show, runs multi on box corners. */
   runAtBox: (
     box: [PointLike, PointLike],
   ) => Promise<RunIdentifyResult | undefined>;
-  applyScopedSession: (
-    result?: IdentifyScopeToggleResult,
-  ) => IdentifyScopedSessionResult;
-  finishScopedSession: (resolved: IdentifyScopedSessionResult) => void;
-  toggleShow: () => IdentifySessionToggleResult;
-  applyToggleShowEffects: (resolved: IdentifySessionToggleResult) => void;
+  /** Resolve scoped intent + start/stop map-click / panel sync. */
+  applyScopedAndFinish: (result?: IdentifyScopeToggleResult) => void;
+  /** Toggle toolbar show + start/stop input modes. */
+  toggleShowAndApply: () => IdentifySessionToggleResult;
   close: () => ReturnType<IdentifyControlModel['close']>;
   closeAndCleanup: () => ReturnType<IdentifyControlModel['close']>;
   setLayerFilter: (identifyId: string) => {
@@ -94,20 +90,21 @@ export type IdentifySession = {
     shouldRequery: boolean;
     panel: IdentifyResultUpdatePayload;
   };
-  /** setLayerFilter + optional project/requery when callMap is set. */
   applyLayerFilter: (identifyId: string) => Promise<{
     filterId: string | undefined;
     shouldRequery: boolean;
     panel: IdentifyResultUpdatePayload;
   }>;
   setLoading: (loading: boolean) => void;
-  setUseClick: (active: boolean) => void;
-  setSelectBbox: (active: boolean) => void;
   setShow: (show: boolean) => void;
   enableMapClickMode: () => void;
   disableMapClickMode: () => void;
   toggleMapClickMode: () => void;
   enableBoxSelectMode: () => void;
+  /**
+   * Tear down bbox event. Default delays 500ms so the map click that ends a
+   * drag does not fire identify; pass `{ immediate: true }` for UI toggle-off.
+   */
   disableBoxSelectMode: (options?: { immediate?: boolean }) => void;
   toggleBoxSelectMode: () => void;
   teardownInputModes: (options?: { immediate?: boolean }) => void;
@@ -117,8 +114,6 @@ export type IdentifySession = {
   buildResultPanelPayload: (
     extra?: IdentifyResultUpdatePayload,
   ) => IdentifyResultUpdatePayload;
-  syncFullResultPanel: (extra?: IdentifyResultUpdatePayload) => void;
-  /** Abort the in-flight query (if any) and clear loading UI. */
   cancelQuery: () => void;
   destroy: () => void;
 };
@@ -145,11 +140,18 @@ export function createIdentifySession(
   let destroyed = false;
   let unbindLongPress: (() => void) | null = null;
   let removeBoxTimer: ReturnType<typeof setTimeout> | undefined;
-  /** Effective flags for panel/guards (box teardown may lag model). */
-  let mapClickActive = false;
-  let boxSelectActive = false;
   let queryAbort: AbortController | null = null;
   let queryGeneration = 0;
+
+  /** EventClick registered? Host SoT via getEventClickActive. */
+  function isEventClickActive(): boolean {
+    return !!options.getEventClickActive?.();
+  }
+
+  /** EventBbox registered? Host SoT via getEventBoxSelectActive. */
+  function isEventBoxSelectActive(): boolean {
+    return !!options.getEventBoxSelectActive?.();
+  }
 
   function clearRemoveBoxTimer() {
     if (removeBoxTimer != null) {
@@ -248,6 +250,7 @@ export function createIdentifySession(
     extra?: IdentifyResultUpdatePayload,
   ): IdentifyResultUpdatePayload {
     const s = model.getState();
+    // Mode button flags: host watches useEventMap.isActive only.
     return {
       ...buildIdentifyResultPanelBase({
         loading: s.loading,
@@ -255,8 +258,6 @@ export function createIdentifySession(
         views: options.getIdentifies(),
         allLayersText: options.translateAllLayers?.() ?? '',
         selectedLayerId: s.filterIdentifyId,
-        isEventClickActive: mapClickActive,
-        isEventClickBox: boxSelectActive,
       }),
       ...extra,
     };
@@ -268,17 +269,13 @@ export function createIdentifySession(
 
   function enableMapClickMode() {
     if (destroyed) return;
-    model.setUseClick(true);
-    mapClickActive = true;
-    emitState(model, options.onStateChange);
     options.onEventClickActive?.(true);
-    options.syncResultPanel?.({ isEventClickActive: true });
     clearLongPress();
     if (shouldBindIdentifyLongPress() && options.callMap) {
       options.callMap((map) => {
         unbindLongPress = bindMapLongPress(map, {
           onLongPress: (point) => {
-            if (boxSelectActive || destroyed) return;
+            if (isEventBoxSelectActive() || destroyed) return;
             const lngLat = map.unproject([point.x, point.y]);
             void session.runAtPoint(lngLat.lng, lngLat.lat, [point.x, point.y]);
           },
@@ -289,38 +286,29 @@ export function createIdentifySession(
 
   function disableMapClickMode() {
     if (destroyed) return;
-    model.setUseClick(false);
-    mapClickActive = false;
-    emitState(model, options.onStateChange);
     options.onEventClickActive?.(false);
     clearLongPress();
-    options.syncResultPanel?.({ isEventClickActive: false });
   }
 
   function enableBoxSelectMode() {
     if (destroyed) return;
-    model.setSelectBbox(true);
-    boxSelectActive = true;
-    emitState(model, options.onStateChange);
+    clearRemoveBoxTimer();
     options.onEventBoxSelectActive?.(true);
-    options.syncResultPanel?.({ isEventClickBox: true });
   }
 
   function disableBoxSelectMode(opts?: { immediate?: boolean }) {
     if (destroyed) return;
-    model.setSelectBbox(false);
-    emitState(model, options.onStateChange);
     clearRemoveBoxTimer();
     const finish = () => {
       removeBoxTimer = undefined;
-      boxSelectActive = false;
       options.onEventBoxSelectActive?.(false);
-      options.syncResultPanel?.({ isEventClickBox: false });
     };
     if (opts?.immediate) {
       finish();
       return;
     }
+    // After a bbox drag ends, delay remove so the mouseup/click does not
+    // also fire EventClick identify. UI toggle-off should pass immediate.
     removeBoxTimer = setTimeout(finish, 500);
   }
 
@@ -330,10 +318,37 @@ export function createIdentifySession(
     disableBoxSelectMode({ immediate: opts?.immediate ?? true });
   }
 
+  function finishScopedSession(
+    resolved: ReturnType<IdentifyControlModel['applyScopedSession']>,
+  ) {
+    if (destroyed) return;
+    if (resolved.kind === 'activate') {
+      syncFullResultPanel(resolved.panel);
+      if (resolved.startMapClick) enableMapClickMode();
+      return;
+    }
+    if (resolved.kind === 'clear-matching') {
+      syncFullResultPanel(resolved.panel);
+    }
+    if (
+      'removeMapClickIfNotImmediate' in resolved &&
+      resolved.removeMapClickIfNotImmediate &&
+      !resolveImmediately(options.immediately)
+    ) {
+      disableMapClickMode();
+    }
+  }
+
+  function applyToggleShowEffects(resolved: IdentifySessionToggleResult) {
+    if (destroyed) return;
+    syncFullResultPanel(resolved.panel);
+    if (resolved.startMapClick) enableMapClickMode();
+    else if (resolved.removeIdentify) teardownInputModes({ immediate: true });
+  }
+
   const session: IdentifySession = {
     getModel: () => model,
     getState: () => model.getState(),
-    getInputModeFlags: () => ({ mapClickActive, boxSelectActive }),
 
     async runAtPoint(lng, lat, point, event) {
       if (destroyed) return undefined;
@@ -349,42 +364,17 @@ export function createIdentifySession(
       return runQuery({ kind: 'box', box });
     },
 
-    applyScopedSession(result) {
-      const resolved = model.applyScopedSession(result);
+    applyScopedAndFinish(result) {
+      const resolved = model.applyScopedSession(result, isEventClickActive());
       emitState(model, options.onStateChange);
-      return resolved;
+      finishScopedSession(resolved);
     },
 
-    finishScopedSession(resolved) {
-      if (destroyed) return;
-      if (resolved.kind === 'activate') {
-        syncFullResultPanel(resolved.panel);
-        if (resolved.startMapClick) enableMapClickMode();
-        return;
-      }
-      if (resolved.kind === 'clear-matching') {
-        syncFullResultPanel(resolved.panel);
-      }
-      if (
-        'removeMapClickIfNotImmediate' in resolved &&
-        resolved.removeMapClickIfNotImmediate &&
-        !resolveImmediately(options.immediately)
-      ) {
-        disableMapClickMode();
-      }
-    },
-
-    toggleShow() {
-      const resolved = model.toggleShow();
+    toggleShowAndApply() {
+      const resolved = model.toggleShow(isEventClickActive());
       emitState(model, options.onStateChange);
+      applyToggleShowEffects(resolved);
       return resolved;
-    },
-
-    applyToggleShowEffects(resolved) {
-      if (destroyed) return;
-      syncFullResultPanel(resolved.panel);
-      if (resolved.startMapClick) enableMapClickMode();
-      else if (resolved.removeIdentify) teardownInputModes({ immediate: true });
     },
 
     close() {
@@ -441,16 +431,6 @@ export function createIdentifySession(
       options.syncResultPanel?.({ loading });
     },
 
-    setUseClick(active) {
-      model.setUseClick(active);
-      emitState(model, options.onStateChange);
-    },
-
-    setSelectBbox(active) {
-      model.setSelectBbox(active);
-      emitState(model, options.onStateChange);
-    },
-
     setShow(show) {
       model.setShow(show);
       emitState(model, options.onStateChange);
@@ -459,27 +439,29 @@ export function createIdentifySession(
     enableMapClickMode,
     disableMapClickMode,
     toggleMapClickMode() {
-      if (model.getState().isUseClick) disableMapClickMode();
+      if (isEventClickActive()) disableMapClickMode();
       else enableMapClickMode();
     },
     enableBoxSelectMode,
     disableBoxSelectMode,
     toggleBoxSelectMode() {
-      console.log(model.getState());
-      if (model.getState().isSelectBbox) disableBoxSelectMode();
-      else enableBoxSelectMode();
+      if (isEventBoxSelectActive()) {
+        disableBoxSelectMode({ immediate: true });
+      } else {
+        enableBoxSelectMode();
+      }
     },
     teardownInputModes,
 
     onMapClick(event) {
-      if (destroyed || boxSelectActive) return;
+      if (destroyed || isEventBoxSelectActive()) return;
       model.setOrigin(event.lngLat.lat, event.lngLat.lng);
       emitState(model, options.onStateChange);
       void runQuery({ kind: 'point', point: event.point, event });
     },
 
     onBboxSelected(bbox) {
-      if (destroyed || mapClickActive) return;
+      if (destroyed || isEventClickActive()) return;
       disableBoxSelectMode();
       if (!bbox) return;
       model.setShow(true);
@@ -510,8 +492,6 @@ export function createIdentifySession(
     },
 
     buildResultPanelPayload,
-    syncFullResultPanel,
-
     cancelQuery,
 
     destroy() {
@@ -519,13 +499,9 @@ export function createIdentifySession(
       cancelQuery();
       clearRemoveBoxTimer();
       clearLongPress();
-      mapClickActive = false;
-      boxSelectActive = false;
       options.onEventClickActive?.(false);
       options.onEventBoxSelectActive?.(false);
       model.close();
-      model.setUseClick(false);
-      model.setSelectBbox(false);
       emitState(model, options.onStateChange);
     },
   };

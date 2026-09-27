@@ -4,7 +4,11 @@ Click or box-select features. Presentation uses menus on the identify dataset no
 
 ## Architecture (thin host)
 
-Orchestration is owned by Experimental **`createIdentifySession`** (`@hungpvq/map-dataset/identify`): control model state, `runIdentifyMulti` query pipeline, and map-click / bbox mode flags. Vue and React `IdentifyControl` stay thin hosts — they wire EventClick / EventBbox, registry, highlight store, and toolbar UI, then sync from `session.getState()` after `applyScopedSession` / `toggleShow` / `closeAndCleanup` / setters.
+Orchestration is owned by Experimental **`createIdentifySession`** (`@hungpvq/map-dataset/identify`): control model state, `runIdentifyMulti` query pipeline, and map-click / bbox mode orchestration. Vue and React `IdentifyControl` stay thin hosts — they wire EventClick / EventBbox, registry, highlight store, and toolbar UI. Prefer host one-shots `toggleShowAndApply` / `applyScopedAndFinish` (then sync from `session.getState()`).
+
+**Input-mode buttons** (map-click / box-select on the result panel) follow **`useEventMap.isActive`** only — hosts push `isEventClickActive` / `isEventClickBox` into the result panel; the session does not mirror those flags into `buildResultPanelPayload`.
+
+**Box-select teardown:** after a bbox drag finishes, EventBbox stays registered ~**500ms** so the mouseup/click that ends the drag does not also fire EventClick identify. Toggling box mode **off** from the UI removes the event **immediately**.
 
 **IdentifyControl highlight:** after each query, `getHighlightResolver(mapId).execute` paints when the (global / per-map) HighlightResolver matches — default: exactly one feature (`source: 'identify'`); multi-hit clears that source. On close the control still calls `hideIfSource('identify')`. Menu-driven paint can also use `source: 'identify'` (see [Highlight](../create-dataset/highlight.md)). That is separate from **`pointer.click`** on a highlight part: Identify’s click query does not require `bindPointer`, and enabling both Identify and pointer click can double-fire — disable `pointer.click` on parts or bind hover-only when Identify owns the click.
 

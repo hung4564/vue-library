@@ -95,6 +95,15 @@ const {
   mapId.value,
   new EventBboxRanger().setHandler((bbox) => session.onBboxSelected(bbox)),
 );
+watch(
+  [isEventClickActive, isEventClickBox],
+  ([clickActive, boxActive]) => {
+    updateResultPanel({
+      isEventClickActive: clickActive,
+      isEventClickBox: boxActive,
+    });
+  },
+);
 
 function updateResultPanel(payload: IdentifyResultUpdatePayload) {
   UniversalRegistry.runControlAction(
@@ -127,12 +136,11 @@ session = createIdentifySession({
     else removeEventClick();
   },
   onEventBoxSelectActive: (active) => {
-    console.log('onEventBoxSelectActive', {
-      active,
-    });
     if (active) addEventBbox();
     else removeEventBbox();
   },
+  getEventClickActive: () => isEventClickActive.value,
+  getEventBoxSelectActive: () => isEventClickBox.value,
   onCloseSideEffects: () => {
     const filterId = session.getState().filterIdentifyId;
     const dataset = filterId
@@ -190,19 +198,17 @@ useRegisterMapControl(mapId, {
     {
       type: IDENTIFY_CONTROL.id,
       run: () => {
-        const resolved = session.toggleShow();
+        session.toggleShowAndApply();
         syncFromModel();
-        session.applyToggleShowEffects(resolved);
       },
     },
     {
       type: IDENTIFY_CONTROL.actionSetScoped,
       run: (event) => {
-        const resolved = session.applyScopedSession(
+        session.applyScopedAndFinish(
           event as IdentifyScopeToggleResult | undefined,
         );
         syncFromModel();
-        session.finishScopedSession(resolved);
       },
     },
     {
@@ -273,7 +279,6 @@ UniversalRegistry.registerMenuHandlerForMap(
 );
 
 watch(views, () => syncResultPanel(), { deep: true });
-watch([isEventClickActive, isEventClickBox], () => syncResultPanel());
 
 const { state, control } = useToolbarControl(mapId.value, props, {
   kind: 'single',
@@ -288,9 +293,8 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     });
   },
   onClick() {
-    const resolved = session.toggleShow();
+    session.toggleShowAndApply();
     syncFromModel();
-    session.applyToggleShowEffects(resolved);
   },
 });
 controlSyncRef = () => control.sync();

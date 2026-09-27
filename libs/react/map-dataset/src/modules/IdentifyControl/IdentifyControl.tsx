@@ -126,6 +126,10 @@ export function IdentifyControl(
   addEventBboxRef.current = addEventBbox;
   const removeEventBboxRef = useRef(removeEventBbox);
   removeEventBboxRef.current = removeEventBbox;
+  const isEventClickActiveRef = useRef(isEventClickActive);
+  isEventClickActiveRef.current = isEventClickActive;
+  const isEventClickBoxRef = useRef(isEventClickBox);
+  isEventClickBoxRef.current = isEventClickBox;
 
   const sessionRef = useRef<ReturnType<typeof createIdentifySession> | null>(
     null,
@@ -160,6 +164,8 @@ export function IdentifyControl(
         if (active) addEventBboxRef.current();
         else removeEventBboxRef.current();
       },
+      getEventClickActive: () => isEventClickActiveRef.current,
+      getEventBoxSelectActive: () => isEventClickBoxRef.current,
       onCloseSideEffects: () => {
         const filterId = sessionRef.current?.getState().filterIdentifyId;
         const dataset = filterId
@@ -171,7 +177,7 @@ export function IdentifyControl(
         syncIdentifyPointerPick(mapId, false);
       },
     });
-    if (props.show) sessionRef.current.getModel().setShow(true);
+    if (props.show) sessionRef.current.setShow(true);
   }
   const session = sessionRef.current;
 
@@ -211,14 +217,13 @@ export function IdentifyControl(
 
   useEffect(() => {
     syncResultPanel();
-  }, [
-    views,
-    show,
-    loading,
-    isEventClickActive,
-    isEventClickBox,
-    syncResultPanel,
-  ]);
+  }, [views, show, loading, syncResultPanel]);
+  useEffect(() => {
+    syncResultPanelRef.current?.({
+      isEventClickActive,
+      isEventClickBox,
+    });
+  }, [isEventClickActive, isEventClickBox]);
 
   useEffect(() => {
     UniversalRegistry.registerMenuHandlerForMap(
@@ -256,9 +261,8 @@ export function IdentifyControl(
   }, []);
 
   function handleToggle() {
-    const resolved = session.toggleShow();
+    session.toggleShowAndApply();
     syncFromModel();
-    session.applyToggleShowEffects(resolved);
   }
 
   const toolbarConfig = useMemo(
@@ -307,11 +311,10 @@ export function IdentifyControl(
       {
         type: IDENTIFY_CONTROL.actionSetScoped,
         run: (event) => {
-          const resolved = session.applyScopedSession(
+          session.applyScopedAndFinish(
             event as IdentifyScopeToggleResult | undefined,
           );
           syncFromModel();
-          session.finishScopedSession(resolved);
         },
       },
       {

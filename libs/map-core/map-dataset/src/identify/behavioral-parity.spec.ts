@@ -3,6 +3,28 @@ import { describe, expect, it, vi } from 'vitest';
 import { createIdentifySession } from './identify-session';
 import * as runIdentify from './run-identify';
 
+function withEventTracking(base: Parameters<typeof createIdentifySession>[0]) {
+  let clickActive = false;
+  let boxActive = false;
+  return {
+    session: createIdentifySession({
+      ...base,
+      onEventClickActive: (a) => {
+        clickActive = a;
+        base.onEventClickActive?.(a);
+      },
+      onEventBoxSelectActive: (a) => {
+        boxActive = a;
+        base.onEventBoxSelectActive?.(a);
+      },
+      getEventClickActive: () => clickActive,
+      getEventBoxSelectActive: () => boxActive,
+    }),
+    isClick: () => clickActive,
+    isBox: () => boxActive,
+  };
+}
+
 /**
  * Dual Vue/React Identify behavioral locks (session SoT).
  */
@@ -16,7 +38,7 @@ describe('dual behavioral parity — identify session', () => {
       empty: true,
     });
     const boxFlags: boolean[] = [];
-    const session = createIdentifySession({
+    const { session, isBox } = withEventTracking({
       mapId: 'parity-identify',
       getIdentifies: () => [],
       onEventBoxSelectActive: (a) => boxFlags.push(a),
@@ -27,7 +49,7 @@ describe('dual behavioral parity — identify session', () => {
       longitude: 105,
     });
     session.enableBoxSelectMode();
-    expect(session.getInputModeFlags().boxSelectActive).toBe(true);
+    expect(isBox()).toBe(true);
     session.destroy();
     expect(boxFlags.at(-1)).toBe(false);
     spy.mockRestore();
@@ -35,13 +57,12 @@ describe('dual behavioral parity — identify session', () => {
 
   it('toggle show effects start map click when opening', () => {
     const clicks: boolean[] = [];
-    const session = createIdentifySession({
+    const { session } = withEventTracking({
       mapId: 'parity-identify-2',
       getIdentifies: () => [],
       onEventClickActive: (a) => clicks.push(a),
     });
-    const opened = session.toggleShow();
-    session.applyToggleShowEffects(opened);
+    session.toggleShowAndApply();
     expect(clicks).toContain(true);
     session.destroy();
   });
@@ -51,7 +72,7 @@ describe('dual behavioral parity — identify session', () => {
     const boxes: boolean[] = [];
     const sideEffects = vi.fn();
     const syncPanels: unknown[] = [];
-    const session = createIdentifySession({
+    const { session, isClick, isBox } = withEventTracking({
       mapId: 'parity-identify-teardown',
       getIdentifies: () => [],
       immediately: false,
@@ -61,22 +82,18 @@ describe('dual behavioral parity — identify session', () => {
       syncResultPanel: (p) => syncPanels.push(p),
     });
     session.enableBoxSelectMode();
-    expect(session.getInputModeFlags().boxSelectActive).toBe(true);
+    expect(isBox()).toBe(true);
 
     session.closeAndCleanup();
     expect(sideEffects).toHaveBeenCalledOnce();
     expect(session.getState().show).toBe(false);
-    expect(session.getInputModeFlags()).toEqual({
-      mapClickActive: false,
-      boxSelectActive: false,
-    });
+    expect(isClick()).toBe(false);
+    expect(isBox()).toBe(false);
     expect(boxes.at(-1)).toBe(false);
 
     session.destroy();
-    expect(session.getInputModeFlags()).toEqual({
-      mapClickActive: false,
-      boxSelectActive: false,
-    });
+    expect(isClick()).toBe(false);
+    expect(isBox()).toBe(false);
     session.onMapClick({
       lngLat: { lng: 1, lat: 2 },
       point: { x: 0, y: 0 },
@@ -87,7 +104,7 @@ describe('dual behavioral parity — identify session', () => {
   it('scoped activate → panel + map click; clear-matching tears down click', () => {
     const clicks: boolean[] = [];
     const panels: unknown[] = [];
-    const session = createIdentifySession({
+    const { session } = withEventTracking({
       mapId: 'parity-scoped',
       getIdentifies: () => [],
       immediately: false,
@@ -95,12 +112,10 @@ describe('dual behavioral parity — identify session', () => {
       syncResultPanel: (p) => panels.push(p),
     });
 
-    const activated = session.applyScopedSession({
+    session.applyScopedAndFinish({
       active: true,
       identifyId: 'L1',
     });
-    expect(activated.kind).toBe('activate');
-    session.finishScopedSession(activated);
     expect(session.getState().filterIdentifyId).toBe('L1');
     expect(clicks).toContain(true);
     expect(
@@ -112,12 +127,10 @@ describe('dual behavioral parity — identify session', () => {
       ),
     ).toBe(true);
 
-    const cleared = session.applyScopedSession({
+    session.applyScopedAndFinish({
       active: false,
       identifyId: 'L1',
     });
-    expect(cleared.kind).toBe('clear-matching');
-    session.finishScopedSession(cleared);
     expect(session.getState().filterIdentifyId).toBeUndefined();
     expect(clicks.at(-1)).toBe(false);
     session.destroy();
@@ -125,7 +138,7 @@ describe('dual behavioral parity — identify session', () => {
 
   it('scoped noop disables click when not immediate; leaves click when immediately', () => {
     const clicks: boolean[] = [];
-    const session = createIdentifySession({
+    const { session } = withEventTracking({
       mapId: 'parity-scoped-noop',
       getIdentifies: () => [],
       immediately: false,
@@ -133,17 +146,15 @@ describe('dual behavioral parity — identify session', () => {
     });
     session.enableMapClickMode();
     session.getModel().setFilterIdentifyId('L1');
-    const noop = session.applyScopedSession({
+    session.applyScopedAndFinish({
       active: false,
       identifyId: 'other',
     });
-    expect(noop.kind).toBe('noop');
-    session.finishScopedSession(noop);
     expect(clicks.at(-1)).toBe(false);
     session.destroy();
 
     const clicksImm: boolean[] = [];
-    const sessionImm = createIdentifySession({
+    const { session: sessionImm, isClick } = withEventTracking({
       mapId: 'parity-scoped-imm',
       getIdentifies: () => [],
       immediately: true,
@@ -151,17 +162,16 @@ describe('dual behavioral parity — identify session', () => {
     });
     sessionImm.enableMapClickMode();
     sessionImm.getModel().setFilterIdentifyId('L1');
-    const noopImm = sessionImm.applyScopedSession({
+    sessionImm.applyScopedAndFinish({
       active: false,
       identifyId: 'other',
     });
-    sessionImm.finishScopedSession(noopImm);
-    expect(sessionImm.getInputModeFlags().mapClickActive).toBe(true);
+    expect(isClick()).toBe(true);
     sessionImm.destroy();
   });
 
   it('immediately:true closeAndCleanup leaves input modes active', () => {
-    const session = createIdentifySession({
+    const { session, isClick, isBox } = withEventTracking({
       mapId: 'parity-immediate-close',
       getIdentifies: () => [],
       immediately: true,
@@ -169,10 +179,8 @@ describe('dual behavioral parity — identify session', () => {
     session.enableMapClickMode();
     session.enableBoxSelectMode();
     session.closeAndCleanup();
-    expect(session.getInputModeFlags()).toEqual({
-      mapClickActive: true,
-      boxSelectActive: true,
-    });
+    expect(isClick()).toBe(true);
+    expect(isBox()).toBe(true);
     session.destroy();
   });
 

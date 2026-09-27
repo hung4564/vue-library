@@ -7,6 +7,7 @@ import type { MapLayerEventType } from 'maplibre-gl';
 
 import { Base } from '../../model/Base';
 import type { MapSimple } from '../../types';
+import { EventManager } from '../event-manager.service';
 
 /**
  * Interface for event models
@@ -25,6 +26,7 @@ export interface IEvent<
   options: IOption;
   handler?: ICallBack;
   setHandler(_handler: ICallBack): this;
+  setManager(manager?: EventManager): this;
   addToMap(_map: MapSimple): this;
   removeFromMap(_map: MapSimple): this;
 }
@@ -48,14 +50,17 @@ export class Event<
   public type_select: string;
   public options: IOption;
   public handler?: ICallBack;
-
+  public manager?: EventManager;
   constructor(event_map_type: string, type_select = 'map') {
     super();
     this.event_map_type = event_map_type;
     this.type_select = type_select;
     this.options = {} as IOption;
   }
-
+  setManager(manager?: EventManager) {
+    this.manager = manager;
+    return this;
+  }
   /**
    * Set the event handler callback
    */

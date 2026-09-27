@@ -21,6 +21,13 @@ describe('EventManager', () => {
     return { store, emitter, manager };
   }
 
+  function fakeEvent(partial: Record<string, unknown> = {}) {
+    return {
+      setManager: vi.fn().mockReturnThis(),
+      ...partial,
+    } as any;
+  }
+
   it('add prepends item, normalizes from, and emits', () => {
     const { store, emitter, manager } = create();
     const onAdd = vi.fn();
@@ -28,28 +35,32 @@ describe('EventManager', () => {
     emitter.on(EventKey.add, onAdd);
     emitter.on(EventKey.setItems, onItems);
 
-    manager.add({ id: 'e1', from: 'MyComponent' } as any);
+    const event = fakeEvent({ id: 'e1', from: 'MyComponent' });
+    manager.add(event);
     expect(store.items[0].from).toBe('my-component');
+    expect(event.setManager).toHaveBeenCalledWith(manager);
     expect(onAdd).toHaveBeenCalled();
     expect(onItems).toHaveBeenCalledWith(store.items);
   });
 
   it('remove and setCurrent update store and emit', () => {
     const { store, emitter, manager } = create();
-    const event = { id: 'e1' } as any;
+    const event = fakeEvent({ id: 'e1', event_map_type: 'click' });
     manager.add(event);
     manager.setCurrent(event);
+    expect(manager.getCurrent('click')).toEqual(event);
     expect(manager.getCurrent()).toEqual(event);
-    expect(manager.isActive('e1')).toBe(true);
+    expect(manager.isActive(event)).toBe(true);
 
     const onRemove = vi.fn();
     emitter.on(EventKey.remove, onRemove);
     manager.remove(event);
     expect(store.items).toHaveLength(0);
     expect(onRemove).toHaveBeenCalledWith(event);
+    expect(event.setManager).toHaveBeenLastCalledWith(undefined);
 
-    manager.setCurrent(undefined, 'e1');
-    expect(manager.getCurrent('e1')).toBeUndefined();
+    manager.setCurrent(undefined, 'click');
+    expect(manager.getCurrent('click')).toBeUndefined();
     expect(manager.getCurrent()).toBeUndefined();
   });
 
@@ -58,13 +69,13 @@ describe('EventManager', () => {
     const emitter = mitt();
     const log = vi.fn();
     const manager = new EventManager('m1', store, emitter as any, log);
-    const event = {
+    const event = fakeEvent({
       id: 'e1',
       event_map_type: 'click',
       type_select: 'map',
       from: 'IdentifyControl',
       name: 'identify',
-    } as any;
+    });
 
     manager.add(event, 'IdentifyControl');
     expect(log.mock.calls[0][2]).toContain('add click (map)');

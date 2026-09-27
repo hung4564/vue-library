@@ -29,19 +29,19 @@ describe('identify control-model', () => {
     expect(
       resolveIdentifyScopedSession(
         { active: true, identifyId: 'id-1' },
-        { filterIdentifyId: undefined, isUseClick: false },
+        { filterIdentifyId: undefined, eventClickActive: false },
       ).kind,
     ).toBe('activate');
     expect(
       resolveIdentifyScopedSession(
         { active: false, identifyId: 'id-1' },
-        { filterIdentifyId: 'id-1', isUseClick: true },
+        { filterIdentifyId: 'id-1', eventClickActive: true },
       ).kind,
     ).toBe('clear-matching');
     expect(
       resolveIdentifyScopedSession(
         { active: false, identifyId: 'other' },
-        { filterIdentifyId: 'id-1', isUseClick: true },
+        { filterIdentifyId: 'id-1', eventClickActive: true },
       ).kind,
     ).toBe('noop');
   });
@@ -63,21 +63,20 @@ describe('identify control-model', () => {
 
   it('createIdentifyControlModel mutates session on scoped / toggle / close', () => {
     const model = createIdentifyControlModel();
-    const activated = model.applyScopedSession({
-      active: true,
-      identifyId: 'x',
-    });
+    const activated = model.applyScopedSession(
+      { active: true, identifyId: 'x' },
+      false,
+    );
     expect(activated.kind).toBe('activate');
     expect(model.getState().filterIdentifyId).toBe('x');
     expect(model.getState().show).toBe(false);
 
     model.setShow(true);
-    const toggled = model.toggleShow();
+    const toggled = model.toggleShow(false);
     expect(toggled.show).toBe(false);
     expect(toggled.removeIdentify).toBe(true);
 
     model.setShow(true);
-    model.setUseClick(true);
     const closed = model.close();
     expect(closed.clearScope).toBe(true);
     expect(model.getState().show).toBe(false);

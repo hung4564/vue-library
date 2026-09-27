@@ -58,7 +58,7 @@ describe('dual behavioral parity — measurement session', () => {
  *   → map-dataset identify/behavioral-parity.spec.ts
  * - Identify abort: rapid runAtPoint AbortSignal + cancelQuery
  *   → map-dataset identify/behavioral-parity.spec.ts
- * - Identify box/scoped: runAtBox / onBboxSelected / finishScopedSession
+ * - Identify box/scoped: runAtBox / onBboxSelected / applyScopedAndFinish
  *   → map-dataset identify/identify-session.spec.ts + behavioral-parity.spec.ts
  * - Draw: createDrawSession delete→redrawNonDraft + scheduled select after draw.delete
  *   → map-draw draw-session.spec.ts

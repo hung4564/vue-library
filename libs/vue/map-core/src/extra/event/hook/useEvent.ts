@@ -1,14 +1,18 @@
-import { logHelper, MapSimple, subscribeMapReady } from '@hungpvq/map-core';
+import {
+  debounce,
+  logHelper,
+  MapSimple,
+  subscribeMapReady,
+} from '@hungpvq/map-core';
 import {
   type AnyIEvent,
   EventManager,
+  logger,
   MittTypeMapEvent,
   MittTypeMapEventEventKey,
 } from '@hungpvq/map-core/event';
-import { logger } from '@hungpvq/map-core/event';
 import { MapEventType } from 'maplibre-gl';
 import {
-  computed,
   getCurrentInstance,
   onBeforeUnmount,
   onMounted,
@@ -54,12 +58,15 @@ export function useEventMap(
   const current = shallowRef<AnyIEvent | undefined | null>(
     manager.getCurrent(event.id),
   );
-  const isActive = computed(() => manager.isActive(event.id));
-
+  const isActive = shallowRef(manager.isActive(event));
   // Subscribe to events and mirror state
-  const updateCurrentHandler = (value: AnyIEvent | undefined | null) => {
-    current.value = value;
-  };
+  const updateCurrentHandler = debounce(
+    (value: AnyIEvent | undefined | null) => {
+      current.value = value;
+      isActive.value = manager.isActive(event);
+    },
+    200,
+  );
 
   onMounted(() => {
     emitter.on(MittTypeMapEventEventKey.setCurrent, updateCurrentHandler);

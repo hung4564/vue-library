@@ -241,10 +241,8 @@ onUnmounted(() => {
               class="map-registry-control__item"
               :class="{ 'is-selected': selectedId === ctrl.id }"
             >
-              <MapControlButton
-                class="map-registry-control__select"
-                variant="plain"
-                size="small"
+              <div
+                class="map-registry-control__select clickable"
                 @click="select(ctrl.id)"
               >
                 <strong>{{ ctrl.id }}</strong>
@@ -257,7 +255,7 @@ onUnmounted(() => {
                       : trans('map.registry-control.closedState')
                   }}
                 </span>
-              </MapControlButton>
+              </div>
             </li>
           </ul>
 
