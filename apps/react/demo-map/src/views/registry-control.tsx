@@ -80,7 +80,10 @@ export function RegistryControlPage() {
 
         <IdentifyShowFirstControl />
 
-        <RegistryControl position="top-right" show />
+        <RegistryControl
+          position="top-right"
+          show
+        />
         <DemoHelpPanel />
       </Map>
     </MapPageShell>

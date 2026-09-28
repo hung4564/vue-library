@@ -9,7 +9,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiDelete, mdiLayersOutline, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { MapCard } from '../../../components/MapCard';
 import { MapControlButton } from '../../../components/MapControlButton';
@@ -20,8 +20,7 @@ import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import type { BindPosition } from '../../../modules/ModuleContainer/ModuleContainer';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useMapControl } from '../../registry/useMapControl';
 import { useBaseMap } from '../hooks/useBaseMap';
 import { BaseMapAddForm } from './BaseMapAddForm';
 
@@ -57,10 +56,7 @@ export function BaseMapControl({
     showOpacity,
     allowAddBasemap,
   };
-  const { mapId, moduleContainerProps, order, mapInstance } = useMap({
-    ...props,
-    controlId: 'mapBaseMapControl',
-  });
+  const { mapId, order, mapInstance } = useMap(props);
   const { trans } = useLang(mapId);
   const {
     setBaseMaps,
@@ -90,21 +86,35 @@ export function BaseMapControl({
     [],
   );
 
-  const { panelBind } = useRegisterMapControl(mapId, {
+  const onToggleList = useCallback(() => {
+    setShow((s) => !s);
+  }, [setShow]);
+
+  const { panelBind, moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapBaseMapControl',
     panelKind: 'popup',
     title: title || trans('map.basemap.title'),
-    buttonPosition: props.position,
+    from: props,
+    order,
+    buttonSlot: 'custom',
     show,
     setShow,
     getProps: () => ({
-      position: props.position,
-      controlLayout: props.controlLayout,
       defaultBaseMap: props.defaultBaseMap,
       showOpacity: props.showOpacity,
       allowAddBasemap: props.allowAddBasemap,
+      controlIcon: props.controlIcon,
+      title: props.title,
     }),
-    actions: [{ type: 'mapBaseMapControl', run: () => setShow((s) => !s) }],
+    actions: [{ type: 'mapBaseMapControl', run: () => onToggleList() }],
+    getButtonState: () =>
+      mdiButtonState(mdiLayersOutline, {
+        visible: true,
+        active: show,
+        order,
+        title: title || trans('map.basemap.title'),
+      }),
+    onClick: onToggleList,
   });
 
   const noneThumb = useMemo(
@@ -158,10 +168,6 @@ export function BaseMapControl({
     [removeBaseMap, mapId],
   );
 
-  const onToggleList = useCallback(() => {
-    setShow((s) => !s);
-  }, [setShow]);
-
   useEffect(() => {
     if (!mapInstance) return;
     init(props.baseMaps as BaseMapItem[], props.defaultBaseMap);
@@ -179,24 +185,9 @@ export function BaseMapControl({
     setDefaultBaseMap(props.defaultBaseMap);
   }, [mapInstance, props.defaultBaseMap, setDefaultBaseMap]);
 
-  const { control } = useToolbarControl(mapId, props, {
-    kind: 'single',
-    id: 'mapBaseMapControl',
-    getState: () =>
-      mdiButtonState(mdiLayersOutline, {
-        visible: true,
-        active: show,
-        order,
-        title: title || trans('map.basemap.title'),
-      }),
-    onClick: onToggleList,
-  });
-  const controlRef = useRef(control);
-  controlRef.current = control;
-
   useEffect(() => {
-    controlRef.current.sync();
-  }, [show]);
+    control.sync();
+  }, [show, control]);
 
   const popupHeight = (() => {
     if (showAddForm) return 420;
@@ -273,7 +264,10 @@ export function BaseMapControl({
                             onRemoveBasemap(baseMap);
                           }}
                         >
-                          <Icon path={mdiDelete} size="18px" />
+                          <Icon
+                            path={mdiDelete}
+                            size="18px"
+                          />
                         </button>
                       ) : null}
                     </div>
@@ -302,7 +296,10 @@ export function BaseMapControl({
                       height: SIZE_BASE_MAP - 34 + 'px',
                     }}
                   >
-                    <Icon path={mdiPlus} size="22px" />
+                    <Icon
+                      path={mdiPlus}
+                      size="22px"
+                    />
                   </div>
                   <div className="base-map-control-setting-item__title">
                     {trans('map.basemap.add')}
@@ -372,7 +369,10 @@ export function BaseMapControl({
                 {controlIcon ? (
                   <MapIcon>{controlIcon}</MapIcon>
                 ) : (
-                  <Icon path={mdiLayersOutline} size={1} />
+                  <Icon
+                    path={mdiLayersOutline}
+                    size={1}
+                  />
                 )}
                 <div>{title || trans('map.basemap.title')}</div>
               </div>

@@ -49,5 +49,5 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <ZoomControl />
-</Map>
+</Map>;
 ```

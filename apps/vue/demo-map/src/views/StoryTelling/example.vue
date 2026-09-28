@@ -147,7 +147,10 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
 );
 </script>
 <template>
-  <Map ref="mapRef" @mapLoaded="onMapLoaded">
+  <Map
+    ref="mapRef"
+    @mapLoaded="onMapLoaded"
+  >
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
@@ -165,10 +168,34 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
   </Map>
   <div class="buttons-container">
     <MapCard>
-      <button type="button" :disabled="!mapId" @click="play">Play</button>
-      <button type="button" :disabled="!mapId" @click="pause">Pause</button>
-      <button type="button" :disabled="!mapId" @click="prev">Prev</button>
-      <button type="button" :disabled="!mapId" @click="next">Next</button>
+      <button
+        type="button"
+        :disabled="!mapId"
+        @click="play"
+      >
+        Play
+      </button>
+      <button
+        type="button"
+        :disabled="!mapId"
+        @click="pause"
+      >
+        Pause
+      </button>
+      <button
+        type="button"
+        :disabled="!mapId"
+        @click="prev"
+      >
+        Prev
+      </button>
+      <button
+        type="button"
+        :disabled="!mapId"
+        @click="next"
+      >
+        Next
+      </button>
       <div style="padding: 8px">
         <div>Current: {{ currentIndex }}</div>
         <div v-if="isPlaying">Playing</div>

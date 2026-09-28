@@ -78,7 +78,11 @@ export function MapButton({
     >
       <span className="map-control-button__content">
         {loading ? (
-          <Icon path={mdiLoading} size={spinnerSize} className="spin" />
+          <Icon
+            path={mdiLoading}
+            size={spinnerSize}
+            className="spin"
+          />
         ) : (
           children
         )}

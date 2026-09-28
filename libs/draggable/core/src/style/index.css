@@ -50,7 +50,10 @@
   border-radius: 4px;
   display: inline-flex;
   flex: 0 0 auto;
-  font-weight: var(--draggable-font-weight-medium, var(--map-font-weight-medium, 500));
+  font-weight: var(
+    --draggable-font-weight-medium,
+    var(--map-font-weight-medium, 500)
+  );
   letter-spacing: 0.0892857143em;
   justify-content: center;
   outline: 0;
@@ -69,7 +72,7 @@
   min-width: 0;
   padding: 0;
 }
-.draggable-container .vdr{
+.draggable-container .vdr {
   border: unset;
 }
 .hungpvq-draggable-button__content {
@@ -136,7 +139,10 @@
 }
 
 .draggable-header__content {
-  padding: var(--draggable-padding-header, var(--map-padding-header, 0 4px 0 8px));
+  padding: var(
+    --draggable-padding-header,
+    var(--map-padding-header, 0 4px 0 8px)
+  );
   align-items: center;
   display: flex;
   position: relative;
@@ -159,7 +165,10 @@
   gap: 4px;
   min-width: 0;
   font-size: var(--draggable-font-size-2xl, var(--map-font-size-2xl, 20px));
-  font-weight: var(--draggable-font-weight-medium, var(--map-font-weight-medium, 500));
+  font-weight: var(
+    --draggable-font-weight-medium,
+    var(--map-font-weight-medium, 500)
+  );
   line-height: var(--draggable-line-height, var(--map-line-height, 1.4));
   font-family: inherit;
 }
@@ -180,8 +189,14 @@
 
 /* ===== DragCard ===== */
 .hungpvq-draggable-card {
-  background-color: var(--card-background-color, var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9))));
-  color: var(--card-color, var(--draggable-card-text, var(--map-card-text, #fff)));
+  background-color: var(
+    --card-background-color,
+    var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9)))
+  );
+  color: var(
+    --card-color,
+    var(--draggable-card-text, var(--map-card-text, #fff))
+  );
   position: relative;
   border: 2px solid transparent;
   border-radius: var(--draggable-radius, 0px);
@@ -364,10 +379,7 @@
       sans-serif
     )
   );
-  font-size: var(
-    --draggable-font-size-base,
-    var(--map-font-size-base, 14px)
-  );
+  font-size: var(--draggable-font-size-base, var(--map-font-size-base, 14px));
   line-height: var(--draggable-line-height, var(--map-line-height, 1.4));
   color: var(--card-color, var(--map-card-text, inherit));
 }
@@ -441,8 +453,14 @@
     'top top top'
     'left center right'
     'bottom bottom bottom';
-  grid-template-columns: var(--drawer-left-size, 0px) minmax(0, 1fr) var(--drawer-right-size, 0px);
-  grid-template-rows: var(--drawer-top-size, 0px) minmax(0, 1fr) var(--drawer-bottom-size, 0px);
+  grid-template-columns: var(--drawer-left-size, 0px) minmax(0, 1fr) var(
+      --drawer-right-size,
+      0px
+    );
+  grid-template-rows: var(--drawer-top-size, 0px) minmax(0, 1fr) var(
+      --drawer-bottom-size,
+      0px
+    );
   overflow: hidden;
 }
 
@@ -507,8 +525,14 @@
 }
 
 :root {
-  --card-background-color: var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9)));
-  --card-highlight-background-color: var(--draggable-card-highlight-bg, var(--map-card-highlight-bg, rgba(26, 115, 232)));
+  --card-background-color: var(
+    --draggable-card-bg,
+    var(--map-card-bg, rgba(32, 43, 54, 0.9))
+  );
+  --card-highlight-background-color: var(
+    --draggable-card-highlight-bg,
+    var(--map-card-highlight-bg, rgba(26, 115, 232))
+  );
   --card-color: var(--draggable-card-text, var(--map-card-text, #fff));
   --draggable-radius: 0px;
   --draggable-shadow: none;
@@ -844,8 +868,14 @@
   height: 48px;
   width: 23px;
   display: flex;
-  background-color: var(--card-background-color, var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9))));
-  color: var(--card-color, var(--draggable-card-text, var(--map-card-text, #fff)));
+  background-color: var(
+    --card-background-color,
+    var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9)))
+  );
+  color: var(
+    --card-color,
+    var(--draggable-card-text, var(--map-card-text, #fff))
+  );
   align-items: center;
   justify-content: center;
   border-radius: 0px;

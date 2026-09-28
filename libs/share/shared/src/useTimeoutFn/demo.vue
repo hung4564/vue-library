@@ -17,5 +17,10 @@ function restart() {
 
 <template>
   <p>{{ text }}</p>
-  <button :class="{ disabled: isPending }" @click="restart()">Restart</button>
+  <button
+    :class="{ disabled: isPending }"
+    @click="restart()"
+  >
+    Restart
+  </button>
 </template>

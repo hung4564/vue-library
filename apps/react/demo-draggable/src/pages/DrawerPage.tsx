@@ -10,8 +10,15 @@ export function DrawerPage() {
   const [drawerSize, setDrawerSize] = useState(300);
 
   return (
-    <DraggableContainer containerId="demo-drawer" className="demo-page">
-      <DraggableItemSideBar show title="Controls" location="left">
+    <DraggableContainer
+      containerId="demo-drawer"
+      className="demo-page"
+    >
+      <DraggableItemSideBar
+        show
+        title="Controls"
+        location="left"
+      >
         <div className="panel">
           <h2>Drawer demo</h2>
           <p>

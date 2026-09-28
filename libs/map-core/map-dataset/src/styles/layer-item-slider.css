@@ -56,8 +56,7 @@
 
 .map-range-slider:focus::-webkit-slider-runnable-track,
 .layer-item-slider:focus::-webkit-slider-runnable-track,
-.layer-item__opacity
-  input[type='range']:focus::-webkit-slider-runnable-track {
+.layer-item__opacity input[type='range']:focus::-webkit-slider-runnable-track {
   background: transparent;
 }
 

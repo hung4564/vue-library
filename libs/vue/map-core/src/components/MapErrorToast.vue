@@ -52,7 +52,11 @@ onUnmounted(() => {
     aria-live="polite"
   >
     <span class="map-error-toast__message">{{ message }}</span>
-    <button type="button" class="map-error-toast__action" @click="openErrors">
+    <button
+      type="button"
+      class="map-error-toast__action"
+      @click="openErrors"
+    >
       Open errors
     </button>
     <button

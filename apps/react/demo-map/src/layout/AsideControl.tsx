@@ -2,15 +2,15 @@ import './demo-nav.css';
 
 import { getDemoAsideNavItems } from '@hungpvq/demo-map-datasets';
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
-  MapCommonButton,
   ModuleContainer,
   useLang,
   useMap,
+  useMapControl,
   useShow,
-  useToolbarControl,
 } from '@hungpvq/react-map-core';
 import { mdiMenu } from '@mdi/js';
 import { useEffect, useMemo } from 'react';
@@ -20,7 +20,7 @@ const NAV_ITEMS = getDemoAsideNavItems('react');
 
 export function AsideControl(props: WithMapPropType & { show?: boolean }) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps } = useMap({
+  const { mapId, order } = useMap({
     ...merged,
     controlId: 'asideControl',
   });
@@ -34,15 +34,25 @@ export function AsideControl(props: WithMapPropType & { show?: boolean }) {
     });
   }, [registerLocale]);
 
-  const { state, control } = useToolbarControl(mapId, merged, {
-    kind: 'single',
+  const { moduleContainerProps, control } = useMapControl(mapId, {
     id: 'asideControl',
-    getState: () => ({
-      visible: true,
-      active: show,
-      title: trans('map.aside-control.title'),
-      icon: { type: 'mdi' as const, path: mdiMenu },
-    }),
+    panelKind: 'sidebar',
+    title: trans('map.aside-control.title'),
+    position: merged.position,
+    order,
+    controlLayout: merged.controlLayout,
+    controlVisible: merged.controlVisible,
+    buttonInMobile: merged.buttonInMobile,
+    show,
+    setShow: (value) => toggleShow(value),
+    actions: [{ type: 'asideControl', run: () => toggleShow() }],
+    getButtonState: () =>
+      mdiButtonState(mdiMenu, {
+        visible: true,
+        active: show,
+        title: trans('map.aside-control.title'),
+        order,
+      }),
     onClick: () => toggleShow(),
   });
 
@@ -53,17 +63,6 @@ export function AsideControl(props: WithMapPropType & { show?: boolean }) {
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : null
-      }
       draggable={(bind) => (
         <DraggableItemSideBar
           show={show}
@@ -78,8 +77,14 @@ export function AsideControl(props: WithMapPropType & { show?: boolean }) {
         >
           <ul className="v-list">
             {navItems.map((item) => (
-              <li key={item.to} className="v-list-item">
-                <Link to={item.to} onClick={() => toggleShow(false)}>
+              <li
+                key={item.to}
+                className="v-list-item"
+              >
+                <Link
+                  to={item.to}
+                  onClick={() => toggleShow(false)}
+                >
                   {item.label}
                 </Link>
               </li>

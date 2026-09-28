@@ -34,8 +34,15 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <DraggableContainer containerId="demo-custom-card" class="demo-page">
-    <DraggableItemSideBar show title="Controls" location="left">
+  <DraggableContainer
+    containerId="demo-custom-card"
+    class="demo-page"
+  >
+    <DraggableItemSideBar
+      show
+      title="Controls"
+      location="left"
+    >
       <div class="panel">
         <h2>Custom card</h2>
         <p>
@@ -46,7 +53,11 @@ onUnmounted(() => {
       </div>
     </DraggableItemSideBar>
 
-    <DraggableItemSideBar show title="Sidebar (global)" location="right">
+    <DraggableItemSideBar
+      show
+      title="Sidebar (global)"
+      location="right"
+    >
       <div class="panel">
         <p>
           Sidebar uses global card (store) — no local override API on shell.

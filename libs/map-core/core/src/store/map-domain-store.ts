@@ -93,3 +93,20 @@ export function ensureMapDomainStore<T>(mapId: string, key: string): T {
 
   return store;
 }
+
+/** Read domain bag without creating. */
+export function peekMapDomainStore<T>(
+  mapId: string,
+  key: string,
+): T | undefined {
+  if (!isUsableMapId(mapId)) return undefined;
+  return getMapCoreRootStore()[mapId]?.[key] as T | undefined;
+}
+
+/** Drop a domain bag key on `map:core[mapId]` (no-op if missing). */
+export function deleteMapDomainStore(mapId: string, key: string): void {
+  if (!isUsableMapId(mapId)) return;
+  const entry = getMapCoreRootStore()[mapId];
+  if (!entry || !(key in entry)) return;
+  delete entry[key];
+}

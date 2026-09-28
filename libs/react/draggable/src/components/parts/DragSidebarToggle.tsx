@@ -18,7 +18,11 @@ export function DragSidebarToggle({
   const { SidebarExpandedIcon, SidebarCloseExpandedIcon } = useIcon();
 
   return (
-    <button type="button" onClick={onClick} {...props}>
+    <button
+      type="button"
+      onClick={onClick}
+      {...props}
+    >
       {expand ? (
         <SidebarExpandedIcon size={'16px'} />
       ) : (

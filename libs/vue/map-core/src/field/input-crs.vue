@@ -242,7 +242,10 @@ onBeforeUnmount(() => {
     <label v-if="label">
       {{ label }}
     </label>
-    <div ref="wrapRef" class="input-container input-crs__wrap">
+    <div
+      ref="wrapRef"
+      class="input-container input-crs__wrap"
+    >
       <input
         :value="query"
         type="text"

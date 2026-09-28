@@ -102,14 +102,20 @@ export function MultiStyle({
           onClick={() => onRemoveStyleLayer(tab)}
           disabled={!tab}
         >
-          <Icon path={mdiDelete} size="14px" />
+          <Icon
+            path={mdiDelete}
+            size="14px"
+          />
         </MapControlButton>
         <MapControlButton
           variant="text"
           className="tab-item tab-add clickable"
           onClick={() => setShowAdd(!showAdd)}
         >
-          <Icon path={!showAdd ? mdiPlus : mdiClose} size="14px" />
+          <Icon
+            path={!showAdd ? mdiPlus : mdiClose}
+            size="14px"
+          />
         </MapControlButton>
       </div>
       {showAdd ? (

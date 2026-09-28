@@ -1,9 +1,16 @@
 <template>
   <span class="mgmt-item-meta">
-    <span v-if="typeLabel" class="mgmt-type" :data-type="typeKey">{{
-      typeLabel
-    }}</span>
-    <span class="mgmt-item-title" :title="title">{{ title }}</span>
+    <span
+      v-if="typeLabel"
+      class="mgmt-type"
+      :data-type="typeKey"
+      >{{ typeLabel }}</span
+    >
+    <span
+      class="mgmt-item-title"
+      :title="title"
+      >{{ title }}</span
+    >
   </span>
 </template>
 

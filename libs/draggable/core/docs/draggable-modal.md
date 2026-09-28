@@ -49,13 +49,13 @@ A11y: root uses `role="dialog"`, `aria-modal`, Esc closes, focus moves into the 
 
 Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
 
-| Vue             | React        | Description                                      |
-| --------------- | ------------ | ------------------------------------------------ |
-| `default`       | `children`   | Content of the modal.                            |
-| `pre-title`     | `preTitle`   | Before the title group.                          |
-| `title`         | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
-| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
-| `extra-btn`     | `extraBtn`   | Trailing header actions after the spacer.        |
+| Vue           | React        | Description                                                |
+| ------------- | ------------ | ---------------------------------------------------------- |
+| `default`     | `children`   | Content of the modal.                                      |
+| `pre-title`   | `preTitle`   | Before the title group.                                    |
+| `title`       | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
+| `after-title` | `afterTitle` | Immediately after title (before spacer).                   |
+| `extra-btn`   | `extraBtn`   | Trailing header actions after the spacer.                  |
 
 ## Usage
 
@@ -68,7 +68,12 @@ import { DraggableContainer, DraggableModal } from '@hungpvq/vue-draggable';
 
 <template>
   <DraggableContainer>
-    <DraggableModal title="Confirm" show :width="480" :height="280">
+    <DraggableModal
+      title="Confirm"
+      show
+      :width="480"
+      :height="280"
+    >
       <div style="padding: 12px">Modal content</div>
     </DraggableModal>
   </DraggableContainer>

@@ -1,10 +1,15 @@
 import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import type {
+  ButtonInMobile,
   ControlLayout,
   ResolvedControlLayout,
   WithMapPropType,
 } from '@hungpvq/map-core';
-import { resolveControlLayout, subscribeMapReady } from '@hungpvq/map-core';
+import {
+  resolveControlLayout,
+  resolveEffectiveButtonInMobile,
+  subscribeMapReady,
+} from '@hungpvq/map-core';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import { MapContext } from '../context/MapContext';
@@ -12,11 +17,16 @@ import { getMap } from '../store/store';
 
 export function useResolvedControlLayout(
   controlLayout?: ControlLayout,
+  controlButtonInMobile?: ButtonInMobile,
 ): ResolvedControlLayout {
   const context = useContext(MapContext);
   return resolveControlLayout(controlLayout, {
     isMobile: !!context?.isMobile,
-    buttonInMobile: context?.buttonInMobile ?? 'button',
+    buttonInMobile:
+      resolveEffectiveButtonInMobile(
+        controlButtonInMobile,
+        context?.buttonInMobile,
+      ) ?? 'button',
   });
 }
 

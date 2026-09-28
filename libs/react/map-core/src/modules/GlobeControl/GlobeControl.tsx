@@ -9,10 +9,8 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiWeb } from '@mdi/js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
@@ -35,11 +33,7 @@ export function GlobeControl(props: WithMapPropType) {
     detachProjectionRef.current = null;
   }, []);
 
-  const { callMap, mapId, moduleContainerProps, order } = useMap(
-    { ...mergedProps, controlId: 'mapGlobeControl' },
-    onInit,
-    onDestroy,
-  );
+  const { callMap, mapId, order } = useMap(mergedProps, onInit, onDestroy);
   const { trans } = useLang(mapId);
 
   function toggle() {
@@ -48,14 +42,11 @@ export function GlobeControl(props: WithMapPropType) {
     });
   }
 
-  useRegisterMapControl(mapId, {
+  const { moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapGlobeControl',
     panelKind: 'button',
-    buttonPosition: mergedProps.position,
-    getProps: () => ({
-      position: mergedProps.position,
-      controlLayout: mergedProps.controlLayout,
-    }),
+    from: mergedProps,
+    order,
     actions: [
       {
         type: 'mapGlobeControl',
@@ -64,12 +55,7 @@ export function GlobeControl(props: WithMapPropType) {
         },
       },
     ],
-  });
-
-  const { state, control } = useToolbarControl(mapId, mergedProps, {
-    kind: 'single',
-    id: 'mapGlobeControl',
-    getState: () =>
+    getButtonState: () =>
       mdiButtonState(mdiWeb, {
         visible: true,
         active: isGlobeProjection(currentProjection),
@@ -83,20 +69,5 @@ export function GlobeControl(props: WithMapPropType) {
     control.sync();
   }, [currentProjection, control]);
 
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e);
-            }}
-          />
-        ) : null
-      }
-    />
-  );
+  return <ModuleContainer {...moduleContainerProps} />;
 }

@@ -21,7 +21,7 @@ import {
   ModuleContainer,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
 } from '@hungpvq/vue-map-core';
 import { computed, ref, watch } from 'vue';
 
@@ -95,7 +95,7 @@ function onUpdateShow(val: boolean) {
   if (!val) handleClose();
 }
 
-const { panelBind } = useRegisterMapControl(mapId, {
+const { panelBind } = useMapControl(mapId, {
   id: 'mapLayerDetail',
   panelKind: 'popup',
   title: () => trans.value('map.layer-control.info.title'),
@@ -139,7 +139,10 @@ const { panelBind } = useRegisterMapControl(mapId, {
         <template #title>
           {{ trans('map.layer-control.info.title') }}
         </template>
-        <template v-if="view" #after-title>
+        <template
+          v-if="view"
+          #after-title
+        >
           <DatasetMenus
             :menus="layerTitleMenus"
             :data="view"

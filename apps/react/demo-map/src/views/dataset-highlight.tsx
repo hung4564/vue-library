@@ -17,7 +17,6 @@ import {
   useMapHighlight,
 } from '@hungpvq/react-map-dataset';
 import { DevtoolsControl } from '@hungpvq/react-map-devtools';
-import { loggerFactory } from '@hungpvq/shared-log';
 import { useEffect } from 'react';
 
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
@@ -26,9 +25,6 @@ import { MapPageShell } from '../components/MapPageShell';
 import { loadHighlightDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
-
-loggerFactory.enable('map:highlight');
-loggerFactory.enable('demo:highlight');
 
 function HighlightDemoBindings() {
   const { mapId } = useMap();
@@ -65,7 +61,10 @@ export function DatasetHighlightPage() {
           show
           endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
         />
-        <IdentifyControl position="top-right" immediately />
+        <IdentifyControl
+          position="top-right"
+          immediately
+        />
         <ComponentManagementControl />
         <ZoomControl />
         <BaseMapControl position="bottom-left" />

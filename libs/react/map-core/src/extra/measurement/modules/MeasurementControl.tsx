@@ -49,8 +49,7 @@ import {
 import { useEventMap } from '../../event/hook/useEvent';
 import { useMapImage } from '../../image/store';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useMapControl } from '../../registry/useMapControl';
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
 import { MeasurementSettingPopup } from './MeasurementSettingPopup';
@@ -97,11 +96,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
     (key: string, params?: Record<string, string | number>) => string
   >((key) => key);
 
-  const { callMap, mapId, moduleContainerProps, order } = useMap(
-    { ...merged, controlId: 'mapMeasurementControl' },
-    onInit,
-    onDestroy,
-  );
+  const { callMap, mapId, order } = useMap(merged, onInit, onDestroy);
   const crsHandle = useMapCrsItems(mapId);
   const displayCrsHandle = useMapCrsDisplayEpsgs(mapId);
   const imageHandle = useMapImage(mapId);
@@ -302,22 +297,6 @@ export function MeasurementControl(props: MeasurementControlProps) {
     [session],
   );
 
-  const toolbarConfig = useMemo(
-    () => ({
-      kind: 'module' as const,
-      moduleId: 'mapMeasurementControl',
-      order: order,
-      orientation: 'row' as const,
-      buttons: [...buttonShow, ...buttonHandle, ...(props.actions || [])].map(
-        toToolbarButton,
-      ),
-    }),
-    [order, buttonShow, buttonHandle, props.actions, toToolbarButton],
-  );
-
-  const { state, control } = useToolbarControl(mapId, merged, toolbarConfig);
-  controlRef.current = control;
-
   const registerActions = useMemo(
     () =>
       [...buttonShow, ...buttonHandle, ...(props.actions || [])].map(
@@ -332,17 +311,25 @@ export function MeasurementControl(props: MeasurementControlProps) {
     [buttonShow, buttonHandle, props.actions, toToolbarButton],
   );
 
-  useRegisterMapControl(mapId, {
+  const { moduleContainerProps, state, control } = useMapControl(mapId, {
     id: 'mapMeasurementControl',
     panelKind: 'button',
-    buttonPosition: merged.position,
+    from: merged,
+    order,
+    buttonSlot: 'custom',
     defaultActionType: 'distance',
-    getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-    }),
     actions: registerActions,
+    toolbar: {
+      kind: 'module',
+      moduleId: 'mapMeasurementControl',
+      order,
+      orientation: 'row',
+      buttons: [...buttonShow, ...buttonHandle, ...(props.actions || [])].map(
+        toToolbarButton,
+      ),
+    },
   });
+  controlRef.current = control;
 
   useEffect(() => {
     control.sync();
@@ -384,7 +371,10 @@ export function MeasurementControl(props: MeasurementControlProps) {
     <ModuleContainer
       {...moduleContainerProps}
       btn={
-        <MapControlGroupButton row className="map-measurement-control">
+        <MapControlGroupButton
+          row
+          className="map-measurement-control"
+        >
           {moduleState &&
             Object.entries(moduleState).map(([id, btn]) =>
               btn && btn.visible !== false ? (

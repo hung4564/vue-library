@@ -24,7 +24,10 @@ function DetailRow({
       <div className="log-viewer__detail-value">{children}</div>
       {copyValue ? (
         <div className="log-viewer__detail-copy">
-          <MapCopyButton title={`Copy ${label}`} value={copyValue} />
+          <MapCopyButton
+            title={`Copy ${label}`}
+            value={copyValue}
+          />
         </div>
       ) : null}
     </div>
@@ -42,7 +45,10 @@ export function LogDetailPanel({
 }) {
   if (!log) {
     return (
-      <aside className="log-viewer__detail" aria-label="Log details">
+      <aside
+        className="log-viewer__detail"
+        aria-label="Log details"
+      >
         <div className="log-viewer__detail-empty">Select a log to inspect</div>
       </aside>
     );
@@ -52,7 +58,10 @@ export function LogDetailPanel({
   const objects = objectArgs(log);
 
   return (
-    <aside className="log-viewer__detail" aria-label="Log details">
+    <aside
+      className="log-viewer__detail"
+      aria-label="Log details"
+    >
       <div className="log-viewer__detail-h">
         <strong>{title}</strong>
         <div className="log-viewer__detail-h-actions">
@@ -84,27 +93,42 @@ export function LogDetailPanel({
         <DetailRow label="Message">{textMessage(log)}</DetailRow>
       ) : null}
       {log.header.namespaces[0] ? (
-        <DetailRow label="Namespace" copyValue={log.header.namespaces[0]}>
+        <DetailRow
+          label="Namespace"
+          copyValue={log.header.namespaces[0]}
+        >
           <code className="log-viewer__mono">{log.header.namespaces[0]}</code>
         </DetailRow>
       ) : null}
       {log.header.actionId ? (
-        <DetailRow label="actionId" copyValue={log.header.actionId}>
+        <DetailRow
+          label="actionId"
+          copyValue={log.header.actionId}
+        >
           <code className="log-viewer__mono">{log.header.actionId}</code>
         </DetailRow>
       ) : null}
       {log.header.spanId ? (
-        <DetailRow label="spanId" copyValue={log.header.spanId}>
+        <DetailRow
+          label="spanId"
+          copyValue={log.header.spanId}
+        >
           <code className="log-viewer__mono">{log.header.spanId}</code>
         </DetailRow>
       ) : null}
       {log.header.parentSpanId ? (
-        <DetailRow label="parentSpanId" copyValue={log.header.parentSpanId}>
+        <DetailRow
+          label="parentSpanId"
+          copyValue={log.header.parentSpanId}
+        >
           <code className="log-viewer__mono">{log.header.parentSpanId}</code>
         </DetailRow>
       ) : null}
       {log.header.requestId ? (
-        <DetailRow label="requestId (HTTP)" copyValue={log.header.requestId}>
+        <DetailRow
+          label="requestId (HTTP)"
+          copyValue={log.header.requestId}
+        >
           <code className="log-viewer__mono">{log.header.requestId}</code>
         </DetailRow>
       ) : null}
@@ -151,7 +175,10 @@ export function LogDetailPanel({
         <div className="log-viewer__detail-args">
           <div className="log-viewer__detail-args-h">Args</div>
           {objects.map((arg, index) => (
-            <div key={index} className="log-viewer__detail-arg">
+            <div
+              key={index}
+              className="log-viewer__detail-arg"
+            >
               <TreeItem data={arg} />
             </div>
           ))}

@@ -29,14 +29,21 @@ export function BasemapPage() {
         <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
-        <BaseMapControl position="bottom-left" showOpacity />
+        <BaseMapControl
+          position="bottom-left"
+          showOpacity
+        />
         <BaseMapTagControl position="bottom-left" />
         <DemoHelpPanel />
       </Map>
       {mapId ? (
         <div className="base-map-card-demo">
           <MapCard>
-            <BaseMapCard mapId={mapId} showOpacity allowAddBasemap />
+            <BaseMapCard
+              mapId={mapId}
+              showOpacity
+              allowAddBasemap
+            />
           </MapCard>
         </div>
       ) : null}

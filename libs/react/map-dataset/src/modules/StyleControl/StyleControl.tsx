@@ -13,7 +13,7 @@ import {
   RegistryItem,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
 import { copyByJson } from '@hungpvq/shared';
@@ -26,12 +26,12 @@ export function StyleControl({
   item: IDataset;
   onClose?: () => void;
 }) {
-  const { mapId, moduleContainerProps, callMap } = useMap({
+  const { mapId, callMap } = useMap({
     controlId: 'mapStyleControl',
   });
   const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(false);
-  const { panelPosition } = useRegisterMapControl(mapId, {
+  const { panelPosition, moduleContainerProps } = useMapControl(mapId, {
     id: 'mapStyleControl',
     panelKind: 'sidebar',
     title: trans('map.style-control.title'),

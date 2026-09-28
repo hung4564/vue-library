@@ -30,7 +30,10 @@ export function ListItem({
           }}
         >
           <div className="draggable-handle__icon">
-            <Icon path={mdiArrowUpDown} size={ICON_SIZE} />
+            <Icon
+              path={mdiArrowUpDown}
+              size={ICON_SIZE}
+            />
           </div>
         </div>
       )}

@@ -271,7 +271,10 @@ export function ToolbarControl(props: ToolbarControlProps) {
                     onPointerDown={(e) => e.stopPropagation()}
                   >
                     {corner.split.overflow.map((group) => (
-                      <MapControlGroupButton key={group.id} row>
+                      <MapControlGroupButton
+                        key={group.id}
+                        row
+                      >
                         {group.buttons.map((btn) => (
                           <MapCommonButton
                             key={btn.id}
@@ -302,10 +305,16 @@ export function ToolbarControl(props: ToolbarControlProps) {
     <ModuleContainer
       {...moduleContainerProps}
       btn={
-        <div ref={rootRef} className="map-toolbar-control">
+        <div
+          ref={rootRef}
+          className="map-toolbar-control"
+        >
           <MapControlGroupButton row>
             {toolbarSplit.visible.map((group) => (
-              <MapControlGroupButton key={group.id} row>
+              <MapControlGroupButton
+                key={group.id}
+                row
+              >
                 {group.buttons.map((btn) => (
                   <MapCommonButton
                     key={btn.id}
@@ -328,9 +337,15 @@ export function ToolbarControl(props: ToolbarControlProps) {
             ) : null}
           </MapControlGroupButton>
           {overflowOpen ? (
-            <div className={toolbarOverflowPanelClassName(pos)} role="menu">
+            <div
+              className={toolbarOverflowPanelClassName(pos)}
+              role="menu"
+            >
               {toolbarSplit.overflow.map((group) => (
-                <MapControlGroupButton key={group.id} row>
+                <MapControlGroupButton
+                  key={group.id}
+                  row
+                >
                   {group.buttons.map((btn) => (
                     <MapCommonButton
                       key={btn.id}

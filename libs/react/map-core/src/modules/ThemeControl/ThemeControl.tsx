@@ -30,8 +30,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
@@ -61,10 +60,7 @@ export function ThemeControl({
   ...props
 }: ThemeControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap({
-    ...mergedProps,
-    controlId: 'mapThemeControl',
-  });
+  const { mapId, order } = useMap(mergedProps);
   const { trans } = useLang(mapId);
   const storageOpts = scope === 'map' ? { mapId } : undefined;
   const [mode, setMode] = useState<MapThemeMode>(() =>
@@ -134,13 +130,15 @@ export function ThemeControl({
     applyMode(toggleTarget);
   }
 
-  useRegisterMapControl(mapId, {
+  const titleKey = getMapThemeLocaleKey(toggleTarget);
+
+  const { moduleContainerProps, state, control } = useMapControl(mapId, {
     id: 'mapThemeControl',
     panelKind: 'button',
-    buttonPosition: mergedProps.position,
+    from: mergedProps,
+    order,
+    buttonSlot: 'custom',
     getProps: () => ({
-      position: mergedProps.position,
-      controlLayout: mergedProps.controlLayout,
       themes: themeModes,
       scope,
     }),
@@ -150,14 +148,7 @@ export function ThemeControl({
         run: () => toggleTheme(),
       },
     ],
-  });
-
-  const titleKey = getMapThemeLocaleKey(toggleTarget);
-
-  const { state, control } = useToolbarControl(mapId, mergedProps, {
-    kind: 'single',
-    id: 'mapThemeControl',
-    getState: () =>
+    getButtonState: () =>
       mdiButtonState(toggleIcon, {
         visible: true,
         order,
@@ -174,7 +165,10 @@ export function ThemeControl({
     <ModuleContainer
       {...moduleContainerProps}
       btn={
-        <MapControlGroupButton row className="button-group-hover-expand">
+        <MapControlGroupButton
+          row
+          className="button-group-hover-expand"
+        >
           {state ? (
             <MapCommonButton
               option={state}

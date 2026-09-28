@@ -40,12 +40,12 @@ Use these variables to customize the look and feel of the entire map library.
 
 ### Primary vs accent
 
-| Token | Role | Light default |
-| --- | --- | --- |
-| `--map-primary-color` | Brand / chrome: active toolbar icons (`--map-button-active-color`), nav emphasis | `#004e98` |
-| `--map-primary-hover-color` | Hover for primary surfaces | `#003a72` |
-| `--map-on-primary-color` | Foreground on solid primary/accent fills (e.g. `variant="filled"` label) | `#ffffff` |
-| `--map-accent-color` | CTA and interactive accent: `MapControlButton` `filled`/`tonal`, `--map-status-active-color`, card highlight tints | `#1a73e8` |
+| Token                       | Role                                                                                                               | Light default |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------- |
+| `--map-primary-color`       | Brand / chrome: active toolbar icons (`--map-button-active-color`), nav emphasis                                   | `#004e98`     |
+| `--map-primary-hover-color` | Hover for primary surfaces                                                                                         | `#003a72`     |
+| `--map-on-primary-color`    | Foreground on solid primary/accent fills (e.g. `variant="filled"` label)                                           | `#ffffff`     |
+| `--map-accent-color`        | CTA and interactive accent: `MapControlButton` `filled`/`tonal`, `--map-status-active-color`, card highlight tints | `#1a73e8`     |
 
 Override both when rebranding; overriding only `--map-primary-color` leaves CTA buttons on the default accent. Themes set both in [`themes.css`](../../src/style/themes.css) (e.g. `.map-theme-light`).
 
@@ -77,16 +77,16 @@ Stable root: `MapControlButton` (Vue/React map-core). Experimental chrome: `MapB
 
 CSS classes: `map-control-button--{variant}`, `map-control-button--size-{small|medium|large}`.
 
-| Token / class | Role | Default |
-| --- | --- | --- |
-| `--map-button-size` | Label-variant min-height; set by size class | `32px` (`medium`) |
-| `--map-button-pad-x` | Label-variant horizontal padding | `12px` |
-| `--map-button-font-size` | Label-variant font size | `12px` |
-| `--map-button-bg` | Icon chrome background | `var(--map-surface-color, #ffffff)` |
-| `--map-button-active-color` | Active icon color | `var(--map-primary-color, #004e98)` |
-| `--map-button-hover-bg` | Default hover fill | `var(--map-hover-color, #f5f5f5)` |
-| `--map-button-disabled-color` | Disabled icon color | `var(--map-disabled-color, rgba(0,0,0,0.25))` |
-| `--map-on-primary-color` | `filled` label on accent | `var(--map-text-inverse, #fff)` |
+| Token / class                 | Role                                        | Default                                       |
+| ----------------------------- | ------------------------------------------- | --------------------------------------------- |
+| `--map-button-size`           | Label-variant min-height; set by size class | `32px` (`medium`)                             |
+| `--map-button-pad-x`          | Label-variant horizontal padding            | `12px`                                        |
+| `--map-button-font-size`      | Label-variant font size                     | `12px`                                        |
+| `--map-button-bg`             | Icon chrome background                      | `var(--map-surface-color, #ffffff)`           |
+| `--map-button-active-color`   | Active icon color                           | `var(--map-primary-color, #004e98)`           |
+| `--map-button-hover-bg`       | Default hover fill                          | `var(--map-hover-color, #f5f5f5)`             |
+| `--map-button-disabled-color` | Disabled icon color                         | `var(--map-disabled-color, rgba(0,0,0,0.25))` |
+| `--map-on-primary-color`      | `filled` label on accent                    | `var(--map-text-inverse, #fff)`               |
 
 Guidance: dense lists (layer rows) → `size="small"`; header / toolbar beside draggable chrome → `medium` (matches 32×32 `hungpvq-draggable-button`). Size/variant helpers: `@hungpvq/map-core` (`resolveMapButtonSizePx`, `MAP_BUTTON_VARIANTS`, …).
 
@@ -96,22 +96,18 @@ Stable root: `MapCopyButton` (Vue/React map-core). Clipboard copy with short ico
 
 Built on `MapControlButton` + `@hungpvq/map-core` `createCopyFeedback` / `COPY_FEEDBACK_MS` (1500ms). Success: `mdiContentCopy` → `mdiCheck`, title → `copiedTitle` (“Copied”), then revert.
 
-| Prop | Default | Notes |
-| --- | --- | --- |
-| `value` | `''` | Text written to clipboard |
-| `title` | `'Copy'` | Idle tooltip / aria-label |
-| `copiedTitle` | `'Copied'` | Feedback tooltip / aria-label |
-| `variant` | `'plain'` | Same as `MapControlButton` |
-| `size` | `'small'` | Same as `MapControlButton` |
-| `iconSize` | `14` | SvgIcon / @mdi/react size (px) |
-| `disabled` | auto when empty/`—` | Or force via prop |
+| Prop          | Default             | Notes                          |
+| ------------- | ------------------- | ------------------------------ |
+| `value`       | `''`                | Text written to clipboard      |
+| `title`       | `'Copy'`            | Idle tooltip / aria-label      |
+| `copiedTitle` | `'Copied'`          | Feedback tooltip / aria-label  |
+| `variant`     | `'plain'`           | Same as `MapControlButton`     |
+| `size`        | `'small'`           | Same as `MapControlButton`     |
+| `iconSize`    | `14`                | SvgIcon / @mdi/react size (px) |
+| `disabled`    | auto when empty/`—` | Or force via prop              |
 
 ```vue
-<MapCopyButton
-  :value="row.value"
-  :title="trans('map.info-control.copy')"
-  :copied-title="trans('map.info-control.copied')"
-/>
+<MapCopyButton :value="row.value" :title="trans('map.info-control.copy')" :copied-title="trans('map.info-control.copied')" />
 ```
 
 ```tsx
@@ -132,15 +128,15 @@ Built on `MapControlButton` + `@hungpvq/map-core` `createCopyFeedback` / `COPY_F
 
 Named classes: `map-theme-light`, `map-theme-dark`, `map-theme-vibrant`, `map-theme-ocean`, `map-theme-forest`, `map-theme-sunset`, `map-theme-slate`.
 
-| Theme | Feel |
-| --- | --- |
-| `light` | Neutral white + blue |
-| `dark` | Charcoal + sky blue |
+| Theme     | Feel                             |
+| --------- | -------------------------------- |
+| `light`   | Neutral white + blue             |
+| `dark`    | Charcoal + sky blue              |
 | `vibrant` | Lavender panels + purple/magenta |
-| `ocean` | Aqua panels + teal/cyan |
-| `forest` | Sage panels + green |
-| `sunset` | Peach panels + coral/amber |
-| `slate` | Steel dark + cyan accent |
+| `ocean`   | Aqua panels + teal/cyan          |
+| `forest`  | Sage panels + green              |
+| `sunset`  | Peach panels + coral/amber       |
+| `slate`   | Steel dark + cyan accent         |
 
 Draggable overlays alias these as `--card-background-color` / `--card-color`. Apply a theme class on `html` (or use [`ThemeControl`](./module/ThemeControl.md) / `bootstrapMapTheme()`).
 
@@ -224,11 +220,11 @@ Map UI packages set `box-sizing: border-box` on their own roots so host apps **d
 *, *::before, *::after { box-sizing: border-box; border-width: 0; … }
 ```
 
-| Package CSS | Covers |
-|-------------|--------|
-| `@hungpvq/map-core/style.css` | `.map-container` (+ descendants), `.module__container`, `.map-context-menu`, `.map-error-toast` |
-| `@hungpvq/draggable` / `*-draggable/style.css` | Popup / modal / drawer / float / sidebar / card / context-menu portals |
-| `@hungpvq/map-debug/style.css` | Floating Devtools shell + viewers |
+| Package CSS                                    | Covers                                                                                          |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `@hungpvq/map-core/style.css`                  | `.map-container` (+ descendants), `.module__container`, `.map-context-menu`, `.map-error-toast` |
+| `@hungpvq/draggable` / `*-draggable/style.css` | Popup / modal / drawer / float / sidebar / card / context-menu portals                          |
+| `@hungpvq/map-debug/style.css`                 | Floating Devtools shell + viewers                                                               |
 
 Without border-box, patterns like `width: 100%` + horizontal padding (e.g. layer-detail rows in `.table-show-info`) overflow parents with `overflow: auto` and show an unwanted scrollbar.
 

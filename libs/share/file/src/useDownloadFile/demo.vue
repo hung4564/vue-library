@@ -45,7 +45,12 @@ const downloadBufferFile = () => {
   <div class="status">
     <p><b>Status:</b> {{ status }}</p>
     <p><b>Source:</b> {{ downloadingFrom }}</p>
-    <p v-if="error" class="error">❌ Error: {{ error }}</p>
+    <p
+      v-if="error"
+      class="error"
+    >
+      ❌ Error: {{ error }}
+    </p>
   </div>
 </template>
 

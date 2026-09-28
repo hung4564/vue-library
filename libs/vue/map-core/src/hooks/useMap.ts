@@ -6,7 +6,11 @@ import type {
   ResolvedControlLayout,
   WithMapPropType,
 } from '@hungpvq/map-core';
-import { resolveControlLayout, subscribeMapReady } from '@hungpvq/map-core';
+import {
+  resolveControlLayout,
+  resolveEffectiveButtonInMobile,
+  subscribeMapReady,
+} from '@hungpvq/map-core';
 import {
   computed,
   type ComputedRef,
@@ -24,6 +28,7 @@ import { getMap } from '../store/store';
 
 export function useResolvedControlLayout(
   controlLayout?: MaybeRefOrGetter<ControlLayout | undefined>,
+  controlButtonInMobile?: MaybeRefOrGetter<ButtonInMobile | undefined>,
 ): ComputedRef<ResolvedControlLayout> {
   const isMobile = inject<ComputedRef<boolean> | boolean | undefined>(
     '$map.isMobile',
@@ -35,7 +40,11 @@ export function useResolvedControlLayout(
   return computed(() =>
     resolveControlLayout(toValue(controlLayout), {
       isMobile: !!unref(isMobile),
-      buttonInMobile: unref(buttonInMobile) ?? 'button',
+      buttonInMobile:
+        resolveEffectiveButtonInMobile(
+          toValue(controlButtonInMobile),
+          unref(buttonInMobile),
+        ) ?? 'button',
     }),
   );
 }
@@ -149,6 +158,14 @@ export const withMapProps = {
     default: 'standalone',
     validator(value: string) {
       return ['standalone', 'toolbar', 'button'].indexOf(value) !== -1;
+    },
+  },
+  buttonInMobile: {
+    type: String,
+    default: undefined,
+    validator(value: string | undefined) {
+      if (value == null || value === '') return true;
+      return ['button', 'toolbar', 'menu'].indexOf(value) !== -1;
     },
   },
 };

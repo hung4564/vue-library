@@ -1,7 +1,10 @@
-﻿<template>
+<template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlGroupButton row class="map-measurement-control">
+      <MapControlGroupButton
+        row
+        class="map-measurement-control"
+      >
         <template v-for="(btn, id) in state">
           <MapCommonButton
             v-if="btn?.visible != false"
@@ -46,15 +49,18 @@ import {
 import { EventClick } from '@hungpvq/map-core/event';
 import {
   createMeasurementSession,
+  logger,
   type MeasureActionItem,
   MEASUREMENT_MAP_VIEW_IMAGE,
   type MeasurementModeType,
   type MeasurementUiState,
   resolveMeasurementToolbarStatus,
 } from '@hungpvq/map-core/measurement';
-import { logger } from '@hungpvq/map-core/measurement';
-import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-import { type ToolbarButtonConfig } from '@hungpvq/map-core/toolbar';
+import {
+  type MapControlButtonUIState,
+  mdiButtonState,
+  type ToolbarButtonConfig,
+} from '@hungpvq/map-core/toolbar';
 import {
   mdiAngleAcute,
   mdiClose,
@@ -81,8 +87,7 @@ import {
 import { useEventMap } from '../../event/hook/useEvent';
 import { useMapImage } from '../../image/store';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useMapControl } from '../../registry/useMapControl';
 import imageArrow from './img/arrow.png';
 import imageRounded from './img/rounded.png';
 import type { MeasurementControlProps } from './MeasurementControl.props';
@@ -112,11 +117,7 @@ const ui = reactive<MeasurementUiState>({
   setting: { show: true, fields: [], maxLength: 0 },
 });
 
-const { callMap, mapId, moduleContainerProps, order } = useMap(
-  props,
-  onInit,
-  onDestroy,
-);
+const { callMap, mapId, order } = useMap(props, onInit, onDestroy);
 
 const crsHandle = useMapCrsItems(mapId.value);
 const displayCrsHandle = useMapCrsDisplayEpsgs(mapId.value);
@@ -294,25 +295,17 @@ function toToolbarButton(action: MeasureActionItem): ToolbarButtonConfig {
   };
 }
 
-const { state, control } = useToolbarControl(mapId.value, props, {
-  moduleId: 'mapMeasurementControl',
-  kind: 'module',
-  order: order.value,
-  orientation: 'row',
-  buttons: [...button_show, ...button_handle, ...(props.actions || [])].map(
-    toToolbarButton,
-  ),
-});
-
-useRegisterMapControl(mapId, {
+const {
+  moduleContainerProps,
+  state: toolbarState,
+  control,
+} = useMapControl(mapId, {
   id: 'mapMeasurementControl',
   panelKind: 'button',
-  buttonPosition: () => props.position,
+  from: props,
+  order,
+  buttonSlot: 'custom',
   defaultActionType: 'distance',
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
   actions: () =>
     [...button_show, ...button_handle, ...(props.actions || [])].map(
       (action) => ({
@@ -320,7 +313,20 @@ useRegisterMapControl(mapId, {
         run: (e) => control.onAction(action.type, e as MouseEvent),
       }),
     ),
+  toolbar: {
+    moduleId: 'mapMeasurementControl',
+    kind: 'module',
+    order: order.value,
+    orientation: 'row',
+    buttons: [...button_show, ...button_handle, ...(props.actions || [])].map(
+      toToolbarButton,
+    ),
+  },
 });
+const state = computed(
+  () =>
+    toolbarState.value as Record<string, MapControlButtonUIState> | undefined,
+);
 
 watch(
   [() => ui.measurementType, () => ui.coordinates, () => ui.setting.show],

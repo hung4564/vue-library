@@ -1,5 +1,9 @@
 <template>
-  <div class="layer-item__icon-content" :class="kindClass" :title="kindTitle">
+  <div
+    class="layer-item__icon-content"
+    :class="kindClass"
+    :title="kindTitle"
+  >
     <SvgIcon
       size="14"
       type="mdi"
@@ -7,7 +11,12 @@
       class="spin"
       v-if="loading"
     />
-    <SvgIcon size="14" type="mdi" :path="iconPath" v-else />
+    <SvgIcon
+      size="14"
+      type="mdi"
+      :path="iconPath"
+      v-else
+    />
   </div>
 </template>
 <script setup lang="ts">

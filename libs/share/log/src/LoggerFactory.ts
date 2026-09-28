@@ -54,7 +54,7 @@ export class LoggerFactory {
   /** Queryable store; default noop (ConsoleAdapter companion). */
   private dataStore: LogDataStore = noopLogDataStore;
 
-  private enableAll = true;
+  private enableAll = false;
   private disabledNamespaces: Set<string> = new Set();
   private enabledNamespaces: Set<string> = new Set();
 

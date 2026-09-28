@@ -21,40 +21,30 @@ The domain bag (`MapDatasetStore` on `map:core[mapId].dataset`) is a **plain obj
 
 `useMapDataset` subscribes to those listeners and exposes **`datasetVersion`**. List UIs must depend on that value — do **not** `watch(getDatasetIds())` or assume `getDatasetIds().value` is a Vue Ref (ids are often mutated in place with the same array reference).
 
-| Framework | `datasetVersion` | Typical usage |
-| --- | --- | --- |
-| Vue | `Ref<number>` | `watch([datasetVersion, mapId], refresh, { immediate: true })` or `void datasetVersion.value` inside `computed` |
-| React | `number` | `useEffect(..., [datasetVersion])` or read it in render |
+| Framework | `datasetVersion` | Typical usage                                                                                                   |
+| --------- | ---------------- | --------------------------------------------------------------------------------------------------------------- |
+| Vue       | `Ref<number>`    | `watch([datasetVersion, mapId], refresh, { immediate: true })` or `void datasetVersion.value` inside `computed` |
+| React     | `number`         | `useEffect(..., [datasetVersion])` or read it in render                                                         |
 
 Built-in hosts (`LayerControl` / `LayerList`, `DatasetControl`, `IdentifyControl`, …) already follow this. Custom list UIs should do the same.
 
 ## API
 
 ```ts
-const {
-  addDataset,
-  removeDataset,
-  removeComponent,
-  getDatasets,
-  getDatasetIds,
-  getAllComponentsByType,
-  getStoreDataset,
-  setMapId,
-  datasetVersion,
-} = useMapDataset(mapId);
+const { addDataset, removeDataset, removeComponent, getDatasets, getDatasetIds, getAllComponentsByType, getStoreDataset, setMapId, datasetVersion } = useMapDataset(mapId);
 ```
 
-| Method | Role |
-| --- | --- |
-| `addDataset(dataset)` | Add tree to the map (respects `dependsOn`); notifies listeners |
-| `removeDataset(dataset)` | Remove tree from the map; notifies listeners |
-| `removeComponent(node)` | Remove one node (e.g. a list row); notifies listeners |
-| `getDatasets()` | Root datasets (snapshot) |
-| `getDatasetIds()` | Plain `{ value: string[] }` box of root ids (not framework-reactive) |
-| `getAllComponentsByType<T>(type)` | e.g. `'list'`, `'identify'` |
-| `getStoreDataset()` | Current `MapDatasetStore` or `undefined` |
-| `setMapId(id)` | Bind after mount |
-| `datasetVersion` | Bumped on `notifyMapDatasetStore` — drive list UI updates |
+| Method                            | Role                                                                 |
+| --------------------------------- | -------------------------------------------------------------------- |
+| `addDataset(dataset)`             | Add tree to the map (respects `dependsOn`); notifies listeners       |
+| `removeDataset(dataset)`          | Remove tree from the map; notifies listeners                         |
+| `removeComponent(node)`           | Remove one node (e.g. a list row); notifies listeners                |
+| `getDatasets()`                   | Root datasets (snapshot)                                             |
+| `getDatasetIds()`                 | Plain `{ value: string[] }` box of root ids (not framework-reactive) |
+| `getAllComponentsByType<T>(type)` | e.g. `'list'`, `'identify'`                                          |
+| `getStoreDataset()`               | Current `MapDatasetStore` or `undefined`                             |
+| `setMapId(id)`                    | Bind after mount                                                     |
+| `datasetVersion`                  | Bumped on `notifyMapDatasetStore` — drive list UI updates            |
 
 ```ts
 function onMapLoaded(map: MapSimple) {
@@ -68,9 +58,13 @@ function onMapLoaded(map: MapSimple) {
 ```ts
 const { mapId } = useMap(props);
 const { getDatasets, datasetVersion } = useMapDataset(mapId);
-watch([datasetVersion, mapId], () => {
-  views.value = getDatasets();
-}, { immediate: true });
+watch(
+  [datasetVersion, mapId],
+  () => {
+    views.value = getDatasets();
+  },
+  { immediate: true },
+);
 ```
 
 ### React — refresh a custom list

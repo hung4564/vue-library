@@ -16,29 +16,29 @@ dataset.add(createHighlightPart());
 dataset.add(createHighlightPart({ mode: 'outline', color: '#FFB703' }));
 ```
 
-| Option | Role |
-| --- | --- |
-| `mode` | `'default'` \| `'outline'` \| `'pulse'` \| `'changeColor'` \| `'custom'` \| … |
-| `color` / `durationMs` / `paint` | Style overrides |
-| `filterCreator` | Field name or `(feature) =>` MapLibre filter |
-| `data` | `{ type: 'local' }` (default), `{ type: 'vector-tile', strategy: 'feature-state' \| 'query', … }`, or `{ type: 'resolver', resolve }` |
-| `selection` | `{ policy: 'single' \| 'multiple', replaceScope: 'source' \| 'all', maxEntries? }` |
-| `presentation` | `{ popup?, clickAction?, onShow?, onHide? }` — `clickAction`: `'popup'` (default) \| `'detail'` \| `'none'` |
-| `pointer` | `{ click?, hover? }` — which map events may pick **this** dataset (default both `true`) |
-| `animate` / `createDefaultState` | Required for `mode: 'custom'` |
-| `stateKey` | Feature-state key when using VT feature-state |
+| Option                           | Role                                                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `mode`                           | `'default'` \| `'outline'` \| `'pulse'` \| `'changeColor'` \| `'custom'` \| …                                                         |
+| `color` / `durationMs` / `paint` | Style overrides                                                                                                                       |
+| `filterCreator`                  | Field name or `(feature) =>` MapLibre filter                                                                                          |
+| `data`                           | `{ type: 'local' }` (default), `{ type: 'vector-tile', strategy: 'feature-state' \| 'query', … }`, or `{ type: 'resolver', resolve }` |
+| `selection`                      | `{ policy: 'single' \| 'multiple', replaceScope: 'source' \| 'all', maxEntries? }`                                                    |
+| `presentation`                   | `{ popup?, clickAction?, onShow?, onHide? }` — `clickAction`: `'popup'` (default) \| `'detail'` \| `'none'`                           |
+| `pointer`                        | `{ click?, hover? }` — which map events may pick **this** dataset (default both `true`)                                               |
+| `animate` / `createDefaultState` | Required for `mode: 'custom'`                                                                                                         |
+| `stateKey`                       | Feature-state key when using VT feature-state                                                                                         |
 
 Cascade when calling `show` / `pickAt`: **call options → part → controller defaults**.
 
 ## Modes (migration from old factories)
 
-| Old factory | New |
-| --- | --- |
-| `createDatasetPartHighlightComponent()` | `createHighlightPart()` or `{ mode: 'default' }` |
-| `createDatasetPartShadowHighlightComponent(color)` | `{ mode: 'outline', color }` |
-| `createDatasetPartChangeColorHighlightComponent()` | `{ mode: 'changeColor' }` |
-| `createDatasetPartFeatureStateHighlightComponent(color)` | GeoJSON demos: `{ mode: 'pulse', color }` (`promoteId` on the **source**). Vector tiles: `{ mode: 'pulse', color, data: { type: 'vector-tile', strategy: 'feature-state' }, stateKey? }` |
-| `createDatasetPartCustomAnimateHighlightComponent(animate, createDefaultState, …)` | `{ mode: 'custom', animate, createDefaultState, filterCreator? }` |
+| Old factory                                                                        | New                                                                                                                                                                                      |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `createDatasetPartHighlightComponent()`                                            | `createHighlightPart()` or `{ mode: 'default' }`                                                                                                                                         |
+| `createDatasetPartShadowHighlightComponent(color)`                                 | `{ mode: 'outline', color }`                                                                                                                                                             |
+| `createDatasetPartChangeColorHighlightComponent()`                                 | `{ mode: 'changeColor' }`                                                                                                                                                                |
+| `createDatasetPartFeatureStateHighlightComponent(color)`                           | GeoJSON demos: `{ mode: 'pulse', color }` (`promoteId` on the **source**). Vector tiles: `{ mode: 'pulse', color, data: { type: 'vector-tile', strategy: 'feature-state' }, stateKey? }` |
+| `createDatasetPartCustomAnimateHighlightComponent(animate, createDefaultState, …)` | `{ mode: 'custom', animate, createDefaultState, filterCreator? }`                                                                                                                        |
 
 `useHighlightAnimation` is removed — custom paint loops go through `mode: 'custom'` or controller paint sessions.
 
@@ -77,32 +77,26 @@ Vue/React hosts **do not** call `clearHighlight` / `onDetailClose` / `onIdentify
 **Import:** `@hungpvq/map-dataset/highlight`  
 **Raw mitt (optional):** `useMapMittStore` / `getMapMittStore` from `@hungpvq/vue-map-core` or `@hungpvq/react-map-core`
 
-| API | Role |
-| --- | --- |
-| `bindHighlightMittBridge(mapId)` | Ensure listeners + return **clean disposer** (call on unmount) |
-| `releaseHighlightMittBridge(mapId)` | Drop one consumer ref; unbind when last |
-| `cleanHighlightMittBridge(mapId)` / `destroyHighlightMittBridge` | Force unbind (map / controller teardown) |
-| `emitHighlightAttributeTableClose` / `emitHighlightDetailClose` / `emitHighlightIdentifyClose` / `emitHighlightClear` | Host-friendly emit (`mapId` filled in) |
+| API                                                                                                                   | Role                                                           |
+| --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `bindHighlightMittBridge(mapId)`                                                                                      | Ensure listeners + return **clean disposer** (call on unmount) |
+| `releaseHighlightMittBridge(mapId)`                                                                                   | Drop one consumer ref; unbind when last                        |
+| `cleanHighlightMittBridge(mapId)` / `destroyHighlightMittBridge`                                                      | Force unbind (map / controller teardown)                       |
+| `emitHighlightAttributeTableClose` / `emitHighlightDetailClose` / `emitHighlightIdentifyClose` / `emitHighlightClear` | Host-friendly emit (`mapId` filled in)                         |
 
 **Close payload** (`MapDatasetClosePayload`): `{ mapId, item?, dataset? }`. Hosts always send `mapId`; attach `dataset` (and `item` for Detail) when known so app listeners can scope cleanup.
 
 **Clear payload** (`MapDatasetClearPayload`): `{ mapId, target, dataset? }` — `target` is the same value previously passed to `clearHighlight`.
 
-| Event (`MAP_DATASET_EVENT`) | Payload | Session effect |
-| --- | --- | --- |
-| `ATTRIBUTE_TABLE_CLOSE` | `{ mapId, dataset? }` | `clearHighlight('attribute-table')` |
-| `DETAIL_CLOSE` | `{ mapId, item?, dataset? }` | `onDetailClose` |
-| `IDENTIFY_CLOSE` | `{ mapId, dataset? }` (scoped filter when set) | `onIdentifyClose` |
-| `CLEAR` | `{ mapId, target, dataset? }` | `clearHighlight(target)` |
+| Event (`MAP_DATASET_EVENT`) | Payload                                        | Session effect                      |
+| --------------------------- | ---------------------------------------------- | ----------------------------------- |
+| `ATTRIBUTE_TABLE_CLOSE`     | `{ mapId, dataset? }`                          | `clearHighlight('attribute-table')` |
+| `DETAIL_CLOSE`              | `{ mapId, item?, dataset? }`                   | `onDetailClose`                     |
+| `IDENTIFY_CLOSE`            | `{ mapId, dataset? }` (scoped filter when set) | `onIdentifyClose`                   |
+| `CLEAR`                     | `{ mapId, target, dataset? }`                  | `clearHighlight(target)`            |
 
 ```ts
-import {
-  bindHighlightMittBridge,
-  emitHighlightAttributeTableClose,
-  emitHighlightDetailClose,
-  MAP_DATASET_EVENT,
-  type MapDatasetEvent,
-} from '@hungpvq/map-dataset/highlight';
+import { bindHighlightMittBridge, emitHighlightAttributeTableClose, emitHighlightDetailClose, MAP_DATASET_EVENT, type MapDatasetEvent } from '@hungpvq/map-dataset/highlight';
 import { useMapMittStore } from '@hungpvq/vue-map-core';
 // or: import { useMapMittStore } from '@hungpvq/react-map-core';
 
@@ -125,44 +119,44 @@ Hosts prefer **mitt emit** (above). FallbackResolver / core still call **session
 
 **Import:** `@hungpvq/map-dataset/identify`
 
-| API | Role |
-| --- | --- |
-| `paintHighlight(mapId, { intent, feature, dataset? })` | Paint one feature by UX intent |
-| `paintHighlights(mapId, { intent, features, dataset? })` | Clear intent then paint many (AttributeTable multi-select) |
-| `clearHighlight(mapId, intent \| { featureId } \| 'identify-session')` | Clear by intent, feature id, or identify session |
-| `onDetailClose(mapId, item?)` | Close Detail → hide `detail` + `hideEntry(featureId)` |
-| `onIdentifyClose(mapId)` | Turn off Identify → exclusive UI + clear identify |
-| `paintIdentifyResultFocus(mapId, child)` | Result-panel row focus → identify paint |
-| `clearIdentifyResultHighlight(mapId)` | Clear identify session paint |
-| `syncIdentifyPointerPick(mapId, clickActive)` | Identify owns click → `pointerClickEnabled = !clickActive` |
+| API                                                                    | Role                                                       |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `paintHighlight(mapId, { intent, feature, dataset? })`                 | Paint one feature by UX intent                             |
+| `paintHighlights(mapId, { intent, features, dataset? })`               | Clear intent then paint many (AttributeTable multi-select) |
+| `clearHighlight(mapId, intent \| { featureId } \| 'identify-session')` | Clear by intent, feature id, or identify session           |
+| `onDetailClose(mapId, item?)`                                          | Close Detail → hide `detail` + `hideEntry(featureId)`      |
+| `onIdentifyClose(mapId)`                                               | Turn off Identify → exclusive UI + clear identify          |
+| `paintIdentifyResultFocus(mapId, child)`                               | Result-panel row focus → identify paint                    |
+| `clearIdentifyResultHighlight(mapId)`                                  | Clear identify session paint                               |
+| `syncIdentifyPointerPick(mapId, clickActive)`                          | Identify owns click → `pointerClickEnabled = !clickActive` |
 
 ### UX matrix (library defaults)
 
-| Owner | When it paints |
-| --- | --- |
-| **Identify** | Only if the pick has **exactly 1** feature **and** Identify owns the hit (`hitAction` is not `detail` / `table`). Multi → clear identify, no paint. |
-| **Detail** | Paints the **single feature** being shown (`hitAction:'detail'` or menu detail). Close → mitt `DETAIL_CLOSE`. |
-| **Attribute table** | Paints **all selected rows** (`sources: ['attribute-table']` → `paintHighlights`). Close → mitt `ATTRIBUTE_TABLE_CLOSE`. |
-| **Identify → Detail / Table** | Identify clears its own paint; Detail / Table owns highlight afterward. |
+| Owner                         | When it paints                                                                                                                                      |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Identify**                  | Only if the pick has **exactly 1** feature **and** Identify owns the hit (`hitAction` is not `detail` / `table`). Multi → clear identify, no paint. |
+| **Detail**                    | Paints the **single feature** being shown (`hitAction:'detail'` or menu detail). Close → mitt `DETAIL_CLOSE`.                                       |
+| **Attribute table**           | Paints **all selected rows** (`sources: ['attribute-table']` → `paintHighlights`). Close → mitt `ATTRIBUTE_TABLE_CLOSE`.                            |
+| **Identify → Detail / Table** | Identify clears its own paint; Detail / Table owns highlight afterward.                                                                             |
 
-| Scenario | Behavior |
-| --- | --- |
-| **A** Identify → Detail → close | `hitAction:'detail'` → `paintHighlight(detail)`. Close → mitt `DETAIL_CLOSE`. |
-| **B** Multi → result panel | Multi → clear identify (no paint). Focus row → `paintIdentifyResultFocus` (one feature). |
-| **C** Menu Detail | Menu → `paintHighlight(detail)`. Close → mitt `DETAIL_CLOSE`. |
-| **D** Fit bounds | Camera only via `runFitBoundsMenuAction` — never paints highlight. |
-| **E** Attribute table | All selected features highlighted; empty selection clears. |
-| **F** Pointer vs Identify | Identify click active → `syncIdentifyPointerPick(true)` disables pointer click pick. |
+| Scenario                        | Behavior                                                                                 |
+| ------------------------------- | ---------------------------------------------------------------------------------------- |
+| **A** Identify → Detail → close | `hitAction:'detail'` → `paintHighlight(detail)`. Close → mitt `DETAIL_CLOSE`.            |
+| **B** Multi → result panel      | Multi → clear identify (no paint). Focus row → `paintIdentifyResultFocus` (one feature). |
+| **C** Menu Detail               | Menu → `paintHighlight(detail)`. Close → mitt `DETAIL_CLOSE`.                            |
+| **D** Fit bounds                | Camera only via `runFitBoundsMenuAction` — never paints highlight.                       |
+| **E** Attribute table           | All selected features highlighted; empty selection clears.                               |
+| **F** Pointer vs Identify       | Identify click active → `syncIdentifyPointerPick(true)` disables pointer click pick.     |
 
 ### Clear matrix
 
-| User action | Host emit / session |
-| --- | --- |
-| Close Detail | mitt `DETAIL_CLOSE` → `onDetailClose` |
-| Identify click elsewhere | `closeIdentifyExclusiveUi` + new paint |
-| Turn off Identify | mitt `IDENTIFY_CLOSE` → `onIdentifyClose` |
-| Close AttributeTable | mitt `ATTRIBUTE_TABLE_CLOSE` → `clearHighlight('attribute-table')` |
-| No orphan glow | Close mitt / `clearHighlight` / duration timers call `hideEntry(id)` |
+| User action              | Host emit / session                                                  |
+| ------------------------ | -------------------------------------------------------------------- |
+| Close Detail             | mitt `DETAIL_CLOSE` → `onDetailClose`                                |
+| Identify click elsewhere | `closeIdentifyExclusiveUi` + new paint                               |
+| Turn off Identify        | mitt `IDENTIFY_CLOSE` → `onIdentifyClose`                            |
+| Close AttributeTable     | mitt `ATTRIBUTE_TABLE_CLOSE` → `clearHighlight('attribute-table')`   |
+| No orphan glow           | Close mitt / `clearHighlight` / duration timers call `hideEntry(id)` |
 
 ```ts
 import { paintHighlight, paintIdentifyResultFocus } from '@hungpvq/map-dataset/identify';
@@ -183,34 +177,27 @@ After each Identify run (and AttributeTable row selection), map paint goes throu
 
 **Import:** `@hungpvq/map-dataset/identify`
 
-| API | Role |
-| --- | --- |
-| `createDefaultHighlightResolver()` | Fresh default (compose / override) |
-| `highlightResolver` | Package default instance |
-| `setGlobalHighlightResolver` / `getGlobalHighlightResolver` | Process default on `map:core:meta.registries['highlight-resolver']` |
-| `setHighlightResolver(mapId, resolver \| null)` / `getHighlightResolver(mapId)` | Per-map override on `map:core[mapId].resolver['highlight-resolver']` |
-| `runHighlightFromRecords({ mapId, records, hitAction?, … })` | Identify path helper (`records` → features in prepare) |
-| `HighlightContext` | `{ mapId, records?, features?, count?, dataset?, sources?, hitAction?, signal? }` |
+| API                                                                             | Role                                                                              |
+| ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `createDefaultHighlightResolver()`                                              | Fresh default (compose / override)                                                |
+| `highlightResolver`                                                             | Package default instance                                                          |
+| `setGlobalHighlightResolver` / `getGlobalHighlightResolver`                     | Process default on `map:core:meta.registries['highlight-resolver']`               |
+| `setHighlightResolver(mapId, resolver \| null)` / `getHighlightResolver(mapId)` | Per-map override on `map:core[mapId].resolver['highlight-resolver']`              |
+| `runHighlightFromRecords({ mapId, records, hitAction?, … })`                    | Identify path helper (`records` → features in prepare)                            |
+| `HighlightContext`                                                              | `{ mapId, records?, features?, count?, dataset?, sources?, hitAction?, signal? }` |
 
 **Default policy:**
 
-| Context | Default |
-| --- | --- |
-| `sources: ['attribute-table']` | `paintHighlights` for **all** features (or clear if empty) |
+| Context                                  | Default                                                    |
+| ---------------------------------------- | ---------------------------------------------------------- |
+| `sources: ['attribute-table']`           | `paintHighlights` for **all** features (or clear if empty) |
 | `hitAction:'detail'` + exactly 1 feature | `paintHighlight({ intent: 'detail' })` — Detail owns paint |
-| `hitAction:'table'` | `clearHighlight('identify')` — Table owns paint after open |
-| Identify owns + exactly 1 feature | `paintHighlight({ intent: 'identify' })` |
-| Identify owns + 0 / multi | `clearHighlight('identify')` — no multi paint |
+| `hitAction:'table'`                      | `clearHighlight('identify')` — Table owns paint after open |
+| Identify owns + exactly 1 feature        | `paintHighlight({ intent: 'identify' })`                   |
+| Identify owns + 0 / multi                | `clearHighlight('identify')` — no multi paint              |
 
 ```ts
-import {
-  createDefaultHighlightResolver,
-  setGlobalHighlightResolver,
-  setHighlightResolver,
-  getHighlightResolver,
-  highlightResolver,
-  paintHighlight,
-} from '@hungpvq/map-dataset/identify';
+import { createDefaultHighlightResolver, setGlobalHighlightResolver, setHighlightResolver, getHighlightResolver, highlightResolver, paintHighlight } from '@hungpvq/map-dataset/identify';
 
 // Global override (demo / app-wide) — prefer session paint
 const custom = createDefaultHighlightResolver();
@@ -266,15 +253,15 @@ unbind();
 destroyHighlightController(mapId);
 ```
 
-| Method | Role |
-| --- | --- |
-| `show` / `showMany` | Resolve data → paint (+ presentation) |
-| `hide` / `hideEntry` / `hideIfSource` | Clear paint (`hideEntry` removes **all** entries with that id; duration timers call `hideEntry`) |
-| `pickAt` | Query layers at a point/box |
-| `bindPointer` | Map click / mousemove → `pickAt` |
-| `setPointerClickEnabled` / `pointerClickEnabled` | Gate click pick while Identify owns the map click |
-| `setDefaultStyle` / `Data` / `Selection` / `Presentation` | Global defaults |
-| `subscribe` | React to `entries` changes |
+| Method                                                    | Role                                                                                             |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `show` / `showMany`                                       | Resolve data → paint (+ presentation)                                                            |
+| `hide` / `hideEntry` / `hideIfSource`                     | Clear paint (`hideEntry` removes **all** entries with that id; duration timers call `hideEntry`) |
+| `pickAt`                                                  | Query layers at a point/box                                                                      |
+| `bindPointer`                                             | Map click / mousemove → `pickAt`                                                                 |
+| `setPointerClickEnabled` / `pointerClickEnabled`          | Gate click pick while Identify owns the map click                                                |
+| `setDefaultStyle` / `Data` / `Selection` / `Presentation` | Global defaults                                                                                  |
+| `subscribe`                                               | React to `entries` changes                                                                       |
 
 ### Vue / React
 

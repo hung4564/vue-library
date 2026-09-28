@@ -31,7 +31,10 @@ export function InputMultiple({
   return (
     <div className="input-array-index">
       {form.map((arr, index) => (
-        <div className="input-array-item" key={`array_${index}`}>
+        <div
+          className="input-array-item"
+          key={`array_${index}`}
+        >
           <InputText
             value={String(arr ?? '')}
             type="number"
@@ -39,14 +42,23 @@ export function InputMultiple({
           />
           <div className="input-array-item__action">
             {form.length > 2 && (
-              <MapControlButton variant="text" onClick={() => onRemove(index)}>
-                <Icon path={mdiDelete} size="16px" />
+              <MapControlButton
+                variant="text"
+                onClick={() => onRemove(index)}
+              >
+                <Icon
+                  path={mdiDelete}
+                  size="16px"
+                />
               </MapControlButton>
             )}
           </div>
         </div>
       ))}
-      <MapControlButton onClick={onAdd} variant="text">
+      <MapControlButton
+        onClick={onAdd}
+        variant="text"
+      >
         {' '}
         Add
       </MapControlButton>

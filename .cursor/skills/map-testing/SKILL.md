@@ -49,12 +49,12 @@ npx nx e2e react-demo-map-e2e
 
 Smoke specs under `apps/*/demo-map-e2e`:
 
-| Spec | Route | Focus |
-|------|-------|--------|
-| `minimal.spec.ts` | `/#/minimal` | Map shell + canvas |
-| `layer-identify.spec.ts` | `/#/dataset-identify` | LayerControl + IdentifyControl mount |
-| `attribute-table.spec.ts` | `/#/dataset-attribute-table` | Open table + toolbar/grid smoke |
-| `create-control.spec.ts` | `/#/minimal` | CreateControl raw GeoJSON → new layer |
+| Spec                      | Route                        | Focus                                 |
+| ------------------------- | ---------------------------- | ------------------------------------- |
+| `minimal.spec.ts`         | `/#/minimal`                 | Map shell + canvas                    |
+| `layer-identify.spec.ts`  | `/#/dataset-identify`        | LayerControl + IdentifyControl mount  |
+| `attribute-table.spec.ts` | `/#/dataset-attribute-table` | Open table + toolbar/grid smoke       |
+| `create-control.spec.ts`  | `/#/minimal`                 | CreateControl raw GeoJSON → new layer |
 
 ## Commands
 
@@ -82,17 +82,17 @@ Ensure `tsconfig.spec.json` / vite `test:` block exist when adding the first spe
 
 Map packages lock **runtime** root exports with `public-api.spec.ts` (Stable ∪ Experimental exact match), parallel to draggable:
 
-| Package | Spec |
-|---------|------|
-| `@hungpvq/map-core` | `libs/map-core/core/src/public-api.spec.ts` |
-| `@hungpvq/map-dataset` | `libs/map-core/map-dataset/src/public-api.spec.ts` |
-| `@hungpvq/map-draw` | `libs/map-core/map-draw/src/public-api.spec.ts` |
-| `@hungpvq/vue-map-core` | `libs/vue/map-core/src/public-api.spec.ts` |
-| `@hungpvq/vue-map-dataset` | `libs/vue/map-dataset/src/public-api.spec.ts` |
-| `@hungpvq/vue-map-draw` | `libs/vue/map-draw/src/public-api.spec.ts` |
-| `@hungpvq/react-map-core` | `libs/react/map-core/src/public-api.spec.ts` |
-| `@hungpvq/react-map-dataset` | `libs/react/map-dataset/src/public-api.spec.ts` |
-| `@hungpvq/react-map-draw` | `libs/react/map-draw/src/public-api.spec.ts` |
+| Package                      | Spec                                               |
+| ---------------------------- | -------------------------------------------------- |
+| `@hungpvq/map-core`          | `libs/map-core/core/src/public-api.spec.ts`        |
+| `@hungpvq/map-dataset`       | `libs/map-core/map-dataset/src/public-api.spec.ts` |
+| `@hungpvq/map-draw`          | `libs/map-core/map-draw/src/public-api.spec.ts`    |
+| `@hungpvq/vue-map-core`      | `libs/vue/map-core/src/public-api.spec.ts`         |
+| `@hungpvq/vue-map-dataset`   | `libs/vue/map-dataset/src/public-api.spec.ts`      |
+| `@hungpvq/vue-map-draw`      | `libs/vue/map-draw/src/public-api.spec.ts`         |
+| `@hungpvq/react-map-core`    | `libs/react/map-core/src/public-api.spec.ts`       |
+| `@hungpvq/react-map-dataset` | `libs/react/map-dataset/src/public-api.spec.ts`    |
+| `@hungpvq/react-map-draw`    | `libs/react/map-draw/src/public-api.spec.ts`       |
 
 When changing `src/index.ts` named exports, update the allowlist arrays in that spec and `libs/map-core/core/docs/core/stable-api.md` (if Stable). See skill `map-semver-api`. Do **not** reintroduce public `export *` on `index.ts`.
 

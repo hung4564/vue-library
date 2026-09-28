@@ -17,12 +17,12 @@ Release preflight also uses `npm run draggable:build` (lint + build).
 
 ## What each layer covers
 
-| Layer | Location | Focus |
-|-------|----------|--------|
-| Core unit | `libs/draggable/core/src/**/*.spec.ts` | Store (`drag:core`), factories, bounds, focus/a11y helpers, menu keyboard |
-| Public API lock | `*/src/public-api.spec.ts` | Root runtime exports = Stable ∪ Experimental allowlists |
-| Vue adapter | `libs/vue/draggable/src/**/*.spec.ts` | Container init, chrome parts (`Drag*`), hooks, ContextMenu |
-| React adapter | `libs/react/draggable/src/**/*.spec.tsx` | Same contracts as Vue (+ context / reactive store) |
+| Layer           | Location                                 | Focus                                                                     |
+| --------------- | ---------------------------------------- | ------------------------------------------------------------------------- |
+| Core unit       | `libs/draggable/core/src/**/*.spec.ts`   | Store (`drag:core`), factories, bounds, focus/a11y helpers, menu keyboard |
+| Public API lock | `*/src/public-api.spec.ts`               | Root runtime exports = Stable ∪ Experimental allowlists                   |
+| Vue adapter     | `libs/vue/draggable/src/**/*.spec.ts`    | Container init, chrome parts (`Drag*`), hooks, ContextMenu                |
+| React adapter   | `libs/react/draggable/src/**/*.spec.tsx` | Same contracts as Vue (+ context / reactive store)                        |
 
 There is **no** Playwright e2e project for demo-draggable yet. Prefer unit + `public-api` locks; smoke demos with `npm run draggable:dev-vue` / `draggable:dev-react` before a release.
 

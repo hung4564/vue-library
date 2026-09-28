@@ -50,7 +50,10 @@ export function MinimalPage() {
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />
-        <LayerControl position="top-left" show />
+        <LayerControl
+          position="top-left"
+          show
+        />
         <DemoHelpPanel />
       </Map>
     </MapPageShell>

@@ -36,12 +36,12 @@ Only one drawer is visible per edge. If several drawers share the same `location
 
 ## Events
 
-| Name            | Description                                                       |
-| --------------- | ----------------------------------------------------------------- |
-| `update:size`   | Emitted when the drawer size changes. Payload: `(value:number)`   |
-| `resize`        | Emitted while resizing. Payload: `(value:number)`                 |
-| `close`         | Emitted when the drawer is closed. Payload: `()`                  |
-| `update:show`   | Emitted when the visibility changes. Payload: `(value:boolean)`   |
+| Name          | Description                                                     |
+| ------------- | --------------------------------------------------------------- |
+| `update:size` | Emitted when the drawer size changes. Payload: `(value:number)` |
+| `resize`      | Emitted while resizing. Payload: `(value:number)`               |
+| `close`       | Emitted when the drawer is closed. Payload: `()`                |
+| `update:show` | Emitted when the visibility changes. Payload: `(value:boolean)` |
 
 React: use `onUpdateSize` / `onUpdateShow` / `onClose` instead of Vue `update:*` / `close` events.
 
@@ -49,12 +49,12 @@ React: use `onUpdateSize` / `onUpdateShow` / `onClose` instead of Vue `update:*`
 
 Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
 
-| Vue             | React        | Description                                      |
-| --------------- | ------------ | ------------------------------------------------ |
-| `default`       | `children`   | Content of the drawer.                           |
-| `title`         | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
-| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
-| `extra-btn`     | `extraBtn`   | Trailing header actions after the spacer.        |
+| Vue           | React        | Description                                                |
+| ------------- | ------------ | ---------------------------------------------------------- |
+| `default`     | `children`   | Content of the drawer.                                     |
+| `title`       | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
+| `after-title` | `afterTitle` | Immediately after title (before spacer).                   |
+| `extra-btn`   | `extraBtn`   | Trailing header actions after the spacer.                  |
 
 ## Usage
 
@@ -79,7 +79,11 @@ const size = ref(360);
     >
       <div style="padding: 12px">Drawer content (size: {{ size }}px)</div>
     </DraggableDrawer>
-    <DraggableDrawer title="Layers" location="right" :show="false">
+    <DraggableDrawer
+      title="Layers"
+      location="right"
+      :show="false"
+    >
       <div style="padding: 12px">Switch via the header menu</div>
     </DraggableDrawer>
   </DraggableContainer>
@@ -107,7 +111,11 @@ export function Example() {
       >
         <div style={{ padding: 12 }}>Drawer content (size: {size}px)</div>
       </DraggableDrawer>
-      <DraggableDrawer title="Layers" location="right" show={false}>
+      <DraggableDrawer
+        title="Layers"
+        location="right"
+        show={false}
+      >
         <div style={{ padding: 12 }}>Switch via the header menu</div>
       </DraggableDrawer>
     </DraggableContainer>

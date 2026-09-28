@@ -11,14 +11,12 @@ import {
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
-  MapCommonButton,
   MapControlButton,
   ModuleContainer,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
-  useToolbarControl,
 } from '@hungpvq/react-map-core';
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -30,26 +28,9 @@ const ICON_SIZE = 16 / 24;
 
 export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap({
-    ...merged,
-    controlId: 'mapDatasetControl',
-  });
+  const { mapId, order } = useMap(merged);
   const { trans } = useLang(mapId);
   const [show, setShow] = useShow(props.show);
-  const { panelPosition } = useRegisterMapControl(mapId, {
-    id: 'mapDatasetControl',
-    panelKind: 'sidebar',
-    title: trans('map.dataset-control.title'),
-    buttonPosition: merged.position,
-    show,
-    setShow,
-    initialPanelPosition: { location: 'left' },
-    getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-    }),
-    actions: [{ type: 'mapDatasetControl', run: () => setShow() }],
-  });
   const { getDatasets, removeDataset, datasetVersion } = useMapDataset(mapId);
   const [views, setViews] = useState<IDataset[]>([]);
 
@@ -66,17 +47,27 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
     });
   }, [datasetVersion, mapId, getDatasets]);
 
-  const { state, control } = useToolbarControl(mapId, merged, {
-    kind: 'single',
-    id: 'mapDatasetControl',
-    getState: () =>
-      mdiButtonState(mdiDatabaseOutline, {
-        active: show,
-        title: trans('map.dataset-control.title'),
-        order,
-      }),
-    onClick: () => setShow(),
-  });
+  const { moduleContainerProps, panelPosition, control } = useMapControl(
+    mapId,
+    {
+      id: 'mapDatasetControl',
+      panelKind: 'sidebar',
+      title: trans('map.dataset-control.title'),
+      from: merged,
+      order,
+      show,
+      setShow,
+      initialPanelPosition: { location: 'left' },
+      actions: [{ type: 'mapDatasetControl', run: () => setShow() }],
+      getButtonState: () =>
+        mdiButtonState(mdiDatabaseOutline, {
+          active: show,
+          title: trans('map.dataset-control.title'),
+          order,
+        }),
+      onClick: () => setShow(),
+    },
+  );
 
   useEffect(() => {
     control.sync();
@@ -100,17 +91,6 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : null
-      }
       draggable={(bind) => (
         <DraggableItemSideBar
           show={show}
@@ -121,7 +101,10 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
         >
           <div className="dataset-control">
             {views.map((view) => (
-              <div key={view.id} className="dataset-item">
+              <div
+                key={view.id}
+                className="dataset-item"
+              >
                 <span className="dataset-item__title">{view.getName()}</span>
                 <div className="dataset-item__title-action">
                   <MapControlButton
@@ -131,7 +114,10 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
                       onShowDetail(view);
                     }}
                   >
-                    <Icon path={mdiInformation} size={ICON_SIZE} />
+                    <Icon
+                      path={mdiInformation}
+                      size={ICON_SIZE}
+                    />
                   </MapControlButton>
                   <MapControlButton
                     variant="plain"
@@ -140,7 +126,10 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
                       removeDataset(view);
                     }}
                   >
-                    <Icon path={mdiDelete} size={ICON_SIZE} />
+                    <Icon
+                      path={mdiDelete}
+                      size={ICON_SIZE}
+                    />
                   </MapControlButton>
                 </div>
               </div>

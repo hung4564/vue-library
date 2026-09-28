@@ -6,7 +6,12 @@
     :title="title"
     variant="plain"
   >
-    <SvgIcon v-if="icon" size="14" type="mdi" :path="icon" />
+    <SvgIcon
+      v-if="icon"
+      size="14"
+      type="mdi"
+      :path="icon"
+    />
     <span v-else>{{ title }}</span>
   </MapControlButton>
 </template>

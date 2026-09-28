@@ -4,13 +4,13 @@ Vue / React map libraries built on MapLibre GL.
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
+| Package                                                                                                                                         | Description                                              |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
 | [`@hungpvq/vue-map`](https://www.npmjs.com/package/@hungpvq/vue-map) / [`@hungpvq/react-map`](https://www.npmjs.com/package/@hungpvq/react-map) | **Meta** — one install + `installMapApp` + `./style.css` |
-| [`@hungpvq/vue-map-core`](./core/) / [`@hungpvq/react-map-core`](./core/) | Map container, controls, hooks |
-| [`@hungpvq/vue-map-dataset`](./dataset/) / [`@hungpvq/react-map-dataset`](./dataset/) | Layers, identify, create dataset |
-| [`@hungpvq/vue-map-draw`](/map/draw/) / [`@hungpvq/react-map-draw`](/map/draw/) | Draw / edit (Inspect documented under draw) |
-| [`@hungpvq/vue-map-devtools`](./core/devtools) / [`@hungpvq/react-map-devtools`](./core/devtools) | Debug panel (store, logs, errors) |
+| [`@hungpvq/vue-map-core`](./core/) / [`@hungpvq/react-map-core`](./core/)                                                                       | Map container, controls, hooks                           |
+| [`@hungpvq/vue-map-dataset`](./dataset/) / [`@hungpvq/react-map-dataset`](./dataset/)                                                           | Layers, identify, create dataset                         |
+| [`@hungpvq/vue-map-draw`](/map/draw/) / [`@hungpvq/react-map-draw`](/map/draw/)                                                                 | Draw / edit (Inspect documented under draw)              |
+| [`@hungpvq/vue-map-devtools`](./core/devtools) / [`@hungpvq/react-map-devtools`](./core/devtools)                                               | Debug panel (store, logs, errors)                        |
 
 Errors / `errorHandler`: [Error handling](./core/error-handling.md).  
 Map access / scoped stores: [Map store](./core/map-store.md).  
@@ -118,14 +118,14 @@ Not needed for the minimal inline-GeoJSON path. Add the Vite plugin from `@hungp
 
 ## If UI / worker seems broken
 
-| Symptom | Check |
-|---------|--------|
-| Unstyled / broken layout | Missing `@hungpvq/vue-map/style.css` (or `react-map`) — or incomplete a-la-carte CSS set (see §2) |
-| Empty layer menus, missing style / export / attribute UI | Forgot `installMapApp` (or `createDatasetRegistryPlugin`) |
-| Dialogs / management panels missing | Need `ComponentManagementControl` (or equivalent) on the map |
-| File parse hangs / blocks UI; worker never runs | Vite `mapDatasetGisWorker()` / worker asset config — [Worker docs](./dataset/worker) |
-| CreateControl fails on CSV/KML/Shapefile with missing peer | Install optional GIS peers — [CreateControl](./dataset/module/CreateControl) |
-| Install / peer errors | Prefer meta (`@hungpvq/vue-map` / `react-map`) — [Install from npm](./core/install-from-npm.md); align map family versions |
+| Symptom                                                    | Check                                                                                                                      |
+| ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Unstyled / broken layout                                   | Missing `@hungpvq/vue-map/style.css` (or `react-map`) — or incomplete a-la-carte CSS set (see §2)                          |
+| Empty layer menus, missing style / export / attribute UI   | Forgot `installMapApp` (or `createDatasetRegistryPlugin`)                                                                  |
+| Dialogs / management panels missing                        | Need `ComponentManagementControl` (or equivalent) on the map                                                               |
+| File parse hangs / blocks UI; worker never runs            | Vite `mapDatasetGisWorker()` / worker asset config — [Worker docs](./dataset/worker)                                       |
+| CreateControl fails on CSV/KML/Shapefile with missing peer | Install optional GIS peers — [CreateControl](./dataset/module/CreateControl)                                               |
+| Install / peer errors                                      | Prefer meta (`@hungpvq/vue-map` / `react-map`) — [Install from npm](./core/install-from-npm.md); align map family versions |
 
 More detail: [Install from npm](./core/install-from-npm.md) · [Map Dataset setup](./dataset/) · [Map Core](./core/) · [Stable API](./core/stable-api.md)
 

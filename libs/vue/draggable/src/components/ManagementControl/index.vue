@@ -54,23 +54,38 @@ const drawerCount = computed(() =>
       </div>
     </section>
 
-    <section v-if="sidebarCount > 0" class="mgmt__section">
+    <section
+      v-if="sidebarCount > 0"
+      class="mgmt__section"
+    >
       <header class="mgmt__header">
         <h3 class="mgmt__title">Sidebars</h3>
         <span class="mgmt__count">{{ sidebarCount }}</span>
       </header>
-      <ShowStatusSideBar :items="sideBar" :containerId="containerId" />
+      <ShowStatusSideBar
+        :items="sideBar"
+        :containerId="containerId"
+      />
     </section>
 
-    <section v-if="drawerCount > 0" class="mgmt__section">
+    <section
+      v-if="drawerCount > 0"
+      class="mgmt__section"
+    >
       <header class="mgmt__header">
         <h3 class="mgmt__title">Drawers</h3>
         <span class="mgmt__count">{{ drawerCount }}</span>
       </header>
-      <ShowStatusDrawer :items="drawer" :containerId="containerId" />
+      <ShowStatusDrawer
+        :items="drawer"
+        :containerId="containerId"
+      />
     </section>
 
-    <section v-if="popup.items.length > 0" class="mgmt__section">
+    <section
+      v-if="popup.items.length > 0"
+      class="mgmt__section"
+    >
       <header class="mgmt__header">
         <h3 class="mgmt__title">Popups</h3>
         <span class="mgmt__count"
@@ -84,7 +99,10 @@ const drawerCount = computed(() =>
       />
     </section>
 
-    <section v-if="modal.items.length > 0" class="mgmt__section">
+    <section
+      v-if="modal.items.length > 0"
+      class="mgmt__section"
+    >
       <header class="mgmt__header">
         <h3 class="mgmt__title">Modals</h3>
         <span class="mgmt__count"
@@ -98,7 +116,10 @@ const drawerCount = computed(() =>
       />
     </section>
 
-    <section v-if="float.items.length > 0" class="mgmt__section">
+    <section
+      v-if="float.items.length > 0"
+      class="mgmt__section"
+    >
       <header class="mgmt__header">
         <h3 class="mgmt__title">Floats</h3>
         <span class="mgmt__count"
@@ -112,7 +133,10 @@ const drawerCount = computed(() =>
       />
     </section>
 
-    <section v-if="bottom.items.length > 0" class="mgmt__section">
+    <section
+      v-if="bottom.items.length > 0"
+      class="mgmt__section"
+    >
       <header class="mgmt__header">
         <h3 class="mgmt__title">Bottoms</h3>
         <span class="mgmt__count"

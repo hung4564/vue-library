@@ -53,7 +53,10 @@ Dataset apps need the full set (`map-core` + `map-dataset` + framework adapters 
 
 ```vue
 <template>
-  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
+  <Map
+    :mapId="mapId"
+    @mapLoaded="onMapLoaded"
+  >
     <ZoomControl position="top-right" />
     <HomeControl position="top-right" />
     <FullScreenControl position="top-right" />
@@ -70,15 +73,7 @@ Dataset apps need the full set (`map-core` + `map-dataset` + framework adapters 
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import {
-  Map,
-  ZoomControl,
-  HomeControl,
-  FullScreenControl,
-  MouseCoordinatesControl,
-  MapContextMenuControl,
-  WorkerControl,
-} from '@hungpvq/vue-map-core';
+import { Map, ZoomControl, HomeControl, FullScreenControl, MouseCoordinatesControl, MapContextMenuControl, WorkerControl } from '@hungpvq/vue-map-core';
 import '@hungpvq/vue-map-core/style.css';
 
 const mapId = ref('map-core');
@@ -92,20 +87,15 @@ function onMapLoaded(map: any) {
 ### React
 
 ```tsx
-import {
-  Map,
-  ZoomControl,
-  HomeControl,
-  FullScreenControl,
-  MouseCoordinatesControl,
-  MapContextMenuControl,
-  WorkerControl,
-} from '@hungpvq/react-map-core';
+import { Map, ZoomControl, HomeControl, FullScreenControl, MouseCoordinatesControl, MapContextMenuControl, WorkerControl } from '@hungpvq/react-map-core';
 import '@hungpvq/react-map-core/style.css';
 
 function App() {
   return (
-    <Map mapId="map-core" onMapLoaded={(map) => console.info('Map loaded:', map)}>
+    <Map
+      mapId="map-core"
+      onMapLoaded={(map) => console.info('Map loaded:', map)}
+    >
       <ZoomControl position="top-right" />
       <HomeControl position="top-right" />
       <FullScreenControl position="top-right" />

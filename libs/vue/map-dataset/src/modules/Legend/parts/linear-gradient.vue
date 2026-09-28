@@ -2,7 +2,11 @@
   <div class="legend-item legend-item--column">
     <div class="legend-text">{{ item.text }}:</div>
     <div class="legend-value-container">
-      <div class="legend-value" v-for="(item, i) in items" :key="i">
+      <div
+        class="legend-value"
+        v-for="(item, i) in items"
+        :key="i"
+      >
         {{ item.value }}
       </div>
     </div>

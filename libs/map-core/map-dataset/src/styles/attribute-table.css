@@ -353,8 +353,7 @@
   align-items: center;
   gap: var(--map-space-sm, 4px) var(--map-space-md, 8px);
   padding: 6px var(--map-space-md, 8px);
-  border-top: 1px solid
-    var(--map-divider-color, var(--map-border-color, #eee));
+  border-top: 1px solid var(--map-divider-color, var(--map-border-color, #eee));
   background: var(--map-surface-variant-color, #f7f7f7);
   font-size: var(--map-font-size-sm, 12px);
 }

@@ -39,7 +39,10 @@ export function DataSourceTabs({
 
   return (
     <div className="create-control-data">
-      <div className="create-control-data__tabs" role="tablist">
+      <div
+        className="create-control-data__tabs"
+        role="tablist"
+      >
         {tabs.map((tab) => (
           <button
             key={tab}
@@ -53,7 +56,10 @@ export function DataSourceTabs({
           </button>
         ))}
       </div>
-      <div className="create-control-data__panel" role="tabpanel">
+      <div
+        className="create-control-data__panel"
+        role="tabpanel"
+      >
         {children[activeTab]}
       </div>
     </div>

@@ -231,7 +231,10 @@ export function DraggableItemFloat({
                     </>
                   )}
                   {!disabledClose && (
-                    <DragButton aria-label="Close panel" onClick={handleClose}>
+                    <DragButton
+                      aria-label="Close panel"
+                      onClick={handleClose}
+                    >
                       <CloseIcon size={'16px'} />
                     </DragButton>
                   )}
@@ -240,7 +243,10 @@ export function DraggableItemFloat({
             />
           )}
           {expand && (
-            <div className="draggable-float-content" style={contentStyle}>
+            <div
+              className="draggable-float-content"
+              style={contentStyle}
+            >
               {children}
             </div>
           )}
@@ -281,7 +287,10 @@ export function DraggableItemFloat({
                     </>
                   )}
                   {!disabledClose && (
-                    <DragButton aria-label="Close panel" onClick={handleClose}>
+                    <DragButton
+                      aria-label="Close panel"
+                      onClick={handleClose}
+                    >
                       <CloseIcon size={'16px'} />
                     </DragButton>
                   )}

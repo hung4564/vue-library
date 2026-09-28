@@ -114,7 +114,10 @@ function toggleExpand(event: MouseEvent) {
       <span class="log-request-flow__delta">{{
         formatFlowDelta(node.deltaMs)
       }}</span>
-      <span class="log-request-flow__rail" aria-hidden="true">
+      <span
+        class="log-request-flow__rail"
+        aria-hidden="true"
+      >
         <span class="log-request-flow__dot" />
       </span>
       <span class="log-request-flow__card">
@@ -125,9 +128,11 @@ function toggleExpand(event: MouseEvent) {
             class="log-request-flow__kind"
             >{{ node.phase }}</span
           >
-          <span v-else-if="node.flowKind" class="log-request-flow__kind">{{
-            node.flowKind
-          }}</span>
+          <span
+            v-else-if="node.flowKind"
+            class="log-request-flow__kind"
+            >{{ node.flowKind }}</span
+          >
         </span>
         <span class="log-request-flow__sub">
           <template v-if="node.index != null">#{{ node.index }} · </template>
@@ -182,7 +187,10 @@ function toggleExpand(event: MouseEvent) {
         <span class="log-request-flow__delta">{{
           formatFlowDelta(closer.deltaMs)
         }}</span>
-        <span class="log-request-flow__rail" aria-hidden="true">
+        <span
+          class="log-request-flow__rail"
+          aria-hidden="true"
+        >
           <span class="log-request-flow__dot" />
         </span>
         <span class="log-request-flow__card">

@@ -28,7 +28,10 @@ describe('Map UI smoke', () => {
   it('loads map shell and renders children after drag init', async () => {
     const onLoaded = vi.fn();
     render(
-      <Map mapId={MAP_ID} onMapLoaded={onLoaded}>
+      <Map
+        mapId={MAP_ID}
+        onMapLoaded={onLoaded}
+      >
         <div data-testid="map-child">child</div>
       </Map>,
     );

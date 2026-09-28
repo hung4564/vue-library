@@ -6,8 +6,8 @@ Map UI strings live in **per-language catalogs** on the `LANG` store (`MAP_STORE
 
 ```ts
 type MapLocateStore = {
-  language: string;              // active code
-  fallbackLanguage: string;      // default 'en'
+  language: string; // active code
+  fallbackLanguage: string; // default 'en'
   messages: Record<string, MapLangLocale>;
   languageLabels: Record<string, string>;
   loadingLanguages: Record<string, boolean>;
@@ -22,19 +22,7 @@ type MapLocateStore = {
 ```ts
 import { useLang } from '@hungpvq/vue-map-core'; // or @hungpvq/react-map-core
 
-const {
-  trans,
-  language,
-  fallbackLanguage,
-  languages,
-  registerLocale,
-  registerLocaleFlat,
-  registerLanguage,
-  setLanguage,
-  setFallbackLanguage,
-  loadLocale,
-  setTranslate,
-} = useLang(mapId);
+const { trans, language, fallbackLanguage, languages, registerLocale, registerLocaleFlat, registerLanguage, setLanguage, setFallbackLanguage, loadLocale, setTranslate } = useLang(mapId);
 ```
 
 ### Register (controls)
@@ -141,11 +129,11 @@ On the control:
 
 ## Built-in packs
 
-| Export | Package |
-|--------|---------|
-| `MAP_CORE_LOCALE_EN`, `MAP_CORE_LOCALE_VI`, `LANGUAGE_CONTROL_LOCALE` | `@hungpvq/map-core` |
-| `MAP_DATASET_LOCALE_EN`, `MAP_DATASET_LOCALE_VI` | `@hungpvq/map-dataset` |
-| `MAP_DRAW_LOCALE_EN`, `MAP_DRAW_LOCALE_VI` | `@hungpvq/map-draw` |
+| Export                                                                | Package                |
+| --------------------------------------------------------------------- | ---------------------- |
+| `MAP_CORE_LOCALE_EN`, `MAP_CORE_LOCALE_VI`, `LANGUAGE_CONTROL_LOCALE` | `@hungpvq/map-core`    |
+| `MAP_DATASET_LOCALE_EN`, `MAP_DATASET_LOCALE_VI`                      | `@hungpvq/map-dataset` |
+| `MAP_DRAW_LOCALE_EN`, `MAP_DRAW_LOCALE_VI`                            | `@hungpvq/map-draw`    |
 
 Pack files: `locale/locale.en.ts` / `locale/locale.vi.ts` (full catalogs). Control slices live in `<domain>/locale/locale.<lang>.ts` (EN compat: `locale/index.ts` → `locale.en`) and are merged into the packs. See skill `map-locale`.
 

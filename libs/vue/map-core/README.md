@@ -33,7 +33,10 @@ yarn add @hungpvq/vue-map-core
 
 ```vue
 <template>
-  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
+  <Map
+    :mapId="mapId"
+    @mapLoaded="onMapLoaded"
+  >
     <!-- Navigation controls -->
     <ZoomControl position="top-right" />
     <HomeControl position="top-right" />
@@ -62,7 +65,10 @@ function onMapLoaded(map: any) {
 
 ```vue
 <template>
-  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
+  <Map
+    :mapId="mapId"
+    @mapLoaded="onMapLoaded"
+  >
     <!-- Navigation controls -->
     <ZoomControl position="top-right" />
     <HomeControl position="top-right" />
@@ -104,17 +110,17 @@ function onMapLoaded(map: any) {
 
 #### Props
 
-| Prop                | Type         | Default                                             | Description                        |
-| ------------------- | ------------ | --------------------------------------------------- | ---------------------------------- |
-| `mapboxAccessToken` | `string`     | `''`                                                | Mapbox access token                |
+| Prop                | Type         | Default                                                  | Description                        |
+| ------------------- | ------------ | -------------------------------------------------------- | ---------------------------------- |
+| `mapboxAccessToken` | `string`     | `''`                                                     | Mapbox access token                |
 | `initOptions`       | `MapOptions` | `{}` (merged with `MapInitializer.createDefaultOptions`) | MapLibre GL initialization options |
-| `dragId`            | `string`     | `undefined`                                         | ID of draggable element            |
-| `mapId`             | `string`     | `undefined`                                         | Unique map identifier              |
+| `dragId`            | `string`     | `undefined`                                              | ID of draggable element            |
+| `mapId`             | `string`     | `undefined`                                              | Unique map identifier              |
 
 #### Events
 
-| Event         | Payload     | Description                 |
-| ------------- | ----------- | --------------------------- |
+| Event        | Payload     | Description                 |
+| ------------ | ----------- | --------------------------- |
 | `mapLoaded`  | `MapSimple` | Fired when map is loaded    |
 | `mapDestroy` | `MapSimple` | Fired when map is destroyed |
 
@@ -213,7 +219,11 @@ interface WithMapPropType {
 
 ```vue
 <template>
-  <Map :mapId="mapId" :initOptions="initOptions" @mapLoaded="onMapLoaded">
+  <Map
+    :mapId="mapId"
+    :initOptions="initOptions"
+    @mapLoaded="onMapLoaded"
+  >
     <ZoomControl position="top-right" />
     <HomeControl position="top-right" />
     <FullScreenControl position="top-right" />

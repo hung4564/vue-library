@@ -100,7 +100,10 @@ function registerModuleOrder(key: OrderKey) {
 provide('$map.registerModuleOrder', registerModuleOrder);
 </script>
 <template>
-  <div v-if="!isSupport" class="">
+  <div
+    v-if="!isSupport"
+    class=""
+  >
     <div class="not-support-map">
       <p class="">
         Trình duyệt của bạn không hỗ trợ hiển thị bản đồ, vui lòng đổi trình
@@ -115,12 +118,28 @@ provide('$map.registerModuleOrder', registerModuleOrder);
     :class="{ 'map-mobile-container': isMobile }"
   >
     <div class="map-viewer">
-      <div ref="mapContainer" class="map-content" :id="id"></div>
+      <div
+        ref="mapContainer"
+        class="map-content"
+        :id="id"
+      ></div>
       <template v-if="!props.dragId">
-        <div class="right-bottom-container" :id="rightBottomTo" />
-        <div class="left-bottom-container" :id="leftBottomTo" />
-        <div class="right-top-container" :id="rightTopTo" />
-        <div class="left-top-container" :id="leftTopTo" />
+        <div
+          class="right-bottom-container"
+          :id="rightBottomTo"
+        />
+        <div
+          class="left-bottom-container"
+          :id="leftBottomTo"
+        />
+        <div
+          class="right-top-container"
+          :id="rightTopTo"
+        />
+        <div
+          class="left-top-container"
+          :id="leftTopTo"
+        />
         <draggable-container
           v-if="loaded"
           class="drag-container"

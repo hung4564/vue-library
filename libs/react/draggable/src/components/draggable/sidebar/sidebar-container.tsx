@@ -177,7 +177,10 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
         }
       >
         <div className="sidebar-container--content">
-          <Card width="100%" height="100%">
+          <Card
+            width="100%"
+            height="100%"
+          >
             <div className="draggable-sidebar">
               <Header
                 title={
@@ -200,13 +203,19 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
                         <SidebarOpenMenu size={'16px'} />
                       </DragButton>
                     )}
-                    <DragButton onClick={onClose} aria-label="Close sidebar">
+                    <DragButton
+                      onClick={onClose}
+                      aria-label="Close sidebar"
+                    >
                       <CloseIcon size={'16px'} />
                     </DragButton>
                   </>
                 }
               />
-              <div className="draggable-sidebar-content" id={contentTo}>
+              <div
+                className="draggable-sidebar-content"
+                id={contentTo}
+              >
                 {/* Content will be portaled here */}
               </div>
             </div>
@@ -229,7 +238,10 @@ export function SidebarContainer({ location }: SidebarContainerProps) {
         ariaLabel="Switch sidebar panel"
         onOpenChange={setMenuOpen}
       >
-        <ul className="context-menu" role="presentation">
+        <ul
+          className="context-menu"
+          role="presentation"
+        >
           {allItems.map((item) => (
             <ContextMenuItem
               key={item.id}

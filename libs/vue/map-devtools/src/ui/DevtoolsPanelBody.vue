@@ -1,40 +1,13 @@
 <template>
   <div class="devtools-header">
     <DevtoolsMapFilter v-if="showMapFilter" />
-    <div class="devtools-tabs">
-      <MapControlButton
-        :active="state.activeTab === 'store'"
-        variant="text"
-        size="small"
-        @click="setDevtoolActiveTab('store')"
-      >
-        Store
-      </MapControlButton>
-      <MapControlButton
-        :active="state.activeTab === 'dataset'"
-        variant="text"
-        size="small"
-        @click="setDevtoolActiveTab('dataset')"
-      >
-        Dataset
-      </MapControlButton>
-      <MapControlButton
-        :active="state.activeTab === 'logs'"
-        variant="text"
-        size="small"
-        @click="setDevtoolActiveTab('logs')"
-      >
-        Logs ({{ logCount }})
-      </MapControlButton>
-      <MapControlButton
-        :active="state.activeTab === 'errors'"
-        variant="text"
-        size="small"
-        @click="setDevtoolActiveTab('errors')"
-      >
-        Errors ({{ errorCount }})
-      </MapControlButton>
-    </div>
+    <MapTabs
+      class="devtools-tabs-host"
+      :model-value="state.activeTab"
+      :items="tabItems"
+      :with-panes="false"
+      @update:model-value="onTabChange"
+    />
     <MapControlButton
       v-if="showClose"
       class="close-btn"
@@ -46,27 +19,43 @@
     </MapControlButton>
   </div>
   <div class="devtools-content">
-    <div class="devtools-content__pane" :hidden="state.activeTab !== 'store'">
+    <div
+      class="devtools-content__pane"
+      :hidden="state.activeTab !== 'store'"
+    >
       <StoreViewer />
     </div>
     <!-- Keep mounted: Run/menu actions can remount the panel; local UI must survive. -->
-    <div class="devtools-content__pane" :hidden="state.activeTab !== 'dataset'">
+    <div
+      class="devtools-content__pane"
+      :hidden="state.activeTab !== 'dataset'"
+    >
       <DatasetMenuViewer />
     </div>
-    <div class="devtools-content__pane" :hidden="state.activeTab !== 'logs'">
+    <div
+      class="devtools-content__pane"
+      :hidden="state.activeTab !== 'logs'"
+    >
       <LogViewer />
     </div>
-    <div class="devtools-content__pane" :hidden="state.activeTab !== 'errors'">
+    <div
+      class="devtools-content__pane"
+      :hidden="state.activeTab !== 'errors'"
+    >
       <ErrorViewer />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { MapControlButton } from '@hungpvq/vue-map-core';
+import {
+  MapControlButton,
+  type MapTabItem,
+  MapTabs,
+} from '@hungpvq/vue-map-core';
 import { computed } from 'vue';
 
-import { devtoolState, setDevtoolActiveTab } from '../store';
+import { devtoolState, type DevtoolTab, setDevtoolActiveTab } from '../store';
 import DatasetMenuViewer from './DatasetMenuViewer.vue';
 import DevtoolsMapFilter from './DevtoolsMapFilter.vue';
 import ErrorViewer from './ErrorViewer.vue';
@@ -90,4 +79,15 @@ const emit = defineEmits<{ close: [] }>();
 const state = devtoolState;
 const logCount = computed(() => state.logs.length);
 const errorCount = computed(() => state.errors.length);
+
+const tabItems = computed((): MapTabItem[] => [
+  { id: 'store', label: 'Store' },
+  { id: 'dataset', label: 'Dataset' },
+  { id: 'logs', label: `Logs (${logCount.value})` },
+  { id: 'errors', label: `Errors (${errorCount.value})` },
+]);
+
+function onTabChange(id: string) {
+  setDevtoolActiveTab(id as DevtoolTab);
+}
 </script>

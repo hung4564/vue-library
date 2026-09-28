@@ -14,17 +14,28 @@
         viewBox="0 0 24 24"
         width="22"
       >
-        <g fill="none" fill-rule="evenodd">
+        <g
+          fill="none"
+          fill-rule="evenodd"
+        >
           <path d="M0 0h24v24H0z"></path>
-          <path d="M12 3l4 8H8z" fill="#f44336"></path>
-          <path d="M12 21l-4-8h8z" fill="#9E9E9E"></path>
+          <path
+            d="M12 3l4 8H8z"
+            fill="#f44336"
+          ></path>
+          <path
+            d="M12 21l-4-8h8z"
+            fill="#9E9E9E"
+          ></path>
         </g>
       </svg>
     </template>
 
-    <span v-else-if="option.text" class="map-common-button__text">{{
-      option.text
-    }}</span>
+    <span
+      v-else-if="option.text"
+      class="map-common-button__text"
+      >{{ option.text }}</span
+    >
 
     <SvgIcon
       v-else-if="option.icon?.type === 'mdi'"

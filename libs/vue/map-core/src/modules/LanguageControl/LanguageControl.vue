@@ -17,8 +17,7 @@ import { computed, onMounted, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
@@ -44,7 +43,7 @@ const props = withDefaults(
   },
 );
 
-const { mapId, moduleContainerProps, order } = useMap(props);
+const { mapId, order } = useMap(props);
 const {
   trans,
   language,
@@ -120,13 +119,13 @@ watch(
   { immediate: true },
 );
 
-useRegisterMapControl(mapId, {
+const { moduleContainerProps, state, control } = useMapControl(mapId, {
   id: 'mapLanguageControl',
   panelKind: 'button',
-  buttonPosition: () => props.position,
+  from: props,
+  order,
+  buttonSlot: 'custom',
   getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
     languages: languageList.value,
     defaultLanguage: props.defaultLanguage,
     fallbackLanguage: props.fallbackLanguage,
@@ -137,11 +136,7 @@ useRegisterMapControl(mapId, {
       run: () => toggleLanguage(),
     },
   ],
-});
-
-const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapLanguageControl',
-  getState() {
+  getButtonState() {
     return textButtonState(mapLanguageCodeLabel(language.value), {
       visible: true,
       active: true,
@@ -185,7 +180,10 @@ onMounted(() => {
         then all language chips. Visual expand ≈ fr | vi | en | <current>.
         Click chip → select; click current → cycle.
       -->
-      <MapControlGroupButton row class="button-group-hover-expand">
+      <MapControlGroupButton
+        row
+        class="button-group-hover-expand"
+      >
         <MapCommonButton
           v-if="state"
           :option="state"

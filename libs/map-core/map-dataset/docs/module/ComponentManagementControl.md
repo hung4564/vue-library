@@ -15,7 +15,10 @@ No extra props. `mapId` is enough (inherited from `<Map>`).
 ```vue
 <template>
   <Map>
-    <LayerControl position="top-left" show />
+    <LayerControl
+      position="top-left"
+      show
+    />
     <IdentifyControl position="top-right" />
     <DatasetControl position="top-left" />
     <ComponentManagementControl />
@@ -24,12 +27,7 @@ No extra props. `mapId` is enough (inherited from `<Map>`).
 
 <script setup lang="ts">
 import { Map } from '@hungpvq/vue-map-core';
-import {
-  LayerControl,
-  IdentifyControl,
-  DatasetControl,
-  ComponentManagementControl,
-} from '@hungpvq/vue-map-dataset';
+import { LayerControl, IdentifyControl, DatasetControl, ComponentManagementControl } from '@hungpvq/vue-map-dataset';
 </script>
 ```
 

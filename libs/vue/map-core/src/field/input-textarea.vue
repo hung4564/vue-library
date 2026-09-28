@@ -10,7 +10,10 @@ defineProps({
       {{ label }}
     </label>
     <div class="input-container">
-      <textarea v-bind="$attrs" v-model="model" />
+      <textarea
+        v-bind="$attrs"
+        v-model="model"
+      />
     </div>
   </div>
 </template>

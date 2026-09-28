@@ -31,7 +31,10 @@ export function ToggleShowButton({
       variant="plain"
       size={size}
     >
-      <Icon path={show ? mdiEye : mdiEyeOff} size={resolvedIconSize} />
+      <Icon
+        path={show ? mdiEye : mdiEyeOff}
+        size={resolvedIconSize}
+      />
     </MapControlButton>
   );
 }

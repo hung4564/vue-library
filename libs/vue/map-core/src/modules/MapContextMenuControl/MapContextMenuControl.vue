@@ -135,19 +135,32 @@ function isDisabled(item: MapContextMenuItem) {
 
 <template>
   <ContextMenu ref="menuRef">
-    <ul class="context-menu map-context-menu" v-if="target">
+    <ul
+      class="context-menu map-context-menu"
+      v-if="target"
+    >
       <li
         v-if="showCoords"
         class="map-context-menu__coords"
         @click.stop="onCopyCoords"
       >
         <div class="map-context-menu__coords-icon">
-          <SvgIcon :size="16" type="mdi" :path="mdiMapMarkerOutline" />
+          <SvgIcon
+            :size="16"
+            type="mdi"
+            :path="mdiMapMarkerOutline"
+          />
         </div>
         <span class="map-context-menu__label">{{ coordsLabel }}</span>
       </li>
-      <template v-for="(item, index) in visibleItems" :key="item.id || index">
-        <li v-if="item.type === 'header'" class="map-context-menu__header">
+      <template
+        v-for="(item, index) in visibleItems"
+        :key="item.id || index"
+      >
+        <li
+          v-if="item.type === 'header'"
+          class="map-context-menu__header"
+        >
           {{ item.name }}
         </li>
         <li
@@ -166,11 +179,23 @@ function isDisabled(item: MapContextMenuItem) {
           @click.stop="onSelect(item, $event)"
         >
           <div class="map-context-menu__item-icon">
-            <SvgIcon v-if="item.icon" :size="16" type="mdi" :path="item.icon" />
+            <SvgIcon
+              v-if="item.icon"
+              :size="16"
+              type="mdi"
+              :path="item.icon"
+            />
           </div>
           <span class="map-context-menu__label">{{ item.name }}</span>
-          <div v-if="item.children?.length" class="map-context-menu__chevron">
-            <SvgIcon :size="16" type="mdi" :path="mdiChevronRight" />
+          <div
+            v-if="item.children?.length"
+            class="map-context-menu__chevron"
+          >
+            <SvgIcon
+              :size="16"
+              type="mdi"
+              :path="mdiChevronRight"
+            />
           </div>
           <ul
             v-if="item.children?.length"
@@ -206,9 +231,11 @@ function isDisabled(item: MapContextMenuItem) {
                     :path="child.icon"
                   />
                 </div>
-                <span v-if="'name' in child" class="map-context-menu__label">{{
-                  child.name
-                }}</span>
+                <span
+                  v-if="'name' in child"
+                  class="map-context-menu__label"
+                  >{{ child.name }}</span
+                >
               </li>
             </template>
           </ul>

@@ -3,10 +3,7 @@
 A leaf is a node without children. Built-in types (`list`, `layer`, `source`, `identify`, `highlight`, `dataManagement`, `list-item`, `bound`, `menu`) are reserved — pick another `type`.
 
 ```typescript
-import {
-  createRootDataset,
-  createDatasetLeaf,
-} from '@hungpvq/map-dataset';
+import { createRootDataset, createDatasetLeaf } from '@hungpvq/map-dataset';
 
 const root = createRootDataset('Root');
 const leaf = {

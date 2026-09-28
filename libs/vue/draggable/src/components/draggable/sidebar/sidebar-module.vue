@@ -1,12 +1,27 @@
 <template>
-  <div class="module-sidebar__container" v-if="alive && isCurrentShow">
-    <Teleport v-if="hasSlotTitle && titleEl" :to="titleEl" defer>
+  <div
+    class="module-sidebar__container"
+    v-if="alive && isCurrentShow"
+  >
+    <Teleport
+      v-if="hasSlotTitle && titleEl"
+      :to="titleEl"
+      defer
+    >
       <slot name="title" />
     </Teleport>
-    <Teleport v-if="hasSlotAfterTitle && afterTitleEl" :to="afterTitleEl" defer>
+    <Teleport
+      v-if="hasSlotAfterTitle && afterTitleEl"
+      :to="afterTitleEl"
+      defer
+    >
       <slot name="after-title" />
     </Teleport>
-    <Teleport v-if="contentEl" :to="contentEl" defer>
+    <Teleport
+      v-if="contentEl"
+      :to="contentEl"
+      defer
+    >
       <slot />
     </Teleport>
   </div>

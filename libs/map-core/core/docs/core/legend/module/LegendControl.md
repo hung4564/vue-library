@@ -41,5 +41,5 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <LegendControl />
-</Map>
+</Map>;
 ```

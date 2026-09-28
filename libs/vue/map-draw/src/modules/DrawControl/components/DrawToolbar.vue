@@ -64,38 +64,77 @@ function onToolbarKeydown(event: KeyboardEvent) {
     @keydown="onToolbarKeydown"
   >
     <template v-if="isShow">
-      <MapControlGroupButton row v-if="isDraw">
-        <MapControlButton title="Cancel" @click="emit('cancel')">
-          <SvgIcon :size="18" type="mdi" :path="path.discard" />
+      <MapControlGroupButton
+        row
+        v-if="isDraw"
+      >
+        <MapControlButton
+          title="Cancel"
+          @click="emit('cancel')"
+        >
+          <SvgIcon
+            :size="18"
+            type="mdi"
+            :path="path.discard"
+          />
         </MapControlButton>
-        <MapControlButton title="Save" @click="emit('save')">
-          <SvgIcon :size="18" type="mdi" :path="path.save" />
+        <MapControlButton
+          title="Save"
+          @click="emit('save')"
+        >
+          <SvgIcon
+            :size="18"
+            type="mdi"
+            :path="path.save"
+          />
         </MapControlButton>
       </MapControlGroupButton>
-      <MapControlGroupButton row v-else>
-        <MapControlButton title="Close" @click="emit('close')">
-          <SvgIcon :size="18" type="mdi" :path="path.close" />
+      <MapControlGroupButton
+        row
+        v-else
+      >
+        <MapControlButton
+          title="Close"
+          @click="emit('close')"
+        >
+          <SvgIcon
+            :size="18"
+            type="mdi"
+            :path="path.close"
+          />
         </MapControlButton>
         <MapControlButton
           title="Draw"
           :active="method === 'create'"
           @click="emit('start-draw', $event)"
         >
-          <SvgIcon :size="18" type="mdi" :path="path.add" />
+          <SvgIcon
+            :size="18"
+            type="mdi"
+            :path="path.add"
+          />
         </MapControlButton>
         <MapControlButton
           title="Select"
           :active="method === 'select'"
           @click="emit('select-method', 'select')"
         >
-          <SvgIcon :size="18" type="mdi" :path="path.update" />
+          <SvgIcon
+            :size="18"
+            type="mdi"
+            :path="path.update"
+          />
         </MapControlButton>
         <MapControlButton
           title="Delete"
           :active="method === 'delete'"
           @click="emit('select-method', 'delete')"
         >
-          <SvgIcon :size="18" type="mdi" :path="path.delete" />
+          <SvgIcon
+            :size="18"
+            type="mdi"
+            :path="path.delete"
+          />
         </MapControlButton>
       </MapControlGroupButton>
     </template>
@@ -108,14 +147,22 @@ function onToolbarKeydown(event: KeyboardEvent) {
         @click="emit('commit')"
         :disabled="isDraw || draftCounts == 0"
       >
-        <SvgIcon :size="18" type="mdi" :path="path.draftCommit" />
+        <SvgIcon
+          :size="18"
+          type="mdi"
+          :path="path.draftCommit"
+        />
       </MapControlButton>
       <MapControlButton
         title="Discard drafts"
         @click="emit('discard')"
         :disabled="isDraw || draftCounts == 0"
       >
-        <SvgIcon :size="18" type="mdi" :path="path.draftDiscard" />
+        <SvgIcon
+          :size="18"
+          type="mdi"
+          :path="path.draftDiscard"
+        />
       </MapControlButton>
       <MapControlButton
         title="Draft list"

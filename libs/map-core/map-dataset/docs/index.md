@@ -98,8 +98,14 @@ installMapApp();
 
 ```vue
 <template>
-  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
-    <LayerControl position="top-left" show>
+  <Map
+    :mapId="mapId"
+    @mapLoaded="onMapLoaded"
+  >
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
@@ -113,13 +119,7 @@ installMapApp();
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { Map, BaseMapCard } from '@hungpvq/vue-map-core';
-import {
-  LayerControl,
-  IdentifyControl,
-  ComponentManagementControl,
-  useMapDataset,
-  useMapHighlight,
-} from '@hungpvq/vue-map-dataset';
+import { LayerControl, IdentifyControl, ComponentManagementControl, useMapDataset, useMapHighlight } from '@hungpvq/vue-map-dataset';
 import { createRootDataset, createDatasetPartListViewUiComponentBuilder, createMultiMapboxLayerComponent } from '@hungpvq/map-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
@@ -140,9 +140,7 @@ function onMapLoaded(map: MapSimple) {
   const { addDataset } = useMapDataset(map.id);
 
   const dataset = createRootDataset('Sample');
-  const list = createDatasetPartListViewUiComponentBuilder('Hanoi')
-    .setColor('#ff6b6b')
-    .build();
+  const list = createDatasetPartListViewUiComponentBuilder('Hanoi').setColor('#ff6b6b').build();
   const source = createDatasetPartGeojsonSourceComponent('source', {
     type: 'FeatureCollection',
     features: [
@@ -153,9 +151,7 @@ function onMapLoaded(map: MapSimple) {
       },
     ],
   });
-  const layer = createMultiMapboxLayerComponent('layer', [
-    new LayerSimpleMapboxBuild().setStyleType('point').setColor(list.color).build(),
-  ]);
+  const layer = createMultiMapboxLayerComponent('layer', [new LayerSimpleMapboxBuild().setStyleType('point').setColor(list.color).build()]);
 
   dataset.add(source);
   dataset.add(list);
@@ -171,17 +167,8 @@ function onMapLoaded(map: MapSimple) {
 ```tsx
 import type { MapSimple } from '@hungpvq/map-core';
 import { Map, BaseMapCard } from '@hungpvq/react-map-core';
-import {
-  LayerControl,
-  IdentifyControl,
-  ComponentManagementControl,
-  useMapDataset,
-  useMapHighlight,
-} from '@hungpvq/react-map-dataset';
-import {
-  createRootDataset,
-  createDatasetPartListViewUiComponentBuilder,
-} from '@hungpvq/map-dataset';
+import { LayerControl, IdentifyControl, ComponentManagementControl, useMapDataset, useMapHighlight } from '@hungpvq/react-map-dataset';
+import { createRootDataset, createDatasetPartListViewUiComponentBuilder } from '@hungpvq/map-dataset';
 import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { useEffect } from 'react';
 import '@hungpvq/map-core/style.css';
@@ -200,9 +187,7 @@ function Page({ mapId }: { mapId: string }) {
   function onMapLoaded(map: MapSimple) {
     const { addDataset } = useMapDataset(map.id);
     const dataset = createRootDataset('Sample');
-    dataset.add(
-      createDatasetPartListViewUiComponentBuilder('Layer').build(),
-    );
+    dataset.add(createDatasetPartListViewUiComponentBuilder('Layer').build());
     dataset.add(createHighlightPart());
     addDataset(dataset);
   }
@@ -227,10 +212,10 @@ Create-layer parses GIS and reprojects CRS in a [Web Worker](./worker.md). Vite 
 
 ## Domain `src/extra` vs adapter `extra`
 
-| Location | Role | Published? |
-| --- | --- | --- |
-| `libs/map-core/map-dataset/src/extra/` | Framework-agnostic helpers (field builders, locales, …) that feed domain entries | **No** — not a package export; use `@hungpvq/map-dataset` / `@hungpvq/map-dataset/<domain>` |
-| `libs/vue\|react/map-dataset/src/extra/` | Framework UI for menu actions / condition context (`ToggleShow`, `DatasetMenuButton`, …) | Internal only; surfaces via adapter root named exports |
+| Location                                 | Role                                                                                     | Published?                                                                                  |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `libs/map-core/map-dataset/src/extra/`   | Framework-agnostic helpers (field builders, locales, …) that feed domain entries         | **No** — not a package export; use `@hungpvq/map-dataset` / `@hungpvq/map-dataset/<domain>` |
+| `libs/vue\|react/map-dataset/src/extra/` | Framework UI for menu actions / condition context (`ToggleShow`, `DatasetMenuButton`, …) | Internal only; surfaces via adapter root named exports                                      |
 
 Import builders, identify, menu protocol, create-control GIS APIs from `@hungpvq/map-dataset/...` — never from adapter `extra/` barrels. Do not reintroduce adapter `builder` / `model` / `services` re-exports of domain code.
 

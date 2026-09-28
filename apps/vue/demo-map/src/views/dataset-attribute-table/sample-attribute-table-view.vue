@@ -71,17 +71,31 @@ function onRowClick(id: string) {
         }}
       </MapControlButton>
     </div>
-    <div v-if="state.loading" class="sample-at-view__status">
+    <div
+      v-if="state.loading"
+      class="sample-at-view__status"
+    >
       {{ props.labels.loading }}
     </div>
-    <div v-else-if="!state.rows.length" class="sample-at-view__status">
+    <div
+      v-else-if="!state.rows.length"
+      class="sample-at-view__status"
+    >
       {{ props.labels.empty }}
     </div>
-    <table v-else class="sample-at-view__table">
+    <table
+      v-else
+      class="sample-at-view__table"
+    >
       <thead>
         <tr>
           <th></th>
-          <th v-for="col in state.columns" :key="col.key">{{ col.label }}</th>
+          <th
+            v-for="col in state.columns"
+            :key="col.key"
+          >
+            {{ col.label }}
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -98,7 +112,10 @@ function onRowClick(id: string) {
               @click.stop="onRowClick(row.id)"
             />
           </td>
-          <td v-for="col in state.columns" :key="col.key">
+          <td
+            v-for="col in state.columns"
+            :key="col.key"
+          >
             {{ row.cells[col.key] }}
           </td>
         </tr>

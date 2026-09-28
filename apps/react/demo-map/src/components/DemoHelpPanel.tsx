@@ -201,7 +201,10 @@ export function DemoHelpPanel(props?: {
         <span className="demo-help__toggle-label">
           {open ? chrome.hide : chrome.show}
         </span>
-        <span className="demo-help__toggle-icon" aria-hidden="true">
+        <span
+          className="demo-help__toggle-icon"
+          aria-hidden="true"
+        >
           {open ? '▾' : '▸'}
         </span>
       </button>
@@ -218,7 +221,10 @@ export function DemoHelpPanel(props?: {
           ) : null}
           <ul className="demo-help__list">
             {resolved.sections.map((section) => (
-              <li key={section.id} className="demo-help__item">
+              <li
+                key={section.id}
+                className="demo-help__item"
+              >
                 <div className="demo-help__title">{section.title}</div>
                 <div className="demo-help__text">{section.body}</div>
               </li>

@@ -67,11 +67,28 @@ export { MAP_CORE_LOCALE_EN } from './locale/locale.en';
 export { MAP_CORE_LOCALE_VI } from './locale/locale.vi';
 export { registerMapCoreBuiltinLocales } from './locale/register-builtin-locales';
 export { Base } from './model/Base';
+export {
+  clearControlAutoButtonsForMap,
+  getControlAutoButton,
+  notifyControlAutoButton,
+  registerControlAutoButton,
+  subscribeControlAutoButton,
+  unregisterControlAutoButton,
+} from './registry/control-auto-button-store';
+export {
+  clearControlLayoutsForMap,
+  DEFAULT_CONTROL_LAYOUT_STATE,
+  ensureControlLayout,
+  getControlLayout,
+  normalizeControlLayoutDefaults,
+  removeControlLayout,
+  resolveEffectiveButtonInMobile,
+  setControlLayout,
+  subscribeControlLayout,
+} from './registry/control-layout-store';
 export { MAP_MODULE_CONTROL_ID_KEY } from './registry/module-control-id';
 export {
-  REGISTRY_CONTROLS_STORE_KEY,
   REGISTRY_GLOBAL_STORE_KEY,
-  REGISTRY_MAPS_STORE_KEY,
   REGISTRY_NAMESPACES,
   UniversalRegistry,
 } from './registry/universal-registry';
@@ -117,6 +134,7 @@ export type {
 export {
   clearMapDomainStoreFactories,
   createMapCoreMetaRegistry,
+  deleteMapDomainStore,
   ensureMapDomainStore,
   getMap,
   getMapCoreMetaStore,
@@ -127,6 +145,7 @@ export {
   MAP_CORE_ROOT_STORE_KEY,
   MAP_PLATFORM_HOST,
   MAP_PLATFORM_REGISTRY_METHOD,
+  peekMapDomainStore,
   registerMapAccessor,
   registerMapDomainStoreFactory,
   registerMapReadySubscriber,
@@ -181,6 +200,7 @@ export {
   resolveMapButtonSizePx,
 } from './ui/map-button';
 export {
+  boundsFromPanelPosition,
   buildModuleBindPosition,
   isModuleCornerChromeVisible,
   moduleBtnContainerClassName,
@@ -188,7 +208,9 @@ export {
   moduleCornerHostSelector,
   moduleDraggableHostId,
   moduleDraggableHostSelector,
+  panelPositionFromBounds,
   queryModuleHostElement,
+  resolveEffectivePanelPosition,
 } from './ui/module-container';
 export { isValidBbox } from './utils/bbox';
 export {
@@ -311,6 +333,11 @@ export type {
   MapControlPanelKind,
   MapControlPanelPosition,
 } from './registry/control';
+export type { ControlAutoButtonEntry } from './registry/control-auto-button-store';
+export type {
+  MapControlLayoutPatch,
+  MapControlLayoutState,
+} from './registry/control-layout-store';
 export type { RegistryNamespaceKind } from './registry/universal-registry';
 export type { ErrorHandlerOptions } from './services/error-handler.service';
 export type { MapEventCallbacks } from './services/map-initializer.service';
@@ -352,6 +379,8 @@ export type {
 export type {
   ModuleBindPosition,
   ModuleCornerChromeLayout,
+  PanelBoundsRect,
+  PanelContainerSize,
 } from './ui/module-container';
 export type {
   MapBreakpointConfig,

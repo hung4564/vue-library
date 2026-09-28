@@ -23,15 +23,13 @@ import {
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
-  MapCommonButton,
   MapControlButton,
   ModuleContainer,
   UniversalRegistry,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
-  useToolbarControl,
   type WithShowProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
@@ -77,7 +75,7 @@ defineSlots<{
   endList: (props: { mapId: string }) => any;
   default(): any;
 }>();
-const { mapId, moduleContainerProps, order } = useMap(props);
+const { mapId, order } = useMap(props);
 const { trans } = useLang(mapId.value);
 useEnsureDatasetBuiltinLocales(mapId.value);
 warnIfDatasetRegistryMissing(
@@ -94,11 +92,12 @@ const [showCreate, toggleShowCreate] = useShow();
 function openAddLayer() {
   toggleShowCreate();
 }
-const { panelPosition } = useRegisterMapControl(mapId, {
+const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
   id: 'mapLayerControl',
   panelKind: 'sidebar',
   title: () => trans.value('map.layer-control.title'),
-  buttonPosition: () => props.position,
+  from: props,
+  order,
   show,
   setShow,
   initialPanelPosition: { location: 'left' },
@@ -109,8 +108,6 @@ const { panelPosition } = useRegisterMapControl(mapId, {
     disabledMove: props.disabledMove,
     globalVisibilityMode: props.globalVisibilityMode,
     createLayerTypes: props.createLayerTypes,
-    position: props.position,
-    controlLayout: props.controlLayout,
   }),
   actions: [
     {
@@ -118,10 +115,7 @@ const { panelPosition } = useRegisterMapControl(mapId, {
       run: () => setShow(),
     },
   ],
-});
-const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapLayerControl',
-  getState() {
+  getButtonState() {
     return mdiButtonState(path.icon, {
       active: show.value,
       title: trans.value('map.layer-control.title'),
@@ -149,15 +143,6 @@ const titleMenuState = computed(() => {
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
-
     <template #draggable="props">
       <DraggableItemSideBar
         :containerId="props.containerId"
@@ -170,7 +155,10 @@ const titleMenuState = computed(() => {
             {{ trans('map.layer-control.title') }}
           </span>
         </template>
-        <template v-if="titleMenuState.data" #after-title>
+        <template
+          v-if="titleMenuState.data"
+          #after-title
+        >
           <DatasetMenus
             :menus="titleMenuState.menus"
             :data="titleMenuState.data"
@@ -190,20 +178,31 @@ const titleMenuState = computed(() => {
             @create="openAddLayer"
           >
             <template #title>
-              <slot name="titleList" :mapId="mapId">
+              <slot
+                name="titleList"
+                :mapId="mapId"
+              >
                 <MapControlButton
                   data-testid="map-layer-create"
                   @click.stop="openAddLayer()"
                   v-if="!disabledCreate"
                   variant="plain"
                 >
-                  <SvgIcon size="14" type="mdi" :path="path.layer.create" />
+                  <SvgIcon
+                    size="14"
+                    type="mdi"
+                    :path="path.layer.create"
+                  />
                 </MapControlButton>
               </slot>
             </template>
           </LayerList>
           <div class="base-map-card-container">
-            <slot name="endList" :mapId="mapId"> </slot>
+            <slot
+              name="endList"
+              :mapId="mapId"
+            >
+            </slot>
           </div>
         </div>
       </DraggableItemSideBar>

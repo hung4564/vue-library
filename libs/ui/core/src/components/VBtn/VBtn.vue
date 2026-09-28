@@ -12,7 +12,10 @@
     :tabindex="loading || readonly ? -1 : undefined"
     @click="onClick"
   >
-    <span class="v-btn__content" data-no-activator="">
+    <span
+      class="v-btn__content"
+      data-no-activator=""
+    >
       <slot />
     </span>
   </component>

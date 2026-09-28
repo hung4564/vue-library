@@ -5,22 +5,44 @@
     @click.stop="open = !open"
   >
     <div class="layer-context-menu__item-icon">
-      <SvgIcon size="16" type="mdi" :path="mdiStar" />
+      <SvgIcon
+        size="16"
+        type="mdi"
+        :path="mdiStar"
+      />
     </div>
     <span>{{ 'name' in item ? item.name : 'Sample custom menu' }}</span>
     <div class="layer-context-menu__chevron">
-      <SvgIcon size="16" type="mdi" :path="mdiChevronRight" />
+      <SvgIcon
+        size="16"
+        type="mdi"
+        :path="mdiChevronRight"
+      />
     </div>
     <ul class="context-menu layer-context-menu layer-context-menu--submenu">
-      <li class="layer-context-menu__item" @click.stop="onLog">
+      <li
+        class="layer-context-menu__item"
+        @click.stop="onLog"
+      >
         <div class="layer-context-menu__item-icon">
-          <SvgIcon size="16" type="mdi" :path="mdiInformation" />
+          <SvgIcon
+            size="16"
+            type="mdi"
+            :path="mdiInformation"
+          />
         </div>
         <span>Log layer (keep open)</span>
       </li>
-      <li class="layer-context-menu__item" @click.stop="onDone">
+      <li
+        class="layer-context-menu__item"
+        @click.stop="onDone"
+      >
         <div class="layer-context-menu__item-icon">
-          <SvgIcon size="16" type="mdi" :path="mdiClose" />
+          <SvgIcon
+            size="16"
+            type="mdi"
+            :path="mdiClose"
+          />
         </div>
         <span>Done (close menu)</span>
       </li>

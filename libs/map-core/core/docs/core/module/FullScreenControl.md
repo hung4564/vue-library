@@ -50,5 +50,5 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <FullScreenControl />
-</Map>
+</Map>;
 ```

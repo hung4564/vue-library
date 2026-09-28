@@ -20,15 +20,13 @@ import {
 } from '@hungpvq/map-dataset/identify';
 import {
   defaultMapProps,
-  MapCommonButton,
   ModuleContainer,
   UniversalRegistry,
   useEventMap,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
-  useToolbarControl,
 } from '@hungpvq/react-map-core';
 import { mdiHandPointingUp } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';
@@ -57,10 +55,7 @@ export function IdentifyControl(
   },
 ) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order, callMap } = useMap({
-    ...merged,
-    controlId: IDENTIFY_CONTROL.id,
-  });
+  const { mapId, order, callMap } = useMap(merged);
   const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
   const { trans } = useLang(mapId);
   useEffect(() => bindHighlightMittBridge(mapId), [mapId]);
@@ -265,36 +260,12 @@ export function IdentifyControl(
     syncFromModel();
   }
 
-  const toolbarConfig = useMemo(
-    () => ({
-      kind: 'single' as const,
-      id: IDENTIFY_CONTROL.id,
-      getState: () =>
-        mdiButtonState(mdiHandPointingUp, {
-          visible: viewsRef.current.length > 0,
-          active: showRef.current,
-          loading: loadingRef.current,
-          title: trans('map.identify.title'),
-          order,
-        }),
-      onClick: () => handleToggle(),
-    }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [trans, order],
-  );
-
-  const { state, control } = useToolbarControl(mapId, merged, toolbarConfig);
-  controlSyncRef.current = () => control.sync();
-
-  useEffect(() => {
-    control.sync();
-  }, [show, loading, views.length, control]);
-
-  useRegisterMapControl(mapId, {
+  const { moduleContainerProps, control } = useMapControl(mapId, {
     id: IDENTIFY_CONTROL.id,
     panelKind: 'button',
     title: trans('map.identify.title'),
-    buttonPosition: merged.position,
+    from: merged,
+    order,
     show,
     setShow: (value) => {
       session.setShow(value);
@@ -302,8 +273,6 @@ export function IdentifyControl(
       updateResultPanel(mapId, { show: value });
     },
     getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
       immediately: props.immediately,
     }),
     actions: [
@@ -358,24 +327,25 @@ export function IdentifyControl(
         },
       },
     ],
+    getButtonState: () =>
+      mdiButtonState(mdiHandPointingUp, {
+        visible: viewsRef.current.length > 0,
+        active: showRef.current,
+        loading: loadingRef.current,
+        title: trans('map.identify.title'),
+        order,
+      }),
+    onClick: () => handleToggle(),
   });
+  controlSyncRef.current = () => control.sync();
+
+  useEffect(() => {
+    control.sync();
+  }, [show, loading, views.length, control]);
 
   return (
     <>
-      <ModuleContainer
-        {...moduleContainerProps}
-        btn={
-          state ? (
-            <MapCommonButton
-              option={state}
-              onClick={(e) => {
-                e.stopPropagation();
-                control.onAction(e.nativeEvent);
-              }}
-            />
-          ) : null
-        }
-      />
+      <ModuleContainer {...moduleContainerProps} />
       <IdentifyResultControl
         position={merged.position}
         controlLayout={merged.controlLayout}

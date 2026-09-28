@@ -370,7 +370,11 @@ watch(
 
 <template>
   <div class="attribute-table">
-    <div class="attribute-table__sr-only" role="status" aria-live="polite">
+    <div
+      class="attribute-table__sr-only"
+      role="status"
+      aria-live="polite"
+    >
       {{ selectionStatusText }}
     </div>
     <RegistryItem

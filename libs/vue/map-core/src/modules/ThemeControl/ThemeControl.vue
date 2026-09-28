@@ -31,8 +31,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
@@ -65,7 +64,7 @@ const props = withDefaults(
   },
 );
 
-const { mapId, moduleContainerProps, order } = useMap(props);
+const { mapId, order } = useMap(props);
 const { trans } = useLang(mapId.value);
 const storageOpts = computed(() =>
   props.scope === 'map' ? { mapId: mapId.value } : undefined,
@@ -107,13 +106,13 @@ function toggleTheme() {
 
 const titleKey = computed(() => getMapThemeLocaleKey(toggleTarget.value));
 
-useRegisterMapControl(mapId, {
+const { moduleContainerProps, state, control } = useMapControl(mapId, {
   id: 'mapThemeControl',
   panelKind: 'button',
-  buttonPosition: () => props.position,
+  from: props,
+  order,
+  buttonSlot: 'custom',
   getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
     themes: themeModes.value,
     scope: props.scope,
   }),
@@ -123,11 +122,7 @@ useRegisterMapControl(mapId, {
       run: () => toggleTheme(),
     },
   ],
-});
-
-const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapThemeControl',
-  getState() {
+  getButtonState() {
     return mdiButtonState(toggleIcon.value, {
       visible: true,
       order: order.value,
@@ -189,7 +184,10 @@ onUnmounted(() => {
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlGroupButton row class="button-group-hover-expand">
+      <MapControlGroupButton
+        row
+        class="button-group-hover-expand"
+      >
         <MapCommonButton
           v-if="state"
           :option="state"

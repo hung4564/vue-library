@@ -6,11 +6,11 @@ Dialog to add a dataset from the UI by **data kind**. `LayerControl` opens this 
 
 Shared map props (`mapId`, `position`, `controlLayout`, `controlVisible`, …) apply. CreateControl also registers a **chrome button** (`mdiPlus`) via ModuleContainer `#btn` / toolbar.
 
-| Prop | Type | Default | Effect |
-| --- | --- | --- | --- |
-| `show` / `v-model:show` | `boolean` | — | Open the create popup |
-| `createLayerTypes` | `LayerType[]` | all `LAYER_TYPES` | Allowlist for the type select (`resolveCreateControlLayerTypes`) |
-| `controlVisible` | `boolean` | `true` | Show map chrome button; LayerControl nests with `false` |
+| Prop                    | Type          | Default           | Effect                                                           |
+| ----------------------- | ------------- | ----------------- | ---------------------------------------------------------------- |
+| `show` / `v-model:show` | `boolean`     | —                 | Open the create popup                                            |
+| `createLayerTypes`      | `LayerType[]` | all `LAYER_TYPES` | Allowlist for the type select (`resolveCreateControlLayerTypes`) |
+| `controlVisible`        | `boolean`     | `true`            | Show map chrome button; LayerControl nests with `false`          |
 
 Standalone:
 
@@ -22,14 +22,14 @@ When nested under LayerControl, the host passes `controlVisible={false}` and `cr
 
 Layer types (`LAYER_TYPES`):
 
-| Type | Data |
-| --- | --- |
-| `geojson` | GeoJSON / GIS files (worker `geojson`) |
-| `filegdb` | ESRI File Geodatabase — `.gdb.zip` / `*_gdb.zip` / `.gdb` folder (optional peer `gdal3.js`) |
-| `xyz` | XYZ URL template — raster or vector (`.pbf`) via `tileKind` / URL sniff |
-| `tilejson` | TileJSON URL (`tiles.json`) — `tiles[]` + `vector_layers` metadata |
-| `mbtiles` | Local `.mbtiles` — vector or raster from metadata (`format` / `vector_layers`) |
-| `pmtiles` | `.pmtiles` file or URL — vector or raster from header `tileType` |
+| Type       | Data                                                                                        |
+| ---------- | ------------------------------------------------------------------------------------------- |
+| `geojson`  | GeoJSON / GIS files (worker `geojson`)                                                      |
+| `filegdb`  | ESRI File Geodatabase — `.gdb.zip` / `*_gdb.zip` / `.gdb` folder (optional peer `gdal3.js`) |
+| `xyz`      | XYZ URL template — raster or vector (`.pbf`) via `tileKind` / URL sniff                     |
+| `tilejson` | TileJSON URL (`tiles.json`) — `tiles[]` + `vector_layers` metadata                          |
+| `mbtiles`  | Local `.mbtiles` — vector or raster from metadata (`format` / `vector_layers`)              |
+| `pmtiles`  | `.pmtiles` file or URL — vector or raster from header `tileType`                            |
 
 Optional peers for archives: `pmtiles`, `sql.js` (same pattern as GIS peers below).
 
@@ -37,13 +37,13 @@ Optional peers for archives: `pmtiles`, `sql.js` (same pattern as GIS peers belo
 
 Built-in samples are `CreateControlSample` objects keyed by **`layerKind`** only (`id`, `label`, `layerKind`, `config`, optional `dataUrl`). There is no separate `dataFormat` field — vector vs raster XYZ is carried in `config.tileKind`.
 
-| Kind | Constant | Package entry |
-| --- | --- | --- |
-| `geojson` | `VECTOR_SAMPLES` | `@hungpvq/map-dataset/vector-tile` |
-| `xyz` | `RASTER_XYZ_SAMPLES` + `VECTOR_TILE_SAMPLES` | `/raster` + `/vector-tile` |
-| `tilejson` | `TILEJSON_SAMPLES` (MapLibre [demotiles tiles.json](https://demotiles.maplibre.org/tiles/tiles.json)) | `/vector-tile` |
-| `mbtiles` / `pmtiles` | none | — |
-| `filegdb` | none (upload only) | — |
+| Kind                  | Constant                                                                                              | Package entry                      |
+| --------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `geojson`             | `VECTOR_SAMPLES`                                                                                      | `@hungpvq/map-dataset/vector-tile` |
+| `xyz`                 | `RASTER_XYZ_SAMPLES` + `VECTOR_TILE_SAMPLES`                                                          | `/raster` + `/vector-tile`         |
+| `tilejson`            | `TILEJSON_SAMPLES` (MapLibre [demotiles tiles.json](https://demotiles.maplibre.org/tiles/tiles.json)) | `/vector-tile`                     |
+| `mbtiles` / `pmtiles` | none                                                                                                  | —                                  |
+| `filegdb`             | none (upload only)                                                                                    | —                                  |
 
 Helpers: `getCreateControlSamples(layerKind)`, `applyCreateControlSample(sample)`, `loadCreateControlTileJsonFromUrl` / `tileJsonToCreateControlPatch`.
 
@@ -103,18 +103,18 @@ For MBTiles / PMTiles:
 npm i sql.js pmtiles
 ```
 
-| Format | Peer(s) |
-| --- | --- |
-| GeoJSON / GeoJSONL / WKT | none (`parseGisText` sync) |
-| CSV | `papaparse` |
-| KML / GPX | `@tmcw/togeojson`, `@xmldom/xmldom` |
-| TopoJSON | `topojson-client` |
-| ZIP / KMZ | `jszip` (+ KML peers for KMZ) |
-| Shapefile | `shpjs` |
+| Format                        | Peer(s)                             |
+| ----------------------------- | ----------------------------------- |
+| GeoJSON / GeoJSONL / WKT      | none (`parseGisText` sync)          |
+| CSV                           | `papaparse`                         |
+| KML / GPX                     | `@tmcw/togeojson`, `@xmldom/xmldom` |
+| TopoJSON                      | `topojson-client`                   |
+| ZIP / KMZ                     | `jszip` (+ KML peers for KMZ)       |
+| Shapefile                     | `shpjs`                             |
 | FileGDB (`.gdb.zip` / folder) | `gdal3.js` (+ `jszip` for archives) |
-| MBTiles | `sql.js` |
-| PMTiles | `pmtiles` |
-| TileJSON | none (fetch JSON) |
+| MBTiles                       | `sql.js`                            |
+| PMTiles                       | `pmtiles`                           |
+| TileJSON                      | none (fetch JSON)                   |
 
 Programmatic parse: `parseGisTextAsync` / `loadGis*Async` from `@hungpvq/map-dataset/create-control` — see [GIS worker](../worker.md).
 
@@ -130,26 +130,26 @@ Programmatic parse: `parseGisTextAsync` / `loadGis*Async` from `@hungpvq/map-dat
 
 Create / validate / defaults live on core **`LayerHelper`** from `@hungpvq/map-dataset/create-control`. Vue and React adapters only supply framework form UI as **leaf modules**.
 
-| | Import |
-| --- | --- |
-| Protocol | `LayerHelper`, `LAYER_TYPES`, `ConfigTilejsonHelper`, `ConfigFilegdbHelper`, parse/upload helpers from `@hungpvq/map-dataset/create-control` |
-| Vue forms | `CreateControl/config/*.vue` leaf SFCs (`filegdb-upload.vue`, `filegdb-settings.vue`, `tilejson-json.vue`, `archive-settings.vue`, …) |
-| React forms | `CreateControl/config/*.tsx` leaf modules (`filegdb-upload.tsx`, `filegdb-settings.tsx`, …) |
+|             | Import                                                                                                                                       |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Protocol    | `LayerHelper`, `LAYER_TYPES`, `ConfigTilejsonHelper`, `ConfigFilegdbHelper`, parse/upload helpers from `@hungpvq/map-dataset/create-control` |
+| Vue forms   | `CreateControl/config/*.vue` leaf SFCs (`filegdb-upload.vue`, `filegdb-settings.vue`, `tilejson-json.vue`, `archive-settings.vue`, …)        |
+| React forms | `CreateControl/config/*.tsx` leaf modules (`filegdb-upload.tsx`, `filegdb-settings.tsx`, …)                                                  |
 
 ## Props
 
 <!--@include: ../../core/module/props.md-->
 
-| Prop | Type | Required | Effect |
-| --- | --- | --- | --- |
-| `show` | `boolean` | yes | Open the dialog |
+| Prop   | Type      | Required | Effect          |
+| ------ | --------- | -------- | --------------- |
+| `show` | `boolean` | yes      | Open the dialog |
 
 ## Events
 
-| Name | Payload | Framework |
-| --- | --- | --- |
-| `update:show` | `boolean` | Vue (`v-model:show`) |
-| `onShowChange` | `(show: boolean) => void` | React |
+| Name           | Payload                   | Framework            |
+| -------------- | ------------------------- | -------------------- |
+| `update:show`  | `boolean`                 | Vue (`v-model:show`) |
+| `onShowChange` | `(show: boolean) => void` | React                |
 
 ## Vue
 

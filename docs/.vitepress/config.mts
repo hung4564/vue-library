@@ -44,7 +44,10 @@ const sharedVite = {
     preserveSymlinks: true,
     alias: {
       '@hungpvq/shared': path.resolve(__dirname, '../../libs/share/shared/src'),
-      '@hungpvq/shared-core': path.resolve(__dirname, '../../libs/share/core/src'),
+      '@hungpvq/shared-core': path.resolve(
+        __dirname,
+        '../../libs/share/core/src',
+      ),
     },
   },
 };
@@ -272,9 +275,8 @@ const demoMapConfig: UserConfig = {
         target: '_self',
         rel: 'noopener',
       },
-      ...rewriteSidebar(
-        getMapSideBar() as DefaultTheme.SidebarItem[],
-        (link) => rewritePrefixLink('map', link),
+      ...rewriteSidebar(getMapSideBar() as DefaultTheme.SidebarItem[], (link) =>
+        rewritePrefixLink('map', link),
       ),
     ],
     socialLinks: [

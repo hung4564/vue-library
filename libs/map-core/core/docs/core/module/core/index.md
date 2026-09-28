@@ -11,8 +11,8 @@
 
 ## Events
 
-| Name          | Description                |
-| ------------- | -------------------------- |
+| Name         | Description                |
+| ------------ | -------------------------- |
 | `mapLoaded`  | `(map: MapSimple) => void` |
 | `mapDestroy` | `(map: MapSimple) => void` |
 
@@ -44,7 +44,7 @@ import { Map } from '@hungpvq/vue-map-core';
 import { Map } from '@hungpvq/react-map-core';
 import '@hungpvq/react-map-core/style.css';
 
-<Map />
+<Map />;
 ```
 
 ##### Custom initOptions
@@ -82,7 +82,7 @@ const initOptions = {
   attributionControl: false,
 };
 
-<Map initOptions={initOptions} />
+<Map initOptions={initOptions} />;
 ```
 
 ##### Handle events
@@ -102,7 +102,10 @@ function onMapDestroy(map) {
 </script>
 
 <template>
-  <Map @mapLoaded="onMapLoaded" @mapDestroy="onMapDestroy" />
+  <Map
+    @mapLoaded="onMapLoaded"
+    @mapDestroy="onMapDestroy"
+  />
 </template>
 ```
 
@@ -119,7 +122,10 @@ function onMapDestroy(map) {
   console.info('destroy', map);
 }
 
-<Map onMapLoaded={onMapLoaded} onMapDestroy={onMapDestroy} />
+<Map
+  onMapLoaded={onMapLoaded}
+  onMapDestroy={onMapDestroy}
+/>;
 ```
 
 ##### Multiple maps
@@ -151,7 +157,7 @@ import '@hungpvq/react-map-core/style.css';
 <div className="grid grid-cols-2 gap-4">
   <Map mapId="map-1" />
   <Map mapId="map-2" />
-</div>
+</div>;
 ```
 
 ##### Dynamic style switch
@@ -272,13 +278,15 @@ The map library supports extensive customization through CSS variables. All vari
     // + '@hungpvq/vue-map-core/style.css' or react equivalent
     ```
 
-2. **Apply a theme class** to `html` (recommended so teleported menus inherit tokens), or use ThemeControl:
+2.  **Apply a theme class** to `html` (recommended so teleported menus inherit tokens), or use ThemeControl:
 
     ```html
     <!-- Named themes -->
     <html class="map-theme-dark">
-    <html class="map-theme-vibrant">
-    <html class="map-theme-ocean">
+      <html class="map-theme-vibrant">
+        <html class="map-theme-ocean"></html>
+      </html>
+    </html>
     ```
 
     ```ts

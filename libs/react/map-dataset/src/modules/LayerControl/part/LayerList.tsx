@@ -199,7 +199,10 @@ export function LayerList({
               title="Clear search"
               onClick={() => setLayerSearch('')}
             >
-              <Icon path={mdiClose} size="14px" />
+              <Icon
+                path={mdiClose}
+                size="14px"
+              />
             </MapControlButton>
           ) : null}
         </div>
@@ -218,7 +221,10 @@ export function LayerList({
                 title="Create group"
                 variant="plain"
               >
-                <Icon path={mdiGroup} size={HEADER_ICON} />
+                <Icon
+                  path={mdiGroup}
+                  size={HEADER_ICON}
+                />
               </MapControlButton>
             )}
             {!disabledDeleteAll && (
@@ -227,7 +233,10 @@ export function LayerList({
                 title="Delete all layers"
                 variant="plain"
               >
-                <Icon path={mdiDelete} size={HEADER_ICON} />
+                <Icon
+                  path={mdiDelete}
+                  size={HEADER_ICON}
+                />
               </MapControlButton>
             )}
           </div>
@@ -259,7 +268,10 @@ export function LayerList({
                   className="layer-control__empty-action"
                   onClick={onCreate}
                 >
-                  <Icon path={mdiPlus} size="14px" />
+                  <Icon
+                    path={mdiPlus}
+                    size="14px"
+                  />
                   {trans('map.layer-control.create-btn')}
                 </button>
               )}

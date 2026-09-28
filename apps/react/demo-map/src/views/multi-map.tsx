@@ -79,12 +79,18 @@ export function MultiMapPage() {
             <h2 className="multi-map-page__label">
               Map A (<code>demo-map-a</code>)
             </h2>
-            <Map mapId="demo-map-a" onMapLoaded={onLoadedA}>
+            <Map
+              mapId="demo-map-a"
+              onMapLoaded={onLoadedA}
+            >
               <DevtoolsControl position="bottom-right" />
               <DemoLanguageControl />
               <AsideControl position="top-left" />
               <BaseMapControl position="bottom-left" />
-              <LayerControl position="top-left" show />
+              <LayerControl
+                position="top-left"
+                show
+              />
               <DemoHelpPanel />
             </Map>
           </div>
@@ -92,9 +98,15 @@ export function MultiMapPage() {
             <h2 className="multi-map-page__label">
               Map B (<code>demo-map-b</code>)
             </h2>
-            <Map mapId="demo-map-b" onMapLoaded={onLoadedB}>
+            <Map
+              mapId="demo-map-b"
+              onMapLoaded={onLoadedB}
+            >
               <BaseMapControl position="bottom-left" />
-              <LayerControl position="top-left" show />
+              <LayerControl
+                position="top-left"
+                show
+              />
               <DevtoolsControl position="bottom-right" />
             </Map>
           </div>

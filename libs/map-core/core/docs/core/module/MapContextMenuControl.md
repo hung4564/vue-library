@@ -16,16 +16,16 @@ Uses `EventContextMenu` (same pattern as `EventClick`) through `useEventMap`. Ne
 
 and
 
-| Prop | Description | Type | Required | Default |
-| --- | --- | --- | --- | --- |
-| `items` | Full menu (skips built-ins). Same shape as `createMenuBuilder().item().build()` | `MapContextMenuItem[]` | `false` | built-in list |
-| `include` | Only these built-in ids | `MapContextMenuItemId[]` | `false` | all |
-| `exclude` | Hide these built-in ids | `MapContextMenuItemId[]` | `false` | `[]` |
-| `extra` | Appended items | `MapContextMenuItem[]` | `false` | `[]` |
-| `prepend` | Prepended items | `MapContextMenuItem[]` | `false` | `[]` |
-| `showCoords` | Show lat,lng header (click to copy) | `boolean` | `false` | `true` |
-| `enabled` | Listen to right-click | `boolean` | `false` | `true` |
-| `zoomDelta` | Zoom step for **Zoom in here** | `number` | `false` | `2` |
+| Prop         | Description                                                                     | Type                     | Required | Default       |
+| ------------ | ------------------------------------------------------------------------------- | ------------------------ | -------- | ------------- |
+| `items`      | Full menu (skips built-ins). Same shape as `createMenuBuilder().item().build()` | `MapContextMenuItem[]`   | `false`  | built-in list |
+| `include`    | Only these built-in ids                                                         | `MapContextMenuItemId[]` | `false`  | all           |
+| `exclude`    | Hide these built-in ids                                                         | `MapContextMenuItemId[]` | `false`  | `[]`          |
+| `extra`      | Appended items                                                                  | `MapContextMenuItem[]`   | `false`  | `[]`          |
+| `prepend`    | Prepended items                                                                 | `MapContextMenuItem[]`   | `false`  | `[]`          |
+| `showCoords` | Show lat,lng header (click to copy)                                             | `boolean`                | `false`  | `true`        |
+| `enabled`    | Listen to right-click                                                           | `boolean`                | `false`  | `true`        |
+| `zoomDelta`  | Zoom step for **Zoom in here**                                                  | `number`                 | `false`  | `2`           |
 
 Built-in ids: `copy-geojson`, `center-here`, `zoom-in-here`, `quick-analysis`, `identify-here`, `add-geojson-here`, `copy-coords`, `copy-wkt`, `google-maps`, `google-earth`. Extra add-layer items use their own ids (default `buffer-500m`, `buffer-1000m`, `buffer-5000m`).
 
@@ -35,11 +35,11 @@ Built-in ids: `copy-geojson`, `center-here`, `zoom-in-here`, `quick-analysis`, `
 
 ## Events
 
-| Name | Payload |
-| --- | --- |
-| Vue `open` / React `onOpen` | `MapContextMenuTarget` (`lngLat`, `point`, `mapId`) |
-| Vue `close` / React `onClose` | — |
-| Vue `select` / React `onSelect` | `{ item, target }` |
+| Name                            | Payload                                             |
+| ------------------------------- | --------------------------------------------------- |
+| Vue `open` / React `onOpen`     | `MapContextMenuTarget` (`lngLat`, `point`, `mapId`) |
+| Vue `close` / React `onClose`   | —                                                   |
+| Vue `select` / React `onSelect` | `{ item, target }`                                  |
 
 ## Usage
 
@@ -62,10 +62,7 @@ Hide some items, add one with `createMenuBuilder` (or `createMapMenuBuilder` / `
 
 ```ts
 import { createMenuBuilder, createMapContextMenuBuilder } from '@hungpvq/map-dataset/menu';
-import {
-  createMapMenuBuilder,
-  type MapContextMenuTarget,
-} from '@hungpvq/map-core/menu';
+import { createMapMenuBuilder, type MapContextMenuTarget } from '@hungpvq/map-core/menu';
 
 const extra = createMenuBuilder<MapContextMenuTarget>()
   .item()
@@ -92,10 +89,7 @@ const fromCore = createMapMenuBuilder()
 ```
 
 ```vue
-<MapContextMenuControl
-  :exclude="['copy-geojson']"
-  :extra="[extra, also, fromCore]"
-/>
+<MapContextMenuControl :exclude="['copy-geojson']" :extra="[extra, also, fromCore]" />
 ```
 
 Without a menu UI, listen yourself:
@@ -121,5 +115,5 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <MapContextMenuControl exclude={['copy-geojson']} />
-</Map>
+</Map>;
 ```

@@ -19,15 +19,15 @@ An **Nx TypeScript monorepo** that publishes npm packages under `@hungpvq/*` for
 
 ## Main capability groups (product view)
 
-| Group | Consumer-facing capability |
-|-------|----------------------------|
-| Map shell | Create/destroy MapLibre map per `mapId`, toolbar, registry, theme, language |
-| Dataset / layers | Build datasets, list/reorder layers, style, menus, attribute table, export |
-| Identify | Click/box query features → result panel / menus / highlight |
-| Measurement | Distance / area / angle / radius sessions on the map |
-| Draw / inspect | Sketch/edit GeoJSON via Mapbox Draw; inspect layers |
-| Draggable chrome | Sidebar/popup/float panels hosting map controls |
-| Devtools | Store/log/error viewers (dev) |
+| Group            | Consumer-facing capability                                                  |
+| ---------------- | --------------------------------------------------------------------------- |
+| Map shell        | Create/destroy MapLibre map per `mapId`, toolbar, registry, theme, language |
+| Dataset / layers | Build datasets, list/reorder layers, style, menus, attribute table, export  |
+| Identify         | Click/box query features → result panel / menus / highlight                 |
+| Measurement      | Distance / area / angle / radius sessions on the map                        |
+| Draw / inspect   | Sketch/edit GeoJSON via Mapbox Draw; inspect layers                         |
+| Draggable chrome | Sidebar/popup/float panels hosting map controls                             |
+| Devtools         | Store/log/error viewers (dev)                                               |
 
 ## Architecture in one paragraph
 
@@ -60,17 +60,17 @@ MapLibre GL + @mapbox/mapbox-gl-draw
 
 ## 2.1 Inventory (VERIFIED from `project.json` / `package.json`)
 
-| Layer | Packages / projects |
-|-------|---------------------|
-| Map core | `@hungpvq/map-core`, `map-dataset`, `map-draw`, `map-debug` |
-| Map Vue | `vue-map` (meta), `vue-map-core`, `vue-map-dataset`, `vue-map-draw`, `vue-map-devtools` |
+| Layer     | Packages / projects                                                                               |
+| --------- | ------------------------------------------------------------------------------------------------- |
+| Map core  | `@hungpvq/map-core`, `map-dataset`, `map-draw`, `map-debug`                                       |
+| Map Vue   | `vue-map` (meta), `vue-map-core`, `vue-map-dataset`, `vue-map-draw`, `vue-map-devtools`           |
 | Map React | `react-map` (meta), `react-map-core`, `react-map-dataset`, `react-map-draw`, `react-map-devtools` |
-| Draggable | `@hungpvq/draggable`, `vue-draggable`, `react-draggable` |
-| Share | `shared`, `shared-core`, `shared-store`, `shared-log`, `shared-file`, `router` |
-| UI | `ui-core` |
-| Fixtures | `demo-map-datasets` (private) |
-| Apps | `vue-demo-map`, `react-demo-map`, `demo-draggable`, `react-demo-draggable`, e2e apps |
-| Docs / CI | `docs/` VitePress; `.github/workflows/ci.yml`, `publish.yml` |
+| Draggable | `@hungpvq/draggable`, `vue-draggable`, `react-draggable`                                          |
+| Share     | `shared`, `shared-core`, `shared-store`, `shared-log`, `shared-file`, `router`                    |
+| UI        | `ui-core`                                                                                         |
+| Fixtures  | `demo-map-datasets` (private)                                                                     |
+| Apps      | `vue-demo-map`, `react-demo-map`, `demo-draggable`, `react-demo-draggable`, e2e apps              |
+| Docs / CI | `docs/` VitePress; `.github/workflows/ci.yml`, `publish.yml`                                      |
 
 ~29 Nx projects; release groups: **map**, **draggable**, **packages**.
 
@@ -100,8 +100,8 @@ draggable ← vue-draggable | react-draggable
 
 ## 2.3 Framework vs independent
 
-| Independent | Framework-specific |
-|-------------|-------------------|
+| Independent                                                                     | Framework-specific                 |
+| ------------------------------------------------------------------------------- | ---------------------------------- |
 | `map-core`, `map-dataset`, `map-draw`, `map-debug`, `draggable`, share packages | `vue-*`, `react-*` adapters, demos |
 
 ## 2.4 Build / CI (VERIFIED)
@@ -116,17 +116,17 @@ draggable ← vue-draggable | react-draggable
 
 ## 3.1 Core (map platform)
 
-| Feature | Entry | Package |
-|---------|-------|---------|
-| Bootstrap app | `installMapApp` | vue/react-map-dataset |
-| Create / destroy map | `<Map>` / `useMapInstance` | vue/react-map-core |
-| getMap / READY | `registerMapAccessor`, `subscribeMapReady` | map-core + adapter store side-effect |
-| Control registry | `useRegisterMapControl`, `UniversalRegistry` | map-core |
-| Theme | `bootstrapMapTheme`, `ThemeControl`, opt-in `applyMapThemeForMap` | map-core / adapters |
-| Language | `LanguageControl`, lang store | map-core adapters |
-| Toolbar | `ToolbarControl`, `useToolbarControl` | adapters |
-| Context menu | `MapContextMenuControl` | adapters + map-core/menu |
-| Errors | `errorHandler` singleton | map-core |
+| Feature              | Entry                                                             | Package                              |
+| -------------------- | ----------------------------------------------------------------- | ------------------------------------ |
+| Bootstrap app        | `installMapApp`                                                   | vue/react-map-dataset                |
+| Create / destroy map | `<Map>` / `useMapInstance`                                        | vue/react-map-core                   |
+| getMap / READY       | `registerMapAccessor`, `subscribeMapReady`                        | map-core + adapter store side-effect |
+| Control registry     | `useRegisterMapControl`, `UniversalRegistry`                      | map-core                             |
+| Theme                | `bootstrapMapTheme`, `ThemeControl`, opt-in `applyMapThemeForMap` | map-core / adapters                  |
+| Language             | `LanguageControl`, lang store                                     | map-core adapters                    |
+| Toolbar              | `ToolbarControl`, `useToolbarControl`                             | adapters                             |
+| Context menu         | `MapContextMenuControl`                                           | adapters + map-core/menu             |
+| Errors               | `errorHandler` singleton                                          | map-core                             |
 
 ## 3.2 Map chrome controls (dual ids — VERIFIED `MAP_DUAL_CONTROL_IDS`)
 
@@ -134,41 +134,41 @@ Home, Zoom, Navigation, Fullscreen, Globe, GeoLocate, Goto, Info, Setting, Theme
 
 ## 3.3 Dataset domain
 
-| Feature | Core owner |
-|---------|------------|
-| Dataset tree add/remove | `DatasetService` |
-| Layer list / reorder | `syncListViewLayerOrder` |
-| Menus / conditions | map-dataset/menu |
-| Style editor | style helpers + StyleControl UI |
-| Identify session | `createIdentifySession` |
-| Highlight | highlight controller |
-| Attribute table / export | attribute-table / geo-export |
-| GeoJSON here | `registerAddGeojsonHereForMap` |
+| Feature                  | Core owner                      |
+| ------------------------ | ------------------------------- |
+| Dataset tree add/remove  | `DatasetService`                |
+| Layer list / reorder     | `syncListViewLayerOrder`        |
+| Menus / conditions       | map-dataset/menu                |
+| Style editor             | style helpers + StyleControl UI |
+| Identify session         | `createIdentifySession`         |
+| Highlight                | highlight controller            |
+| Attribute table / export | attribute-table / geo-export    |
+| GeoJSON here             | `registerAddGeojsonHereForMap`  |
 
 ## 3.4 Draw domain
 
-| Feature | Core owner |
-|---------|------------|
-| Draw session | `createDrawSession` |
+| Feature             | Core owner                     |
+| ------------------- | ------------------------------ |
+| Draw session        | `createDrawSession`            |
 | Save/cancel prelude | `prepareSave` / `finishCancel` |
-| Persist | `DrawService` |
-| Inspect | `InspectController` |
+| Persist             | `DrawService`                  |
+| Inspect             | `InspectController`            |
 
 ## 3.5 Draggable
 
-| Feature | Owner |
-|---------|-------|
-| Container init | `useDragContainer` / `drag:core` store |
-| Sidebar / popup / float items | vue/react-draggable shells |
-| Used by map | `DraggableItemSideBar` panels |
+| Feature                       | Owner                                  |
+| ----------------------------- | -------------------------------------- |
+| Container init                | `useDragContainer` / `drag:core` store |
+| Sidebar / popup / float items | vue/react-draggable shells             |
+| Used by map                   | `DraggableItemSideBar` panels          |
 
 ## 3.6 Infrastructure
 
-| Feature | Owner |
-|---------|-------|
-| Process store | `GlobalStoreService` → `globalThis.$_hungpv_store` |
-| Logging | `loggerFactory` → `globalThis.__hungpvq_LoggerFactory__` |
-| GIS worker | map-dataset geojson worker config |
+| Feature       | Owner                                                    |
+| ------------- | -------------------------------------------------------- |
+| Process store | `GlobalStoreService` → `globalThis.$_hungpv_store`       |
+| Logging       | `loggerFactory` → `globalThis.__hungpvq_LoggerFactory__` |
+| GIS worker    | map-dataset geojson worker config                        |
 
 ---
 
@@ -177,9 +177,11 @@ Home, Zoom, Navigation, Fullscreen, Globe, GeoLocate, Goto, Info, Setting, Theme
 ## Feature: Map bootstrap + create map
 
 ### Purpose
+
 Initialize theme/registry once; create a MapLibre map bound to `mapId`.
 
 ### Entry
+
 - Dev: `installMapApp(app)` (Vue) / `installMapApp()` (React) — **VERIFIED** `libs/*/map-dataset/src/plugin/index.ts`
 - UI: `<Map map-id="…" />`
 
@@ -207,13 +209,16 @@ Initialize theme/registry once; create a MapLibre map bound to `mapId`.
 ```
 
 ### State
+
 - Per-map: `MapStoreManager.root[mapId].map`
 - Process: platform methods, theme on `html`, tombstones `map:core:meta`
 
 ### Side effects
+
 Theme CSS classes; global component registry; READY mitt.
 
 ### Potential issues
+
 - Accessor **last-writer-wins** if Vue+React both load (**VERIFIED**).
 - Theme **not** per-map by default; `applyMapThemeForMap` is opt-in API with no ThemeControl caller (**VERIFIED**).
 
@@ -222,6 +227,7 @@ Theme CSS classes; global component registry; READY mitt.
 ## Feature: LayerControl — add / reorder layers
 
 ### Entry
+
 `<LayerControl />` after Map READY.
 
 ### Flow (VERIFIED)
@@ -245,8 +251,9 @@ removeMap
 ```
 
 ### Data
-- Input: `IDataset` trees / GeoJSON payloads  
-- Mutation: dataset store arrays + MapLibre style layers  
+
+- Input: `IDataset` trees / GeoJSON payloads
+- Mutation: dataset store arrays + MapLibre style layers
 - Title menus: `getLayerControlTitleMenuState(roots)` (**VERIFIED**)
 
 ---
@@ -254,6 +261,7 @@ removeMap
 ## Feature: Identify
 
 ### Entry
+
 `<IdentifyControl />` → `createIdentifySession`.
 
 ### Flow (VERIFIED)
@@ -273,11 +281,13 @@ Close
 ```
 
 ### Data / highlight note
-- **VERIFIED:** `runIdentifyMulti` does **not** paint highlight by itself.  
-- Highlight `source: 'identify'` comes from **menus** / `handleMenuAction` / LayerMenuDefaultHandle.  
+
+- **VERIFIED:** `runIdentifyMulti` does **not** paint highlight by itself.
+- Highlight `source: 'identify'` comes from **menus** / `handleMenuAction` / LayerMenuDefaultHandle.
 - Docs that said “adapters own runIdentifyMulti” were **outdated**; session owns query (**fixed in docs**).
 
 ### Async
+
 Loading toggles session + cursor `wait`; empty hits may not open panel (resolver rules).
 
 ---
@@ -285,6 +295,7 @@ Loading toggles session + cursor `wait`; empty hits may not open panel (resolver
 ## Feature: Measurement
 
 ### Entry
+
 `<MeasurementControl />` → `createMeasurementSession`.
 
 ### Flow (VERIFIED)
@@ -303,6 +314,7 @@ Unmount onDestroy
 ```
 
 ### Export
+
 Geometry download via `buildMeasurementGeojsonDownload` (GeoJSON) — **not** KML/CSV in core (**VERIFIED**; hub docs corrected).
 
 ---
@@ -310,6 +322,7 @@ Geometry download via `buildMeasurementGeojsonDownload` (GeoJSON) — **not** KM
 ## Feature: Draw
 
 ### Entry
+
 `useMapDraw(mapId).start(config)` + `<DrawControl />`.
 
 ### Flow (VERIFIED)
@@ -330,6 +343,7 @@ removeMap / unmount
 ```
 
 ### Asymmetry
+
 Hosts still construct `new MapDraw(...)` (not in session) — **VERIFIED** residual thick host.
 
 ---
@@ -366,15 +380,15 @@ UI drag via vue-draggable-resizable / react-rnd (position local + store z-order)
 
 # 5. Data Flow (summary)
 
-| Domain | Shape | Transform | Sink |
-|--------|-------|-----------|------|
-| Map instance | MapLibre `Map` | wrapped `MapSimple` | MapStoreManager |
-| Datasets | `IDataset` tree | builders → parts | `'dataset'` store + map style |
-| Identify | point/box → records | `runIdentifyMulti` / resolver | Result control payload |
-| Measurement | clicks → coordinates | Turf Measure* | MapView layers + UI fields |
-| Draw | FeatureCollection | DrawService deltas | app CRUD callbacks + drafts |
-| Theme | mode string | resolve light/dark/named | html class + CSS vars |
-| Logs | logger args | namespaces | ConsoleAdapter / devtools |
+| Domain       | Shape                | Transform                     | Sink                          |
+| ------------ | -------------------- | ----------------------------- | ----------------------------- |
+| Map instance | MapLibre `Map`       | wrapped `MapSimple`           | MapStoreManager               |
+| Datasets     | `IDataset` tree      | builders → parts              | `'dataset'` store + map style |
+| Identify     | point/box → records  | `runIdentifyMulti` / resolver | Result control payload        |
+| Measurement  | clicks → coordinates | Turf Measure*                 | MapView layers + UI fields    |
+| Draw         | FeatureCollection    | DrawService deltas            | app CRUD callbacks + drafts   |
+| Theme        | mode string          | resolve light/dark/named      | html class + CSS vars         |
+| Logs         | logger args          | namespaces                    | ConsoleAdapter / devtools     |
 
 **Clone vs mutate:** style patches use immutable clone helpers (`applyStyleTabValue`); dataset/list order mutates view `index` + MapLibre moveLayer (**VERIFIED** for those paths).
 
@@ -384,57 +398,57 @@ UI drag via vue-draggable-resizable / react-rnd (position local + store z-order)
 
 ## Process-global (VERIFIED)
 
-| Owner | Key / bag | Writers | Readers |
-|-------|-----------|---------|---------|
-| GlobalStoreService | `$_hungpv_store` | defineStore / getOrCreateStore | all packages |
-| UniversalRegistry methods | platform GET_MAP / READY / cleanup | adapter store module load | `getMap`, `subscribeMapReady` |
-| UniversalRegistry components | global component keys | `installMapApp` plugin | menus / DatasetMenus |
-| Theme | `html` + localStorage | bootstrap / ThemeControl | CSS |
-| LoggerFactory | `__hungpvq_LoggerFactory__` | first import | logHelper / demos |
-| errorHandler | getOrCreateStore singleton | map-core | listeners |
-| Tombstones | `map:core:meta` | removeMap | getMap guards |
-| Drag store | `drag:core` | draggable core | vue/react shells |
+| Owner                        | Key / bag                          | Writers                        | Readers                       |
+| ---------------------------- | ---------------------------------- | ------------------------------ | ----------------------------- |
+| GlobalStoreService           | `$_hungpv_store`                   | defineStore / getOrCreateStore | all packages                  |
+| UniversalRegistry methods    | platform GET_MAP / READY / cleanup | adapter store module load      | `getMap`, `subscribeMapReady` |
+| UniversalRegistry components | global component keys              | `installMapApp` plugin         | menus / DatasetMenus          |
+| Theme                        | `html` + localStorage              | bootstrap / ThemeControl       | CSS                           |
+| LoggerFactory                | `__hungpvq_LoggerFactory__`        | first import                   | logHelper / demos             |
+| errorHandler                 | getOrCreateStore singleton         | map-core                       | listeners                     |
+| Tombstones                   | `map:core:meta`                    | removeMap                      | getMap guards                 |
+| Drag store                   | `drag:core`                        | draggable core                 | vue/react shells              |
 
 ## Per-mapId (VERIFIED)
 
-| Owner | Key | Content |
-|-------|-----|---------|
-| MapStoreManager | root[mapId] | map instance + scoped stores |
-| MAP_STORE_KEY | mitt, event, lang, crs, toolbar, image, print, … | feature stores |
-| Adapters | `'dataset'`, `'draw'` | dataset list / draw config |
-| UniversalRegistry | controls[mapId], menu handlers for map | control handles |
+| Owner             | Key                                              | Content                      |
+| ----------------- | ------------------------------------------------ | ---------------------------- |
+| MapStoreManager   | root[mapId]                                      | map instance + scoped stores |
+| MAP_STORE_KEY     | mitt, event, lang, crs, toolbar, image, print, … | feature stores               |
+| Adapters          | `'dataset'`, `'draw'`                            | dataset list / draw config   |
+| UniversalRegistry | controls[mapId], menu handlers for map           | control handles              |
 
 ## SoT clarity / risks
 
-- **VERIFIED:** Session SoT for measure/identify/draw in core; hosts mirror UI state.  
-- **VERIFIED:** Duplicate Vue+React package copies share process bags via `globalThis` — intentional.  
+- **VERIFIED:** Session SoT for measure/identify/draw in core; hosts mirror UI state.
+- **VERIFIED:** Duplicate Vue+React package copies share process bags via `globalThis` — intentional.
 - **Risk:** last-writer platform accessor; process-global theme.
 
 ---
 
 # 7. Event Flow
 
-| Event source | Name / channel | Listeners | Cleanup |
-|--------------|----------------|-----------|---------|
-| MapStoreManager | `MAP_CORE_EVENT.READY` | subscribeMapReady / useMap | unsub on unmount |
-| Draw store mitt | `MAP_DRAW_EVENT.START/END` | useConfigDrawControl | store cleanup |
-| MapLibre | `draw.*`, `click`, move/zoom | controls / sessions | off on destroy |
-| useEventMap | EventClick / EventBbox | identify/draw/measure | remove on mode off / unmount |
-| UniversalRegistry | control actions | IdentifyResultControl etc. | clearMap |
-| shared createEventHook | various | demos / utils | per-hook |
-| Theme | matchMedia / prefers-contrast | ThemeControl | remove on unmount |
+| Event source           | Name / channel                | Listeners                  | Cleanup                      |
+| ---------------------- | ----------------------------- | -------------------------- | ---------------------------- |
+| MapStoreManager        | `MAP_CORE_EVENT.READY`        | subscribeMapReady / useMap | unsub on unmount             |
+| Draw store mitt        | `MAP_DRAW_EVENT.START/END`    | useConfigDrawControl       | store cleanup                |
+| MapLibre               | `draw.*`, `click`, move/zoom  | controls / sessions        | off on destroy               |
+| useEventMap            | EventClick / EventBbox        | identify/draw/measure      | remove on mode off / unmount |
+| UniversalRegistry      | control actions               | IdentifyResultControl etc. | clearMap                     |
+| shared createEventHook | various                       | demos / utils              | per-hook                     |
+| Theme                  | matchMedia / prefers-contrast | ThemeControl               | remove on unmount            |
 
 ---
 
 # 8. Async Flow
 
-| Trigger | Async | Loading | Cancel |
-|---------|-------|---------|--------|
-| Identify query | `runIdentifyMulti` await | session.loading + cursor | AbortSignal on session (`cancelQuery` / new click aborts prior; destroy aborts) |
-| Draw save | await save / redraw | UI local | destroy no-ops session methods |
-| Map READY | wait until initMap | subscribeMapReady | unsub |
-| Dataset add | getMap callback when ready | — | tombstone no-op |
-| Draw post-delete select | `schedule` (nextTick / microtask) | — | destroyed guard |
+| Trigger                 | Async                             | Loading                  | Cancel                                                                          |
+| ----------------------- | --------------------------------- | ------------------------ | ------------------------------------------------------------------------------- |
+| Identify query          | `runIdentifyMulti` await          | session.loading + cursor | AbortSignal on session (`cancelQuery` / new click aborts prior; destroy aborts) |
+| Draw save               | await save / redraw               | UI local                 | destroy no-ops session methods                                                  |
+| Map READY               | wait until initMap                | subscribeMapReady        | unsub                                                                           |
+| Dataset add             | getMap callback when ready        | —                        | tombstone no-op                                                                 |
+| Draw post-delete select | `schedule` (nextTick / microtask) | —                        | destroyed guard                                                                 |
 
 ---
 
@@ -475,14 +489,14 @@ App start
 
 Locked by `public-api.spec.ts` per package + `stable-api.md`.
 
-| Consumer imports from | For |
-|----------------------|-----|
-| `@hungpvq/map-core` (+ subpaths) | getMap, registry, theme, measurement session, menu ids |
-| `@hungpvq/map-dataset` (+ subpaths) | builders, identify session, style, menus |
-| `@hungpvq/map-draw` | DrawService, MapDraw, createDrawSession, locales |
-| `@hungpvq/vue-*` / `react-*` | UI components + hooks only |
-| `@hungpvq/vue-draggable` / `react-draggable` | panel shells |
-| `@hungpvq/shared-store` / `shared-log` | store plugin / logging |
+| Consumer imports from                        | For                                                    |
+| -------------------------------------------- | ------------------------------------------------------ |
+| `@hungpvq/map-core` (+ subpaths)             | getMap, registry, theme, measurement session, menu ids |
+| `@hungpvq/map-dataset` (+ subpaths)          | builders, identify session, style, menus               |
+| `@hungpvq/map-draw`                          | DrawService, MapDraw, createDrawSession, locales       |
+| `@hungpvq/vue-*` / `react-*`                 | UI components + hooks only                             |
+| `@hungpvq/vue-draggable` / `react-draggable` | panel shells                                           |
+| `@hungpvq/shared-store` / `shared-log`       | store plugin / logging                                 |
 
 Experimental symbols (e.g. `createDrawSession`) may change in a **minor**; removing them is **major**.
 
@@ -513,29 +527,29 @@ No circular package deps in intended graph (**VERIFIED** from package.json direc
 
 # 13. Feature → File Map
 
-| Feature | Entry | Main modules | Store | External |
-|---------|-------|--------------|-------|----------|
-| Bootstrap | `*/map-dataset/src/plugin/index.ts` | theme/, menu/registry-plugin | localStorage theme | DOM html |
-| Map create | `*/map-core/.../Map.vue|tsx`, `useMapInstance` | store-manager, map-platform-registry | MapStoreManager | MapLibre |
-| Layers | `LayerControl`, `LayerList` | DatasetService, order.ts, title-menus, add-geojson-here | `'dataset'` | MapLibre layers |
-| Identify | `IdentifyControl` | identify-session, run-identify, resolver | session model + result control | MapLibre query |
-| Measure | `MeasurementControl` | measurement-session, MapView | session UI state | MapLibre + Turf |
-| Draw | `DrawControl`, `useMapDraw` | draw-session, DrawService | `'draw'` + mitt | Mapbox Draw |
-| Theme | `ThemeControl` | theme/index.ts | localStorage | DOM |
-| Highlight | menus / LayerMenuDefaultHandle | highlight controller | map-scoped | MapLibre |
-| Draggable panel | `DraggableItemSideBar` | drag store, useInit* | `drag:core` | — |
-| Errors | errorHandler | error-handler.service | getOrCreateStore | shared-log |
-| Devtools | Devtools.vue/tsx | StoreViewer, LogViewer, ErrorViewer, DatasetMenuViewer | reads stores/logs; `window.__hungpvqDatasetDebug` | `@hungpvq/map-debug` |
+| Feature         | Entry                               | Main modules                                            | Store                                             | External             |
+| --------------- | ----------------------------------- | ------------------------------------------------------- | ------------------------------------------------- | -------------------- |
+| Bootstrap       | `*/map-dataset/src/plugin/index.ts` | theme/, menu/registry-plugin                            | localStorage theme                                | DOM html             |
+| Map create      | `*/map-core/.../Map.vue             | tsx`, `useMapInstance`                                  | store-manager, map-platform-registry              | MapStoreManager      | MapLibre |
+| Layers          | `LayerControl`, `LayerList`         | DatasetService, order.ts, title-menus, add-geojson-here | `'dataset'`                                       | MapLibre layers      |
+| Identify        | `IdentifyControl`                   | identify-session, run-identify, resolver                | session model + result control                    | MapLibre query       |
+| Measure         | `MeasurementControl`                | measurement-session, MapView                            | session UI state                                  | MapLibre + Turf      |
+| Draw            | `DrawControl`, `useMapDraw`         | draw-session, DrawService                               | `'draw'` + mitt                                   | Mapbox Draw          |
+| Theme           | `ThemeControl`                      | theme/index.ts                                          | localStorage                                      | DOM                  |
+| Highlight       | menus / LayerMenuDefaultHandle      | highlight controller                                    | map-scoped                                        | MapLibre             |
+| Draggable panel | `DraggableItemSideBar`              | drag store, useInit*                                    | `drag:core`                                       | —                    |
+| Errors          | errorHandler                        | error-handler.service                                   | getOrCreateStore                                  | shared-log           |
+| Devtools        | Devtools.vue/tsx                    | StoreViewer, LogViewer, ErrorViewer, DatasetMenuViewer  | reads stores/logs; `window.__hungpvqDatasetDebug` | `@hungpvq/map-debug` |
 
 ---
 
 # 14. Broken / Incomplete / Orphan flows
 
-| Status | Finding |
-|--------|---------|
-| **INCOMPLETE (by design)** | Identify click → results; highlight needs menu path |
-| **THICK HOST (reduced)** | DrawControl uses `createMapDrawControl` for construct/mount; hosts still own save/draft UI |
-| **NO BACKEND** | No server implementation in workspace |
+| Status                     | Finding                                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| **INCOMPLETE (by design)** | Identify click → results; highlight needs menu path                                        |
+| **THICK HOST (reduced)**   | DrawControl uses `createMapDrawControl` for construct/mount; hosts still own save/draft UI |
+| **NO BACKEND**             | No server implementation in workspace                                                      |
 
 No verified “function called but missing implementation” in core session paths traced above.
 
@@ -543,19 +557,19 @@ No verified “function called but missing implementation” in core session pat
 
 # 15. Potential Problems
 
-1. Theme default remains document-global; use `ThemeControl scope="map"` for per-map chrome.  
-2. Adapter peer surface large (install DX).  
-3. String store keys `'draw'` outside named constants (dataset uses `MAP_DATASET_STORE_KEY`).  
+1. Theme default remains document-global; use `ThemeControl scope="map"` for per-map chrome.
+2. Adapter peer surface large (install DX).
+3. String store keys `'draw'` outside named constants (dataset uses `MAP_DATASET_STORE_KEY`).
 4. Draw hosts still own save/draft UI (construct/mount moved to `createMapDrawControl`).
 
 ---
 
 # 16. Unknown / Not Verified
 
-- Production consumer apps outside this monorepo.  
-- Azure pipelines (none found).  
-- Full MapLibre event surface of every small control (Home/Zoom/…) — same pattern as `useMap` + MapLibre API, not re-traced line-by-line here.  
-- Runtime behavior of every demo dataset loader network URL.  
+- Production consumer apps outside this monorepo.
+- Azure pipelines (none found).
+- Full MapLibre event surface of every small control (Home/Zoom/…) — same pattern as `useMap` + MapLibre API, not re-traced line-by-line here.
+- Runtime behavior of every demo dataset loader network URL.
 - Exact Nx CI target list beyond workflow file existence.
 
 ---
@@ -606,4 +620,4 @@ No verified “function called but missing implementation” in core session pat
 
 ---
 
-*Generated from workspace reverse-engineering. Prefer re-running traces after large refactors; public surfaces locked by `public-api.spec.ts`.*
+_Generated from workspace reverse-engineering. Prefer re-running traces after large refactors; public surfaces locked by `public-api.spec.ts`._

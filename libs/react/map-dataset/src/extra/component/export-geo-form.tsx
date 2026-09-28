@@ -92,7 +92,10 @@ export function ExportGeoForm(props: ExportGeoFormProps) {
         />
       ) : null}
       {props.error ? (
-        <p className="export-geo__error" role="alert">
+        <p
+          className="export-geo__error"
+          role="alert"
+        >
           {props.error}
         </p>
       ) : null}

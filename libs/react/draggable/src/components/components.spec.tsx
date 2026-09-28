@@ -55,7 +55,10 @@ afterEach(() => {
 describe('parts', () => {
   it('DragButton renders with size styles', () => {
     const { getByText, container } = render(
-      <DragButton width={40} height={24}>
+      <DragButton
+        width={40}
+        height={24}
+      >
         Go
       </DragButton>,
     );
@@ -75,7 +78,11 @@ describe('parts', () => {
     expect(render(<DragCard />).container.firstChild).toBeTruthy();
     expect(render(<DragHeader title="T" />).getByText('T')).toBeTruthy();
     const { container } = render(
-      <DragSidebarToggle location="left" expand aria-label="Toggle sidebar" />,
+      <DragSidebarToggle
+        location="left"
+        expand
+        aria-label="Toggle sidebar"
+      />,
     );
     expect(container.querySelector('button')).toBeTruthy();
   });
@@ -85,7 +92,10 @@ describe('DraggableContainer', () => {
   it('inits store container and cleans up on unmount', async () => {
     const onInit = vi.fn();
     const { unmount } = render(
-      <DraggableContainer containerId="ui-container" onInit={onInit} />,
+      <DraggableContainer
+        containerId="ui-container"
+        onInit={onInit}
+      />,
     );
     await waitFor(() => expect(onInit).toHaveBeenCalledWith('ui-container'));
     expect(useDragStore().container['ui-container']).toBeTruthy();
@@ -178,7 +188,10 @@ describe('ContextMenu', () => {
     const ref = React.createRef<ContextMenuRef>();
     render(
       <ContextMenu ref={ref}>
-        <ul className="context-menu" role="presentation">
+        <ul
+          className="context-menu"
+          role="presentation"
+        >
           <ContextMenuItem>One</ContextMenuItem>
         </ul>
       </ContextMenu>,
@@ -205,7 +218,10 @@ describe('ContextMenu', () => {
     const ref = React.createRef<ContextMenuRef>();
     render(
       <ContextMenu ref={ref}>
-        <ul className="context-menu" role="presentation">
+        <ul
+          className="context-menu"
+          role="presentation"
+        >
           <ContextMenuItem>One</ContextMenuItem>
           <ContextMenuItem>Two</ContextMenuItem>
         </ul>

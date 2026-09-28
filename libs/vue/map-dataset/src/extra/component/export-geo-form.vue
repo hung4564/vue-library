@@ -89,7 +89,13 @@ const loadingSlot = computed(() => {
       :componentKey="loadingSlot.componentKey"
       :defaultComponent="loadingSlot.defaultComponent"
     />
-    <p v-if="error" class="export-geo__error" role="alert">{{ error }}</p>
+    <p
+      v-if="error"
+      class="export-geo__error"
+      role="alert"
+    >
+      {{ error }}
+    </p>
     <div class="export-geo__actions">
       <MapControlButton
         variant="outlined"

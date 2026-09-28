@@ -15,7 +15,10 @@ const label = computed(() =>
 
 <template>
   <label class="language-demo-reload">
-    <input v-model="model" type="checkbox" />
+    <input
+      v-model="model"
+      type="checkbox"
+    />
     {{ label }}
   </label>
 </template>

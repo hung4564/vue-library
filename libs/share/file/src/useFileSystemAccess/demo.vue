@@ -38,15 +38,33 @@ async function onSave() {
 
 <template>
   <div>
-    <div flex="~ gap-1" items-center>
+    <div
+      flex="~ gap-1"
+      items-center
+    >
       <button @click="res.open()">Open</button>
       <button @click="res.updateData()">Update</button>
       <button @click="res.create()">New file</button>
-      <button :disabled="!res.file.value" @click="onSave">Save</button>
-      <button :disabled="!res.file.value" @click="res.saveAs()">Save as</button>
+      <button
+        :disabled="!res.file.value"
+        @click="onSave"
+      >
+        Save
+      </button>
+      <button
+        :disabled="!res.file.value"
+        @click="res.saveAs()"
+      >
+        Save as
+      </button>
 
       <div ml5>
-        <div text-xs op50>DataType</div>
+        <div
+          text-xs
+          op50
+        >
+          DataType
+        </div>
         <select
           v-model="dataType"
           class="outline-none w-30 px2 py1 text-sm"
@@ -59,7 +77,10 @@ async function onSave() {
       </div>
     </div>
 
-    <pre class="code-block" lang="yaml">{{ str }}</pre>
+    <pre
+      class="code-block"
+      lang="yaml"
+      >{{ str }}</pre>
 
     <div v-if="content">
       Content

@@ -193,9 +193,7 @@
   overflow: hidden;
 }
 
-.style-edit-container
-  .collapse.collapse-item:last-child
-  .collapse-content-box {
+.style-edit-container .collapse.collapse-item:last-child .collapse-content-box {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;

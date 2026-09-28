@@ -43,7 +43,11 @@
             :aria-label="renameLabel"
             @click.stop="startRename"
           >
-            <SvgIcon size="14" type="mdi" :path="path.group.rename" />
+            <SvgIcon
+              size="14"
+              type="mdi"
+              :path="path.group.rename"
+            />
           </MapControlButton>
           <MapControlButton
             v-if="
@@ -54,7 +58,11 @@
             title="Ungroup"
             @click="unGroup()"
           >
-            <SvgIcon size="14" type="mdi" :path="path.group.unGroup" />
+            <SvgIcon
+              size="14"
+              type="mdi"
+              :path="path.group.unGroup"
+            />
           </MapControlButton>
           <MapControlButton
             v-if="!readonly"
@@ -63,7 +71,11 @@
             size="small"
             title="Delete group"
           >
-            <SvgIcon size="14" type="mdi" :path="path.group.delete" />
+            <SvgIcon
+              size="14"
+              type="mdi"
+              :path="path.group.delete"
+            />
           </MapControlButton>
           <MapControlButton
             data-map-layer-group-toggle
@@ -81,12 +93,18 @@
           </MapControlButton>
         </div>
       </div>
-      <div v-if="isGroupShow" class="draggable-group__divider"></div>
+      <div
+        v-if="isGroupShow"
+        class="draggable-group__divider"
+      ></div>
       <div
         class="draggable-group__children-container"
         :class="{ _show: isGroupShow }"
       >
-        <slot :group="layerGroup" name="item" />
+        <slot
+          :group="layerGroup"
+          name="item"
+        />
         <div
           v-if="
             isGroupShow &&

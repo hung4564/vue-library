@@ -38,8 +38,14 @@ Create-layer reads GIS files and reprojects CRS in a Web Worker. Apps that insta
 
 ```vue
 <template>
-  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
-    <LayerControl position="top-left" show />
+  <Map
+    :mapId="mapId"
+    @mapLoaded="onMapLoaded"
+  >
+    <LayerControl
+      position="top-left"
+      show
+    />
   </Map>
 </template>
 
@@ -47,14 +53,8 @@ Create-layer reads GIS files and reprojects CRS in a Web Worker. Apps that insta
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { Map } from '@hungpvq/vue-map-core';
-import {
-  LayerControl,
-  useMapDataset,
-} from '@hungpvq/vue-map-dataset';
-import {
-  createRootDataset,
-  createDatasetPartListViewUiComponentBuilder,
-} from '@hungpvq/map-dataset';
+import { LayerControl, useMapDataset } from '@hungpvq/vue-map-dataset';
+import { createRootDataset, createDatasetPartListViewUiComponentBuilder } from '@hungpvq/map-dataset';
 import { ref } from 'vue';
 
 const mapId = ref(getUUIDv4());

@@ -36,8 +36,15 @@ export function CustomCardPage() {
   if (!ready) return null;
 
   return (
-    <DraggableContainer containerId="demo-custom-card" className="demo-page">
-      <DraggableItemSideBar show title="Controls" location="left">
+    <DraggableContainer
+      containerId="demo-custom-card"
+      className="demo-page"
+    >
+      <DraggableItemSideBar
+        show
+        title="Controls"
+        location="left"
+      >
         <div className="panel">
           <h2>Custom card</h2>
           <p>
@@ -48,7 +55,11 @@ export function CustomCardPage() {
         </div>
       </DraggableItemSideBar>
 
-      <DraggableItemSideBar show title="Sidebar (global)" location="right">
+      <DraggableItemSideBar
+        show
+        title="Sidebar (global)"
+        location="right"
+      >
         <div className="panel">
           <p>
             Sidebar uses global card (store) — no local override API on shell.

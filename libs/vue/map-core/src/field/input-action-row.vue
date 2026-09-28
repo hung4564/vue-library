@@ -13,7 +13,10 @@ withDefaults(
 </script>
 
 <template>
-  <div class="input-action-row" :class="{ 'input-action-row--flush': flush }">
+  <div
+    class="input-action-row"
+    :class="{ 'input-action-row--flush': flush }"
+  >
     <slot />
     <div class="input-action-row__action">
       <slot name="action" />

@@ -13,9 +13,9 @@ Mount **one** `<ToolbarControl />` in the map slot whenever you use `buttonInMob
 
 and
 
-| Prop         | Description                                      | Type     | Required | Default |
-| ------------ | ------------------------------------------------ | -------- | -------- | ------- |
-| `maxVisible` | Override auto overflow band count (advanced)     | `number` | `false`  | auto    |
+| Prop         | Description                                  | Type     | Required | Default |
+| ------------ | -------------------------------------------- | -------- | -------- | ------- |
+| `maxVisible` | Override auto overflow band count (advanced) | `number` | `false`  | auto    |
 
 `ToolbarControl` itself uses `controlLayout="button"` so it is never hidden by mobile promotion.
 
@@ -23,10 +23,10 @@ and
 
 Set on `<Map>` (see [props](./props.md)):
 
-| Value     | Behavior |
-| --------- | -------- |
-| `button`  | Corner `#btn` unchanged (default) |
-| `toolbar` | Promote eligible controls into one horizontal toolbar host |
+| Value     | Behavior                                                                               |
+| --------- | -------------------------------------------------------------------------------------- |
+| `button`  | Corner `#btn` unchanged (default)                                                      |
+| `toolbar` | Promote eligible controls into one horizontal toolbar host                             |
 | `menu`    | Hide per-control corner `#btn`; fan out clusters by `position` into four corner stacks |
 
 ### Menu mode details
@@ -43,13 +43,7 @@ Demo: `/#/mobile-menu` (`button` / `toolbar` / `menu`); toolbar opt-in: `/#/tool
 
 ```vue
 <script setup lang="ts">
-import {
-  Map,
-  ToolbarControl,
-  ZoomControl,
-  HomeControl,
-  MouseCoordinatesControl,
-} from '@hungpvq/vue-map-core';
+import { Map, ToolbarControl, ZoomControl, HomeControl, MouseCoordinatesControl } from '@hungpvq/vue-map-core';
 import '@hungpvq/vue-map-core/style.css';
 </script>
 
@@ -66,13 +60,7 @@ import '@hungpvq/vue-map-core/style.css';
 ### React
 
 ```tsx
-import {
-  Map,
-  ToolbarControl,
-  ZoomControl,
-  HomeControl,
-  MouseCoordinatesControl,
-} from '@hungpvq/react-map-core';
+import { Map, ToolbarControl, ZoomControl, HomeControl, MouseCoordinatesControl } from '@hungpvq/react-map-core';
 import '@hungpvq/react-map-core/style.css';
 
 <Map buttonInMobile="menu">
@@ -80,5 +68,5 @@ import '@hungpvq/react-map-core/style.css';
   <ZoomControl position="bottom-right" />
   <HomeControl position="bottom-right" />
   <MouseCoordinatesControl />
-</Map>
+</Map>;
 ```

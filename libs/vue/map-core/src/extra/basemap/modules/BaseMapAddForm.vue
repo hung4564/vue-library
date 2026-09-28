@@ -1,7 +1,13 @@
 <template>
-  <div class="base-map-add-form" @click.stop>
+  <div
+    class="base-map-add-form"
+    @click.stop
+  >
     <div class="base-map-add-form__body">
-      <div v-if="showHeading" class="base-map-add-form__title">
+      <div
+        v-if="showHeading"
+        class="base-map-add-form__title"
+      >
         {{ trans('map.basemap.add') }}
       </div>
       <InputText
@@ -55,7 +61,11 @@
       >
         {{ trans('map.basemap.add-submit') }}
       </MapControlButton>
-      <MapControlButton variant="text" size="small" @click="$emit('cancel')">
+      <MapControlButton
+        variant="text"
+        size="small"
+        @click="$emit('cancel')"
+      >
         {{ trans('map.basemap.add-cancel') }}
       </MapControlButton>
     </div>

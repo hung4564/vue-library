@@ -32,7 +32,7 @@ function onMapLoaded(map: any) {
 
 <Map onMapLoaded={onMapLoaded}>
   <BaseMapControl position="bottom-left" />
-</Map>
+</Map>;
 ```
 
 ### Basemap with Tags
@@ -70,5 +70,5 @@ function onMapLoaded(map: any) {
 <Map onMapLoaded={onMapLoaded}>
   <BaseMapTagControl position="bottom-left" />
   <BaseMapControl position="bottom-left" />
-</Map>
+</Map>;
 ```

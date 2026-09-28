@@ -3,7 +3,6 @@ import { DEMO_LAYER_TOGGLE_SHOW_KEY } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { LIST_VIEW_MENU_COMPONENT_KEY } from '@hungpvq/map-dataset/menu';
 import { getUUIDv4 } from '@hungpvq/shared';
-import { loggerFactory } from '@hungpvq/shared-log';
 import {
   BaseMapCard,
   BaseMapControl,
@@ -26,7 +25,6 @@ import AsideControl from '../../layout/aside-control.vue';
 import SampleLayerToggleShow from './sample-layer-toggle-show.vue';
 import SampleToggleShowButton from './sample-toggle-show-button.vue';
 
-loggerFactory.enable('menu');
 const mapId = ref(getUUIDv4());
 
 function registerDemoToggleComponents(id: string) {
@@ -53,13 +51,19 @@ function onMapLoaded(map: MapSimple) {
 }
 </script>
 <template>
-  <Map @mapLoaded="onMapLoaded" :mapId="mapId">
+  <Map
+    @mapLoaded="onMapLoaded"
+    :mapId="mapId"
+  >
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <ThemeControl />
-    <LayerControl position="top-left" show>
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>

@@ -17,12 +17,7 @@ npm install @hungpvq/shared-store
 ### Core (Vue / any framework — no React)
 
 ```ts
-import {
-  GlobalStoreService,
-  defineStore,
-  getOrCreateStore,
-  createStoreRegistryPlugin,
-} from '@hungpvq/shared-store';
+import { GlobalStoreService, defineStore, getOrCreateStore, createStoreRegistryPlugin } from '@hungpvq/shared-store';
 
 // Eager singleton (services, class statics)
 const errorHandler = getOrCreateStore('my:errorHandler', () => createHandler());
@@ -36,11 +31,7 @@ const useMyStore = defineStore('my:domain', () => ({ count: 0 }));
 Import from the React entry so Vue apps never resolve `react`:
 
 ```ts
-import {
-  useStoreValue,
-  useStoreSubscribe,
-  defineStoreReact,
-} from '@hungpvq/shared-store/react';
+import { useStoreValue, useStoreSubscribe, defineStoreReact } from '@hungpvq/shared-store/react';
 ```
 
 ## Building

@@ -75,7 +75,9 @@ function onRemove(epsg: string) {
       :key="row.epsg"
       class="map-measurement-point-crs__row"
     >
-      <span class="map-measurement-point-crs__epsg" :title="row.title"
+      <span
+        class="map-measurement-point-crs__epsg"
+        :title="row.title"
         >EPSG:{{ row.epsg }}</span
       >
       <span class="map-measurement-point-crs__value">{{ row.value }}</span>
@@ -94,7 +96,11 @@ function onRemove(epsg: string) {
           :title="trans('map.crs-display.remove')"
           @click="onRemove(row.epsg)"
         >
-          <SvgIcon :size="14" type="mdi" :path="mdiDeleteOutline" />
+          <SvgIcon
+            :size="14"
+            type="mdi"
+            :path="mdiDeleteOutline"
+          />
         </MapControlButton>
       </div>
     </div>

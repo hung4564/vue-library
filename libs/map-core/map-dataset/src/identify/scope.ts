@@ -9,7 +9,7 @@ import type {
 import { findSiblingOrNearestLeaf } from '../model/visitors/helpers';
 import { IDENTIFY_RESULT_CONTROL } from './result';
 
-/** IdentifyControl registry id + actions (must match useRegisterMapControl). */
+/** IdentifyControl registry id + actions (must match useMapControl). */
 export const IDENTIFY_CONTROL = {
   id: 'mapIdentifyControl',
   idResult: IDENTIFY_RESULT_CONTROL.id,

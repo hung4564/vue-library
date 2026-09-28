@@ -232,10 +232,17 @@ function onTreeKeydown(event: KeyboardEvent) {
         @click="layerSearch = ''"
         variant="plain"
       >
-        <SvgIcon size="14" type="mdi" :path="mdiClose" />
+        <SvgIcon
+          size="14"
+          type="mdi"
+          :path="mdiClose"
+        />
       </MapControlButton>
     </div>
-    <div v-if="views.length" class="layer-control__header">
+    <div
+      v-if="views.length"
+      class="layer-control__header"
+    >
       <slot name="title"></slot>
       <div class="v-spacer"></div>
       <ButtonToggleShowALl
@@ -248,7 +255,11 @@ function onTreeKeydown(event: KeyboardEvent) {
         title="Create group"
         variant="plain"
       >
-        <SvgIcon size="16" type="mdi" :path="path.group.create" />
+        <SvgIcon
+          size="16"
+          type="mdi"
+          :path="path.group.create"
+        />
       </MapControlButton>
       <MapControlButton
         @click="onRemoveAllLayer"
@@ -256,7 +267,11 @@ function onTreeKeydown(event: KeyboardEvent) {
         title="Delete all layers"
         variant="plain"
       >
-        <SvgIcon size="16" type="mdi" :path="path.deleteAll" />
+        <SvgIcon
+          size="16"
+          type="mdi"
+          :path="path.deleteAll"
+        />
       </MapControlButton>
     </div>
     <div
@@ -265,7 +280,10 @@ function onTreeKeydown(event: KeyboardEvent) {
       :aria-label="trans('map.layer-control.title')"
       @keydown="onTreeKeydown"
     >
-      <div v-if="!views.length" class="layer-control__empty">
+      <div
+        v-if="!views.length"
+        class="layer-control__empty"
+      >
         <SvgIcon
           class="layer-control__empty-icon"
           size="36"
@@ -275,7 +293,10 @@ function onTreeKeydown(event: KeyboardEvent) {
         <div class="layer-control__empty-title">
           {{ trans('map.layer-control.empty') }}
         </div>
-        <div v-if="!disabledCreate" class="layer-control__empty-hint">
+        <div
+          v-if="!disabledCreate"
+          class="layer-control__empty-hint"
+        >
           {{ trans('map.layer-control.empty-hint') }}
         </div>
         <button
@@ -284,7 +305,11 @@ function onTreeKeydown(event: KeyboardEvent) {
           class="layer-control__empty-action"
           @click="emit('create')"
         >
-          <SvgIcon size="14" type="mdi" :path="path.layer.create" />
+          <SvgIcon
+            size="14"
+            type="mdi"
+            :path="path.layer.create"
+          />
           {{ trans('map.layer-control.create-btn') }}
         </button>
       </div>

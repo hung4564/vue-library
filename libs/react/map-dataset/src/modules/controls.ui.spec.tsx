@@ -125,7 +125,10 @@ describe('StyleControl + CreateControl UI smoke', () => {
     render(
       <Map mapId={MAP_ID}>
         <StyleControl item={stubItem} />
-        <CreateControl show={false} onShowChange={() => undefined} />
+        <CreateControl
+          show={false}
+          onShowChange={() => undefined}
+        />
       </Map>,
     );
 
@@ -144,7 +147,10 @@ describe('StyleControl + CreateControl UI smoke', () => {
   it('renders create form portal when show=true', async () => {
     render(
       <Map mapId={MAP_ID}>
-        <CreateControl show onShowChange={() => undefined} />
+        <CreateControl
+          show
+          onShowChange={() => undefined}
+        />
       </Map>,
     );
 

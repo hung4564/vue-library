@@ -2,10 +2,10 @@
 
 Framework-agnostic draggable layout kit with Vue and React adapters.
 
-| Package | Version | Description |
-|---------|---------|-------------|
-| [`@hungpvq/draggable`](./core/) | **<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->** | Types, store (`drag:core`), utils, shared CSS |
-| [`@hungpvq/vue-draggable`](../vue/draggable/) | **<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->** | Vue container, items, hooks, store wiring |
+| Package                                           | Version                                                                    | Description                                          |
+| ------------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------- |
+| [`@hungpvq/draggable`](./core/)                   | **<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->** | Types, store (`drag:core`), utils, shared CSS        |
+| [`@hungpvq/vue-draggable`](../vue/draggable/)     | **<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->** | Vue container, items, hooks, store wiring            |
 | [`@hungpvq/react-draggable`](../react/draggable/) | **<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->** | React container, items, hooks, context, store wiring |
 
 **Docs hub:** [core/docs/index.md](./core/docs/index.md) · **Stable API:** [core/docs/stable-api.md](./core/docs/stable-api.md) · **Testing:** [core/docs/testing.md](./core/docs/testing.md) · **Next minor prep:** [core/docs/releases/v1.2.md](./core/docs/releases/v1.2.md) · **Demos:** [Vue](https://hung4564.github.io/demo-draggable/vue/) · [React](https://hung4564.github.io/demo-draggable/react/)
@@ -18,11 +18,11 @@ Packages are on **`<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable
 
 ## 0. Surface map (version together)
 
-| Package | Public entries | Peer lock notes |
-|---------|----------------|-----------------|
-| `@hungpvq/draggable` | `.` + `./style.css` | peer `@hungpvq/shared-store` |
-| `@hungpvq/vue-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`<!-- docs-ver:draggable.peer -->^1.3.0<!-- /docs-ver:draggable.peer -->`**, `vue`, `vue-draggable-resizable` |
-| `@hungpvq/react-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`<!-- docs-ver:draggable.peer -->^1.3.0<!-- /docs-ver:draggable.peer -->`**, React 18, `react-rnd` |
+| Package                    | Public entries      | Peer lock notes                                                                                                                           |
+| -------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `@hungpvq/draggable`       | `.` + `./style.css` | peer `@hungpvq/shared-store`                                                                                                              |
+| `@hungpvq/vue-draggable`   | `.` + `./style.css` | peer `@hungpvq/draggable` **`<!-- docs-ver:draggable.peer -->^1.3.0<!-- /docs-ver:draggable.peer -->`**, `vue`, `vue-draggable-resizable` |
+| `@hungpvq/react-draggable` | `.` + `./style.css` | peer `@hungpvq/draggable` **`<!-- docs-ver:draggable.peer -->^1.3.0<!-- /docs-ver:draggable.peer -->`**, React 18, `react-rnd`            |
 
 **Monorepo rule:** Nx release group `draggable` uses `projectsRelationship: fixed`. Bumping `@hungpvq/draggable` major/minor requires the same release of Vue + React adapters. Do not publish core alone when peers use a `~` pin.
 
@@ -142,21 +142,21 @@ Breaking if you:
 
 ## 6. Common changes → suggested bump
 
-| Change | Bump |
-|--------|------|
-| Add optional item prop | minor |
-| Add Stable a11y helper (`restoreFocus`, …) | minor |
-| Rename `drag:core` store id | major |
-| Rename `item-popup` type string | major |
-| Add new Stable component export | minor |
-| Remove `useDragItem` export | major |
-| Change `v-model:show` / `onUpdateShow` contract | major |
-| Raise React peer to 19 only | major |
-| Internal store refactor, same API | patch |
-| Docs-only Stable API / a11y / testing updates | patch |
+| Change                                                     | Bump                            |
+| ---------------------------------------------------------- | ------------------------------- |
+| Add optional item prop                                     | minor                           |
+| Add Stable a11y helper (`restoreFocus`, …)                 | minor                           |
+| Rename `drag:core` store id                                | major                           |
+| Rename `item-popup` type string                            | major                           |
+| Add new Stable component export                            | minor                           |
+| Remove `useDragItem` export                                | major                           |
+| Change `v-model:show` / `onUpdateShow` contract            | major                           |
+| Raise React peer to 19 only                                | major                           |
+| Internal store refactor, same API                          | patch                           |
+| Docs-only Stable API / a11y / testing updates              | patch                           |
 | ManagementControl / ContextMenu-only change (experimental) | patch/minor — note experimental |
-| Vite demo Fast Refresh exclude only | patch (tooling) |
-| Internal `Drag*` chrome rename (not exported) | patch |
+| Vite demo Fast Refresh exclude only                        | patch (tooling)                 |
+| Internal `Drag*` chrome rename (not exported)              | patch                           |
 
 ## 7. Reducing “everything is breaking”
 

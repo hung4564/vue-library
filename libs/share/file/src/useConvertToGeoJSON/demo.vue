@@ -39,7 +39,10 @@ function convert() {
       >{{ JSON.stringify(raw, null, 2) }}
     </pre>
     <h2 class="text-xl font-bold mb-2">GeoJSON Converter</h2>
-    <button class="bg-blue-500 text-white px-3 py-1 rounded" @click="convert">
+    <button
+      class="bg-blue-500 text-white px-3 py-1 rounded"
+      @click="convert"
+    >
       Convert
     </button>
     <pre class="mt-4 bg-gray-100 p-2 rounded overflow-auto text-xs"

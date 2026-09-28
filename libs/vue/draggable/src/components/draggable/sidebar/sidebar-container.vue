@@ -178,7 +178,11 @@ function selectSideBar(nextId: string) {
     }"
   >
     <div class="sidebar-container--content">
-      <component :is="componentCard" width="100%" height="100%">
+      <component
+        :is="componentCard"
+        width="100%"
+        height="100%"
+      >
         <div class="draggable-sidebar">
           <component :is="componentCardHeader">
             <template #title>
@@ -198,18 +202,27 @@ function selectSideBar(nextId: string) {
               >
                 <SidebarOpenMenu :size="16" />
               </drag-button>
-              <drag-button @click="onClose" aria-label="Close sidebar">
+              <drag-button
+                @click="onClose"
+                aria-label="Close sidebar"
+              >
                 <CloseIcon :size="16" />
               </drag-button>
             </template>
           </component>
-          <div class="draggable-sidebar-content" :id="contentTo">
+          <div
+            class="draggable-sidebar-content"
+            :id="contentTo"
+          >
             <slot name="default"></slot>
           </div>
         </div>
       </component>
     </div>
-    <div class="complex-button-close" v-if="show">
+    <div
+      class="complex-button-close"
+      v-if="show"
+    >
       <ComponentSidebarToggle
         @click="onToggleExpand"
         :expand="expand"
@@ -224,7 +237,10 @@ function selectSideBar(nextId: string) {
     aria-label="Switch sidebar panel"
     @update:open="menuOpen = $event"
   >
-    <ul class="context-menu" role="presentation">
+    <ul
+      class="context-menu"
+      role="presentation"
+    >
       <ContextMenuItem
         v-for="option in allItems"
         :key="option.id"

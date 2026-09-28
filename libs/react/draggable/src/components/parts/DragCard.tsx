@@ -44,7 +44,11 @@ function DragCard({
     .join(' ');
 
   return (
-    <div className={classes} style={cardStyle} {...props}>
+    <div
+      className={classes}
+      style={cardStyle}
+      {...props}
+    >
       <div className="card-container">{children}</div>
       <div className="card-arrow">
         <div className="card-arrow-top-left"></div>

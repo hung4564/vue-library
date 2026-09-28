@@ -84,7 +84,7 @@ function onMapLoaded(map: any) {
 
 <Map onMapLoaded={onMapLoaded}>
   <PrintControl />
-</Map>
+</Map>;
 ```
 
 ## 🤝 Contributing

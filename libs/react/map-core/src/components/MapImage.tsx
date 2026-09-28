@@ -22,9 +22,19 @@ export function MapImage({
   }, [src]);
 
   return (
-    <div className={`map-image ${className}`} style={style} {...props}>
-      <div className="map-image__sizer" style={{ paddingBottom: '100%' }}></div>
-      <div className="map-image__image" style={styleImage}></div>
+    <div
+      className={`map-image ${className}`}
+      style={style}
+      {...props}
+    >
+      <div
+        className="map-image__sizer"
+        style={{ paddingBottom: '100%' }}
+      ></div>
+      <div
+        className="map-image__image"
+        style={styleImage}
+      ></div>
       <div className="map-image__content">{children}</div>
     </div>
   );

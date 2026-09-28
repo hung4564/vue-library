@@ -169,16 +169,32 @@ export function StoryTellingPage() {
       </Map>
       <div className="buttons-container">
         <MapCard>
-          <button type="button" disabled={!mapId} onClick={play}>
+          <button
+            type="button"
+            disabled={!mapId}
+            onClick={play}
+          >
             Play
           </button>
-          <button type="button" disabled={!mapId} onClick={pause}>
+          <button
+            type="button"
+            disabled={!mapId}
+            onClick={pause}
+          >
             Pause
           </button>
-          <button type="button" disabled={!mapId} onClick={prev}>
+          <button
+            type="button"
+            disabled={!mapId}
+            onClick={prev}
+          >
             Prev
           </button>
-          <button type="button" disabled={!mapId} onClick={next}>
+          <button
+            type="button"
+            disabled={!mapId}
+            onClick={next}
+          >
             Next
           </button>
           <div style={{ padding: 8 }}>

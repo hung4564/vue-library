@@ -5,10 +5,7 @@ In-memory payload on a node (`getData` / `setData`). Used by source, layer, high
 **Events:** none.
 
 ```ts
-import {
-  createWithDataHelper,
-  createDatasetLeaf,
-} from '@hungpvq/map-dataset';
+import { createWithDataHelper, createDatasetLeaf } from '@hungpvq/map-dataset';
 
 const data = createWithDataHelper({ count: 0 });
 
@@ -33,9 +30,7 @@ import { createDatasetPartBoundComponent, createRootDataset, createDatasetPartLi
 import { createMenuItemToBoundActionForList } from '@hungpvq/map-dataset/menu';
 
 const dataset = createRootDataset('Cities');
-const bound = createDatasetPartBoundComponent('Cities', [
-  105.83, 21.02, 105.85, 21.04,
-]);
+const bound = createDatasetPartBoundComponent('Cities', [105.83, 21.02, 105.85, 21.04]);
 const list = createDatasetPartListViewUiComponent('Cities');
 
 // Do not pass `bbox` into the menu — Fill bound reads from the bound part at click time
@@ -68,14 +63,7 @@ Add the menu part to the same dataset tree. List, identify, and the table find i
 
 ```ts
 import { createRootDataset, createDatasetPartListViewUiComponentBuilder } from '@hungpvq/map-dataset';
-import {
-  createDatasetPartMenuComponent,
-  createDatasetPartMenuComponentBuilder,
-  createMenuItemShowDetailInfoSource,
-  createMenuItemShowDetailForItem,
-  createMenuItemToBoundActionForItem,
-  LIST_VIEW_MENU_ID,
-} from '@hungpvq/map-dataset/menu';
+import { createDatasetPartMenuComponent, createDatasetPartMenuComponentBuilder, createMenuItemShowDetailInfoSource, createMenuItemShowDetailForItem, createMenuItemToBoundActionForItem, LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
 import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
 
 const dataset = createRootDataset('Cities');
@@ -90,18 +78,9 @@ const simple = createDatasetPartMenuComponent('default menus', [
 ]);
 
 const menus = createDatasetPartMenuComponentBuilder('default menus')
-  .addLayerMenu(
-    createMenuItemShowDetailInfoSource(),
-    LIST_VIEW_MENU_ID.layer.info,
-  )
-  .addItemMenu(
-    createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
-    LIST_VIEW_MENU_ID.item.showDetail,
-  )
-  .addItemMenu(
-    createMenuItemToBoundActionForItem(),
-    LIST_VIEW_MENU_ID.item.flyTo,
-  )
+  .addLayerMenu(createMenuItemShowDetailInfoSource(), LIST_VIEW_MENU_ID.layer.info)
+  .addItemMenu(createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]), LIST_VIEW_MENU_ID.item.showDetail)
+  .addItemMenu(createMenuItemToBoundActionForItem(), LIST_VIEW_MENU_ID.item.flyTo)
   .build();
 
 const list = createDatasetPartListViewUiComponentBuilder('Cities').build();
@@ -126,23 +105,15 @@ menus.setData([
 
 Same menu definition; placement changes with the host. Built-ins already follow this pattern — copy when you add custom actions.
 
-| Control (`MENU_CONTROL_ID`) | Fill bound / Fly to | Detail / Info |
-| --- | --- | --- |
-| `layer-control` / `identify` / `attribute-table` | `extra` (default) | shown (`menu` / `extra`) |
-| `layer-detail` | `title` (header `after-title`) | `hidden: true` |
+| Control (`MENU_CONTROL_ID`)                      | Fill bound / Fly to            | Detail / Info            |
+| ------------------------------------------------ | ------------------------------ | ------------------------ |
+| `layer-control` / `identify` / `attribute-table` | `extra` (default)              | shown (`menu` / `extra`) |
+| `layer-detail`                                   | `title` (header `after-title`) | `hidden: true`           |
 
 ```ts
 import { createRootDataset, createDatasetPartListViewUiComponentBuilder } from '@hungpvq/map-dataset';
 import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
-import {
-  MENU_CONTROL_ID,
-  createDatasetPartMenuComponentBuilder,
-  createMenuBuilder,
-  createMenuItemShowDetailForItem,
-  createMenuItemToBoundActionForItem,
-  createMenuItemToBoundActionForList,
-  LIST_VIEW_MENU_ID,
-} from '@hungpvq/map-dataset/menu';
+import { MENU_CONTROL_ID, createDatasetPartMenuComponentBuilder, createMenuBuilder, createMenuItemShowDetailForItem, createMenuItemToBoundActionForItem, createMenuItemToBoundActionForList, LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
 import { mdiStar } from '@mdi/js';
 
 const dataset = createRootDataset('Places');
@@ -208,13 +179,12 @@ Live demo: `#/dataset-menu` → layer **byControl · LayerDetail title**.
 
 ### Builder methods
 
-| Method | Example | Effect |
-| --- | --- | --- |
-| `addMenu` | `.addMenu({ for: 'layer', key, menu, byControl? })` | One entry (optional entry-level `byControl`) |
-| `addMenus` | `.addMenus([{ for: 'item', key, menu }])` | Several entries |
-| `addLayerMenu` | `.addLayerMenu(menu, LIST_VIEW_MENU_ID.layer.info)` | `for: 'layer'` (`key` defaults to `menu.id`) |
-| `addItemMenu` | `.addItemMenu(menu)` | `for: 'item'` |
-| `addLayerMenus` / `addItemMenus` | `.addLayerMenus([a, b])` | Several menus for that `for` |
+| Method                           | Example                                             | Effect                                       |
+| -------------------------------- | --------------------------------------------------- | -------------------------------------------- |
+| `addMenu`                        | `.addMenu({ for: 'layer', key, menu, byControl? })` | One entry (optional entry-level `byControl`) |
+| `addMenus`                       | `.addMenus([{ for: 'item', key, menu }])`           | Several entries                              |
+| `addLayerMenu`                   | `.addLayerMenu(menu, LIST_VIEW_MENU_ID.layer.info)` | `for: 'layer'` (`key` defaults to `menu.id`) |
+| `addItemMenu`                    | `.addItemMenu(menu)`                                | `for: 'item'`                                |
+| `addLayerMenus` / `addItemMenus` | `.addLayerMenus([a, b])`                            | Several menus for that `for`                 |
 
 `getResolvedMenus(dataset, 'layer' | 'item')` is what the UI calls. It finds the nearest `menu` part with `findPartByType`, and for `item` finds identify the same way. Placement (`byControl`) is applied later at render inside `partitionMenuActions` / `DatasetMenus`.
-

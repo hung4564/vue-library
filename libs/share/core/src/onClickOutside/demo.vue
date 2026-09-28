@@ -32,9 +32,17 @@ const dropdownHandler: OnClickOutsideHandler = (event) => {
       Click outside of the dropdown to close it.
     </div>
   </div>
-  <div v-if="modal" ref="modalRef" class="modal">
+  <div
+    v-if="modal"
+    ref="modalRef"
+    class="modal"
+  >
     <div class="inner">
-      <button class="button small" title="Close" @click="modal = false">
+      <button
+        class="button small"
+        title="Close"
+        @click="modal = false"
+      >
         𝖷
       </button>
       <p class="heading">Demo Modal</p>

@@ -236,7 +236,10 @@ export function InputCrs({
   return (
     <div className="form-group input-crs">
       {label ? <label>{label}</label> : null}
-      <div ref={wrapRef} className="input-container input-crs__wrap">
+      <div
+        ref={wrapRef}
+        className="input-container input-crs__wrap"
+      >
         <input
           type="text"
           autoComplete="off"

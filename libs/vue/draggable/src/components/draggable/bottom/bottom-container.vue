@@ -185,15 +185,27 @@ const shellStyle = computed(() => ({
               :aria-controls="contentTo"
               @click="onToggleExpand()"
             >
-              <FullscreenIcon v-if="expand" :size="16" />
-              <OffFullscreenIcon v-else :size="16" />
+              <FullscreenIcon
+                v-if="expand"
+                :size="16"
+              />
+              <OffFullscreenIcon
+                v-else
+                :size="16"
+              />
             </drag-button>
-            <drag-button aria-label="Close bottom" @click="onClose">
+            <drag-button
+              aria-label="Close bottom"
+              @click="onClose"
+            >
               <CloseIcon :size="16" />
             </drag-button>
           </template>
         </component>
-        <div class="draggable-bottom-content" :id="contentTo"></div>
+        <div
+          class="draggable-bottom-content"
+          :id="contentTo"
+        ></div>
       </div>
     </component>
   </div>
@@ -202,7 +214,10 @@ const shellStyle = computed(() => ({
     aria-label="Switch bottom panel"
     @update:open="menuOpen = $event"
   >
-    <ul class="context-menu" role="presentation">
+    <ul
+      class="context-menu"
+      role="presentation"
+    >
       <ContextMenuItem
         v-for="option in allItems"
         :key="option.id"

@@ -88,7 +88,10 @@ export function BaseMapAddForm({
   }, [checkOk, title, type, url, thumbnail, onAdded]);
 
   return (
-    <div className="base-map-add-form" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="base-map-add-form"
+      onClick={(e) => e.stopPropagation()}
+    >
       <div className="base-map-add-form__body">
         {showHeading ? (
           <div className="base-map-add-form__title">
@@ -156,7 +159,11 @@ export function BaseMapAddForm({
         >
           {trans('map.basemap.add-submit')}
         </MapControlButton>
-        <MapControlButton variant="text" size="small" onClick={onCancel}>
+        <MapControlButton
+          variant="text"
+          size="small"
+          onClick={onCancel}
+        >
           {trans('map.basemap.add-cancel')}
         </MapControlButton>
       </div>

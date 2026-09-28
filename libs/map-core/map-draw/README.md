@@ -13,13 +13,7 @@ npm install @hungpvq/map-draw @mapbox/mapbox-gl-draw
 Peers: `@mapbox/mapbox-gl-draw`, `maplibre-gl`, `@hungpvq/map-core` (optional `randomcolor` for inspect colors).
 
 ```ts
-import {
-  MapDraw,
-  StaticMode,
-  getDrawStyles,
-  getFeatureId,
-  sameFeature,
-} from '@hungpvq/map-draw';
+import { MapDraw, StaticMode, getDrawStyles, getFeatureId, sameFeature } from '@hungpvq/map-draw';
 
 const draw = new MapDraw({
   displayControlsDefault: false,

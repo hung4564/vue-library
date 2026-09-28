@@ -20,7 +20,7 @@ import {
   defaultMapProps,
   ModuleContainer,
   useMap,
-  useToolbarControl,
+  useMapControl,
 } from '@hungpvq/vue-map-core';
 import {
   mdiClose,
@@ -52,7 +52,7 @@ const drawHandle = createMapDrawControl({
   drawControlOptions: props.drawControlOptions,
 });
 const control = drawHandle.control;
-const { mapId, moduleContainerProps, callMap, order } = useMap(props);
+const { mapId, callMap, order } = useMap(props);
 useEnsureDrawBuiltinLocales(mapId.value);
 const isShow = ref(false);
 function onStart(config: MapDrawOption) {
@@ -195,108 +195,115 @@ function onFlyTo(value: Feature) {
   });
 }
 
-const { control: toolbarControl } = useToolbarControl(mapId.value, props, {
-  kind: 'module',
-  moduleId: 'mapDrawControl',
-  order: order.value,
-  orientation: 'row',
-  buttons: [
-    {
-      id: 'cancel',
-      getState: () =>
-        mdiButtonState(mdiClose, {
-          visible: isShow.value && isDraw.value,
-          title: 'Cancel',
-        }),
-      onClick: () => onCancel(),
-    },
-    {
-      id: 'save',
-      getState: () =>
-        mdiButtonState(mdiContentSave, {
-          visible: isShow.value && isDraw.value,
-          title: 'Save',
-        }),
-      onClick: () => {
-        void onSave();
+const { moduleContainerProps, control: toolbarControl } = useMapControl(mapId, {
+  id: 'mapDrawControl',
+  panelKind: 'button',
+  from: props,
+  order,
+  buttonSlot: 'custom',
+  toolbar: {
+    kind: 'module',
+    moduleId: 'mapDrawControl',
+    order: order.value,
+    orientation: 'row',
+    buttons: [
+      {
+        id: 'cancel',
+        getState: () =>
+          mdiButtonState(mdiClose, {
+            visible: isShow.value && isDraw.value,
+            title: 'Cancel',
+          }),
+        onClick: () => onCancel(),
       },
-    },
-    {
-      id: 'close',
-      getState: () =>
-        mdiButtonState(mdiClose, {
-          visible: isShow.value && !isDraw.value,
-          title: 'Close',
-        }),
-      onClick: () => close(),
-    },
-    {
-      id: 'add',
-      getState: () =>
-        mdiButtonState(mdiPlus, {
-          visible: isShow.value && !isDraw.value,
-          active: method.value === 'create',
-          title: 'Draw',
-        }),
-      onClick: (e) => onStartDraw(e),
-    },
-    {
-      id: 'select',
-      getState: () =>
-        mdiButtonState(mdiPencil, {
-          visible: isShow.value && !isDraw.value,
-          active: method.value === 'select',
-          title: 'Select',
-        }),
-      onClick: () => onSelectMethod('select'),
-    },
-    {
-      id: 'delete',
-      getState: () =>
-        mdiButtonState(mdiDeleteOutline, {
-          visible: isShow.value && !isDraw.value,
-          active: method.value === 'delete',
-          title: 'Delete',
-        }),
-      onClick: () => onSelectMethod('delete'),
-    },
-    {
-      id: 'commit',
-      getState: () =>
-        mdiButtonState(mdiContentSaveCheck, {
-          visible: !!(
-            isDraftOption(drawOptions.value) && drawOptions.value?.draft?.show
-          ),
-          disabled: isDraw.value || draftCounts.value === 0,
-          title: 'Commit drafts',
-        }),
-      onClick: () => onCommit(),
-    },
-    {
-      id: 'discard',
-      getState: () =>
-        mdiButtonState(mdiUndoVariant, {
-          visible: !!(
-            isDraftOption(drawOptions.value) && drawOptions.value?.draft?.show
-          ),
-          disabled: isDraw.value || draftCounts.value === 0,
-          title: 'Discard drafts',
-        }),
-      onClick: () => onDiscard(),
-    },
-    {
-      id: 'list',
-      getState: () =>
-        mdiButtonState(mdiViewListOutline, {
-          visible: !!(
-            isDraftOption(drawOptions.value) && drawOptions.value?.draft?.show
-          ),
-          disabled: draftCounts.value === 0,
-          title: 'Draft list',
-        }),
-      onClick: () => onShowListDraftItem(),
-    },
-  ],
+      {
+        id: 'save',
+        getState: () =>
+          mdiButtonState(mdiContentSave, {
+            visible: isShow.value && isDraw.value,
+            title: 'Save',
+          }),
+        onClick: () => {
+          void onSave();
+        },
+      },
+      {
+        id: 'close',
+        getState: () =>
+          mdiButtonState(mdiClose, {
+            visible: isShow.value && !isDraw.value,
+            title: 'Close',
+          }),
+        onClick: () => close(),
+      },
+      {
+        id: 'add',
+        getState: () =>
+          mdiButtonState(mdiPlus, {
+            visible: isShow.value && !isDraw.value,
+            active: method.value === 'create',
+            title: 'Draw',
+          }),
+        onClick: (e) => onStartDraw(e),
+      },
+      {
+        id: 'select',
+        getState: () =>
+          mdiButtonState(mdiPencil, {
+            visible: isShow.value && !isDraw.value,
+            active: method.value === 'select',
+            title: 'Select',
+          }),
+        onClick: () => onSelectMethod('select'),
+      },
+      {
+        id: 'delete',
+        getState: () =>
+          mdiButtonState(mdiDeleteOutline, {
+            visible: isShow.value && !isDraw.value,
+            active: method.value === 'delete',
+            title: 'Delete',
+          }),
+        onClick: () => onSelectMethod('delete'),
+      },
+      {
+        id: 'commit',
+        getState: () =>
+          mdiButtonState(mdiContentSaveCheck, {
+            visible: !!(
+              isDraftOption(drawOptions.value) && drawOptions.value?.draft?.show
+            ),
+            disabled: isDraw.value || draftCounts.value === 0,
+            title: 'Commit drafts',
+          }),
+        onClick: () => onCommit(),
+      },
+      {
+        id: 'discard',
+        getState: () =>
+          mdiButtonState(mdiUndoVariant, {
+            visible: !!(
+              isDraftOption(drawOptions.value) && drawOptions.value?.draft?.show
+            ),
+            disabled: isDraw.value || draftCounts.value === 0,
+            title: 'Discard drafts',
+          }),
+        onClick: () => onDiscard(),
+      },
+      {
+        id: 'list',
+        getState: () =>
+          mdiButtonState(mdiViewListOutline, {
+            visible: !!(
+              isDraftOption(drawOptions.value) && drawOptions.value?.draft?.show
+            ),
+            disabled: draftCounts.value === 0,
+            title: 'Draft list',
+          }),
+        onClick: () => onShowListDraftItem(),
+      },
+    ],
+  },
 });
 watch([isShow, isDraw, method, draftCounts, drawOptions], () =>
   toolbarControl.sync(),

@@ -27,23 +27,35 @@ UniversalRegistry.getControl('mapLayerControl', mapId)?.props;
 UniversalRegistry.getKeysForMap(mapId, 'control');
 ```
 
-## Open / close / move panel
+## Open / close / move panel / button layout
 
 ```ts
 UniversalRegistry.openControl(mapId, 'mapLayerControl');
 UniversalRegistry.closeControl(mapId, 'mapGotoControl');
 
-// Popup / float offsets (pixels from edges)
+// Panel offsets / sidebar dock (not button corner)
 UniversalRegistry.setControlPosition(mapId, 'mapGotoControl', {
   top: 80,
   right: 60,
 });
-
-// Sidebar dock
 UniversalRegistry.setControlPosition(mapId, 'mapLayerControl', {
   location: 'right',
 });
+
+// Button layout SoT (visible, corner position, order, controlLayout, buttonInMobile)
+UniversalRegistry.setControlLayout(mapId, 'mapHomeControl', {
+  visible: false,
+  position: 'top-left',
+  order: 20,
+  controlLayout: 'toolbar',
+  buttonInMobile: 'button', // optional per-control override; omit/undefined = inherit Map
+});
+UniversalRegistry.getControlLayout(mapId, 'mapHomeControl');
+// runAction still works while visible:false
+UniversalRegistry.runControlAction(mapId, 'mapHomeControl');
 ```
+
+`setControlPosition` = **panel** offsets/dock. `setControlLayout.position` = **button corner**.
 
 ## Run button actions
 
@@ -82,60 +94,71 @@ ctrl?.actions.map((a) => a.type); // ['mapCompass', 'mapZoomIn', 'mapZoomOut']
 
 ## Control ids (common)
 
-| id | Kind | Notes |
-| --- | --- | --- |
-| `mapLayerControl` | sidebar | |
-| `mapDatasetControl` | sidebar | |
-| `mapGotoControl` | popup | |
-| `mapSettingControl` | popup | |
-| `mapInfoControl` | popup | |
-| `mapWorkerControl` | sidebar | Any registered web worker |
-| `mapIdentifyControl` | popup | |
-| `mapCrsControl` | popup | |
-| `mapLegendControl` | popup | |
-| `mapBaseMapControl` | popup | |
-| `mapEventManagementControl` | sidebar | |
-| `mapHomeControl` | button | |
-| `mapFullscreenControl` | button | |
-| `mapThemeControl` | button | Toggle light/dark; hover menu for themes |
-| `mapGeoLocateControl` | button | |
-| `mapGlobeControl` | button | |
-| `mapPrintControl` | button | |
-| `mapNavigationControl` | button | multi: `mapCompass`, `mapZoomIn`, `mapZoomOut` |
-| `mapMeasurementControl` | button | multi: `distance`, `area`, … |
-| `mapPrintAdvancedControl` | button | multi: `mapPrintShow`, `mapPrintSave`, … |
-| `mapInspectControl` | button | Draw packages (Vue + React); Inspect docs under `/map/draw/#inspect` |
-| `mapDrawDraftList` | popup | Draw draft list when draft mode is on |
-| `mapRegistryControl` | popup | Inspector for registered controls |
+| id                          | Kind    | Notes                                                                |
+| --------------------------- | ------- | -------------------------------------------------------------------- |
+| `mapLayerControl`           | sidebar |                                                                      |
+| `mapDatasetControl`         | sidebar |                                                                      |
+| `mapGotoControl`            | popup   |                                                                      |
+| `mapSettingControl`         | popup   |                                                                      |
+| `mapInfoControl`            | popup   |                                                                      |
+| `mapWorkerControl`          | sidebar | Any registered web worker                                            |
+| `mapIdentifyControl`        | popup   |                                                                      |
+| `mapCrsControl`             | popup   |                                                                      |
+| `mapLegendControl`          | popup   |                                                                      |
+| `mapBaseMapControl`         | popup   |                                                                      |
+| `mapEventManagementControl` | sidebar |                                                                      |
+| `mapHomeControl`            | button  |                                                                      |
+| `mapFullscreenControl`      | button  |                                                                      |
+| `mapThemeControl`           | button  | Toggle light/dark; hover menu for themes                             |
+| `mapGeoLocateControl`       | button  |                                                                      |
+| `mapGlobeControl`           | button  |                                                                      |
+| `mapPrintControl`           | button  |                                                                      |
+| `mapNavigationControl`      | button  | multi: `mapCompass`, `mapZoomIn`, `mapZoomOut`                       |
+| `mapMeasurementControl`     | button  | multi: `distance`, `area`, …                                         |
+| `mapPrintAdvancedControl`   | button  | multi: `mapPrintShow`, `mapPrintSave`, …                             |
+| `mapInspectControl`         | button  | Draw packages (Vue + React); Inspect docs under `/map/draw/#inspect` |
+| `mapDrawDraftList`          | popup   | Draw draft list when draft mode is on                                |
+| `mapRegistryControl`        | popup   | Inspector for registered controls                                    |
 
 Ids match toolbar / module ids where those exist.
 
 Dynamic panels (`mapCreateControl`, `mapAttributeTable`, `mapLayerDetail`, `mapDatasetDetail`, `mapMeasurementSetting`, …) register when opened via UI / `ComponentManagementControl`.
 
-
 ## Demo
 
 Mount [`RegistryControl`](./module/RegistryControl.md) (id `mapRegistryControl`) — or open `#/registry-control` in `apps/vue/demo-map` / `apps/react/demo-map`.
 
-The inspector uses `ModuleContainer` + `DraggableItemPopup` + `useRegisterMapControl`, same as other library controls.
+The inspector uses `ModuleContainer` + `DraggableItemPopup` + `useMapControl`, same as other library controls. It can edit layout fields and run actions while a control is hidden.
 
 ## Hook (library authors)
 
-Canonical pattern — `setShow` **must** accept a boolean (`true` / `false`). `openControl` / `closeControl` call `setShow(true|false)`; do not pass a toggle-only function.
+Canonical pattern — **`useMapControl` only** (register handle + layout store + toolbar + optional auto-button).
+
+`setShow` **must** accept a boolean (`true` / `false`). `openControl` / `closeControl` call `setShow(true|false)`; do not pass a toggle-only function.
+
+Simple single-button controls omit `#btn` / `btn` — ModuleContainer auto-renders `MapCommonButton` from `getButtonState`. Custom UI passes `buttonSlot: 'custom'` and keeps `#btn`.
 
 ```ts
 const [show, setShow] = useShow(props.show);
 
-useRegisterMapControl(mapId, {
+const { mapId, order } = useMap(props);
+const { moduleContainerProps, panelBind } = useMapControl(mapId, {
   id: 'mapLayerControl',
   panelKind: 'sidebar', // or 'popup' | 'float' | 'button'
   title: () => 'Layers',
+  from: props,
+  order,
   show,
   setShow,
   // Multi-action controls: declare default for runAction() without type
   // defaultActionType: 'distance',
-  actions: [{ type: 'mapLayerControl', run: () => setShow() }],
+  actions: [{ type: 'mapLayerControl', run: () => setShow(true) }],
+  getButtonState: () => mdiButtonState(mdiLayers, { title: 'Layers', order: order.value }),
+  onClick: () => setShow(!show.value),
 });
+
+// Spread `from: props` (+ `order` from useMap) onto useMapControl — chrome mount
+// defaults. Dual popups: override with an explicit `:id` / `id=` **after** `{...panelBind}`.
 ```
 
 App usage (same for every demo / page):
@@ -146,6 +169,7 @@ UniversalRegistry.closeControl(mapId, 'mapLayerControl');
 UniversalRegistry.setControlPosition(mapId, 'mapLayerControl', {
   location: 'right',
 });
+UniversalRegistry.setControlLayout(mapId, 'mapHomeControl', { visible: false });
 UniversalRegistry.runControlAction(mapId, 'mapLayerControl');
 ```
 

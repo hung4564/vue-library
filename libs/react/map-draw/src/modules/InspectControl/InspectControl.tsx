@@ -10,14 +10,12 @@ import {
 } from '@hungpvq/map-draw';
 import {
   defaultMapProps,
-  MapCommonButton,
   ModuleContainer,
   useEventMap,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
-  useToolbarControl,
 } from '@hungpvq/react-map-core';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -119,14 +117,7 @@ export function InspectControl(props: InspectControlProps) {
     controller.detach();
   }, [controller]);
 
-  const { mapId, moduleContainerProps, order } = useMap(
-    {
-      ...merged,
-      controlId: 'mapInspectControl',
-    },
-    onInit,
-    onDestroy,
-  );
+  const { mapId, order } = useMap(merged, onInit, onDestroy);
   const { trans } = useLang(mapId);
   useEnsureDrawBuiltinLocales(mapId);
 
@@ -165,23 +156,14 @@ export function InspectControl(props: InspectControlProps) {
     controller.toggle();
   }, [controller]);
 
-  useRegisterMapControl(mapId, {
+  const { moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapInspectControl',
     panelKind: 'button',
     title: trans('map.inspect-control.button'),
-    buttonPosition: merged.position,
-    show: active,
-    setShow: (v) => {
-      controller.setShowInspectMap(v);
-    },
-    getProps: () => ({ position: merged.position }),
+    from: merged,
+    order,
     actions: [{ type: 'mapInspectControl', run: () => toggle() }],
-  });
-
-  const { state, control } = useToolbarControl(mapId, merged, {
-    kind: 'single',
-    id: 'mapInspectControl',
-    getState: () =>
+    getButtonState: () =>
       mdiButtonState(!active ? INSPECT_ICONS.map : INSPECT_ICONS.inspect, {
         visible: true,
         title: trans('map.inspect-control.button'),
@@ -196,20 +178,5 @@ export function InspectControl(props: InspectControlProps) {
     control.sync();
   }, [active, control]);
 
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction();
-            }}
-          />
-        ) : null
-      }
-    />
-  );
+  return <ModuleContainer {...moduleContainerProps} />;
 }

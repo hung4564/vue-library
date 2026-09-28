@@ -8,10 +8,10 @@ Built-in legend UI lives in adapter **leaf** modules (`Legend/parts/*`, `Legend/
 
 ## `createLegend(type, value)`
 
-| `type` | `value` |
-| --- | --- |
-| `'color'` | `{ text: string, color: string }` |
-| `'text'` | `{ text: string, value: string }` |
+| `type`     | `value`                                                       |
+| ---------- | ------------------------------------------------------------- |
+| `'color'`  | `{ text: string, color: string }`                             |
+| `'text'`   | `{ text: string, value: string }`                             |
 | `'linear'` | `{ text: string, items: { color: string, value: string }[] }` |
 
 ```ts

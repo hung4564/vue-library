@@ -9,7 +9,14 @@ export const MAP_STORE_KEY = {
   LANG: 'lang',
   CRS: 'crs',
   PRINT: 'print',
-  REGISTRY: 'registry',
   BASEMAP: 'basemap',
   RESOLVER: 'resolver',
+  /** Control handles (`UniversalRegistry.registerControl`). */
+  CONTROLS: 'controls',
+  /** Button layout SoT (visible / position / order / controlLayout). */
+  CONTROL_LAYOUT: 'control-layout',
+  /** Auto-button descriptors for ModuleContainer. */
+  CONTROL_AUTO_BUTTON: 'control-auto-button',
+  /** Per-map namespaced method / menu / component values (`UniversalRegistry`). */
+  REGISTRY_MAPS: 'registry-controls',
 } as const;

@@ -18,19 +18,17 @@ import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
 import { computed, onMounted, onUnmounted, shallowRef, watch } from 'vue';
 
-import MapCommonButton from '../../../components/MapCommonButton.vue';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow, type WithShowProps } from '../../../hooks/useShow';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useMapMittStore } from '../../../store/mitt-store';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useMapControl } from '../../registry/useMapControl';
 import { useEventMapItems } from '../hook/useEventMapItems';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, order } = useMap(props);
 const { trans } = useLang(mapId.value);
 const events = shallowRef<MapEventStore['items']>([]);
 const current = shallowRef<MapEventStore['current']>({});
@@ -53,35 +51,30 @@ const path = {
   icon: mdiCalendarSearch,
 };
 const [show, toggleShow] = useShow(props.show);
-const { panelPosition } = useRegisterMapControl(mapId, {
+defineSlots<{
+  default(): any;
+}>();
+const groupedViews = computed(() => groupEventsByMapType(events.value));
+const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
   id: 'mapEventManagementControl',
   panelKind: 'sidebar',
   title: () => trans.value('map.event-control.title'),
-  buttonPosition: () => props.position,
+  from: props,
+  order,
   show,
   setShow: toggleShow,
   initialPanelPosition: { location: 'left' },
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
   actions: [
     {
       type: 'mapEventManagementControl',
       run: () => toggleShow(),
     },
   ],
-});
-defineSlots<{
-  default(): any;
-}>();
-const groupedViews = computed(() => groupEventsByMapType(events.value));
-const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapEventManagementControl',
-  getState() {
+  getButtonState() {
     return mdiButtonState(path.icon, {
       active: show.value,
       title: trans.value('map.event-control.title'),
+      order: order.value,
     });
   },
   onClick() {
@@ -92,15 +85,6 @@ watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
-
     <template #draggable="props">
       <DraggableItemSideBar
         :containerId="props.containerId"

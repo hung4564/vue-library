@@ -19,5 +19,10 @@ export function DemoLanguageControl() {
     [],
   );
 
-  return <LanguageControl languages={['en', 'vi']} locales={locales} />;
+  return (
+    <LanguageControl
+      languages={['en', 'vi']}
+      locales={locales}
+    />
+  );
 }

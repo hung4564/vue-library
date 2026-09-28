@@ -199,7 +199,11 @@ export function DraggableContainer({
           className="drawer-slot drawer-slot-left"
           id={`drawer-left-${containerId}`}
         />
-        <div className="draggable-container" ref={boxRef} id={containerId}>
+        <div
+          className="draggable-container"
+          ref={boxRef}
+          id={containerId}
+        >
           {initDone && (
             <>
               <SidebarContainer location="left" />

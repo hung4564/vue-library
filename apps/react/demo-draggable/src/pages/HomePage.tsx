@@ -25,8 +25,15 @@ export function HomePage() {
   const [drawerSize, setDrawerSize] = useState(280);
 
   return (
-    <DraggableContainer containerId="demo-home" className="demo-page">
-      <DraggableItemSideBar show title="Controls" location="left">
+    <DraggableContainer
+      containerId="demo-home"
+      className="demo-page"
+    >
+      <DraggableItemSideBar
+        show
+        title="Controls"
+        location="left"
+      >
         <div className="panel">
           <h2>Home overview</h2>
           <p>
@@ -35,7 +42,11 @@ export function HomePage() {
           </p>
           <div className="demo-links">
             {demos.map((demo) => (
-              <Link key={demo.to} to={demo.to} className="demo-btn">
+              <Link
+                key={demo.to}
+                to={demo.to}
+                className="demo-btn"
+              >
                 {demo.label}
               </Link>
             ))}
@@ -45,7 +56,11 @@ export function HomePage() {
         </div>
       </DraggableItemSideBar>
 
-      <DraggableItemSideBar show title="Right Sidebar" location="right">
+      <DraggableItemSideBar
+        show
+        title="Right Sidebar"
+        location="right"
+      >
         <div className="panel">
           <h2>Right Sidebar</h2>
           <p>Overview sample — open Sidebar demo for more.</p>
@@ -91,7 +106,10 @@ export function HomePage() {
         </div>
       </DraggableItemFloat>
 
-      <DraggableItemBottom show title="Bottom">
+      <DraggableItemBottom
+        show
+        title="Bottom"
+      >
         <div className="panel">
           <p>Bottom panel overview sample.</p>
         </div>

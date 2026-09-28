@@ -99,7 +99,10 @@ export function SourceLayerOptionsList({
                 style={{ margin: '4px 0 0 28px' }}
               >
                 {chips.map((chip) => (
-                  <li key={chip} className="create-control-loaded__chip">
+                  <li
+                    key={chip}
+                    className="create-control-loaded__chip"
+                  >
                     {chip}
                   </li>
                 ))}

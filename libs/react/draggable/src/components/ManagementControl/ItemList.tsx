@@ -44,7 +44,10 @@ export function ItemList({
             }}
           >
             <div className="mgmt-row__label">
-              <Item item={item} containerId={containerId} />
+              <Item
+                item={item}
+                containerId={containerId}
+              />
             </div>
             <div className="mgmt-row__status">
               <span

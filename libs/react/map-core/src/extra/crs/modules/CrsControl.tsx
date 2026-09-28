@@ -9,16 +9,14 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { MapCommonButton } from '../../../components/MapCommonButton';
 import { BaseCollapse, InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useMapControl } from '../../registry/useMapControl';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../useMapCrsItems';
 
 export interface CrsControlProps extends WithMapPropType {
@@ -32,25 +30,9 @@ const UNIT_ITEMS = [
 
 export function CrsControl(props: CrsControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap({
-    ...merged,
-    controlId: 'mapCrsControl',
-  });
+  const { mapId, order } = useMap(merged);
   const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
-  const { panelBind } = useRegisterMapControl(mapId, {
-    id: 'mapCrsControl',
-    panelKind: 'popup',
-    title: trans('map.crs-control.title'),
-    buttonPosition: merged.position,
-    show,
-    setShow: toggleShow,
-    getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-    }),
-    actions: [{ type: 'mapCrsControl', run: () => toggleShow(!show) }],
-  });
   const { items: crsItems, setItems } = useMapCrsItems(mapId);
   const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId);
   const [filterQuery, setFilterQuery] = useState('');
@@ -70,10 +52,16 @@ export function CrsControl(props: CrsControlProps) {
     toggleShow(!show);
   }, [show, toggleShow]);
 
-  const { state, control } = useToolbarControl(mapId, merged, {
-    kind: 'single',
+  const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
     id: 'mapCrsControl',
-    getState() {
+    panelKind: 'popup',
+    title: trans('map.crs-control.title'),
+    from: merged,
+    order,
+    show,
+    setShow: toggleShow,
+    actions: [{ type: 'mapCrsControl', run: () => handleToggle() }],
+    getButtonState() {
       return mdiButtonState(mdiInboxOutline, {
         visible: true,
         active: show,
@@ -83,12 +71,10 @@ export function CrsControl(props: CrsControlProps) {
     },
     onClick: handleToggle,
   });
-  const controlRef = useRef(control);
-  controlRef.current = control;
 
   useEffect(() => {
-    controlRef.current.sync();
-  }, [show]);
+    control.sync();
+  }, [show, control]);
 
   const updateCrsItem = useCallback(
     (index: number, patch: Partial<CrsItem>) => {
@@ -129,17 +115,6 @@ export function CrsControl(props: CrsControlProps) {
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : null
-      }
       draggable={(bind) =>
         show ? (
           <DraggableItemPopup
@@ -162,7 +137,10 @@ export function CrsControl(props: CrsControlProps) {
                 />
                 <ul className="crs-catalog__list">
                   {filteredCatalog.map((item) => (
-                    <li key={item.epsg} className="crs-catalog__item">
+                    <li
+                      key={item.epsg}
+                      className="crs-catalog__item"
+                    >
                       <label
                         className="crs-item-header__display"
                         title={trans('map.crs-display.show')}
@@ -210,7 +188,10 @@ export function CrsControl(props: CrsControlProps) {
                                     onRemove(crsItem);
                                   }}
                                 >
-                                  <Icon path={mdiDelete} size="16px" />
+                                  <Icon
+                                    path={mdiDelete}
+                                    size="16px"
+                                  />
                                 </button>
                               </div>
                             </div>
@@ -273,7 +254,10 @@ export function CrsControl(props: CrsControlProps) {
                     onAdd();
                   }}
                 >
-                  <Icon path={mdiPlus} size="16px" />
+                  <Icon
+                    path={mdiPlus}
+                    size="16px"
+                  />
                 </button>
               </div>
             </div>

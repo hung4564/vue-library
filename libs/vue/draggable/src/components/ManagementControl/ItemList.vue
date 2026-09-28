@@ -1,5 +1,8 @@
 <template>
-  <ul v-if="items.length > 0" class="mgmt-list">
+  <ul
+    v-if="items.length > 0"
+    class="mgmt-list"
+  >
     <li
       v-for="item in items"
       :key="item"
@@ -14,7 +17,10 @@
       @keydown.space.prevent="$emit('click:item', item)"
     >
       <div class="mgmt-row__label">
-        <Item :item="item" :containerId="containerId" />
+        <Item
+          :item="item"
+          :containerId="containerId"
+        />
       </div>
       <div class="mgmt-row__status">
         <span
@@ -33,7 +39,12 @@
       </div>
     </li>
   </ul>
-  <p v-else class="mgmt__empty">Empty</p>
+  <p
+    v-else
+    class="mgmt__empty"
+  >
+    Empty
+  </p>
 </template>
 
 <script setup lang="ts">

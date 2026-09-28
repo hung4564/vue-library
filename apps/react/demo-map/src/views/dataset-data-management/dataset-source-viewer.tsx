@@ -65,7 +65,10 @@ export function DatasetSourceViewer(props: DatasetSourceViewerProps) {
           <div className="demo-source-viewer">
             <div className="demo-source-viewer__toolbar">
               {hasExampleData ? (
-                <div className="demo-source-viewer__tabs" role="tablist">
+                <div
+                  className="demo-source-viewer__tabs"
+                  role="tablist"
+                >
                   <button
                     type="button"
                     role="tab"
@@ -99,7 +102,10 @@ export function DatasetSourceViewer(props: DatasetSourceViewerProps) {
                 {copied ? 'Copied' : 'Copy'}
               </MapControlButton>
             </div>
-            <pre className="demo-source-viewer__code" tabIndex={0}>
+            <pre
+              className="demo-source-viewer__code"
+              tabIndex={0}
+            >
               {code}
             </pre>
           </div>

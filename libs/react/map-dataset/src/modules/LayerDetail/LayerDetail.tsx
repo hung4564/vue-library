@@ -15,7 +15,7 @@ import {
   ModuleContainer,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
 import { InputTextarea } from '@hungpvq/react-map-core/fields';
@@ -74,14 +74,22 @@ function TableTdLayer({
     <TableTdCopy value={text}>
       {!field.inline ? (
         <div className="layer-detail-grid">
-          <div className="layer-detail-grid__label" title={label}>
+          <div
+            className="layer-detail-grid__label"
+            title={label}
+          >
             {label}
           </div>
           <div className="layer-detail-grid__value">{text}</div>
         </div>
       ) : (
         <div className="layer-detail-grid layer-detail-grid--full">
-          <InputTextarea readOnly rows={10} value={text} label={label} />
+          <InputTextarea
+            readOnly
+            rows={10}
+            value={text}
+            label={label}
+          />
         </div>
       )}
     </TableTdCopy>
@@ -95,7 +103,7 @@ export function LayerDetail({
   popupProps = {},
   onClose,
 }: LayerDetailProps) {
-  const { mapId, moduleContainerProps } = useMap({
+  const { mapId } = useMap({
     controlId: 'mapLayerDetail',
   });
   const { trans } = useLang(mapId);
@@ -137,7 +145,7 @@ export function LayerDetail({
     onClose?.();
   }
 
-  const { panelBind } = useRegisterMapControl(mapId, {
+  const { panelBind, moduleContainerProps } = useMapControl(mapId, {
     id: 'mapLayerDetail',
     panelKind: 'popup',
     title: trans('map.layer-control.info.title'),

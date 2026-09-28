@@ -1,12 +1,12 @@
 # RegistryControl
 
-Inspector for controls registered on the map through `UniversalRegistry`. Lists ids, panel kind, open state, and props; search, open / close / move panels and run actions.
+Inspector for controls registered on the map through `UniversalRegistry`. Lists ids, panel kind, open state, and props; search; detail tabs for **Props** (JSON + run action), **Layout** (button chrome), and **Panel** (open/close + offsets).
 
 ## Usecase
 
 - Debug which ModuleContainer controls are mounted.
 - Filter the list by id, title, panel kind, or action type.
-- Drive `openControl` / `closeControl` / `setControlPosition` / `runControlAction` from the UI.
+- Drive `openControl` / `closeControl` / `setControlPosition` / `setControlLayout` / `runControlAction` from the UI.
 
 ## Props
 
@@ -14,9 +14,9 @@ Inspector for controls registered on the map through `UniversalRegistry`. Lists 
 
 and
 
-| Prop   | Description              | Type      | Required | Default Value    |
-| ------ | ------------------------ | --------- | -------- | ---------------- |
-| `show` | Open the panel initially | `boolean` | `false`  | `false`          |
+| Prop   | Description              | Type      | Required | Default Value |
+| ------ | ------------------------ | --------- | -------- | ------------- |
+| `show` | Open the panel initially | `boolean` | `false`  | `false`       |
 
 ## Events
 
@@ -47,7 +47,7 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <RegistryControl position="top-right" />
-</Map>
+</Map>;
 ```
 
 API details: [UniversalRegistry controls](../registry-controls.md).

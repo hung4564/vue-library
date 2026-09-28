@@ -1,6 +1,9 @@
 <template>
   <div class="tree-item">
-    <div class="tree-item__row" @click="toggle">
+    <div
+      class="tree-item__row"
+      @click="toggle"
+    >
       <span
         v-if="hasChildren"
         class="tree-item__toggle"
@@ -8,18 +11,31 @@
       >
         ▶
       </span>
-      <span v-else class="tree-item__toggle" />
-      <span class="tree-item__key" v-if="label">{{ label }}: </span>
+      <span
+        v-else
+        class="tree-item__toggle"
+      />
+      <span
+        class="tree-item__key"
+        v-if="label"
+        >{{ label }}:
+      </span>
       <span
         class="tree-item__value"
         :class="`tree-item__value--${valueType}`"
         >{{ displayValue }}</span
       >
-      <span v-if="hasChildren && !isOpen" class="tree-item__preview">
+      <span
+        v-if="hasChildren && !isOpen"
+        class="tree-item__preview"
+      >
         {{ previewValue }}
       </span>
     </div>
-    <div v-if="isOpen && hasChildren" class="tree-item__children">
+    <div
+      v-if="isOpen && hasChildren"
+      class="tree-item__children"
+    >
       <TreeItem
         v-for="key in childKeys"
         :key="key"

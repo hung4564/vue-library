@@ -1,5 +1,9 @@
 <template lang="">
-  <component :is="resolvedComponent" v-bind="$attrs" :mapId="mapId"></component>
+  <component
+    :is="resolvedComponent"
+    v-bind="$attrs"
+    :mapId="mapId"
+  ></component>
 </template>
 <script lang="ts" setup>
 import { type Component, computed, markRaw } from 'vue';

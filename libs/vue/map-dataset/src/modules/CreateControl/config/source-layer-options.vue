@@ -5,18 +5,32 @@
   >
     {{ trans(emptyHintKey) }}
   </p>
-  <div v-else-if="options.length" class="map-col-12">
+  <div
+    v-else-if="options.length"
+    class="map-col-12"
+  >
     <div class="create-control-section-label">
       {{ trans('map.layer-control.field.source-layers') }}
     </div>
     <p class="create-control-status">
       {{ trans('map.layer-control.create.source-layers-hint') }}
     </p>
-    <div class="create-control-actions" style="gap: 8px; margin-bottom: 8px">
-      <MapControlButton type="button" variant="outlined" @click="setAll(true)">
+    <div
+      class="create-control-actions"
+      style="gap: 8px; margin-bottom: 8px"
+    >
+      <MapControlButton
+        type="button"
+        variant="outlined"
+        @click="setAll(true)"
+      >
         {{ trans('map.layer-control.create.source-layers-all') }}
       </MapControlButton>
-      <MapControlButton type="button" variant="outlined" @click="setAll(false)">
+      <MapControlButton
+        type="button"
+        variant="outlined"
+        @click="setAll(false)"
+      >
         {{ trans('map.layer-control.create.source-layers-none') }}
       </MapControlButton>
     </div>
@@ -30,7 +44,10 @@
         :label="opt.id"
         @update:model-value="(v) => onToggle(index, v)"
       />
-      <p v-if="opt.description" class="create-control-status">
+      <p
+        v-if="opt.description"
+        class="create-control-status"
+      >
         {{ opt.description }}
       </p>
       <ul

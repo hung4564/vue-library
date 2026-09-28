@@ -4,7 +4,7 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   MapControlButton,
   useLang,
-  useRegisterMapControl,
+  useMapControl,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCrosshairsGps, mdiDeleteOutline } from '@mdi/js';
@@ -30,7 +30,7 @@ const show = computed({
   set: (value: boolean) => emit('update:show', value),
 });
 
-const { panelBind } = useRegisterMapControl(() => props.mapId, {
+const { panelBind } = useMapControl(() => props.mapId, {
   id: 'mapDrawDraftList',
   panelKind: 'popup',
   title: () => trans.value('map.draw-control.draftList.title'),
@@ -79,12 +79,23 @@ const path = {
       </thead>
       <tbody>
         <tr v-if="!draftItems.length">
-          <td colspan="3" class="table-col-empty">
+          <td
+            colspan="3"
+            class="table-col-empty"
+          >
             {{ trans('map.draw-control.draftList.empty') }}
           </td>
         </tr>
-        <tr v-for="item in draftItems" :key="item.id">
-          <td :title="item.id + ''" class="table-col-id">{{ item.id }}</td>
+        <tr
+          v-for="item in draftItems"
+          :key="item.id"
+        >
+          <td
+            :title="item.id + ''"
+            class="table-col-id"
+          >
+            {{ item.id }}
+          </td>
           <td class="table-col-type">
             {{ trans('map.draw-control.draftList.type.' + item.status) }}
           </td>

@@ -5,10 +5,15 @@ import type {
   MapControlPanelKind,
   MapControlPanelPosition,
 } from './control';
+import {
+  DEFAULT_CONTROL_LAYOUT_STATE,
+  type MapControlLayoutPatch,
+  type MapControlLayoutState,
+} from './control-layout-store';
 
 /**
  * Framework-agnostic inputs for {@link buildMapControlHandle}.
- * Adapters supply open-state + panel position callbacks (Vue/React differ).
+ * Adapters supply open-state + panel position + layout callbacks (Vue/React differ).
  */
 export type BuildMapControlHandleInput = {
   id: string;
@@ -22,10 +27,12 @@ export type BuildMapControlHandleInput = {
   setShow: (show: boolean) => void;
   getPanelPosition: () => MapControlPanelPosition;
   setPanelPosition: (pos: MapControlPanelPosition) => void;
+  getLayout?: () => MapControlLayoutState;
+  setLayout?: (patch: MapControlLayoutPatch) => void;
 };
 
 /**
- * Shared MapControlHandle construction (props snapshot, open/close, runAction).
+ * Shared MapControlHandle construction (props snapshot, open/close, layout, runAction).
  */
 export function buildMapControlHandle(
   input: BuildMapControlHandleInput,
@@ -41,6 +48,8 @@ export function buildMapControlHandle(
     setShow,
     getPanelPosition,
     setPanelPosition,
+    getLayout,
+    setLayout,
   } = input;
 
   function actionList(): MapControlAction[] {
@@ -49,6 +58,10 @@ export function buildMapControlHandle(
 
   function actionMap(): Map<string, MapControlAction['run']> {
     return new Map(actionList().map((a) => [a.type, a.run]));
+  }
+
+  function layoutState(): MapControlLayoutState {
+    return getLayout?.() ?? { ...DEFAULT_CONTROL_LAYOUT_STATE };
   }
 
   return {
@@ -78,6 +91,10 @@ export function buildMapControlHandle(
     setShow,
     getPanelPosition,
     setPanelPosition,
+    getLayout: layoutState,
+    setLayout(patch: MapControlLayoutPatch) {
+      setLayout?.(patch);
+    },
     runAction(type?: string, event?: unknown) {
       const list = actionList();
       const map = actionMap();

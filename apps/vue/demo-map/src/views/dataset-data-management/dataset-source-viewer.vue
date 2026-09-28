@@ -100,12 +100,22 @@ async function copyCode() {
                 Example data
               </button>
             </div>
-            <span v-else class="demo-source-viewer__label">Definition</span>
-            <MapControlButton variant="outlined" @click="copyCode">
+            <span
+              v-else
+              class="demo-source-viewer__label"
+              >Definition</span
+            >
+            <MapControlButton
+              variant="outlined"
+              @click="copyCode"
+            >
               {{ copied ? 'Copied' : 'Copy' }}
             </MapControlButton>
           </div>
-          <pre class="demo-source-viewer__code" tabindex="0">{{ code }}</pre>
+          <pre
+            class="demo-source-viewer__code"
+            tabindex="0"
+            >{{ code }}</pre>
         </div>
       </DraggableItemPopup>
     </template>

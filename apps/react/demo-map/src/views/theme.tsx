@@ -39,7 +39,10 @@ function ThemeTokenPanel() {
   }, []);
 
   return (
-    <div className="demo-theme-tokens" data-testid="demo-theme-tokens">
+    <div
+      className="demo-theme-tokens"
+      data-testid="demo-theme-tokens"
+    >
       <div className="demo-theme-tokens__title">Theme tokens</div>
       <dl>
         <dt>--map-primary-color</dt>

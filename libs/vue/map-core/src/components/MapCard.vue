@@ -1,5 +1,9 @@
 <template>
-  <div class="hungpvq-draggable-card" :style="cardStyle" v-bind="$attrs">
+  <div
+    class="hungpvq-draggable-card"
+    :style="cardStyle"
+    v-bind="$attrs"
+  >
     <div>
       <slot />
     </div>

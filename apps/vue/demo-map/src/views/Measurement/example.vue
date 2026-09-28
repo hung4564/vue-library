@@ -33,7 +33,10 @@ const actions: MeasureActionItem[] = [
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
-    <MeasurementControl position="top-left" :actions="actions" />
+    <MeasurementControl
+      position="top-left"
+      :actions="actions"
+    />
     <BaseMapControl position="bottom-left" />
     <DemoHelpPanel />
   </Map>

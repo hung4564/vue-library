@@ -119,14 +119,30 @@ export function Map({
         data-map-id={id}
       >
         <div className="map-viewer">
-          <div ref={mapContainer} className="map-content" id={id}></div>
+          <div
+            ref={mapContainer}
+            className="map-content"
+            id={id}
+          ></div>
           {/* Render container divs immediately so Portal can find them */}
           {!dragId && (
             <>
-              <div className="right-bottom-container" id={rightBottomTo} />
-              <div className="left-bottom-container" id={leftBottomTo} />
-              <div className="right-top-container" id={rightTopTo} />
-              <div className="left-top-container" id={leftTopTo} />
+              <div
+                className="right-bottom-container"
+                id={rightBottomTo}
+              />
+              <div
+                className="left-bottom-container"
+                id={leftBottomTo}
+              />
+              <div
+                className="right-top-container"
+                id={rightTopTo}
+              />
+              <div
+                className="left-top-container"
+                id={leftTopTo}
+              />
               {loaded && (
                 <DraggableContainer
                   className="drag-container"

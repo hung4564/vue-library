@@ -79,19 +79,29 @@ export function AllMapView() {
 
   return (
     <MapPageShell>
-      <Map buttonInMobile="toolbar" onMapLoaded={onMapLoaded}>
+      <Map
+        buttonInMobile="toolbar"
+        onMapLoaded={onMapLoaded}
+      >
         <DevtoolsControl position="bottom-right" />
         <AsideControl position="top-left" />
         <ToolbarControl position="top-left" />
         <ComponentManagementControl />
-        <MeasurementControl position="top-right" actions={actionMeasures} />
+        <MeasurementControl
+          position="top-right"
+          actions={actionMeasures}
+        />
         <IdentifyControl position="top-right" />
         <DrawControl position="top-right" />
         <LayerControl
           position="top-left"
           show
           endList={({ mapId }) => (
-            <BaseMapCard mapId={mapId} showOpacity allowAddBasemap />
+            <BaseMapCard
+              mapId={mapId}
+              showOpacity
+              allowAddBasemap
+            />
           )}
         />
         <InspectControl position="top-right" />
@@ -113,7 +123,10 @@ export function AllMapView() {
         <HomeControl />
         <MouseCoordinatesControl />
         <MapContextMenuControl />
-        <BaseMapControl position="bottom-left" allowAddBasemap />
+        <BaseMapControl
+          position="bottom-left"
+          allowAddBasemap
+        />
         <DatasetControl position="top-left" />
         <EventManagementControl position="top-left" />
       </Map>

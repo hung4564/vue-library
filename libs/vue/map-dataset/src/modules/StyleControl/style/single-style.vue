@@ -130,7 +130,10 @@ const onChangeMaxZoom = (zoom: number) => {
       <template #header>
         {{ trans('map.style-control.style.title') }}
       </template>
-      <div class="tab-group-label" v-if="tabs_format && tabs_format.length > 1">
+      <div
+        class="tab-group-label"
+        v-if="tabs_format && tabs_format.length > 1"
+      >
         <div
           v-for="item in tabs_format"
           :key="item.key"
@@ -150,7 +153,10 @@ const onChangeMaxZoom = (zoom: number) => {
               class="clickable"
               @click.stop="onSelectTab(item)"
             >
-              <div v-if="item.type === 'divider'" class="tab-divider"></div>
+              <div
+                v-if="item.type === 'divider'"
+                class="tab-divider"
+              ></div>
               <TabItem
                 v-else
                 :value="layer[item.part || 'paint'][item.key]"
@@ -166,7 +172,10 @@ const onChangeMaxZoom = (zoom: number) => {
         </div>
         <div class="value-container">
           <div>
-            <div class="value-container__label" v-if="tab">
+            <div
+              class="value-container__label"
+              v-if="tab"
+            >
               {{ tab.text || trans(tab.trans) }}
             </div>
             <TabContent

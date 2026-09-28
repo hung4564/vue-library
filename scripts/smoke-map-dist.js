@@ -11,11 +11,41 @@ const distRoot = path.join(root, 'dist', 'libs');
 
 /** Source package.json under libs/ — used to decide if ./style.css is expected. */
 const sourcePkg = {
-  '@hungpvq/map-draw': path.join(root, 'libs', 'map-core', 'map-draw', 'package.json'),
-  '@hungpvq/vue-map-draw': path.join(root, 'libs', 'vue', 'map-draw', 'package.json'),
-  '@hungpvq/react-map-draw': path.join(root, 'libs', 'react', 'map-draw', 'package.json'),
-  '@hungpvq/vue-map-dataset': path.join(root, 'libs', 'vue', 'map-dataset', 'package.json'),
-  '@hungpvq/react-map-dataset': path.join(root, 'libs', 'react', 'map-dataset', 'package.json'),
+  '@hungpvq/map-draw': path.join(
+    root,
+    'libs',
+    'map-core',
+    'map-draw',
+    'package.json',
+  ),
+  '@hungpvq/vue-map-draw': path.join(
+    root,
+    'libs',
+    'vue',
+    'map-draw',
+    'package.json',
+  ),
+  '@hungpvq/react-map-draw': path.join(
+    root,
+    'libs',
+    'react',
+    'map-draw',
+    'package.json',
+  ),
+  '@hungpvq/vue-map-dataset': path.join(
+    root,
+    'libs',
+    'vue',
+    'map-dataset',
+    'package.json',
+  ),
+  '@hungpvq/react-map-dataset': path.join(
+    root,
+    'libs',
+    'react',
+    'map-dataset',
+    'package.json',
+  ),
 };
 
 function sourceDeclaresStyleCss(pkgName) {
@@ -85,7 +115,10 @@ const required = [
 
 // Append ./style.css to expected exports when source package.json declares it
 for (const entry of required) {
-  if (sourceDeclaresStyleCss(entry.pkg) && !entry.exports.includes('./style.css')) {
+  if (
+    sourceDeclaresStyleCss(entry.pkg) &&
+    !entry.exports.includes('./style.css')
+  ) {
     entry.exports.push('./style.css');
   }
 }
@@ -100,7 +133,9 @@ for (const entry of required) {
   }
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
   if (pkg.name !== entry.pkg) {
-    console.error(`NAME mismatch ${pkgPath}: expected ${entry.pkg}, got ${pkg.name}`);
+    console.error(
+      `NAME mismatch ${pkgPath}: expected ${entry.pkg}, got ${pkg.name}`,
+    );
     fail = 1;
   }
   const exportMap = pkg.exports || {};
@@ -125,7 +160,11 @@ for (const entry of required) {
   const indexJs = path.join(entry.dir, 'index.js');
   const indexMjs = path.join(entry.dir, 'index.mjs');
   const indexCjs = path.join(entry.dir, 'index.cjs');
-  if (!fs.existsSync(indexJs) && !fs.existsSync(indexMjs) && !fs.existsSync(indexCjs)) {
+  if (
+    !fs.existsSync(indexJs) &&
+    !fs.existsSync(indexMjs) &&
+    !fs.existsSync(indexCjs)
+  ) {
     console.error(`MISSING entry file under ${entry.dir}`);
     fail = 1;
   } else {

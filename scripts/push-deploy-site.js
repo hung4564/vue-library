@@ -40,8 +40,7 @@ function parseArgs(argv) {
     process.exit(1);
   }
   const versionIdx = argv.indexOf('--version');
-  const version =
-    versionIdx >= 0 ? argv[versionIdx + 1] : undefined;
+  const version = versionIdx >= 0 ? argv[versionIdx + 1] : undefined;
   return {
     group,
     version,
@@ -88,7 +87,12 @@ if (!skipBuild) {
   }
 }
 
-if (!fs.existsSync(path.join(deployDir, '.git')) && !fs.existsSync(path.join(root, '.git', 'modules', site.dir.replace(/\\/g, '/')))) {
+if (
+  !fs.existsSync(path.join(deployDir, '.git')) &&
+  !fs.existsSync(
+    path.join(root, '.git', 'modules', site.dir.replace(/\\/g, '/')),
+  )
+) {
   // submodule gitdir file
   const gitFile = path.join(deployDir, '.git');
   if (!fs.existsSync(gitFile)) {

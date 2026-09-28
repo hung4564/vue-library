@@ -25,7 +25,15 @@ export const router = createHashRouter([
       { path: 'modal', element: <ModalPage /> },
       { path: 'menu', element: <MenuPage /> },
       { path: 'custom-card', element: <CustomCardPage /> },
-      { path: '*', element: <Navigate to="/" replace /> },
+      {
+        path: '*',
+        element: (
+          <Navigate
+            to="/"
+            replace
+          />
+        ),
+      },
     ],
   },
 ]);

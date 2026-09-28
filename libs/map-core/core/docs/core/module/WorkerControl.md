@@ -54,7 +54,7 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <WorkerControl position="top-left" />
-</Map>
+</Map>;
 ```
 
 Register your own worker and report progress: [Worker monitor](../extra-worker.md).

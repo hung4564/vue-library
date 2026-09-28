@@ -69,22 +69,23 @@ You only need one of the above. Prefer the framework package (`vue-draggable` / 
 ```vue
 <script setup lang="ts">
 import '@hungpvq/vue-draggable/style.css';
-import {
-  DraggableContainer,
-  DraggableItemSideBar,
-  DraggableItemPopup,
-  DraggableItemFloat,
-  DraggableModal,
-  DraggableDrawer,
-} from '@hungpvq/vue-draggable';
+import { DraggableContainer, DraggableItemSideBar, DraggableItemPopup, DraggableItemFloat, DraggableModal, DraggableDrawer } from '@hungpvq/vue-draggable';
 </script>
 
 <template>
   <DraggableContainer>
-    <DraggableItemSideBar show title="Sidebar 1">
+    <DraggableItemSideBar
+      show
+      title="Sidebar 1"
+    >
       <div style="height: 100vh">Sidebar Content</div>
     </DraggableItemSideBar>
-    <DraggableItemPopup show title="Popup 1" :top="10" :right="10">
+    <DraggableItemPopup
+      show
+      title="Popup 1"
+      :top="10"
+      :right="10"
+    >
       <div style="height: 100vh">Popup Content</div>
     </DraggableItemPopup>
     <DraggableItemFloat
@@ -97,10 +98,20 @@ import {
     >
       <div style="height: 100vh">Float Content</div>
     </DraggableItemFloat>
-    <DraggableModal show title="Modal 1" :width="480" :height="280">
+    <DraggableModal
+      show
+      title="Modal 1"
+      :width="480"
+      :height="280"
+    >
       <div style="padding: 12px">Modal Content</div>
     </DraggableModal>
-    <DraggableDrawer show title="Drawer 1" location="right" :size="320">
+    <DraggableDrawer
+      show
+      title="Drawer 1"
+      location="right"
+      :size="320"
+    >
       <div style="padding: 12px">Drawer Content</div>
     </DraggableDrawer>
   </DraggableContainer>
@@ -111,22 +122,23 @@ import {
 
 ```tsx
 import '@hungpvq/react-draggable/style.css';
-import {
-  DraggableContainer,
-  DraggableItemSideBar,
-  DraggableItemPopup,
-  DraggableItemFloat,
-  DraggableModal,
-  DraggableDrawer,
-} from '@hungpvq/react-draggable';
+import { DraggableContainer, DraggableItemSideBar, DraggableItemPopup, DraggableItemFloat, DraggableModal, DraggableDrawer } from '@hungpvq/react-draggable';
 
 export function App() {
   return (
     <DraggableContainer>
-      <DraggableItemSideBar show title="Sidebar 1">
+      <DraggableItemSideBar
+        show
+        title="Sidebar 1"
+      >
         <div style={{ height: '100vh' }}>Sidebar Content</div>
       </DraggableItemSideBar>
-      <DraggableItemPopup show title="Popup 1" top={10} right={10}>
+      <DraggableItemPopup
+        show
+        title="Popup 1"
+        top={10}
+        right={10}
+      >
         <div style={{ height: '100vh' }}>Popup Content</div>
       </DraggableItemPopup>
       <DraggableItemFloat
@@ -139,10 +151,20 @@ export function App() {
       >
         <div style={{ height: '100vh' }}>Float Content</div>
       </DraggableItemFloat>
-      <DraggableModal show title="Modal 1" width={480} height={280}>
+      <DraggableModal
+        show
+        title="Modal 1"
+        width={480}
+        height={280}
+      >
         <div style={{ padding: 12 }}>Modal Content</div>
       </DraggableModal>
-      <DraggableDrawer show title="Drawer 1" location="right" size={320}>
+      <DraggableDrawer
+        show
+        title="Drawer 1"
+        location="right"
+        size={320}
+      >
         <div style={{ padding: 12 }}>Drawer Content</div>
       </DraggableDrawer>
     </DraggableContainer>

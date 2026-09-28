@@ -8,22 +8,15 @@ import {
 } from '@hungpvq/map-core';
 import {
   type MapControlButtonUIState,
-  mdiIcon,
+  mdiButtonState,
 } from '@hungpvq/map-core/toolbar';
 import { mdiMinus, mdiPlus } from '@mdi/js';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
@@ -39,10 +32,13 @@ export function ZoomControl({
 }: ZoomControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
   const [transform, setTransform] = useState('rotate(0deg)');
-  const detachRotateRef = useRef<(() => void) | null>(null);
+  const detachRotateRef = React.useRef<(() => void) | null>(null);
 
   const onInit = useCallback((_map: MapSimple) => {
-    detachRotateRef.current = attachRotateListener(_map, setTransform);
+    detachRotateRef.current = attachRotateListener(_map, (next) => {
+      setTransform(next);
+      controlRef.current?.sync();
+    });
   }, []);
 
   const onDestroy = useCallback((_map: MapSimple) => {
@@ -50,11 +46,7 @@ export function ZoomControl({
     detachRotateRef.current = null;
   }, []);
 
-  const { callMap, mapId, moduleContainerProps, order } = useMap(
-    { ...mergedProps, controlId: 'mapNavigationControl' },
-    onInit,
-    onDestroy,
-  );
+  const { callMap, mapId, order } = useMap(mergedProps, onInit, onDestroy);
   const { trans } = useLang(mapId);
 
   const onZoomIn = useCallback(
@@ -80,86 +72,63 @@ export function ZoomControl({
       resetBearing(map);
     });
   }, [callMap]);
-  const registerActions = useMemo(
-    () => [
+
+  const { moduleContainerProps, state, control } = useMapControl(mapId, {
+    id: 'mapNavigationControl',
+    panelKind: 'button',
+    from: mergedProps,
+    order,
+    buttonSlot: 'custom',
+    defaultActionType: 'mapZoomIn',
+    getProps: () => ({
+      showCompass,
+      showZoom,
+    }),
+    actions: [
       { type: 'mapCompass', run: () => onResetBearing() },
       { type: 'mapZoomIn', run: (e?: unknown) => onZoomIn(e) },
       { type: 'mapZoomOut', run: (e?: unknown) => onZoomOut(e) },
     ],
-    [onResetBearing, onZoomIn, onZoomOut],
-  );
-
-  useRegisterMapControl(mapId, {
-    id: 'mapNavigationControl',
-    panelKind: 'button',
-    buttonPosition: mergedProps.position,
-    defaultActionType: 'mapZoomIn',
-    getProps: () => ({
-      position: mergedProps.position,
-      controlLayout: mergedProps.controlLayout,
-      showCompass,
-      showZoom,
-    }),
-    actions: registerActions,
-  });
-
-  const compassButton = useMemo(
-    () => ({
-      id: 'mapCompass',
-      getState: () => ({
-        visible: showCompass,
-        title: trans('map.action.navigation-control-reset-bearing'),
-        icon: {
-          type: 'compass' as const,
-          transform: transform,
-        },
-      }),
-      onClick: () => onResetBearing(),
-    }),
-    [showCompass, trans, transform, onResetBearing],
-  );
-
-  const zoomInButton = useMemo(
-    () => ({
-      id: 'mapZoomIn',
-      getState: () => ({
-        visible: showZoom,
-        title: trans('map.action.navigation-control-zoom-in'),
-        icon: mdiIcon(mdiPlus),
-      }),
-      onClick: (e?: MouseEvent) => onZoomIn(e),
-    }),
-    [showZoom, trans, onZoomIn],
-  );
-
-  const zoomOutButton = useMemo(
-    () => ({
-      id: 'mapZoomOut',
-      getState: () => ({
-        visible: showZoom,
-        title: trans('map.action.navigation-control-zoom-out'),
-        icon: mdiIcon(mdiMinus),
-      }),
-      onClick: (e?: MouseEvent) => onZoomOut(e),
-    }),
-    [showZoom, trans, onZoomOut],
-  );
-
-  const toolbarConfig = useMemo(
-    () => ({
-      kind: 'module' as const,
+    toolbar: {
+      kind: 'module',
       moduleId: 'mapNavigationControl',
-      order: order,
-      buttons: [compassButton, zoomInButton, zoomOutButton],
-    }),
-    [order, compassButton, zoomInButton, zoomOutButton],
-  );
-
-  const { control, state } = useToolbarControl(
-    mapId,
-    mergedProps,
-    toolbarConfig,
-  );
+      order,
+      buttons: [
+        {
+          id: 'mapCompass',
+          getState: () => ({
+            visible: showCompass,
+            title: trans('map.action.navigation-control-reset-bearing'),
+            icon: {
+              type: 'compass' as const,
+              transform,
+            },
+          }),
+          onClick: () => onResetBearing(),
+        },
+        {
+          id: 'mapZoomIn',
+          getState: () =>
+            mdiButtonState(mdiPlus, {
+              visible: showZoom,
+              title: trans('map.action.navigation-control-zoom-in'),
+            }),
+          onClick: (e?: MouseEvent) => onZoomIn(e),
+        },
+        {
+          id: 'mapZoomOut',
+          getState: () =>
+            mdiButtonState(mdiMinus, {
+              visible: showZoom,
+              title: trans('map.action.navigation-control-zoom-out'),
+            }),
+          onClick: (e?: MouseEvent) => onZoomOut(e),
+        },
+      ],
+    },
+  });
+  const controlRef = React.useRef(control);
+  controlRef.current = control;
 
   const moduleState = state as
     Record<string, MapControlButtonUIState | undefined> | undefined;
@@ -174,8 +143,7 @@ export function ZoomControl({
               option={moduleState.mapCompass}
               onClick={(e) => {
                 e.stopPropagation();
-                compassButton.onClick?.();
-                control.sync();
+                control.onAction('mapCompass', e.nativeEvent);
               }}
             />
           ) : null}
@@ -184,8 +152,7 @@ export function ZoomControl({
               option={moduleState.mapZoomIn}
               onClick={(e) => {
                 e.stopPropagation();
-                zoomInButton.onClick?.(e.nativeEvent);
-                control.sync();
+                control.onAction('mapZoomIn', e.nativeEvent);
               }}
             />
           ) : null}
@@ -194,8 +161,7 @@ export function ZoomControl({
               option={moduleState.mapZoomOut}
               onClick={(e) => {
                 e.stopPropagation();
-                zoomOutButton.onClick?.(e.nativeEvent);
-                control.sync();
+                control.onAction('mapZoomOut', e.nativeEvent);
               }}
             />
           ) : null}

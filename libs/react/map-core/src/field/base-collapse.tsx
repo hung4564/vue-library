@@ -61,9 +61,15 @@ export function BaseCollapse({
         <div className="collapse-header__title">{header}</div>
         <div className="collapse-header__icon">
           {active ? (
-            <Icon path={mdiMenuUp} size="14px" />
+            <Icon
+              path={mdiMenuUp}
+              size="14px"
+            />
           ) : (
-            <Icon path={mdiMenuDown} size="14px" />
+            <Icon
+              path={mdiMenuDown}
+              size="14px"
+            />
           )}
         </div>
       </div>

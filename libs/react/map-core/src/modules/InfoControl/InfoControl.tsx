@@ -21,12 +21,10 @@ import {
 import { Icon } from '@mdi/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlButton } from '../../components/MapControlButton';
 import { MapCopyButton } from '../../components/MapCopyButton';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import {
   type BindPosition,
@@ -40,10 +38,7 @@ export interface InfoControlProps extends WithMapPropType {
 
 export function InfoControl(props: InfoControlProps) {
   const mergedProps = { ...defaultMapProps, fileName: 'map', ...props };
-  const { callMap, mapId, moduleContainerProps, order } = useMap({
-    ...mergedProps,
-    controlId: 'mapInfoControl',
-  });
+  const { callMap, mapId, order } = useMap(mergedProps);
   const { trans } = useLang(mapId);
   const [show, setShow] = useState(props.show ?? false);
   const [info, setInfo] = useState<MapViewInfo>(EMPTY_MAP_VIEW_INFO);
@@ -88,21 +83,6 @@ export function InfoControl(props: InfoControlProps) {
     setShow((visible) => !visible);
   }, []);
 
-  const { panelBind } = useRegisterMapControl(mapId, {
-    id: 'mapInfoControl',
-    panelKind: 'popup',
-    title: trans('map.info-control.title'),
-    buttonPosition: mergedProps.position,
-    show,
-    setShow,
-    getProps: () => ({
-      position: mergedProps.position,
-      controlLayout: mergedProps.controlLayout,
-      fileName: mergedProps.fileName,
-    }),
-    actions: [{ type: 'mapInfoControl', run: () => handleToggle() }],
-  });
-
   const onScreenshot = useCallback(() => {
     callMap(async (map) => {
       setCapturing(true);
@@ -141,10 +121,19 @@ export function InfoControl(props: InfoControlProps) {
     }
   }, [callMap]);
 
-  const { state, control } = useToolbarControl(mapId, mergedProps, {
-    kind: 'single',
+  const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
     id: 'mapInfoControl',
-    getState: () =>
+    panelKind: 'popup',
+    title: trans('map.info-control.title'),
+    from: mergedProps,
+    order,
+    show,
+    setShow,
+    getProps: () => ({
+      fileName: mergedProps.fileName,
+    }),
+    actions: [{ type: 'mapInfoControl', run: () => handleToggle() }],
+    getButtonState: () =>
       mdiButtonState(mdiInformationOutline, {
         visible: true,
         active: show,
@@ -153,12 +142,10 @@ export function InfoControl(props: InfoControlProps) {
       }),
     onClick: () => handleToggle(),
   });
-  const controlRef = useRef(control);
-  controlRef.current = control;
 
   useEffect(() => {
-    controlRef.current.sync();
-  }, [show]);
+    control.sync();
+  }, [show, control]);
 
   const draggableContent = useCallback(
     (bind: BindPosition) => {
@@ -213,7 +200,10 @@ export function InfoControl(props: InfoControlProps) {
                   onScreenshot();
                 }}
               >
-                <Icon path={mdiCameraOutline} size="16px" />
+                <Icon
+                  path={mdiCameraOutline}
+                  size="16px"
+                />
               </MapControlButton>
               <MapControlButton
                 variant="plain"
@@ -224,7 +214,10 @@ export function InfoControl(props: InfoControlProps) {
                   onCopyImage();
                 }}
               >
-                <Icon path={mdiContentCopy} size="16px" />
+                <Icon
+                  path={mdiContentCopy}
+                  size="16px"
+                />
               </MapControlButton>
             </>
           }
@@ -262,7 +255,10 @@ export function InfoControl(props: InfoControlProps) {
             </div>
             <div className="map-info-control__rows">
               {rows.map((row) => (
-                <div key={row.key} className="map-info-control__row">
+                <div
+                  key={row.key}
+                  className="map-info-control__row"
+                >
                   <div className="map-info-control__label">{row.label}</div>
                   <div className="map-info-control__value">{row.value}</div>
                   <MapCopyButton
@@ -295,17 +291,6 @@ export function InfoControl(props: InfoControlProps) {
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : null
-      }
       draggable={draggableContent}
     />
   );

@@ -5,7 +5,10 @@
 ```vue
 <template>
   <Map @mapLoaded="onMapLoaded">
-    <BaseMapControl position="bottom-left" :customBasemaps="customBasemaps" />
+    <BaseMapControl
+      position="bottom-left"
+      :customBasemaps="customBasemaps"
+    />
   </Map>
 </template>
 
@@ -69,6 +72,9 @@ function onMapLoaded(map: any) {
 }
 
 <Map onMapLoaded={onMapLoaded}>
-  <BaseMapControl position="bottom-left" baseMaps={customBasemaps} />
-</Map>
+  <BaseMapControl
+    position="bottom-left"
+    baseMaps={customBasemaps}
+  />
+</Map>;
 ```

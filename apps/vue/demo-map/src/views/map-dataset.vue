@@ -49,7 +49,10 @@ function onMapLoaded(map: MapSimple) {
     <LegendControl position="bottom-right" />
     <MeasurementControl position="bottom-right" />
     <PrintControl position="bottom-right" />
-    <LayerControl position="top-left" show>
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>

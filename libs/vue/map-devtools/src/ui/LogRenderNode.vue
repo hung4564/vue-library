@@ -46,7 +46,11 @@ function onRowClick(event: MouseEvent) {
       <span class="log-entry__time">{{ formatLogTime(log.header.ts) }}</span>
       <div class="log-entry__row">
         <div class="log-entry__content">
-          <span v-if="message" class="log-entry__msg">{{ message }}</span>
+          <span
+            v-if="message"
+            class="log-entry__msg"
+            >{{ message }}</span
+          >
         </div>
         <div class="log-entry__actions">
           <MapControlButton
@@ -72,7 +76,10 @@ function onRowClick(event: MouseEvent) {
       >
         {{ (log.header.level || '?').toUpperCase() }}
       </span>
-      <div v-if="log.header.namespaces[0] || actionId" class="log-entry__meta">
+      <div
+        v-if="log.header.namespaces[0] || actionId"
+        class="log-entry__meta"
+      >
         <MapControlButton
           v-if="log.header.namespaces[0]"
           variant="text"

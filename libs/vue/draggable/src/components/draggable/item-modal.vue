@@ -295,7 +295,10 @@ function init() {
 </script>
 
 <template>
-  <Teleport v-if="show && init_done" :to="modalLayerTo">
+  <Teleport
+    v-if="show && init_done"
+    :to="modalLayerTo"
+  >
     <div
       ref="modalRoot"
       class="draggable-modal-root"
@@ -352,7 +355,10 @@ function init() {
                   <slot name="after-title"></slot>
                 </template>
                 <template #pre-title>
-                  <div v-if="draggable" class="draggable-popup-drag-container">
+                  <div
+                    v-if="draggable"
+                    class="draggable-popup-drag-container"
+                  >
                     <DragIcon :size="16" />
                     <div class="drag grabbing"></div>
                   </div>

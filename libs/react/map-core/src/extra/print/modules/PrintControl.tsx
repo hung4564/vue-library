@@ -5,12 +5,10 @@ import { mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { MapCommonButton } from '../../../components/MapCommonButton';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useMapControl } from '../../registry/useMapControl';
 
 export interface PrintControlProps extends WithMapPropType {
   fileName?: string;
@@ -21,14 +19,10 @@ export function PrintControl({
   ...mapProps
 }: PrintControlProps) {
   const merged = { ...defaultMapProps, ...mapProps };
-  const { callMap, mapId, moduleContainerProps, order } = useMap({
-    ...merged,
-    controlId: 'mapPrintControl',
-  });
+  const { callMap, mapId, order } = useMap(merged);
   const { trans } = useLang(mapId);
   const [loading, setLoading] = useState(false);
   const loadingRef = useRef(false);
-  const controlRef = useRef<{ sync: () => void } | null>(null);
 
   const onPrint = useMemo(
     () => () => {
@@ -51,14 +45,11 @@ export function PrintControl({
     [callMap, fileName],
   );
 
-  useRegisterMapControl(mapId, {
+  const { moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapPrintControl',
     panelKind: 'button',
-    buttonPosition: merged.position,
-    getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-    }),
+    from: merged,
+    order,
     actions: [
       {
         type: 'mapPrintControl',
@@ -67,12 +58,7 @@ export function PrintControl({
         },
       },
     ],
-  });
-
-  const { state, control } = useToolbarControl(mapId, merged, {
-    kind: 'single',
-    id: 'mapPrintControl',
-    getState: () =>
+    getButtonState: () =>
       mdiButtonState(mdiPrinterOutline, {
         visible: true,
         title: trans('map.print.title'),
@@ -83,26 +69,12 @@ export function PrintControl({
       onPrint();
     },
   });
+  const controlRef = useRef(control);
   controlRef.current = control;
 
   useEffect(() => {
     control.sync();
   }, [loading, order, control]);
 
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : null
-      }
-    />
-  );
+  return <ModuleContainer {...moduleContainerProps} />;
 }

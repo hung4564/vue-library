@@ -4,7 +4,7 @@ import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   ModuleContainer,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
 
@@ -17,12 +17,12 @@ export function DatasetDetail({
   onClose?: () => void;
   mapId?: string;
 }) {
-  const { mapId, moduleContainerProps } = useMap({
+  const { mapId } = useMap({
     mapId: propsMapId,
     controlId: 'mapDatasetDetail',
   });
   const [show, toggleShow] = useShow(true);
-  const { panelBind } = useRegisterMapControl(mapId, {
+  const { panelBind, moduleContainerProps } = useMapControl(mapId, {
     id: 'mapDatasetDetail',
     panelKind: 'popup',
     title: dataset.getName(),

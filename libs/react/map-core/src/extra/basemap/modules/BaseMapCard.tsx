@@ -148,7 +148,10 @@ export function BaseMapCard({
               onRemoveCurrent();
             }}
           >
-            <Icon path={mdiDelete} size="18px" />
+            <Icon
+              path={mdiDelete}
+              size="18px"
+            />
           </button>
         ) : null}
       </div>
@@ -188,7 +191,10 @@ export function BaseMapCard({
             aria-label={trans('map.basemap.add')}
             onClick={() => setShowAddForm(true)}
           >
-            <Icon path={mdiPlus} size="16px" />
+            <Icon
+              path={mdiPlus}
+              size="16px"
+            />
             {trans('map.basemap.add')}
           </MapControlButton>
         </div>

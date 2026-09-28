@@ -6,9 +6,9 @@ Tabular view of GeoJSON feature properties. The **Attribute table** item is **no
 
 **Architecture:** Vue/React shells only call `createAttributeTableController`. Data + selection resolve both go through **`AttributeTableStore.list`** with an explicit `intent`:
 
-| Intent | When | Cache hint |
-|--------|------|------------|
-| `'page'` | Browse / page / search / sort | page + search + sort |
+| Intent     | When                                        | Cache hint                              |
+| ---------- | ------------------------------------------- | --------------------------------------- |
+| `'page'`   | Browse / page / search / sort               | page + search + sort                    |
 | `'select'` | Highlight selection missing on current page | sorted `ids` (separate from page cache) |
 
 Default store: DM sibling → wrap `part.list`; else local GeoJSON; or inject `store`.
@@ -25,11 +25,11 @@ Needs `installMapApp` (or `createDatasetRegistryPlugin`) and `ComponentManagemen
 
 Identify box / click opens the table with `queueAttributeTableSelectRows` using **`attributeTableIdentifyRowSelectKey`**. Keys are stable ids only:
 
-| Priority | Source |
-| --- | --- |
-| 1 | `properties._id` (`GEOJSON_FEATURE_ID_KEY`) |
-| 2 | `properties.id` (non-numeric business id) |
-| 3 | string `feature.id` (e.g. after `promoteId: '_id'`) |
+| Priority | Source                                              |
+| -------- | --------------------------------------------------- |
+| 1        | `properties._id` (`GEOJSON_FEATURE_ID_KEY`)         |
+| 2        | `properties.id` (non-numeric business id)           |
+| 3        | string `feature.id` (e.g. after `promoteId: '_id'`) |
 
 Never geometry hashes or MapLibre numeric rendered ids (they drift with zoom). `createGeoJsonDataset` stamps `_id` + sets source `promoteId: '_id'` automatically — recreate layers built before that change. Auto-inferred table columns **omit** `_`-prefixed properties (`_id` stays selectable, not shown). See [Source](./source.md) and [Highlight](./highlight.md#host-lifecycle-via-map-mitt).
 
@@ -38,10 +38,7 @@ Never geometry hashes or MapLibre numeric rendered ids (they drift with zoom). `
 ```ts
 import { createMenuItemAttributeTable } from '@hungpvq/map-dataset/attribute-table';
 
-createDatasetPartListViewUiComponentBuilder('Cities')
-  .setColor('#ff6b6b')
-  .addMenu(createMenuItemAttributeTable())
-  .build();
+createDatasetPartListViewUiComponentBuilder('Cities').setColor('#ff6b6b').addMenu(createMenuItemAttributeTable()).build();
 ```
 
 Hide at render time: `menuContext: { disabledAttributeTable: true }`. With `createGeoJsonDataset`, skip the menu via `attributeTable: false`. Or omit `addMenu` / call `removeMenu(LIST_VIEW_MENU_ID.layer.attributeTable)`.
@@ -57,20 +54,12 @@ Column / UI defs resolve in this order (later wins):
 Explicit `columns` may still include a `_…` key if you want it visible.
 
 ```ts
-import {
-  createDatasetPartAttributeTable,
-  createMenuItemAttributeTable,
-  createLocalAttributeTableStore,
-} from '@hungpvq/map-dataset/attribute-table';
+import { createDatasetPartAttributeTable, createMenuItemAttributeTable, createLocalAttributeTableStore } from '@hungpvq/map-dataset/attribute-table';
 
 // Highest priority: attach next to list / source / data-management
 dataset.add(
   createDatasetPartAttributeTable('table', {
-    columns: [
-      { key: 'name', label: 'Name' },
-      { key: 'id', label: 'ID', sortable: false },
-      '__geometry',
-    ],
+    columns: [{ key: 'name', label: 'Name' }, { key: 'id', label: 'ID', sortable: false }, '__geometry'],
     ui: { sort: true },
   }),
 );
@@ -108,12 +97,12 @@ list.addMenu(
 
 Column options:
 
-| Field | Role |
-| --- | --- |
-| `format` | `(value, ctx) => string` — builds `row.cells[key]` (framework-agnostic) |
-| `sortable` | Default `true`; `false` disables header sort for that column |
-| `cellComponent` | Registry `componentKey` (`string`) **or** Vue/React component |
-| `headerComponent` | Registry `componentKey` (`string`) **or** Vue/React component |
+| Field             | Role                                                                    |
+| ----------------- | ----------------------------------------------------------------------- |
+| `format`          | `(value, ctx) => string` — builds `row.cells[key]` (framework-agnostic) |
+| `sortable`        | Default `true`; `false` disables header sort for that column            |
+| `cellComponent`   | Registry `componentKey` (`string`) **or** Vue/React component           |
+| `headerComponent` | Registry `componentKey` (`string`) **or** Vue/React component           |
 
 Custom cell props: `{ value, raw, row, column }` (`AttributeTableCellProps`).  
 Custom header props: `{ label, column, sortable, sortDir?, sortOrder?, sortCount?, onSort? }` (`AttributeTableHeaderProps`).  
@@ -125,11 +114,7 @@ Sort cycle per column: **none → asc → desc → none**.
 ## Store API
 
 ```ts
-import {
-  createAttributeTableStoreFromDataset,
-  createLocalAttributeTableStore,
-  type AttributeTableStore,
-} from '@hungpvq/map-dataset/attribute-table';
+import { createAttributeTableStoreFromDataset, createLocalAttributeTableStore, type AttributeTableStore } from '@hungpvq/map-dataset/attribute-table';
 
 // Default: DM → part.list; else local GeoJSON
 const store = createAttributeTableStoreFromDataset(list);
@@ -166,7 +151,9 @@ const controller = createAttributeTableController(list, {
   // store: customStore,
 });
 await controller.load('initial');
-controller.subscribe(() => { /* re-render from controller.getState() */ });
+controller.subscribe(() => {
+  /* re-render from controller.getState() */
+});
 await controller.resolveFeaturesForSelection(['1']); // intent: 'select' if needed
 controller.dispose();
 ```
@@ -175,13 +162,13 @@ controller.dispose();
 
 Prefer Registry for component swaps. Props are for data / toggles (`columns`, `store`, `ui`).
 
-| Key | Props type |
-| --- | --- |
-| `attribute-table` / `root` | `AttributeTableProps` |
-| `attribute-table-view` / `view` | `AttributeTableViewProps` — full body |
-| `attribute-table-toolbar` / `toolbar` | `AttributeTableToolbarProps` |
-| `attribute-table-grid` / `grid` | `AttributeTableGridProps` |
-| `attribute-table-pager` / `pager` | `AttributeTablePagerProps` |
+| Key                                   | Props type                            |
+| ------------------------------------- | ------------------------------------- |
+| `attribute-table` / `root`            | `AttributeTableProps`                 |
+| `attribute-table-view` / `view`       | `AttributeTableViewProps` — full body |
+| `attribute-table-toolbar` / `toolbar` | `AttributeTableToolbarProps`          |
+| `attribute-table-grid` / `grid`       | `AttributeTableGridProps`             |
+| `attribute-table-pager` / `pager`     | `AttributeTablePagerProps`            |
 
 ```ts
 import { ATTRIBUTE_TABLE_COMPONENT_KEY } from '@hungpvq/map-dataset/attribute-table';
@@ -193,11 +180,7 @@ function CustomTable(props: AttributeTableViewProps) {
   // props.controller.goNext() · props.controller.selectIds(…)
 }
 
-UniversalRegistry.registerComponentForMap(
-  mapId,
-  ATTRIBUTE_TABLE_COMPONENT_KEY.view,
-  CustomTable,
-);
+UniversalRegistry.registerComponentForMap(mapId, ATTRIBUTE_TABLE_COMPONENT_KEY.view, CustomTable);
 ```
 
 Demo `/#/dataset-attribute-table`: registry overrides, `addComponent` (+ columns / ui / cell+header components), custom store via `store.list`, `queueAttributeTableSelectRows`, `runMapControlAction`.
@@ -208,29 +191,29 @@ Panel chrome (dialog role, Escape, focus trap/restore, titled close) is owned by
 
 ### Roles and live regions
 
-| Surface | Contract |
-|---------|----------|
-| Selection / total | Polite `role="status"` live region (`selectionStatus` locale template with `{selected}` / `{total}`) |
-| Grid body | `role="region"` + `aria-label` (`gridRegion`); loading uses `aria-busy` |
-| Loading / empty | `role="status"` + `aria-live="polite"` |
-| Table | Native `<table>` + `aria-label` (layer name or `table` locale) |
-| Column headers | `scope="col"`; sortable headers expose `aria-sort` |
-| Sort control | `<button type="button">` inside `<th>` (keyboard + screen reader); Shift+click / Shift+Enter keeps multi-sort |
-| Rows | `aria-selected`; named row / select-all checkboxes |
-| Pager page text | `role="status"` + `aria-live="polite"` |
-| Search / row filter | Explicit `aria-label` (not placeholder-only) |
+| Surface             | Contract                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Selection / total   | Polite `role="status"` live region (`selectionStatus` locale template with `{selected}` / `{total}`)          |
+| Grid body           | `role="region"` + `aria-label` (`gridRegion`); loading uses `aria-busy`                                       |
+| Loading / empty     | `role="status"` + `aria-live="polite"`                                                                        |
+| Table               | Native `<table>` + `aria-label` (layer name or `table` locale)                                                |
+| Column headers      | `scope="col"`; sortable headers expose `aria-sort`                                                            |
+| Sort control        | `<button type="button">` inside `<th>` (keyboard + screen reader); Shift+click / Shift+Enter keeps multi-sort |
+| Rows                | `aria-selected`; named row / select-all checkboxes                                                            |
+| Pager page text     | `role="status"` + `aria-live="polite"`                                                                        |
+| Search / row filter | Explicit `aria-label` (not placeholder-only)                                                                  |
 
 Do **not** use `role="grid"` unless you intentionally adopt ARIA grid keyboard semantics. Custom header/cell registry slots should remain keyboard-activatable; the default path is accessible without overrides.
 
 ### Keyboard (content)
 
-| Key | When focus is in the table region / focused row |
-|-----|--------------------------------------------------|
-| ArrowUp / ArrowDown | Move roving focus among **visible** (virtualized) rows |
-| Home / End | First / last visible row |
-| Space / Enter | Toggle selection on the focused row (ignored when target is a button, checkbox, link, or input) |
-| Tab | Moves through dialog chrome and focusable controls (sort buttons, checkboxes, pager); does not replace the shell Tab trap |
-| Escape | Closes the panel via the draggable shell when focus is inside it |
+| Key                 | When focus is in the table region / focused row                                                                           |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| ArrowUp / ArrowDown | Move roving focus among **visible** (virtualized) rows                                                                    |
+| Home / End          | First / last visible row                                                                                                  |
+| Space / Enter       | Toggle selection on the focused row (ignored when target is a button, checkbox, link, or input)                           |
+| Tab                 | Moves through dialog chrome and focusable controls (sort buttons, checkboxes, pager); does not replace the shell Tab trap |
+| Escape              | Closes the panel via the draggable shell when focus is inside it                                                          |
 
 ### Locale keys (`map.attribute-table.*`)
 

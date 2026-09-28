@@ -27,7 +27,13 @@ export function MultiLegend({
       {legends.map((legend, index) => {
         const Comp = getComponent(legendComponentKey[legend.type]);
         if (!Comp) return null;
-        return <Comp key={index} value={legend.value} mapId={mapId} />;
+        return (
+          <Comp
+            key={index}
+            value={legend.value}
+            mapId={mapId}
+          />
+        );
       })}
     </>
   );

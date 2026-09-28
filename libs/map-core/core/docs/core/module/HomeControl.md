@@ -49,5 +49,5 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <HomeControl />
-</Map>
+</Map>;
 ```

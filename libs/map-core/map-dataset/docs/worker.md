@@ -12,18 +12,18 @@ Mount [`WorkerControl`](/map/core/module/WorkerControl) to watch status, progres
 
 ## Formats
 
-| Input | Notes |
-| --- | --- |
-| GeoJSON `.geojson` / `.json` | CRS from `crs.properties.name` when present |
-| GeoJSON Lines `.geojsonl` / `.ndjson` | One Feature per line |
-| TopoJSON `.topojson` | Converted with `topojson-client` |
-| KML `.kml` | Converted with `@tmcw/togeojson` |
-| KMZ `.kmz` | Zip archive containing a KML |
-| GPX `.gpx` | Tracks / routes / waypoints |
-| ZIP `.zip` | Shapefile (`.shp`+`.dbf`+`.prj`) **or** GeoJSON / KML / GPX / TopoJSON / CSV / WKT members (merged when several) |
-| Shapefile parts `.shp` / `.dbf` / `.prj` | Drop the sidecar files together |
-| CSV `.csv` | `lat`/`lon` (or aliases) **or** a WKT/`geometry` column |
-| WKT `.wkt` | `POINT`, `LINESTRING`, `POLYGON`, and Multi* |
+| Input                                            | Notes                                                                                                                                                        |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| GeoJSON `.geojson` / `.json`                     | CRS from `crs.properties.name` when present                                                                                                                  |
+| GeoJSON Lines `.geojsonl` / `.ndjson`            | One Feature per line                                                                                                                                         |
+| TopoJSON `.topojson`                             | Converted with `topojson-client`                                                                                                                             |
+| KML `.kml`                                       | Converted with `@tmcw/togeojson`                                                                                                                             |
+| KMZ `.kmz`                                       | Zip archive containing a KML                                                                                                                                 |
+| GPX `.gpx`                                       | Tracks / routes / waypoints                                                                                                                                  |
+| ZIP `.zip`                                       | Shapefile (`.shp`+`.dbf`+`.prj`) **or** GeoJSON / KML / GPX / TopoJSON / CSV / WKT members (merged when several)                                             |
+| Shapefile parts `.shp` / `.dbf` / `.prj`         | Drop the sidecar files together                                                                                                                              |
+| CSV `.csv`                                       | `lat`/`lon` (or aliases) **or** a WKT/`geometry` column                                                                                                      |
+| WKT `.wkt`                                       | `POINT`, `LINESTRING`, `POLYGON`, and Multi*                                                                                                                 |
 | FileGDB `.gdb.zip` / `*_gdb.zip` / `.gdb` folder | Optional peer `gdal3.js` (+ `jszip`). **Main thread only** (UMD via CDN classic `<script>` — never Vite-`import('gdal3.js')`, never inside this GIS worker). |
 
 Pasted text can be GeoJSON, TopoJSON, KML, GPX, CSV, or WKT.
@@ -153,14 +153,7 @@ If module workers are disabled, the library falls back to the main thread.
 Exported from `@hungpvq/map-dataset/create-control` (and geo helpers from `/geojson`):
 
 ```ts
-import {
-  GIS_FILE_ACCEPT,
-  loadGisFileAsync,
-  loadGisTextAsync,
-  loadGisUrlAsync,
-  parseGisText,
-  parseGisTextAsync,
-} from '@hungpvq/map-dataset/create-control';
+import { GIS_FILE_ACCEPT, loadGisFileAsync, loadGisTextAsync, loadGisUrlAsync, parseGisText, parseGisTextAsync } from '@hungpvq/map-dataset/create-control';
 import { reprojectGeojsonToWgs84Async, terminateGeojsonWorker } from '@hungpvq/map-dataset/geojson';
 
 const { geojson, crs, format } = await loadGisFileAsync(file);
@@ -175,18 +168,18 @@ await parseGisTextAsync(csvText, { name: 'sample.csv' });
 
 `loadGeojsonFileAsync` / `loadGeojsonTextAsync` remain as aliases.
 
-| Function | Role |
-| --- | --- |
-| `loadGisFileAsync(file \| files)` | Read one file, a Shapefile sidecar set, parse, detect CRS |
-| `loadGisTextAsync(text)` | Parse pasted GIS text (async peers), detect CRS |
-| `loadGisUrlAsync(url)` | Fetch in the worker, then parse |
-| `parseGisText(text)` | Sync parse for GeoJSON / GeoJSONL / WKT |
-| `parseGisTextAsync(text)` | Full text parse including CSV / KML / GPX / TopoJSON |
-| `parseGeojsonTextAsync(text)` | Same parse; returns GeoJSON only |
-| `reprojectGeojsonToWgs84Async(geojson, crs)` | Reproject to EPSG:4326 (no-op if already 4326) |
-| `bboxFromGeojsonAsync(geojson)` | Turf bbox (prefers worker) |
-| `detectGeojsonStyleTypesAsync(geojson)` | Style types; worker when file is large |
-| `terminateGeojsonWorker()` | Optional cleanup (tests / HMR) |
+| Function                                     | Role                                                      |
+| -------------------------------------------- | --------------------------------------------------------- |
+| `loadGisFileAsync(file \| files)`            | Read one file, a Shapefile sidecar set, parse, detect CRS |
+| `loadGisTextAsync(text)`                     | Parse pasted GIS text (async peers), detect CRS           |
+| `loadGisUrlAsync(url)`                       | Fetch in the worker, then parse                           |
+| `parseGisText(text)`                         | Sync parse for GeoJSON / GeoJSONL / WKT                   |
+| `parseGisTextAsync(text)`                    | Full text parse including CSV / KML / GPX / TopoJSON      |
+| `parseGeojsonTextAsync(text)`                | Same parse; returns GeoJSON only                          |
+| `reprojectGeojsonToWgs84Async(geojson, crs)` | Reproject to EPSG:4326 (no-op if already 4326)            |
+| `bboxFromGeojsonAsync(geojson)`              | Turf bbox (prefers worker)                                |
+| `detectGeojsonStyleTypesAsync(geojson)`      | Style types; worker when file is large                    |
+| `terminateGeojsonWorker()`                   | Optional cleanup (tests / HMR)                            |
 
 The client registers with `connectWorkerMonitor` as `geojson`. Progress and logs show on `WorkerControl`: **task-scoped** lines (`ctx.log` / `taskId`) appear under the running task, then flush into the **Worker log** when the task finishes. Worker-level `console.*` (no `taskId`) go straight to the Worker log.
 

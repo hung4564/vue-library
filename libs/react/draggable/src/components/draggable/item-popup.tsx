@@ -447,7 +447,11 @@ export function DraggableItemPopup({
       onDragStop={handleDragStop}
       onMouseDown={onToFront}
     >
-      <Card width={p_width} height={p_height} highlight={isHighlight}>
+      <Card
+        width={p_width}
+        height={p_height}
+        highlight={isHighlight}
+      >
         <div
           ref={panelRootRef}
           className="draggable-popup-desktop"
@@ -498,7 +502,10 @@ export function DraggableItemPopup({
                     )}
                   </DragButton>
                   {!disabledClose && (
-                    <DragButton aria-label="Close panel" onClick={handleClose}>
+                    <DragButton
+                      aria-label="Close panel"
+                      onClick={handleClose}
+                    >
                       <CloseIcon size={'16px'} />
                     </DragButton>
                   )}

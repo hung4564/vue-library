@@ -18,12 +18,7 @@ const { add: addContextMenu, remove: removeContextMenu } = useEventMap(
 **Import event models directly from `@hungpvq/map-core`:**
 
 ```ts
-import {
-  EventClick,
-  EventContextMenu,
-  EventBboxRanger,
-  EventMouseMove,
-} from '@hungpvq/map-core/event';
+import { EventClick, EventContextMenu, EventBboxRanger, EventMouseMove } from '@hungpvq/map-core/event';
 ```
 
 - `EventClick` - Click event handler
@@ -88,12 +83,7 @@ You can use several built-in event models provided by the library:
 **Import:**
 
 ```ts
-import {
-  EventClick,
-  EventContextMenu,
-  EventBboxRanger,
-  EventMouseMove,
-} from '@hungpvq/map-core/event';
+import { EventClick, EventContextMenu, EventBboxRanger, EventMouseMove } from '@hungpvq/map-core/event';
 ```
 
 **Available Events:**

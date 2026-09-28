@@ -1,7 +1,14 @@
 <template>
-  <ModuleContainer v-bind="moduleContainerProps" :btnWidth="24">
+  <ModuleContainer
+    v-bind="moduleContainerProps"
+    :btnWidth="24"
+  >
     <template #btn>
-      <MapControlGroupButton row v-if="current_baseMaps" size="24">
+      <MapControlGroupButton
+        row
+        v-if="current_baseMaps"
+        size="24"
+      >
         <button
           type="button"
           v-for="baseMap in c_baseMaps"
@@ -30,7 +37,7 @@ import { mdiLayersOutline } from '@mdi/js';
 import { onBeforeUnmount, onMounted, watch } from 'vue';
 
 import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
-import { useToolbarControl } from '../../../extra/toolbar/helper';
+import { useMapControl } from '../../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useBaseMap } from '../hooks/useBaseMap';
@@ -48,7 +55,7 @@ const props = withDefaults(
     defaultBaseMap: 'Open Street Map',
   },
 );
-const { mapId, moduleContainerProps, order } = useMap(props);
+const { mapId, order } = useMap(props);
 const {
   setBaseMaps,
   baseMaps: c_baseMaps,
@@ -76,28 +83,35 @@ function onClick(baseMap: BaseMapItem) {
     .debug('onClick', baseMap);
   setCurrent(baseMap);
 }
-const { control } = useToolbarControl(mapId.value, props, {
-  kind: 'module',
-  moduleId: 'mapBaseMapTagControl',
-  order: order.value,
-  orientation: 'row',
-  buttons: (props.baseMaps ?? []).map((baseMap) => ({
-    id: String(baseMap.id),
-    getState: () => {
-      const live =
-        c_baseMaps.value.find((item) => item.id === baseMap.id) ?? baseMap;
-      return mdiButtonState(mdiLayersOutline, {
-        visible: true,
-        active: current_baseMaps.value?.id === live.id,
-        title: live.title,
-      });
-    },
-    onClick: () => {
-      const live =
-        c_baseMaps.value.find((item) => item.id === baseMap.id) ?? baseMap;
-      onClick(live);
-    },
-  })),
+const { moduleContainerProps, control } = useMapControl(mapId, {
+  id: 'mapBaseMapTagControl',
+  panelKind: 'button',
+  from: props,
+  order,
+  buttonSlot: 'custom',
+  toolbar: {
+    kind: 'module',
+    moduleId: 'mapBaseMapTagControl',
+    order: order.value,
+    orientation: 'row',
+    buttons: (props.baseMaps ?? []).map((baseMap) => ({
+      id: String(baseMap.id),
+      getState: () => {
+        const live =
+          c_baseMaps.value.find((item) => item.id === baseMap.id) ?? baseMap;
+        return mdiButtonState(mdiLayersOutline, {
+          visible: true,
+          active: current_baseMaps.value?.id === live.id,
+          title: live.title,
+        });
+      },
+      onClick: () => {
+        const live =
+          c_baseMaps.value.find((item) => item.id === baseMap.id) ?? baseMap;
+        onClick(live);
+      },
+    })),
+  },
 });
 watch([current_baseMaps, c_baseMaps], () => control.sync());
 onMounted(() => {

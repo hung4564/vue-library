@@ -17,16 +17,16 @@ With tracking on, the button toggles the watch, pans into **background** if the 
 
 Same option names as mapboxgl.GeolocateControl:
 
-| Prop | Core default | Adapter default | Notes |
-| --- | --- | --- | --- |
-| `fitBoundsOptions` | `{ maxZoom: 15 }` | same | Passed to `Map#fitBounds` when the camera moves to the user. |
-| `followUserLocation` | `true` | `true` | If `false`, the dot updates without moving the camera. Click still centers. |
-| `geolocation` | `navigator.geolocation` | same | Inject a Geolocation-shaped object (tests / custom handling). |
-| `positionOptions` | `{ enableHighAccuracy: false, timeout: 6000 }` | same | Geolocation `PositionOptions`. |
-| `showAccuracyCircle` | `true` | `true` | Accuracy halo. Always off when `showUserLocation` is `false`. |
-| `showUserHeading` | `false` | `true` | Heading arrow. Only applies when `trackUserLocation` is `true`. |
-| `showUserLocation` | `true` | `true` | Pulsing location marker. |
-| `trackUserLocation` | `false` | `true` | Toggle + live updates when `true`. |
+| Prop                 | Core default                                   | Adapter default | Notes                                                                       |
+| -------------------- | ---------------------------------------------- | --------------- | --------------------------------------------------------------------------- |
+| `fitBoundsOptions`   | `{ maxZoom: 15 }`                              | same            | Passed to `Map#fitBounds` when the camera moves to the user.                |
+| `followUserLocation` | `true`                                         | `true`          | If `false`, the dot updates without moving the camera. Click still centers. |
+| `geolocation`        | `navigator.geolocation`                        | same            | Inject a Geolocation-shaped object (tests / custom handling).               |
+| `positionOptions`    | `{ enableHighAccuracy: false, timeout: 6000 }` | same            | Geolocation `PositionOptions`.                                              |
+| `showAccuracyCircle` | `true`                                         | `true`          | Accuracy halo. Always off when `showUserLocation` is `false`.               |
+| `showUserHeading`    | `false`                                        | `true`          | Heading arrow. Only applies when `trackUserLocation` is `true`.             |
+| `showUserLocation`   | `true`                                         | `true`          | Pulsing location marker.                                                    |
+| `trackUserLocation`  | `false`                                        | `true`          | Toggle + live updates when `true`.                                          |
 
 Control id / action type: `mapGeoLocateControl`.
 
@@ -34,12 +34,12 @@ Control id / action type: `mapGeoLocateControl`.
 
 Mapbox-aligned events from the control (and Experimental `GeoLocateSession`):
 
-| Event | Payload | When |
-| --- | --- | --- |
-| `geolocate` | `GeolocationPosition` | Each successful fix. |
-| `error` | `{ message: string; code?: number }` | Geolocation failure (permission / timeout / unavailable). |
-| `trackuserlocationstart` | — | Tracking watch starts (`trackUserLocation`). |
-| `trackuserlocationend` | — | Tracking stops. |
+| Event                    | Payload                              | When                                                      |
+| ------------------------ | ------------------------------------ | --------------------------------------------------------- |
+| `geolocate`              | `GeolocationPosition`                | Each successful fix.                                      |
+| `error`                  | `{ message: string; code?: number }` | Geolocation failure (permission / timeout / unavailable). |
+| `trackuserlocationstart` | —                                    | Tracking watch starts (`trackUserLocation`).              |
+| `trackuserlocationend`   | —                                    | Tracking stops.                                           |
 
 Toolbar uses `loading` while `GeoLocateUiState.locating` is true (`WAITING_ACTIVE`).
 
@@ -84,5 +84,5 @@ import '@hungpvq/react-map-core/style.css';
     onTrackUserLocationStart={onTrackStart}
     onTrackUserLocationEnd={onTrackEnd}
   />
-</Map>
+</Map>;
 ```

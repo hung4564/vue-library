@@ -1,4 +1,10 @@
-import { MapControlButton } from '@hungpvq/react-map-core';
+import {
+  MapControlButton,
+  MapTabs,
+  type MapTabItem,
+} from '@hungpvq/react-map-core';
+import { useMemo } from 'react';
+
 import type { DevtoolTab } from '../store';
 import { setDevtoolActiveTab } from '../store';
 import { DatasetMenuViewer } from './DatasetMenuViewer';
@@ -6,13 +12,6 @@ import { DevtoolsMapFilter } from './DevtoolsMapFilter';
 import { ErrorViewer } from './ErrorViewer';
 import { LogViewer } from './LogViewer';
 import { StoreViewer } from './StoreViewer';
-
-const TABS: { id: DevtoolTab; label: string }[] = [
-  { id: 'store', label: 'Store' },
-  { id: 'dataset', label: 'Dataset' },
-  { id: 'logs', label: 'Logs' },
-  { id: 'errors', label: 'Errors' },
-];
 
 export function DevtoolsPanelBody({
   activeTab,
@@ -30,27 +29,27 @@ export function DevtoolsPanelBody({
   showMapFilter?: boolean;
   onClose?: () => void;
 }) {
+  const tabItems = useMemo(
+    (): MapTabItem[] => [
+      { id: 'store', label: 'Store' },
+      { id: 'dataset', label: 'Dataset' },
+      { id: 'logs', label: `Logs (${logCount})` },
+      { id: 'errors', label: `Errors (${errorCount})` },
+    ],
+    [logCount, errorCount],
+  );
+
   return (
     <>
       <div className="devtools-header">
         {showMapFilter ? <DevtoolsMapFilter /> : null}
-        <div className="devtools-tabs">
-          {TABS.map((tab) => (
-            <MapControlButton
-              key={tab.id}
-              variant="text"
-              size="small"
-              active={activeTab === tab.id}
-              onClick={() => setDevtoolActiveTab(tab.id)}
-            >
-              {tab.id === 'logs'
-                ? `Logs (${logCount})`
-                : tab.id === 'errors'
-                  ? `Errors (${errorCount})`
-                  : tab.label}
-            </MapControlButton>
-          ))}
-        </div>
+        <MapTabs
+          className="devtools-tabs-host"
+          items={tabItems}
+          value={activeTab}
+          onChange={(id) => setDevtoolActiveTab(id as DevtoolTab)}
+          withPanes={false}
+        />
         {showClose ? (
           <MapControlButton
             className="close-btn"
@@ -63,7 +62,10 @@ export function DevtoolsPanelBody({
         ) : null}
       </div>
       <div className="devtools-content">
-        <div className="devtools-content__pane" hidden={activeTab !== 'store'}>
+        <div
+          className="devtools-content__pane"
+          hidden={activeTab !== 'store'}
+        >
           <StoreViewer />
         </div>
         <div
@@ -72,10 +74,16 @@ export function DevtoolsPanelBody({
         >
           <DatasetMenuViewer />
         </div>
-        <div className="devtools-content__pane" hidden={activeTab !== 'logs'}>
+        <div
+          className="devtools-content__pane"
+          hidden={activeTab !== 'logs'}
+        >
           <LogViewer />
         </div>
-        <div className="devtools-content__pane" hidden={activeTab !== 'errors'}>
+        <div
+          className="devtools-content__pane"
+          hidden={activeTab !== 'errors'}
+        >
           <ErrorViewer />
         </div>
       </div>

@@ -40,7 +40,7 @@ import {
   UniversalRegistry,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
 } from '@hungpvq/vue-map-core';
 import { InputSelect } from '@hungpvq/vue-map-core/fields';
 import SvgIcon from '@jamescoyle/vue-icon';
@@ -65,7 +65,7 @@ provideMenuConditionContext(() => ({
   control: MENU_CONTROL_ID.identify,
 }));
 
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId } = useMap(props);
 const { trans } = useLang(mapId.value);
 const formatCoordinate = createMapDisplayCoordinateFormatter();
 const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
@@ -169,17 +169,13 @@ function applyUpdate(payload?: IdentifyResultUpdatePayload) {
   }
 }
 
-const { panelBind } = useRegisterMapControl(mapId, {
+const { panelBind, moduleContainerProps } = useMapControl(mapId, {
   id: IDENTIFY_RESULT_CONTROL.id,
   panelKind: 'popup',
   title: () => trans.value('map.identify.title'),
-  buttonPosition: () => props.position,
+  from: props,
   show,
   setShow,
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
   actions: [
     {
       type: IDENTIFY_RESULT_CONTROL.actionUpdate,
@@ -280,7 +276,10 @@ function onResultKeydown(event: KeyboardEvent) {
         @close="onClose"
         :title="trans('map.identify.title')"
       >
-        <template v-if="titleLayer" #after-title>
+        <template
+          v-if="titleLayer"
+          #after-title
+        >
           <DatasetMenus
             :menus="titleMenus"
             :data="titleLayer"
@@ -295,7 +294,11 @@ function onResultKeydown(event: KeyboardEvent) {
             :title="trans('map.identify.map_click')"
             variant="plain"
           >
-            <SvgIcon size="16" type="mdi" :path="path.mapClick" />
+            <SvgIcon
+              size="16"
+              type="mdi"
+              :path="path.mapClick"
+            />
           </MapControlButton>
           <MapControlButton
             @click.stop="onUseBoxSelect"
@@ -303,7 +306,11 @@ function onResultKeydown(event: KeyboardEvent) {
             :title="trans('map.identify.box_select')"
             variant="plain"
           >
-            <SvgIcon size="16" type="mdi" :path="path.boxSelect" />
+            <SvgIcon
+              size="16"
+              type="mdi"
+              :path="path.boxSelect"
+            />
           </MapControlButton>
         </template>
         <div class="identify-control-container">
@@ -326,7 +333,10 @@ function onResultKeydown(event: KeyboardEvent) {
               />
             </div>
           </div>
-          <hr class="identify-control-separator" aria-hidden="true" />
+          <hr
+            class="identify-control-separator"
+            aria-hidden="true"
+          />
           <div
             class="identify-control-body"
             tabindex="0"
@@ -380,7 +390,11 @@ function onResultKeydown(event: KeyboardEvent) {
                 }}</span>
               </div>
             </div>
-            <div v-else class="identify-control-results" role="status">
+            <div
+              v-else
+              class="identify-control-results"
+              role="status"
+            >
               <div
                 v-for="item in items"
                 :key="item.id"

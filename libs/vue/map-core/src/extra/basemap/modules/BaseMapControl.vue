@@ -1,7 +1,14 @@
 <template>
-  <ModuleContainer v-bind="moduleContainerProps" :btnWidth="70">
+  <ModuleContainer
+    v-bind="moduleContainerProps"
+    :btnWidth="70"
+  >
     <template #btn>
-      <MapControlButton v-if="current_baseMaps" :tooltip="title" :active="show">
+      <MapControlButton
+        v-if="current_baseMaps"
+        :tooltip="title"
+        :active="show"
+      >
         <template #content>
           <map-card
             class="clickable base-map-button__container"
@@ -16,7 +23,11 @@
                   <map-icon v-if="controlIcon">
                     {{ controlIcon }}
                   </map-icon>
-                  <SvgIcon type="mdi" :path="path.layer" v-else />
+                  <SvgIcon
+                    type="mdi"
+                    :path="path.layer"
+                    v-else
+                  />
                   <div class="">
                     {{ title || trans('map.basemap.title') }}
                   </div>
@@ -78,7 +89,11 @@
                   :aria-label="trans('map.basemap.remove')"
                   @click.stop="onRemoveBasemap(baseMap)"
                 >
-                  <SvgIcon type="mdi" :path="path.remove" size="18" />
+                  <SvgIcon
+                    type="mdi"
+                    :path="path.remove"
+                    size="18"
+                  />
                 </button>
               </div>
               <div class="base-map-control-setting-item__title">
@@ -101,7 +116,11 @@
                   height: sizeBaseMap - 34 + 'px',
                 }"
               >
-                <SvgIcon type="mdi" :path="path.add" size="22" />
+                <SvgIcon
+                  type="mdi"
+                  :path="path.add"
+                  size="22"
+                />
               </div>
               <div class="base-map-control-setting-item__title">
                 {{ trans('map.basemap.add') }}
@@ -150,8 +169,7 @@ import MapControlButton from '../../../components/MapControlButton.vue';
 import MapIcon from '../../../components/MapIcon.vue';
 import MapImage from '../../../components/MapImage.vue';
 import { useLang } from '../../../extra/lang/hook';
-import { useRegisterMapControl } from '../../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../../extra/toolbar/helper';
+import { useMapControl } from '../../../extra/registry/useMapControl';
 import { MapRangeSlider } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
@@ -180,7 +198,7 @@ const props = withDefaults(
     allowAddBasemap: false,
   },
 );
-const { mapId, moduleContainerProps, order } = useMap(props);
+const { mapId, order } = useMap(props);
 const { trans } = useLang(mapId.value);
 const {
   setBaseMaps,
@@ -273,16 +291,16 @@ function onToggleList() {
   show.value = !show.value;
   if (!show.value) showAddForm.value = false;
 }
-const { panelBind } = useRegisterMapControl(mapId, {
+const { panelBind, moduleContainerProps, control } = useMapControl(mapId, {
   id: 'mapBaseMapControl',
   panelKind: 'popup',
   title: () => props.title || trans.value('map.basemap.title'),
-  buttonPosition: () => props.position,
+  from: props,
+  order,
+  buttonSlot: 'custom',
   show,
   setShow,
   getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
     title: props.title,
     defaultBaseMap: props.defaultBaseMap,
     controlIcon: props.controlIcon,
@@ -295,16 +313,7 @@ const { panelBind } = useRegisterMapControl(mapId, {
       run: () => onToggleList(),
     },
   ],
-});
-onMounted(() => {
-  init(props.baseMaps as BaseMapItem[], props.defaultBaseMap);
-});
-onBeforeUnmount(() => {
-  remove();
-});
-const { control } = useToolbarControl(mapId.value, props, {
-  id: 'mapBaseMapControl',
-  getState() {
+  getButtonState() {
     return mdiButtonState(path.layer, {
       visible: true,
       active: show.value,
@@ -315,6 +324,12 @@ const { control } = useToolbarControl(mapId.value, props, {
   onClick() {
     onToggleList();
   },
+});
+onMounted(() => {
+  init(props.baseMaps as BaseMapItem[], props.defaultBaseMap);
+});
+onBeforeUnmount(() => {
+  remove();
 });
 watch(show, () => control.sync());
 </script>

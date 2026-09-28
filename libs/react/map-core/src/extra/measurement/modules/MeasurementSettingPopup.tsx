@@ -27,7 +27,7 @@ import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { CrsDisplaySettings } from '../../crs/CrsDisplaySettings';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useMapControl } from '../../registry/useMapControl';
 import { FieldGeometry } from './setting/field-geometry';
 import { FieldPointCrs } from './setting/field-point-crs';
 import { MeasurementSettingFields } from './setting/fields-show';
@@ -64,7 +64,7 @@ export function MeasurementSettingPopup({
   ...mapProps
 }: MeasurementSettingPopupProps) {
   const merged = { ...defaultMapProps, ...mapProps };
-  const { callMap, moduleContainerProps, mapId } = useMap({
+  const { callMap, mapId } = useMap({
     ...merged,
     controlId: 'mapMeasurementSetting',
   });
@@ -117,11 +117,11 @@ export function MeasurementSettingPopup({
     onRefresh?.();
   }
 
-  const { panelBind } = useRegisterMapControl(mapId, {
+  const { panelBind, moduleContainerProps } = useMapControl(mapId, {
     id: 'mapMeasurementSetting',
     panelKind: 'popup',
     title: trans('map.measurement.setting.title'),
-    buttonPosition: merged.position,
+    from: merged,
     show,
     setShow: (v) => onUpdateShow?.(v),
     initialPanelPosition: {
@@ -129,8 +129,6 @@ export function MeasurementSettingPopup({
       right: popUpPosition.right,
     },
     getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
       maxLength,
       measurementType,
     }),
@@ -177,7 +175,10 @@ export function MeasurementSettingPopup({
           >
             <div className="map-measurement-setting">
               {measurementType === 'point' ? (
-                <FieldPointCrs fields={fields} onChange={() => onRefresh?.()} />
+                <FieldPointCrs
+                  fields={fields}
+                  onChange={() => onRefresh?.()}
+                />
               ) : (
                 <MeasurementSettingFields fields={fields} />
               )}

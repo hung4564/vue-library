@@ -5,18 +5,32 @@
       :to="btnTo"
     >
       <div
-        v-if="hasSlotBtn"
+        v-if="hasBtnContent"
         :class="btnModuleClass"
         :style="{ order: controlOrder }"
         :data-map-control-id="resolvedControlId || undefined"
       >
-        <slot name="btn" />
+        <slot
+          v-if="hasSlotBtn"
+          name="btn"
+        />
+        <MapCommonButton
+          v-else-if="autoButtonState"
+          :option="autoButtonState"
+          @click.stop="onAutoButtonClick"
+        />
       </div>
       <slot name="btnOutside" />
     </Teleport>
     <slot />
-    <Teleport :to="draggableTo" v-if="c_containerId && hasSlotDraggable">
-      <slot v-bind="bindDrag" name="draggable" />
+    <Teleport
+      :to="draggableTo"
+      v-if="c_containerId && hasSlotDraggable"
+    >
+      <slot
+        v-bind="bindDrag"
+        name="draggable"
+      />
     </Teleport>
   </div>
 </template>
@@ -28,13 +42,19 @@ export default {
 <script setup lang="ts">
 import {
   buildModuleBindPosition,
+  getControlAutoButton,
   isModuleCornerChromeVisible,
   MAP_MODULE_CONTROL_ID_KEY,
   moduleBtnContainerClassName,
   moduleCornerHostSelector,
   moduleDraggableHostSelector,
+  subscribeControlAutoButton,
 } from '@hungpvq/map-core';
-import { computed, inject, useSlots } from 'vue';
+import type { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
+import { computed, inject, onUnmounted, ref, useSlots } from 'vue';
+
+import MapCommonButton from '../../components/MapCommonButton.vue';
+
 const slots = useSlots();
 const props = defineProps({
   mapId: { type: String, default: '' },
@@ -67,16 +87,7 @@ const props = defineProps({
 });
 const hasSlotBtn = computed(() => !!slots['btn']);
 const hasSlotBtnOutside = computed(() => !!slots['btnOutside']);
-const hasCornerChrome = computed(
-  () => hasSlotBtn.value || hasSlotBtnOutside.value,
-);
-const showCornerChrome = computed(() =>
-  isModuleCornerChromeVisible(
-    props.controlLayout as 'toolbar' | 'standalone' | 'button' | 'menu',
-  ),
-);
-const hasSlotDraggable = computed(() => !!slots['draggable']);
-const i_dragId = inject<string>('$map.dragId');
+const autoBtnTick = ref(0);
 const i_map_id = inject<string>('$map.id');
 const injectedControlId = inject<string | undefined>(
   MAP_MODULE_CONTROL_ID_KEY,
@@ -85,15 +96,60 @@ const injectedControlId = inject<string | undefined>(
 const resolvedControlId = computed(
   () => props.controlId || injectedControlId || '',
 );
+const c_mapId = computed<string>(() => {
+  return props.mapId || i_map_id!;
+});
+
+const autoButtonEntry = computed(() => {
+  autoBtnTick.value;
+  if (hasSlotBtn.value) return undefined;
+  const mid = c_mapId.value;
+  const cid = resolvedControlId.value;
+  if (!mid || !cid) return undefined;
+  return getControlAutoButton(mid, cid);
+});
+
+const autoButtonState = computed(() => {
+  autoBtnTick.value;
+  const entry = autoButtonEntry.value;
+  if (!entry) return undefined;
+  return entry.getUiState() as MapControlButtonUIState | undefined;
+});
+
+const hasAutoBtn = computed(
+  () => !!autoButtonEntry.value && !!autoButtonState.value,
+);
+const hasBtnContent = computed(() => hasSlotBtn.value || hasAutoBtn.value);
+const hasCornerChrome = computed(
+  () => hasBtnContent.value || hasSlotBtnOutside.value,
+);
+const showCornerChrome = computed(() =>
+  isModuleCornerChromeVisible(
+    props.controlLayout as 'toolbar' | 'standalone' | 'button' | 'menu',
+  ),
+);
+const hasSlotDraggable = computed(() => !!slots['draggable']);
+const i_dragId = inject<string>('$map.dragId');
 const btnModuleClass = computed(() =>
   moduleBtnContainerClassName(resolvedControlId.value),
 );
 const c_containerId = computed<string>(() => {
   return props.dragId || i_dragId!;
 });
-const c_mapId = computed<string>(() => {
-  return props.mapId || i_map_id!;
+
+const stopAutoBtn = subscribeControlAutoButton((mid, controlId) => {
+  if (
+    mid === c_mapId.value &&
+    (controlId === resolvedControlId.value || controlId === '*')
+  ) {
+    autoBtnTick.value++;
+  }
 });
+onUnmounted(() => stopAutoBtn());
+
+function onAutoButtonClick(event?: unknown) {
+  autoButtonEntry.value?.onAction(event);
+}
 
 const draggableTo = computed(() => moduleDraggableHostSelector(c_mapId.value));
 const btnTo = computed(() =>

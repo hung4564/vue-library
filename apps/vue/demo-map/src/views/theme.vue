@@ -5,7 +5,10 @@
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <ThemeControl />
-    <div class="demo-theme-tokens" data-testid="demo-theme-tokens">
+    <div
+      class="demo-theme-tokens"
+      data-testid="demo-theme-tokens"
+    >
       <div class="demo-theme-tokens__title">Theme tokens</div>
       <dl>
         <dt>--map-primary-color</dt>

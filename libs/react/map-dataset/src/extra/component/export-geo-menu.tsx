@@ -62,11 +62,17 @@ export function ExportGeoFormatMenu(props: WithLayerItemMenuComponentType) {
       }}
     >
       <div className="layer-context-menu__item-icon">
-        <Icon path={mdiDownload} size="16px" />
+        <Icon
+          path={mdiDownload}
+          size="16px"
+        />
       </div>
       <span>{name}</span>
       <div className="layer-context-menu__chevron">
-        <Icon path={mdiChevronRight} size="16px" />
+        <Icon
+          path={mdiChevronRight}
+          size="16px"
+        />
       </div>
       <ul className="context-menu layer-context-menu layer-context-menu--submenu">
         {formats.map((fmt) => (
@@ -76,7 +82,10 @@ export function ExportGeoFormatMenu(props: WithLayerItemMenuComponentType) {
             onClick={(event) => void onFormat(fmt, event)}
           >
             <div className="layer-context-menu__item-icon">
-              <Icon path={mdiDownload} size="16px" />
+              <Icon
+                path={mdiDownload}
+                size="16px"
+              />
             </div>
             <span>{GEO_EXPORT_FORMAT_META[fmt].name}</span>
           </li>

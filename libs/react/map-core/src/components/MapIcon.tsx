@@ -6,7 +6,10 @@ export interface MapIconProps extends React.HTMLAttributes<HTMLElement> {
 
 export function MapIcon({ children, className = '', ...props }: MapIconProps) {
   return (
-    <i className={`map-icon mdi ${className}`} {...props}>
+    <i
+      className={`map-icon mdi ${className}`}
+      {...props}
+    >
       {children}
     </i>
   );

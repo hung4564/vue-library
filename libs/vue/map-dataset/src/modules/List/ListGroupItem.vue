@@ -1,11 +1,20 @@
 <template>
-  <ListItem :disabledDrag="disabledDrag" class="draggable-group__item">
+  <ListItem
+    :disabledDrag="disabledDrag"
+    class="draggable-group__item"
+  >
     <div class="draggable-group__info">
-      <span class="draggable-group__title" :title="item.name">
+      <span
+        class="draggable-group__title"
+        :title="item.name"
+      >
         {{ item.name }}
       </span>
       <div class="draggable-group__action">
-        <slot name="extra-data" :item="item"></slot>
+        <slot
+          name="extra-data"
+          :item="item"
+        ></slot>
         <MapControlButton
           @click="toggleShowChildrenGroup()"
           variant="plain"
@@ -19,7 +28,10 @@
         </MapControlButton>
       </div>
     </div>
-    <div v-if="isGroupShow" class="draggable-group__divider"></div>
+    <div
+      v-if="isGroupShow"
+      class="draggable-group__divider"
+    ></div>
     <div
       class="draggable-group__children-container"
       :class="{ _show: isGroupShow }"

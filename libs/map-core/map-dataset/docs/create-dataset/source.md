@@ -25,12 +25,12 @@ const source = createDatasetPartGeojsonSourceComponent(
 );
 ```
 
-| Argument | Type | Role |
-| --- | --- | --- |
-| `name` | `string` | Source id on the map |
-| `data` | GeoJSON / URL | `GeoJSONSourceSpecification['data']` |
-| `options.promoteId` | `string` | Feature id from a property |
-| `options.generateId` | `boolean` | Let MapLibre generate ids |
+| Argument             | Type          | Role                                 |
+| -------------------- | ------------- | ------------------------------------ |
+| `name`               | `string`      | Source id on the map                 |
+| `data`               | GeoJSON / URL | `GeoJSONSourceSpecification['data']` |
+| `options.promoteId`  | `string`      | Feature id from a property           |
+| `options.generateId` | `boolean`     | Let MapLibre generate ids            |
 
 After add: `source.updateData(map, nextGeoJSON)` to replace features.
 
@@ -95,9 +95,7 @@ For **FileGDB** (`LAYER_TYPES.filegdb` / `ConfigFilegdbHelper`), CreateControl a
 ## With a layer
 
 ```ts
-const layer = createMultiMapboxLayerComponent('layer', [
-  new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build(),
-]);
+const layer = createMultiMapboxLayerComponent('layer', [new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build()]);
 layer.addDependsOn(source);
 dataset.add(source);
 dataset.add(layer);

@@ -19,10 +19,7 @@ No control-specific props beyond shared map props.
 ```vue
 <script setup lang="ts">
 import { Map } from '@hungpvq/vue-map-core';
-import {
-  IdentifyShowFirstControl,
-  ComponentManagementControl,
-} from '@hungpvq/vue-map-dataset';
+import { IdentifyShowFirstControl, ComponentManagementControl } from '@hungpvq/vue-map-dataset';
 </script>
 
 <template>

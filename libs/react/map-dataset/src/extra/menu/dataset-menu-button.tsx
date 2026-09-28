@@ -60,7 +60,14 @@ export function DatasetMenuButton<T extends IDataset = IDataset>({
         }
       }}
     >
-      {icon ? <Icon path={icon} size={ICON_SIZE} /> : title}
+      {icon ? (
+        <Icon
+          path={icon}
+          size={ICON_SIZE}
+        />
+      ) : (
+        title
+      )}
     </MapControlButton>
   );
 }

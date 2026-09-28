@@ -14,13 +14,11 @@ import {
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
-  MapCommonButton,
   MapControlButton,
   ModuleContainer,
   useLang,
   useMap,
-  useRegisterMapControl,
-  useToolbarControl,
+  useMapControl,
 } from '@hungpvq/react-map-core';
 import { InputSelect, InputText } from '@hungpvq/react-map-core/fields';
 import { mdiPlus } from '@mdi/js';
@@ -94,21 +92,17 @@ function settingsComponent(
 
 export function CreateControl(props: CreateControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap({
-    ...merged,
-    controlId: 'mapCreateControl',
-  });
+  const { mapId, order } = useMap(merged);
   const { trans } = useLang(mapId);
-  const { panelBind } = useRegisterMapControl(mapId, {
+  const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
     id: 'mapCreateControl',
     panelKind: 'popup',
     title: trans('map.layer-control.create.title'),
-    buttonPosition: merged.position,
+    from: merged,
+    order,
     show: props.show,
     setShow: props.onShowChange,
     getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
       createLayerTypes: props.createLayerTypes,
     }),
     actions: [
@@ -117,12 +111,7 @@ export function CreateControl(props: CreateControlProps) {
         run: () => props.onShowChange(!props.show),
       },
     ],
-  });
-
-  const { state, control } = useToolbarControl(mapId, merged, {
-    kind: 'single',
-    id: 'mapCreateControl',
-    getState: () =>
+    getButtonState: () =>
       mdiButtonState(mdiPlus, {
         active: props.show,
         title: trans('map.layer-control.create.title'),
@@ -289,17 +278,6 @@ export function CreateControl(props: CreateControlProps) {
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : null
-      }
       draggable={(bind) =>
         props.show ? (
           <DraggableItemPopup

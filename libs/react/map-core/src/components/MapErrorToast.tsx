@@ -38,7 +38,11 @@ export function MapErrorToast() {
   }
 
   return (
-    <div className="map-error-toast" role="status" aria-live="polite">
+    <div
+      className="map-error-toast"
+      role="status"
+      aria-live="polite"
+    >
       <span className="map-error-toast__message">{message}</span>
       <button
         type="button"

@@ -6,10 +6,16 @@
     v-bind="$attrs"
     variant="text"
   >
-    <div class="tab-item-title" :title="text">
+    <div
+      class="tab-item-title"
+      :title="text"
+    >
       {{ text }}
     </div>
-    <div class="tab-item-sub-title" :title="defaultShowInItem">
+    <div
+      class="tab-item-sub-title"
+      :title="defaultShowInItem"
+    >
       <p v-if="!item.component || !item.component.label">
         {{ defaultShowInItem }}
       </p>

@@ -128,7 +128,12 @@ describe('BottomContainer portal hosts', () => {
     const { unmount } = render(
       <ContainerProvider containerId={CID}>
         <BottomContainer />
-        <DraggableItemBottom id="bot-a" show title="Alpha" containerId={CID}>
+        <DraggableItemBottom
+          id="bot-a"
+          show
+          title="Alpha"
+          containerId={CID}
+        >
           <p>A body</p>
         </DraggableItemBottom>
         <DraggableItemBottom
@@ -175,7 +180,10 @@ describe('BottomContainer portal hosts', () => {
     });
     function LocalCard({ children }: { children?: React.ReactNode }) {
       return (
-        <div className="local-bottom-card" data-testid="local-bottom-card">
+        <div
+          className="local-bottom-card"
+          data-testid="local-bottom-card"
+        >
           {children}
         </div>
       );

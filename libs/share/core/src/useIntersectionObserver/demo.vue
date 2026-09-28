@@ -30,9 +30,15 @@ const { isActive, pause, resume } = useIntersectionObserver(
       <span>Enable</span>
     </label>
   </div>
-  <div ref="root" class="root">
+  <div
+    ref="root"
+    class="root"
+  >
     <p class="notice">Scroll me down!</p>
-    <div ref="target" class="target">
+    <div
+      ref="target"
+      class="target"
+    >
       <p>Hello world!</p>
     </div>
   </div>

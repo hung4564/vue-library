@@ -124,7 +124,10 @@ export function DatasetDataManagementPage() {
         <WorkerControl position="top-left" />
         <div style={panelStyle}>
           {pagers.map((state, index) => (
-            <div key={state.label} className="dm-card dm-card--pager">
+            <div
+              key={state.label}
+              className="dm-card dm-card--pager"
+            >
               <strong>{state.label}</strong>
               <div className="dm-card__names">
                 {state.names.join(', ') || '(empty)'}

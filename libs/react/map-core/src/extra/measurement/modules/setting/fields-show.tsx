@@ -10,7 +10,10 @@ export function MeasurementSettingFields({
   return (
     <div className="map-measurement-fields">
       {fields.map((field, i) => (
-        <div className="map-measurement-fields__item" key={i}>
+        <div
+          className="map-measurement-fields__item"
+          key={i}
+        >
           <div className="map-measurement-fields__row">
             <div className="map-measurement-fields__label">{field.text}</div>
             <div className="map-measurement-fields__value">{field.value}</div>

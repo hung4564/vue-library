@@ -10,10 +10,8 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiHome } from '@mdi/js';
 import { ref } from 'vue';
 
-import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 const props = withDefaults(
@@ -32,7 +30,7 @@ const homeView = ref<HomeView>({
   center: { lat: 0, lng: 0 },
 });
 
-const { callMap, mapId, moduleContainerProps, order } = useMap(props, onInit);
+const { callMap, mapId, order } = useMap(props, onInit);
 const { trans } = useLang(mapId.value);
 function onGoHome() {
   callMap((map) => {
@@ -45,14 +43,11 @@ function onInit(_map: MapSimple) {
     center: props.center,
   });
 }
-useRegisterMapControl(mapId, {
+const { moduleContainerProps } = useMapControl(mapId, {
   id: 'mapHomeControl',
   panelKind: 'button',
-  buttonPosition: () => props.position,
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
+  from: props,
+  order,
   actions: [
     {
       type: 'mapHomeControl',
@@ -61,10 +56,7 @@ useRegisterMapControl(mapId, {
       },
     },
   ],
-});
-const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapHomeControl',
-  getState() {
+  getButtonState() {
     return mdiButtonState(mdiHome, {
       visible: true,
       title: trans.value('map.home.title'),
@@ -78,14 +70,6 @@ const { state, control } = useToolbarControl(mapId.value, props, {
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
     <slot />
   </ModuleContainer>
 </template>

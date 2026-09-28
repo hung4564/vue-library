@@ -1,6 +1,9 @@
 <template lang="">
   import { MapControlButton } from '@hungpvq/vue-map-core';
-  <div v-bind="$attrs" class="input-array-index">
+  <div
+    v-bind="$attrs"
+    class="input-array-index"
+  >
     <div
       class="input-array-item"
       v-for="(arr, index) in form"
@@ -17,11 +20,18 @@
           v-if="form.length > 2"
           variant="text"
         >
-          <SvgIcon size="16" type="mdi" :path="path.delete" />
+          <SvgIcon
+            size="16"
+            type="mdi"
+            :path="path.delete"
+          />
         </map-control-button>
       </div>
     </div>
-    <map-control-button @click="onAdd()" variant="text">
+    <map-control-button
+      @click="onAdd()"
+      variant="text"
+    >
       Add</map-control-button
     >
   </div>

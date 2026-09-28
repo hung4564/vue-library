@@ -1,15 +1,19 @@
 import {
   buildModuleBindPosition,
+  getControlAutoButton,
   isModuleCornerChromeVisible,
   moduleBtnContainerClassName,
   moduleCornerHostSelector,
   moduleDraggableHostSelector,
   type Position,
   queryModuleHostElement,
+  subscribeControlAutoButton,
 } from '@hungpvq/map-core';
-import React, { useLayoutEffect, useMemo, useState } from 'react';
+import type { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
+import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { MapCommonButton } from '../../components/MapCommonButton';
 import { useMapContext } from '../../context/MapContext';
 
 export interface ModuleContainerProps {
@@ -97,9 +101,30 @@ export function ModuleContainer({
   const mapId = propsMapId || context.mapId;
   const dragId = propsDragId || context.dragId;
 
+  const [autoTick, setAutoTick] = useState(0);
+  useEffect(() => {
+    return subscribeControlAutoButton((mid, cid) => {
+      if (mid === mapId && (cid === controlId || cid === '*')) {
+        setAutoTick((t) => t + 1);
+      }
+    });
+  }, [mapId, controlId]);
+
+  const autoEntry = useMemo(() => {
+    void autoTick;
+    if (btn || !mapId || !controlId) return undefined;
+    return getControlAutoButton(mapId, controlId);
+  }, [autoTick, btn, mapId, controlId]);
+
+  const autoState = useMemo(() => {
+    void autoTick;
+    return autoEntry?.getUiState() as MapControlButtonUIState | undefined;
+  }, [autoTick, autoEntry]);
+
   const hasBtn = !!btn;
+  const hasAutoBtn = !hasBtn && !!autoEntry && !!autoState;
   const hasBtnOutside = !!btnOutside;
-  const hasCornerChrome = hasBtn || hasBtnOutside;
+  const hasCornerChrome = hasBtn || hasAutoBtn || hasBtnOutside;
   const showCornerChrome = isModuleCornerChromeVisible(controlLayout);
   const hasDraggable = !!draggable;
 
@@ -137,18 +162,30 @@ export function ModuleContainer({
 
   const btnClassName = moduleBtnContainerClassName(controlId);
 
+  const btnContent = hasBtn ? (
+    btn
+  ) : hasAutoBtn ? (
+    <MapCommonButton
+      option={autoState!}
+      onClick={(e) => {
+        e.stopPropagation();
+        autoEntry?.onAction(e);
+      }}
+    />
+  ) : null;
+
   return (
     <div className="module__container">
       {needBtnHost && btnPortalTarget
         ? createPortal(
             <>
-              {hasBtn ? (
+              {btnContent ? (
                 <div
                   className={btnClassName}
                   style={{ order: controlOrder }}
                   data-map-control-id={controlId || undefined}
                 >
-                  {btn}
+                  {btnContent}
                 </div>
               ) : null}
               {btnOutside}

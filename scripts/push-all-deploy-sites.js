@@ -20,17 +20,11 @@ const skipBuild = args.includes('--skip-build');
 const dryRun = args.includes('--dry-run');
 
 function runSite(site) {
-  const parts = [
-    'node',
-    path.join(__dirname, 'push-deploy-site.js'),
-    site,
-  ];
+  const parts = ['node', path.join(__dirname, 'push-deploy-site.js'), site];
   if (version) parts.push('--version', version);
   if (skipBuild) parts.push('--skip-build');
   if (dryRun) parts.push('--dry-run');
-  const command = parts
-    .map((p) => (/\s/.test(p) ? `"${p}"` : p))
-    .join(' ');
+  const command = parts.map((p) => (/\s/.test(p) ? `"${p}"` : p)).join(' ');
   console.log(`\n======== ${site} ========\n`);
   execSync(command, {
     cwd: root,

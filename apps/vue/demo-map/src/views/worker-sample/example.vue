@@ -19,19 +19,37 @@
       </p>
       <label>
         From
-        <input v-model.number="from" type="number" />
+        <input
+          v-model.number="from"
+          type="number"
+        />
       </label>
       <label>
         To
-        <input v-model.number="to" type="number" />
+        <input
+          v-model.number="to"
+          type="number"
+        />
       </label>
-      <button type="button" :disabled="running" @click="onRun">
+      <button
+        type="button"
+        :disabled="running"
+        @click="onRun"
+      >
         {{ running ? 'Runningâ€¦' : 'Run sum-range' }}
       </button>
-      <p v-if="result != null" class="sample-worker-panel__result">
+      <p
+        v-if="result != null"
+        class="sample-worker-panel__result"
+      >
         Result: {{ result }}
       </p>
-      <p v-if="error" class="sample-worker-panel__error">{{ error }}</p>
+      <p
+        v-if="error"
+        class="sample-worker-panel__error"
+      >
+        {{ error }}
+      </p>
     </div>
   </div>
 </template>

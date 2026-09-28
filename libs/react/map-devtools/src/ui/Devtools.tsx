@@ -9,5 +9,10 @@ export type DevtoolsProps = Partial<DevtoolsControlProps> &
   Partial<WithMapPropType>;
 
 export function Devtools({ mapId, ...controlProps }: DevtoolsProps = {}) {
-  return <DevtoolsControl mapId={mapId} {...controlProps} />;
+  return (
+    <DevtoolsControl
+      mapId={mapId}
+      {...controlProps}
+    />
+  );
 }

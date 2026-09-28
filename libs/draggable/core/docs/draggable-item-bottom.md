@@ -12,23 +12,23 @@ Only **one** bottom is visible at a time (`ContainerStore.bottom.show` is a sing
 
 ## Props
 
-| Prop             | Description                                   | Type      | Required | Default Value |
-| ---------------- | --------------------------------------------- | --------- | -------- | ------------- |
-| `id`             | Stable item id for store commands / remount.  | `string`  | false    | auto UUID     |
-| `title`          | Title displayed in the bottom panel header / switch menu. | `string`  | false    | -             |
-| `containerId`    | ID of the parent container (for teleporting). | `string`  | false    | -             |
-| `show`           | Controls whether this bottom is the active sheet. | `boolean` | false    | false         |
-| `componentCard`  | Local card chrome override for the shared bottom shell (wins over global store while this item is active). | component | false | - |
-| `componentCardHeader` | Local header chrome override (same scope as `componentCard`). | component | false | - |
+| Prop                  | Description                                                                                                | Type      | Required | Default Value |
+| --------------------- | ---------------------------------------------------------------------------------------------------------- | --------- | -------- | ------------- |
+| `id`                  | Stable item id for store commands / remount.                                                               | `string`  | false    | auto UUID     |
+| `title`               | Title displayed in the bottom panel header / switch menu.                                                  | `string`  | false    | -             |
+| `containerId`         | ID of the parent container (for teleporting).                                                              | `string`  | false    | -             |
+| `show`                | Controls whether this bottom is the active sheet.                                                          | `boolean` | false    | false         |
+| `componentCard`       | Local card chrome override for the shared bottom shell (wins over global store while this item is active). | component | false    | -             |
+| `componentCardHeader` | Local header chrome override (same scope as `componentCard`).                                              | component | false    | -             |
 
 Legacy chrome flags (`disabledExpand`, `disabledHeader`, `disabledClose`, `expand`, …) may still appear on the component API for compatibility; expand/close live on the shared shell.
 
 ## Events
 
-| Name            | Description                                                       |
-| --------------- | ----------------------------------------------------------------- |
-| `close`         | Emitted when the bottom panel is closed. Payload: `()`            |
-| `update:show`   | Emitted when the visibility changes. Payload: `(value:boolean)`   |
+| Name          | Description                                                     |
+| ------------- | --------------------------------------------------------------- |
+| `close`       | Emitted when the bottom panel is closed. Payload: `()`          |
+| `update:show` | Emitted when the visibility changes. Payload: `(value:boolean)` |
 
 React: use `onUpdateShow` / `onClose`.
 
@@ -36,11 +36,11 @@ React: use `onUpdateShow` / `onClose`.
 
 Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
 
-| Vue             | React        | Description                                      |
-| --------------- | ------------ | ------------------------------------------------ |
-| `default`       | `children`   | Content of the bottom panel.                     |
-| `title`         | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
-| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
+| Vue           | React        | Description                                                |
+| ------------- | ------------ | ---------------------------------------------------------- |
+| `default`     | `children`   | Content of the bottom panel.                               |
+| `title`       | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
+| `after-title` | `afterTitle` | Immediately after title (before spacer).                   |
 
 ## Store
 
@@ -59,10 +59,16 @@ import { DraggableContainer, DraggableItemBottom } from '@hungpvq/vue-draggable'
 
 <template>
   <DraggableContainer>
-    <DraggableItemBottom title="Panel A" show>
+    <DraggableItemBottom
+      title="Panel A"
+      show
+    >
       <div>First bottom</div>
     </DraggableItemBottom>
-    <DraggableItemBottom title="Panel B" :show="false">
+    <DraggableItemBottom
+      title="Panel B"
+      :show="false"
+    >
       <div>Second bottom — switch via header menu</div>
     </DraggableItemBottom>
   </DraggableContainer>
@@ -77,10 +83,16 @@ import { DraggableContainer, DraggableItemBottom } from '@hungpvq/react-draggabl
 export function Example() {
   return (
     <DraggableContainer>
-      <DraggableItemBottom title="Panel A" show>
+      <DraggableItemBottom
+        title="Panel A"
+        show
+      >
         <div>First bottom</div>
       </DraggableItemBottom>
-      <DraggableItemBottom title="Panel B" show={false}>
+      <DraggableItemBottom
+        title="Panel B"
+        show={false}
+      >
         <div>Second bottom — switch via header menu</div>
       </DraggableItemBottom>
     </DraggableContainer>

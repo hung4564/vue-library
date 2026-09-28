@@ -25,8 +25,15 @@ const demos = [
 </script>
 
 <template>
-  <DraggableContainer containerId="demo-home" class="demo-page">
-    <DraggableItemSideBar show title="Controls" location="left">
+  <DraggableContainer
+    containerId="demo-home"
+    class="demo-page"
+  >
+    <DraggableItemSideBar
+      show
+      title="Controls"
+      location="left"
+    >
       <div class="panel">
         <h2>Home overview</h2>
         <p>
@@ -48,7 +55,11 @@ const demos = [
       </div>
     </DraggableItemSideBar>
 
-    <DraggableItemSideBar show title="Right Sidebar" location="right">
+    <DraggableItemSideBar
+      show
+      title="Right Sidebar"
+      location="right"
+    >
       <div class="panel">
         <h2>Right Sidebar</h2>
         <p>Overview sample — open Sidebar demo for more.</p>
@@ -94,7 +105,10 @@ const demos = [
       </div>
     </DraggableItemFloat>
 
-    <DraggableItemBottom show title="Bottom">
+    <DraggableItemBottom
+      show
+      title="Bottom"
+    >
       <div class="panel">
         <p>Bottom panel overview sample.</p>
       </div>

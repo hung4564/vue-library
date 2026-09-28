@@ -43,5 +43,5 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <GotoControl />
-</Map>
+</Map>;
 ```

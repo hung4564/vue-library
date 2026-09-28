@@ -73,13 +73,13 @@ Documented header slot / prop names are **Stable** (rename = **major**). Source 
 [ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]
 ```
 
-| Vue | React | Notes |
-| --- | --- | --- |
-| `pre-title` | `preTitle` | Before title group |
-| `title` (prop) | `title` | Plain string for switcher store + default header |
-| `title` (slot) | `titleNode` | Custom header node on `DraggableItemSideBar` (falls back to `title`) |
-| `after-title` | `afterTitle` | Immediately after title; **`location: 'title'` maps here**, not `extra-btn` |
-| `extra-btn` | `extraBtn` | Trailing actions after spacer |
+| Vue            | React        | Notes                                                                       |
+| -------------- | ------------ | --------------------------------------------------------------------------- |
+| `pre-title`    | `preTitle`   | Before title group                                                          |
+| `title` (prop) | `title`      | Plain string for switcher store + default header                            |
+| `title` (slot) | `titleNode`  | Custom header node on `DraggableItemSideBar` (falls back to `title`)        |
+| `after-title`  | `afterTitle` | Immediately after title; **`location: 'title'` maps here**, not `extra-btn` |
+| `extra-btn`    | `extraBtn`   | Trailing actions after spacer                                               |
 
 When proposing a header-slot change, remind to update `header-slots.md`, `stable-api.md`, and the affected `draggable-*.md` Slots tables (and map-dataset menu docs if `location: 'title'` is involved — **edit both trees, do not cross-link**; see `map-docs-vitepress` Doc isolation). Explicitly list **`titleNode`** when touching `DraggableItemSideBar` props (Stable; rename = **major**).
 
@@ -89,10 +89,10 @@ Experimental root exports (`ManagementControl`, `ContextMenu`, …) may change i
 
 Root `src/index.ts` must use **named exports only** — never reintroduce `export *`.
 
-| Package | Lock file |
-|---------|-----------|
-| `@hungpvq/draggable` | `libs/draggable/core/src/public-api.spec.ts` |
-| `@hungpvq/vue-draggable` | `libs/vue/draggable/src/public-api.spec.ts` |
+| Package                    | Lock file                                     |
+| -------------------------- | --------------------------------------------- |
+| `@hungpvq/draggable`       | `libs/draggable/core/src/public-api.spec.ts`  |
+| `@hungpvq/vue-draggable`   | `libs/vue/draggable/src/public-api.spec.ts`   |
 | `@hungpvq/react-draggable` | `libs/react/draggable/src/public-api.spec.ts` |
 
 When adding/removing a **runtime** export:
@@ -121,7 +121,7 @@ Workspace apps resolve `@hungpvq/react-*` to **source under `libs/`**. `@vitejs/
 **Rule:** React Vite demos must exclude `libs/` from the React plugin:
 
 ```ts
-react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] })
+react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] });
 ```
 
 Already applied on `apps/react/demo-draggable` and `apps/react/demo-map`. Apply the same pattern to any new React app that path-aliases into `libs/`.

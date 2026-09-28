@@ -14,12 +14,12 @@ import { ContextMenu, ContextMenuItem } from '@hungpvq/vue-draggable'; // or rea
 
 ## Props
 
-| Prop / event | Vue | React | Notes |
-|--------------|-----|-------|-------|
-| `zIndex` | yes | yes | default `10000` |
-| `ariaLabel` | yes | yes | menu `aria-label` (default `"Context menu"`) |
-| Open change | `@update:open` | `onOpenChange(open)` | for `aria-expanded` on triggers |
-| Ref API | `open(event)` / `close()` | same via `ContextMenuRef` | |
+| Prop / event | Vue                       | React                     | Notes                                        |
+| ------------ | ------------------------- | ------------------------- | -------------------------------------------- |
+| `zIndex`     | yes                       | yes                       | default `10000`                              |
+| `ariaLabel`  | yes                       | yes                       | menu `aria-label` (default `"Context menu"`) |
+| Open change  | `@update:open`            | `onOpenChange(open)`      | for `aria-expanded` on triggers              |
+| Ref API      | `open(event)` / `close()` | same via `ContextMenuRef` |                                              |
 
 `ContextMenuItem`: `active`, `disabled`; sets `aria-current` / `aria-disabled`.
 
@@ -32,14 +32,14 @@ import { ContextMenu, ContextMenuItem } from '@hungpvq/vue-draggable'; // or rea
 
 ### Cases
 
-| Case | How |
-|------|-----|
-| Right-click | `@contextmenu` / `onContextMenu` → `open(e)` (+ `preventDefault`) |
-| Button open | same `open(e)` with the click event (positions near pointer) |
-| Active row | `active` on `ContextMenuItem` |
-| Disabled row | `disabled` — skipped by Arrow / typeahead navigation |
-| Keyboard | Esc closes (+ restores focus); Tab trapped in menu; Arrow Up/Down/Left/Right, Home/End; Enter/Space activates; typeahead by label |
-| Close after select | call `ref.close()` in the item click handler |
+| Case               | How                                                                                                                               |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| Right-click        | `@contextmenu` / `onContextMenu` → `open(e)` (+ `preventDefault`)                                                                 |
+| Button open        | same `open(e)` with the click event (positions near pointer)                                                                      |
+| Active row         | `active` on `ContextMenuItem`                                                                                                     |
+| Disabled row       | `disabled` — skipped by Arrow / typeahead navigation                                                                              |
+| Keyboard           | Esc closes (+ restores focus); Tab trapped in menu; Arrow Up/Down/Left/Right, Home/End; Enter/Space activates; typeahead by label |
+| Close after select | call `ref.close()` in the item click handler                                                                                      |
 
 ## Demo
 
@@ -64,8 +64,14 @@ Vue / React demo-draggable: **Menu** nav (`#/menu`) — canvas right-click, butt
   ariaLabel="Actions"
   onOpenChange={setMenuOpen}
 >
-  <ul className="context-menu" role="presentation">
-    <ContextMenuItem active={id === 'a'} onClick={() => onPick('a')}>
+  <ul
+    className="context-menu"
+    role="presentation"
+  >
+    <ContextMenuItem
+      active={id === 'a'}
+      onClick={() => onPick('a')}
+    >
       A
     </ContextMenuItem>
     <ContextMenuItem disabled>Off</ContextMenuItem>

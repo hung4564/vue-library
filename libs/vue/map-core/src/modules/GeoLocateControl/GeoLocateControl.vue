@@ -10,10 +10,8 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { ref, watch } from 'vue';
 
-import MapCommonButton from '../../components/MapCommonButton.vue';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
 
@@ -36,7 +34,7 @@ const emit = defineEmits<{
   trackuserlocationend: [];
 }>();
 
-const { mapId, callMap, moduleContainerProps, order } = useMap(
+const { mapId, callMap, order } = useMap(
   { ...props, controlId: 'mapGeoLocateControl' },
   undefined,
   onDestroy,
@@ -137,15 +135,12 @@ function onClick() {
   });
 }
 
-useRegisterMapControl(mapId, {
+const { moduleContainerProps, control } = useMapControl(mapId, {
   id: 'mapGeoLocateControl',
   panelKind: 'button',
-  buttonPosition: () => props.position,
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-    ...sessionOptions(),
-  }),
+  from: props,
+  order,
+  getProps: () => ({ ...sessionOptions() }),
   actions: [
     {
       type: 'mapGeoLocateControl',
@@ -154,10 +149,7 @@ useRegisterMapControl(mapId, {
       },
     },
   ],
-});
-const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapGeoLocateControl',
-  getState() {
+  getButtonState() {
     const error = ui.value.errorMessage;
     const background = ui.value.background;
     return mdiButtonState(error ? mdiCrosshairsOff : mdiCrosshairsGps, {
@@ -178,18 +170,10 @@ const { state, control } = useToolbarControl(mapId.value, props, {
   },
 });
 
-watch(ui, () => control.sync(), { deep: true });
+watch(ui, () => control?.sync(), { deep: true });
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
     <slot />
   </ModuleContainer>
 </template>

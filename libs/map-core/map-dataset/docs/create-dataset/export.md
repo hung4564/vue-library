@@ -10,21 +10,21 @@ Needs `installMapApp` (or `createDatasetRegistryPlugin`) plus `ComponentManageme
 
 **Naming — `onExport` vs `exportHandler`**
 
-| Where | Prop |
-| --- | --- |
-| Menu / dataset-part / `GeoExportOptions` / controller | **`onExport`** |
+| Where                                                             | Prop                |
+| ----------------------------------------------------------------- | ------------------- |
+| Menu / dataset-part / `GeoExportOptions` / controller             | **`onExport`**      |
 | ExportGeo shell attr (`addComponent` / `ExportGeoComponentAttrs`) | **`exportHandler`** |
 
 Same function. The shell uses `exportHandler` so Vue `$attrs` does not treat `onExport` as a fallthrough `export` event listener. The controller maps `exportHandler` → `onExport` when building the run context.
 
 ## Formats
 
-| Format | File | Notes |
-| --- | --- | --- |
-| GeoJSON | `.geojson` | Always available |
-| CSV | `.csv` | Properties + `geometry` JSON column |
-| KML | `.kml` | Needs optional peer `tokml` |
-| Shapefile | `.zip` | Needs optional peer `@mapbox/shp-write` |
+| Format    | File       | Notes                                   |
+| --------- | ---------- | --------------------------------------- |
+| GeoJSON   | `.geojson` | Always available                        |
+| CSV       | `.csv`     | Properties + `geometry` JSON column     |
+| KML       | `.kml`     | Needs optional peer `tokml`             |
+| Shapefile | `.zip`     | Needs optional peer `@mapbox/shp-write` |
 
 ## Data source (same precedence as Attribute Table)
 
@@ -39,11 +39,11 @@ One runner for everything. Omit `onExport` → built-in **local** pipeline (reso
 
 Custom handler receives `GeoExportContext`:
 
-| Field | Role |
-| --- | --- |
-| `resolveCollection()` | FeatureCollection for the chosen scope |
-| `downloadLocal(format?)` | Built-in local convert + download |
-| `format` / `filename` / `scope` / `ids` / `search` / `sort` / CRS | Current run |
+| Field                                                             | Role                                   |
+| ----------------------------------------------------------------- | -------------------------------------- |
+| `resolveCollection()`                                             | FeatureCollection for the chosen scope |
+| `downloadLocal(format?)`                                          | Built-in local convert + download      |
+| `format` / `filename` / `scope` / `ids` / `search` / `sort` / CRS | Current run                            |
 
 Return a **`Blob`** → lib downloads it. Return **`void`** → you handle download / upload yourself.
 
@@ -84,11 +84,11 @@ Pass `signal: AbortSignal` to `controller.run({ signal })` to cancel between pip
 
 ## UI modes
 
-| `uiMode` | Behavior |
-| --- | --- |
-| `'modal'` (default) | Opens ExportGeo shell: **filename**, **scope**, format, CRS, busy |
-| `'menu'` | Context-menu format list (`GEO_EXPORT_COMPONENT_KEY.formatMenu`) |
-| `'click'` | One menu row; runs export immediately with `formats[0]` (default `geojson`) |
+| `uiMode`            | Behavior                                                                    |
+| ------------------- | --------------------------------------------------------------------------- |
+| `'modal'` (default) | Opens ExportGeo shell: **filename**, **scope**, format, CRS, busy           |
+| `'menu'`            | Context-menu format list (`GEO_EXPORT_COMPONENT_KEY.formatMenu`)            |
+| `'click'`           | One menu row; runs export immediately with `formats[0]` (default `geojson`) |
 
 ```ts
 list.addMenu(createMenuItemExportGeo({ uiMode: 'menu', formats: ['geojson', 'csv'] }));
@@ -118,27 +118,23 @@ createDatasetPartAttributeTable('attribute-table', {
 
 Two levels (same idea as Attribute Table `cellComponent`):
 
-| Level | How |
-| --- | --- |
-| **Global** (map) | `UniversalRegistry.registerComponent` / `registerComponentForMap` with `GEO_EXPORT_COMPONENT_KEY.form` / `.loading` / … |
+| Level               | How                                                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Global** (map)    | `UniversalRegistry.registerComponent` / `registerComponentForMap` with `GEO_EXPORT_COMPONENT_KEY.form` / `.loading` / …   |
 | **Local** (dataset) | `formComponent` / `loadingComponent` on the dataset part or menu — Registry **`string` key** or a Vue/React **component** |
 
 Precedence for form / loading: **local** → global key → built-in default. A local **component** skips the global key so a map-level registration cannot override it.
 
-| Key | Role |
-| --- | --- |
-| `GEO_EXPORT_COMPONENT_KEY.root` | Full modal shell |
-| `GEO_EXPORT_COMPONENT_KEY.form` | Form body |
-| `GEO_EXPORT_COMPONENT_KEY.loading` | Busy indicator |
+| Key                                   | Role                              |
+| ------------------------------------- | --------------------------------- |
+| `GEO_EXPORT_COMPONENT_KEY.root`       | Full modal shell                  |
+| `GEO_EXPORT_COMPONENT_KEY.form`       | Form body                         |
+| `GEO_EXPORT_COMPONENT_KEY.loading`    | Busy indicator                    |
 | `GEO_EXPORT_COMPONENT_KEY.formatMenu` | Format submenu (`uiMode: 'menu'`) |
 
 ```ts
 // Global (all layers on this map)
-UniversalRegistry.registerComponentForMap(
-  mapId,
-  GEO_EXPORT_COMPONENT_KEY.loading,
-  MyLoading,
-);
+UniversalRegistry.registerComponentForMap(mapId, GEO_EXPORT_COMPONENT_KEY.loading, MyLoading);
 
 // Local — string key (register that key yourself)
 createDatasetPartGeoExport('export', {
@@ -204,10 +200,10 @@ npm install tokml @mapbox/shp-write
 
 ## Troubleshooting
 
-| Symptom | Cause / fix |
-| --- | --- |
-| Modal shows **No features to export** | Scope resolved to an empty FeatureCollection (e.g. selected with no rows). Change scope or select rows in the Attribute table. |
-| **Install optional peer "tokml"** | KML needs `npm i tokml`. |
-| **Install optional peer "@mapbox/shp-write"** | Shapefile needs `npm i @mapbox/shp-write`. |
+| Symptom                                         | Cause / fix                                                                                                                                          |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Modal shows **No features to export**           | Scope resolved to an empty FeatureCollection (e.g. selected with no rows). Change scope or select rows in the Attribute table.                       |
+| **Install optional peer "tokml"**               | KML needs `npm i tokml`.                                                                                                                             |
+| **Install optional peer "@mapbox/shp-write"**   | Shapefile needs `npm i @mapbox/shp-write`.                                                                                                           |
 | Download closes with no file (React StrictMode) | Use current `@hungpvq/react-map-dataset` — ExportGeo creates the controller inside `useEffect` so StrictMode dispose does not leave a dead instance. |
-| Custom handler not called from modal | Pass it as dataset-part / menu `onExport`; the shell attr is `exportHandler` (see tip above). |
+| Custom handler not called from modal            | Pass it as dataset-part / menu `onExport`; the shell attr is `exportHandler` (see tip above).                                                        |

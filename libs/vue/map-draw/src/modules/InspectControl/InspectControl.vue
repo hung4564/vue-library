@@ -17,13 +17,11 @@ import {
 } from '@hungpvq/map-draw';
 import {
   defaultMapProps,
-  MapCommonButton,
   ModuleContainer,
   useEventMap,
   useLang,
   useMap,
-  useRegisterMapControl,
-  useToolbarControl,
+  useMapControl,
 } from '@hungpvq/vue-map-core';
 import { mdiMap, mdiMapSearch } from '@mdi/js';
 import { ref } from 'vue';
@@ -80,7 +78,7 @@ const moveEvent = new EventMouseMove().setHandler(
   controller.handlePointerEvent,
 );
 
-const { mapId, moduleContainerProps, order } = useMap(props, onInit, onDestroy);
+const { mapId, order } = useMap(props, onInit, onDestroy);
 const { trans } = useLang(mapId.value);
 useEnsureDrawBuiltinLocales(mapId.value);
 const { add: addEventClick, remove: removeEventClick } = useEventMap(
@@ -117,14 +115,11 @@ function toggleInspect() {
   controller.toggle();
 }
 
-useRegisterMapControl(mapId, {
+const { moduleContainerProps, control } = useMapControl(mapId, {
   id: 'mapInspectControl',
   panelKind: 'button',
-  buttonPosition: () => props.position,
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
+  from: props,
+  order,
   actions: [
     {
       type: 'mapInspectControl',
@@ -133,11 +128,7 @@ useRegisterMapControl(mapId, {
       },
     },
   ],
-});
-
-const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapInspectControl',
-  getState() {
+  getButtonState() {
     return mdiButtonState(!showInspect.value ? path.map : path.inspect, {
       visible: true,
       title: trans.value('map.inspect-control.button'),
@@ -151,14 +142,6 @@ const { state, control } = useToolbarControl(mapId.value, props, {
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
     <slot />
   </ModuleContainer>
 </template>

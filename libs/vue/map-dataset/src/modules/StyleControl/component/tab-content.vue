@@ -17,7 +17,10 @@
       :mapId="mapId"
       class="tab-item-content"
     ></component>
-    <div v-if="default_value != null" class="full-width">
+    <div
+      v-if="default_value != null"
+      class="full-width"
+    >
       <hr class="map-divider" />
       <MapControlButton
         @click="onSetDefaultValue()"

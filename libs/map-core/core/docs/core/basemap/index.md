@@ -44,7 +44,10 @@ npm install @hungpvq/react-map-core
 
 ```vue
 <template>
-  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
+  <Map
+    :mapId="mapId"
+    @mapLoaded="onMapLoaded"
+  >
     <!-- Core controls -->
     <ZoomControl position="top-right" />
     <HomeControl position="top-right" />
@@ -64,18 +67,15 @@ import { BaseMapControl, BaseMapTagControl } from '@hungpvq/vue-map-core';
 #### React
 
 ```tsx
-import {
-  Map,
-  ZoomControl,
-  HomeControl,
-  BaseMapControl,
-  BaseMapTagControl,
-} from '@hungpvq/react-map-core';
+import { Map, ZoomControl, HomeControl, BaseMapControl, BaseMapTagControl } from '@hungpvq/react-map-core';
 import '@hungpvq/react-map-core/style.css';
 
 function App() {
   return (
-    <Map mapId={mapId} onMapLoaded={onMapLoaded}>
+    <Map
+      mapId={mapId}
+      onMapLoaded={onMapLoaded}
+    >
       <ZoomControl position="top-right" />
       <HomeControl position="top-right" />
       <BaseMapControl position="bottom-left" />
@@ -91,8 +91,14 @@ function App() {
 
 ```vue
 <template>
-  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
-    <LayerControl position="top-left" show>
+  <Map
+    :mapId="mapId"
+    @mapLoaded="onMapLoaded"
+  >
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
@@ -117,7 +123,10 @@ import '@hungpvq/react-map-core/style.css';
 
 function App() {
   return (
-    <Map mapId={mapId} onMapLoaded={onMapLoaded}>
+    <Map
+      mapId={mapId}
+      onMapLoaded={onMapLoaded}
+    >
       <LayerControl
         position="top-left"
         show

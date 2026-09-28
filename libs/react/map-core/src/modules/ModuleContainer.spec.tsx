@@ -30,7 +30,10 @@ describe('ModuleContainer portal', () => {
           position="top-left"
           controlLayout="standalone"
           btn={
-            <button type="button" data-testid="corner-btn">
+            <button
+              type="button"
+              data-testid="corner-btn"
+            >
               Go
             </button>
           }

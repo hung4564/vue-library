@@ -1,5 +1,8 @@
 <template>
-  <div class="collapse collapse-item" :class="{ 'is-active': active }">
+  <div
+    class="collapse collapse-item"
+    :class="{ 'is-active': active }"
+  >
     <div
       class="collapse-header touchable"
       role="tab"
@@ -10,13 +13,26 @@
         <slot name="header"></slot>
       </div>
       <div class="collapse-header__icon">
-        <SvgIcon size="14" type="mdi" :path="path.close" v-if="active" />
+        <SvgIcon
+          size="14"
+          type="mdi"
+          :path="path.close"
+          v-if="active"
+        />
 
-        <SvgIcon size="14" type="mdi" :path="path.open" v-else />
+        <SvgIcon
+          size="14"
+          type="mdi"
+          :path="path.open"
+          v-else
+        />
       </div>
     </div>
     <transition name="fade">
-      <div class="collapse-content" v-if="active">
+      <div
+        class="collapse-content"
+        v-if="active"
+      >
         <div class="collapse-content-box">
           <slot></slot>
         </div>

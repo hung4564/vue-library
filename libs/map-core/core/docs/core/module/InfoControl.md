@@ -14,10 +14,10 @@ Map view inspector: center, zoom, pitch, bearing, projection, and bounds. Click 
 
 and
 
-| Prop       | Description              | Type     | Required | Default Value |
-| ---------- | ------------------------ | -------- | -------- | ------------- |
-| `show`     | Open the panel initially | `boolean` | `false` | `false`       |
-| `fileName` | Screenshot file name     | `string`  | `false` | `'map'`       |
+| Prop       | Description              | Type      | Required | Default Value |
+| ---------- | ------------------------ | --------- | -------- | ------------- |
+| `show`     | Open the panel initially | `boolean` | `false`  | `false`       |
+| `fileName` | Screenshot file name     | `string`  | `false`  | `'map'`       |
 
 ## Events
 
@@ -48,5 +48,5 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <InfoControl position="top-right" />
-</Map>
+</Map>;
 ```

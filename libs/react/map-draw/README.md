@@ -30,7 +30,10 @@ export function Example() {
   }
 
   return (
-    <Map mapId="my-map" onMapLoaded={onMapLoaded}>
+    <Map
+      mapId="my-map"
+      onMapLoaded={onMapLoaded}
+    >
       <DrawControl position="top-right" />
     </Map>
   );

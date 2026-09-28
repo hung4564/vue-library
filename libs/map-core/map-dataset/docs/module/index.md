@@ -2,14 +2,14 @@
 
 Map controls (shared map props: `mapId`, `dragId`, `btnWidth`, `position`, `controlVisible`).
 
-| Component | Role | Custom events |
-| --- | --- | --- |
-| [LayerControl](./LayerControl.md) | Editable layer list | none (list node: `toggleShow`, `changeOpacity`) |
-| [IdentifyControl](./IdentifyControl.md) | Click / box identify | none |
-| [IdentifyShowFirstControl](./IdentifyShowFirstControl.md) | Click → first identify menu | none |
-| [DatasetControl](./DatasetControl.md) | Root dataset list | none |
-| [ComponentManagementControl](./ComponentManagementControl.md) | Dialogs from menus (`addComponent`) | none |
-| [CreateControl](./CreateControl.md) | Create-layer dialog | Vue `update:show` / React `onShowChange` |
+| Component                                                     | Role                                | Custom events                                   |
+| ------------------------------------------------------------- | ----------------------------------- | ----------------------------------------------- |
+| [LayerControl](./LayerControl.md)                             | Editable layer list                 | none (list node: `toggleShow`, `changeOpacity`) |
+| [IdentifyControl](./IdentifyControl.md)                       | Click / box identify                | none                                            |
+| [IdentifyShowFirstControl](./IdentifyShowFirstControl.md)     | Click → first identify menu         | none                                            |
+| [DatasetControl](./DatasetControl.md)                         | Root dataset list                   | none                                            |
+| [ComponentManagementControl](./ComponentManagementControl.md) | Dialogs from menus (`addComponent`) | none                                            |
+| [CreateControl](./CreateControl.md)                           | Create-layer dialog                 | Vue `update:show` / React `onShowChange`        |
 
 ## Helpers
 

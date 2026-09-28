@@ -9,7 +9,10 @@ const { toggle } = useFullscreen(el);
 
 <template>
   <div class="text-center">
-    <div class="flex" p="y-4">
+    <div
+      class="flex"
+      p="y-4"
+    >
       <video
         ref="el"
         class="m-auto rounded"

@@ -58,5 +58,5 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <PrintAdvancedControl fileName="custom-map" />
-</Map>
+</Map>;
 ```

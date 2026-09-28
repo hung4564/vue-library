@@ -6,7 +6,10 @@
     v-if="isGroup(item)"
   >
     <template #extra-data="{ item }">
-      <slot name="group-extra-data" :item="item" />
+      <slot
+        name="group-extra-data"
+        :item="item"
+      />
     </template>
     <template #items-list>
       <div class="draggable-group__children">
@@ -21,10 +24,16 @@
             :is-leaf="isLeaf"
           >
             <template #group-extra-data="{ item: groupItem }">
-              <slot name="group-extra-data" :item="groupItem" />
+              <slot
+                name="group-extra-data"
+                :item="groupItem"
+              />
             </template>
             <template #leaf="{ item: leafItem }">
-              <slot name="leaf" :item="leafItem" />
+              <slot
+                name="leaf"
+                :item="leafItem"
+              />
             </template>
           </RecursiveList>
         </template>
@@ -32,10 +41,20 @@
     </template>
   </ListGroupItem>
 
-  <ListItem :item="item" :disabled-drag="disabledDrag" v-else>
-    <slot name="leaf" :item="item">
+  <ListItem
+    :item="item"
+    :disabled-drag="disabledDrag"
+    v-else
+  >
+    <slot
+      name="leaf"
+      :item="item"
+    >
       <div class="leaf-item">
-        <span class="leaf-item__title" :title="(item as any).name">
+        <span
+          class="leaf-item__title"
+          :title="(item as any).name"
+        >
           {{ item.name }}
         </span>
       </div>

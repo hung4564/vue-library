@@ -87,7 +87,11 @@ export function DragDropFile({
     >
       <label className="ddf__label">
         <span className="ddf__label-inner">
-          <svg className="ddf__icon" viewBox="0 0 64 64" aria-hidden="true">
+          <svg
+            className="ddf__icon"
+            viewBox="0 0 64 64"
+            aria-hidden="true"
+          >
             <path
               fill="currentColor"
               d="M51,27c-.374,0-.742.025-1.109.056a18,18,0,0,0-35.782,0C13.742,27.025,13.374,27,13,27a13,13,0,0,0,0,26H51a13,13,0,0,0,0-26Z"

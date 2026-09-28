@@ -1,7 +1,13 @@
 <template lang="">
-  <div v-bind="$attrs" class="input-image">
+  <div
+    v-bind="$attrs"
+    class="input-image"
+  >
     <div>
-      <InputText :modelValue="form" @change="onSetValue($event.target.value)" />
+      <InputText
+        :modelValue="form"
+        @change="onSetValue($event.target.value)"
+      />
     </div>
     <div class="fill-canvas">
       <div

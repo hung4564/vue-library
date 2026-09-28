@@ -20,20 +20,23 @@ import '@hungpvq/vue-draggable/style.css';
 
 ```vue
 <script setup lang="ts">
-import {
-  DraggableContainer,
-  DraggableItemSideBar,
-  DraggableItemPopup,
-  DraggableItemFloat,
-} from '@hungpvq/vue-draggable';
+import { DraggableContainer, DraggableItemSideBar, DraggableItemPopup, DraggableItemFloat } from '@hungpvq/vue-draggable';
 </script>
 
 <template>
   <DraggableContainer>
-    <DraggableItemSideBar show title="sidebar 1">
+    <DraggableItemSideBar
+      show
+      title="sidebar 1"
+    >
       <div style="height: 100vh"></div>
     </DraggableItemSideBar>
-    <DraggableItemPopup show title="Popup 1" :top="10" :right="10">
+    <DraggableItemPopup
+      show
+      title="Popup 1"
+      :top="10"
+      :right="10"
+    >
       <div style="height: 100vh"></div>
     </DraggableItemPopup>
     <DraggableItemFloat

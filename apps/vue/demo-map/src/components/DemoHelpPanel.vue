@@ -191,7 +191,10 @@ const panelStyle = computed(() => {
       <span class="demo-help__toggle-label">
         {{ open ? chrome.hide : chrome.show }}
       </span>
-      <span class="demo-help__toggle-icon" aria-hidden="true">
+      <span
+        class="demo-help__toggle-icon"
+        aria-hidden="true"
+      >
         {{ open ? '▾' : '▸' }}
       </span>
     </button>
@@ -203,7 +206,10 @@ const panelStyle = computed(() => {
       role="region"
       :aria-label="chrome.title"
     >
-      <p v-if="resolved.intro" class="demo-help__intro">
+      <p
+        v-if="resolved.intro"
+        class="demo-help__intro"
+      >
         {{ resolved.intro }}
       </p>
       <ul class="demo-help__list">

@@ -3,7 +3,7 @@ import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   MapControlButton,
   useLang,
-  useRegisterMapControl,
+  useMapControl,
 } from '@hungpvq/react-map-core';
 import { mdiCrosshairsGps, mdiDeleteOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -37,7 +37,7 @@ export function DrawDraftList({
   bindDrag,
 }: DrawDraftListProps) {
   const { trans } = useLang(mapId);
-  const { panelBind } = useRegisterMapControl(mapId, {
+  const { panelBind } = useMapControl(mapId, {
     id: 'mapDrawDraftList',
     panelKind: 'popup',
     title: trans('map.draw-control.draftList.title'),
@@ -80,14 +80,20 @@ export function DrawDraftList({
         <tbody>
           {draftItems.length === 0 ? (
             <tr>
-              <td colSpan={3} className="table-col-empty">
+              <td
+                colSpan={3}
+                className="table-col-empty"
+              >
                 {trans('map.draw-control.draftList.empty')}
               </td>
             </tr>
           ) : (
             draftItems.map((item) => (
               <tr key={String(item.id)}>
-                <td title={String(item.id)} className="table-col-id">
+                <td
+                  title={String(item.id)}
+                  className="table-col-id"
+                >
                   {item.id}
                 </td>
                 <td className="table-col-type">
@@ -104,7 +110,10 @@ export function DrawDraftList({
                       )}
                       onClick={() => onFlyTo(item.modified as Feature)}
                     >
-                      <Icon path={mdiCrosshairsGps} size="16px" />
+                      <Icon
+                        path={mdiCrosshairsGps}
+                        size="16px"
+                      />
                     </MapControlButton>
                   ) : null}
                   <MapControlButton
@@ -114,7 +123,10 @@ export function DrawDraftList({
                     title={trans('map.draw-control.draftList.action.discard')}
                     onClick={() => onDiscardItem(item)}
                   >
-                    <Icon path={mdiDeleteOutline} size="16px" />
+                    <Icon
+                      path={mdiDeleteOutline}
+                      size="16px"
+                    />
                   </MapControlButton>
                 </td>
               </tr>

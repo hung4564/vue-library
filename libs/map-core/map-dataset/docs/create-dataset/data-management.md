@@ -34,9 +34,7 @@ createDataManagement('records', {
   format: 'list',
   persistKey: 'users',
   geometryFields: ['geometry', 'geom', 'geo'],
-  initData: [
-    { id: 1, name: 'A', geom: { type: 'Point', coordinates: [105, 21] } },
-  ],
+  initData: [{ id: 1, name: 'A', geom: { type: 'Point', coordinates: [105, 21] } }],
 });
 ```
 
@@ -112,7 +110,6 @@ createDataManagement('records', {
 
 Demo: `/#/dataset-data-management`. Layer ⋮ **View source** is attached on all demo list layers (`attachViewSourceMenuToLists`). Data-management lists use curated copy-ready snippets; other demos register factory source via `view-source-catalog` / highlight self-registration. Attribute table UI: [Attribute table](./attribute-table.md) (`/#/dataset-attribute-table`).
 
-
 For large APIs prefer `syncMap: false` and keep map data on a separate source; use `list` for tables/forms.
 
 ## Custom store
@@ -155,10 +152,10 @@ createDataManagement('records', {
 
 ## Map sync
 
-| Option | Behavior |
-| --- | --- |
+| Option                    | Behavior                                                                                     |
+| ------------------------- | -------------------------------------------------------------------------------------------- |
 | `syncMap: true` (default) | `addToMap` / `redraw` push `list({ pageSize: 'all' }).items` into the sibling GeoJSON source |
-| `syncMap: false` | CRUD only; map source managed elsewhere |
+| `syncMap: false`          | CRUD only; map source managed elsewhere                                                      |
 
 Export and Attribute table resolve data via `list({ pageSize: 'all' })` when a `data-management` sibling exists.
 

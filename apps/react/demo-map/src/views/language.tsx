@@ -123,7 +123,10 @@ export function LanguagePage() {
         <BaseMapControl position="bottom-left" />
         <MouseCoordinatesControl />
         <DemoHelpPanel />
-        <ReloadToggle checked={reloadOnSelect} onChange={setReloadOnSelect} />
+        <ReloadToggle
+          checked={reloadOnSelect}
+          onChange={setReloadOnSelect}
+        />
       </Map>
     </MapPageShell>
   );

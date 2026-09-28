@@ -18,11 +18,7 @@ const list = createDatasetPartListViewUiComponentBuilder('My Layer')
   .setOpacity(0.9)
   .setIndex(1)
   .setGroup({ id: 'g1', name: 'Group 1' })
-  .setLegend(
-    createMultiLegend([
-      { type: 'color', value: { text: 'Fill', value: '#4ecdc4' } },
-    ]),
-  )
+  .setLegend(createMultiLegend([{ type: 'color', value: { text: 'Fill', value: '#4ecdc4' } }]))
   .configInitShowLegend()
   .addMenu(createMenuItemToggleShow())
   .addMenus([
@@ -40,19 +36,19 @@ const list = createDatasetPartListViewUiComponentBuilder('My Layer')
 
 ## Builder methods
 
-| Method | Example | Effect |
-| --- | --- | --- |
-| `setColor` | `.setColor('#4ecdc4')` | Swatch / default paint |
-| `setOpacity` | `.setOpacity(0.8)` | Initial opacity |
-| `setIndex` | `.setIndex(2)` | Sort in the list |
-| `setGroup` | `.setGroup('g1')` or `{ id, name }` | Initial group |
-| `setLegend` | `.setLegend(createMultiLegend([...]))` | Legend block |
-| `configDisabledOpacity()` | | No opacity control / no auto opacity menu |
-| `configDisabledDelete()` | | Hide row delete |
-| `configDisabledMove()` | | Do not add Move up/down |
-| `configDisabledAddToGroup()` | | Do not add Add to group |
-| `configInitShowLegend()` | | Legend expanded |
-| `addMenu` / `addMenus` | see [Menus](./with-helper-menu.md) | Extra actions |
+| Method                       | Example                                | Effect                                    |
+| ---------------------------- | -------------------------------------- | ----------------------------------------- |
+| `setColor`                   | `.setColor('#4ecdc4')`                 | Swatch / default paint                    |
+| `setOpacity`                 | `.setOpacity(0.8)`                     | Initial opacity                           |
+| `setIndex`                   | `.setIndex(2)`                         | Sort in the list                          |
+| `setGroup`                   | `.setGroup('g1')` or `{ id, name }`    | Initial group                             |
+| `setLegend`                  | `.setLegend(createMultiLegend([...]))` | Legend block                              |
+| `configDisabledOpacity()`    |                                        | No opacity control / no auto opacity menu |
+| `configDisabledDelete()`     |                                        | Hide row delete                           |
+| `configDisabledMove()`       |                                        | Do not add Move up/down                   |
+| `configDisabledAddToGroup()` |                                        | Do not add Add to group                   |
+| `configInitShowLegend()`     |                                        | Legend expanded                           |
+| `addMenu` / `addMenus`       | see [Menus](./with-helper-menu.md)     | Extra actions                             |
 
 Each `configDisabled*(true)` is the default when called with no arg. Pass `false` to turn the flag off.
 
@@ -83,30 +79,22 @@ const rows: LayerListItem[] = /* … */;
 const tree: LayerListTreeNode[] = convertListToTree(rows);
 ```
 
-| Type | Use |
-| --- | --- |
-| `IListViewUI` | Dataset list-part protocol (`group` may be `string \| { id, name, children? }`) |
-| `LayerListItem` | Flat drag-list row: `IListViewUI` ∩ tree `Item` with `group?: ListViewGroupRef` |
-| `LayerListTreeNode` / `LayerListGroupTree` | Tree nodes after `convertListToTree` |
+| Type                                       | Use                                                                             |
+| ------------------------------------------ | ------------------------------------------------------------------------------- |
+| `IListViewUI`                              | Dataset list-part protocol (`group` may be `string \| { id, name, children? }`) |
+| `LayerListItem`                            | Flat drag-list row: `IListViewUI` ∩ tree `Item` with `group?: ListViewGroupRef` |
+| `LayerListTreeNode` / `LayerListGroupTree` | Tree nodes after `convertListToTree`                                            |
 
 `IListViewUI.group` can be a bare string; `convertListToTree` expects object groups with `.id`. Prefer `setGroup({ id, name })` or normalize before converting.
 
 ## Sub-list and group list
 
 ```ts
-import {
-  createDatasetPartGroupSubListViewUiComponentBuilder,
-  createDatasetPartSubListViewUiComponentBuilder,
-} from '@hungpvq/map-dataset';
+import { createDatasetPartGroupSubListViewUiComponentBuilder, createDatasetPartSubListViewUiComponentBuilder } from '@hungpvq/map-dataset';
 
-const group = createDatasetPartGroupSubListViewUiComponentBuilder('Group')
-  .setColor('#00bfff')
-  .configInitShowChildren()
-  .build();
+const group = createDatasetPartGroupSubListViewUiComponentBuilder('Group').setColor('#00bfff').configInitShowChildren().build();
 
-const child = createDatasetPartSubListViewUiComponentBuilder('Child')
-  .setColor('#ffa500')
-  .build();
+const child = createDatasetPartSubListViewUiComponentBuilder('Child').setColor('#ffa500').build();
 
 group.add(child);
 ```
@@ -117,9 +105,9 @@ group.add(child);
 
 The list node (not `LayerControl`) emits:
 
-| Event | Payload |
-| --- | --- |
-| `toggleShow` | `{ show: boolean, dataset }` |
+| Event           | Payload                        |
+| --------------- | ------------------------------ |
+| `toggleShow`    | `{ show: boolean, dataset }`   |
 | `changeOpacity` | `{ opacity: number, dataset }` |
 
 ```ts

@@ -34,7 +34,10 @@ export function ShowStatusSideBar({
   return (
     <div className="mgmt-groups">
       {filled.map(([side, state]) => (
-        <div key={side} className="mgmt-group">
+        <div
+          key={side}
+          className="mgmt-group"
+        >
           <div className="mgmt-group__title">
             <span>{capitalize(side)}</span>
             <span className="mgmt__count">{state.items.length}</span>

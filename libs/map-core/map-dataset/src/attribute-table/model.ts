@@ -13,7 +13,7 @@ export function isAttributeTableInternalPropertyKey(key: string): boolean {
   return key.startsWith('_');
 }
 
-/** AttributeTable registry id + select action (must match useRegisterMapControl). */
+/** AttributeTable registry id + select action (must match useMapControl). */
 export const ATTRIBUTE_TABLE_CONTROL = {
   id: 'mapAttributeTable',
   actionSelectRows: 'mapAttributeTable.selectRows',

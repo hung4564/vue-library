@@ -1,4 +1,8 @@
-import type { ControlLayout, Position } from '@hungpvq/map-core';
+import type {
+  ButtonInMobile,
+  ControlLayout,
+  Position,
+} from '@hungpvq/map-core';
 
 import type { IDataset } from '../interfaces/dataset.base';
 import type { MenuAction } from '../interfaces/dataset.parts';
@@ -20,7 +24,7 @@ import type { VirtualRowWindow } from './virtual-rows';
  * body with another table library (AG Grid, TanStack Table, …).
  */
 export const ATTRIBUTE_TABLE_COMPONENT_KEY = {
-  /** Full panel shell (popup + `useRegisterMapControl`). */
+  /** Full panel shell (popup + `useMapControl`). */
   root: 'attribute-table',
   /**
    * Entire table body inside the popup (toolbar + grid + pager by default).
@@ -168,6 +172,8 @@ export type AttributeTableProps = {
   position?: Position;
   controlLayout?: ControlLayout;
   controlVisible?: boolean;
+  /** Per-control override of Map `buttonInMobile`; `undefined` = inherit. */
+  buttonInMobile?: ButtonInMobile;
   controlOrder?: number | string;
   btnWidth?: number;
   /**

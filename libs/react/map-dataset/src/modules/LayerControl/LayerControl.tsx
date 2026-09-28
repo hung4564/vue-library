@@ -16,15 +16,13 @@ import {
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
-  MapCommonButton,
   MapControlButton,
   ModuleContainer,
   UniversalRegistry,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
-  useToolbarControl,
 } from '@hungpvq/react-map-core';
 import { mdiLayers, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
@@ -71,10 +69,7 @@ function renderSlot(slot: LayerControlSlot | undefined, mapId: string) {
 
 export function LayerControl(props: LayerControlProps) {
   const merged = { ...defaultMapProps, ...defaultLayerControlProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap({
-    ...merged,
-    controlId: 'mapLayerControl',
-  });
+  const { mapId, order } = useMap(merged);
   const { trans } = useLang(mapId);
   useEnsureDatasetBuiltinLocales(mapId);
   const [show, setShow] = useShow(props.show);
@@ -95,38 +90,35 @@ export function LayerControl(props: LayerControlProps) {
     [props.menuContext],
   );
 
-  const { panelPosition } = useRegisterMapControl(mapId, {
-    id: 'mapLayerControl',
-    panelKind: 'sidebar',
-    title: trans('map.layer-control.title'),
-    buttonPosition: merged.position,
-    show,
-    setShow,
-    initialPanelPosition: { location: 'left' },
-    getProps: () => ({
-      disabledCreate: merged.disabledCreate,
-      disabledCreateGroup: merged.disabledCreateGroup,
-      disabledDeleteAll: merged.disabledDeleteAll,
-      disabledMove: merged.disabledMove,
-      globalVisibilityMode: merged.globalVisibilityMode,
-      createLayerTypes: props.createLayerTypes,
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-    }),
-    actions: [{ type: 'mapLayerControl', run: () => setShow() }],
-  });
-
-  const { state, control } = useToolbarControl(mapId, merged, {
-    kind: 'single',
-    id: 'mapLayerControl',
-    getState: () =>
-      mdiButtonState(mdiLayers, {
-        active: show,
-        title: trans('map.layer-control.title'),
-        order,
+  const { moduleContainerProps, panelPosition, control } = useMapControl(
+    mapId,
+    {
+      id: 'mapLayerControl',
+      panelKind: 'sidebar',
+      title: trans('map.layer-control.title'),
+      from: merged,
+      order,
+      show,
+      setShow,
+      initialPanelPosition: { location: 'left' },
+      getProps: () => ({
+        disabledCreate: merged.disabledCreate,
+        disabledCreateGroup: merged.disabledCreateGroup,
+        disabledDeleteAll: merged.disabledDeleteAll,
+        disabledMove: merged.disabledMove,
+        globalVisibilityMode: merged.globalVisibilityMode,
+        createLayerTypes: props.createLayerTypes,
       }),
-    onClick: () => setShow(),
-  });
+      actions: [{ type: 'mapLayerControl', run: () => setShow() }],
+      getButtonState: () =>
+        mdiButtonState(mdiLayers, {
+          active: show,
+          title: trans('map.layer-control.title'),
+          order,
+        }),
+      onClick: () => setShow(),
+    },
+  );
 
   useEffect(() => {
     control.sync();
@@ -154,17 +146,6 @@ export function LayerControl(props: LayerControlProps) {
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : null
-      }
       draggable={(bind) => (
         <DraggableItemSideBar
           show={show}
@@ -210,7 +191,10 @@ export function LayerControl(props: LayerControlProps) {
                       data-testid="map-layer-create"
                       onClick={() => toggleShowCreate(true)}
                     >
-                      <Icon path={mdiPlus} size="14px" />
+                      <Icon
+                        path={mdiPlus}
+                        size="14px"
+                      />
                     </MapControlButton>
                   ) : null
                 }

@@ -5,7 +5,10 @@
     </div>
     <template v-if="!field.inline">
       <div class="layer-detail-grid">
-        <div class="layer-detail-grid__label" :title="label">
+        <div
+          class="layer-detail-grid__label"
+          :title="label"
+        >
           {{ label }}
         </div>
         <div class="layer-detail-grid__value">
@@ -13,8 +16,16 @@
         </div>
       </div>
     </template>
-    <div class="layer-detail-grid layer-detail-grid--full" v-else>
-      <input-text-area readonly rows="10" v-model="value" :label="label" />
+    <div
+      class="layer-detail-grid layer-detail-grid--full"
+      v-else
+    >
+      <input-text-area
+        readonly
+        rows="10"
+        v-model="value"
+        :label="label"
+      />
     </div>
   </div>
 </template>

@@ -1,7 +1,10 @@
 <template>
   <div class="layer-item-container">
     <div class="layer-item__info">
-      <div v-if="isHasIcon" class="layer-item__icon">
+      <div
+        v-if="isHasIcon"
+        class="layer-item__icon"
+      >
         <RegistryItem
           v-if="props.item.icon?.componentKey"
           :componentKey="props.item.icon.componentKey"
@@ -15,16 +18,24 @@
         :title="item.getName()"
         @click="emit('click', item)"
       >
-        <template v-for="(part, i) in nameParts" :key="i">
-          <mark v-if="part.match" class="layer-item__search-match">{{
-            part.text
-          }}</mark>
+        <template
+          v-for="(part, i) in nameParts"
+          :key="i"
+        >
+          <mark
+            v-if="part.match"
+            class="layer-item__search-match"
+            >{{ part.text }}</mark
+          >
           <span v-else>{{ part.text }}</span>
         </template>
       </span>
       <div class="v-spacer"></div>
       <div class="layer-item__title-action">
-        <slot name="pre-btn" :loading="loading" />
+        <slot
+          name="pre-btn"
+          :loading="loading"
+        />
         <DatasetMenus
           :menus="button_menus"
           :data="item"
@@ -41,9 +52,16 @@
           variant="plain"
           size="small"
         >
-          <SvgIcon size="14" type="mdi" :path="path.delete" />
+          <SvgIcon
+            size="14"
+            type="mdi"
+            :path="path.delete"
+          />
         </MapControlButton>
-        <slot name="extra-btn" :loading="loading" />
+        <slot
+          name="extra-btn"
+          :loading="loading"
+        />
         <template v-if="!showBottom">
           <DatasetMenus
             :menus="button_menus"
@@ -69,7 +87,10 @@
         </template>
       </div>
     </div>
-    <div class="layer-item__action" v-if="showBottom">
+    <div
+      class="layer-item__action"
+      v-if="showBottom"
+    >
       <DatasetMenus
         :menus="button_menus"
         :data="item"
@@ -123,7 +144,10 @@
         v-bind="props.item.legend.attr"
       ></RegistryItem>
     </div>
-    <div v-if="isHasChildren && childrenShow" class="layer-item__children">
+    <div
+      v-if="isHasChildren && childrenShow"
+      class="layer-item__children"
+    >
       <LayerSubItem
         v-for="item in children"
         :key="item.id"

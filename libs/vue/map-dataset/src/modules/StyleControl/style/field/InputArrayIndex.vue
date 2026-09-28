@@ -1,5 +1,8 @@
 <template lang="">
-  <div v-bind="$attrs" class="input-array-index">
+  <div
+    v-bind="$attrs"
+    class="input-array-index"
+  >
     <div
       class="input-array-item"
       v-for="(arr, index) in items"

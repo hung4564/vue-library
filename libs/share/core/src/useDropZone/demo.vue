@@ -58,7 +58,12 @@ const { isOverDropZone: isOverImageDropZone } = useDropZone(imageDropZoneRef, {
 
       <div class="flex gap-6">
         <div class="flex flex-col items-center">
-          <img ref="pngRef" src="./vue.png" alt="Drag me" h-10 />
+          <img
+            ref="pngRef"
+            src="./vue.png"
+            alt="Drag me"
+            h-10
+          />
           <span>PNG</span>
         </div>
       </div>
@@ -68,7 +73,12 @@ const { isOverDropZone: isOverImageDropZone } = useDropZone(imageDropZoneRef, {
           ref="dropZoneRef"
           class="flex flex-col w-full min-h-200px h-auto bg-gray-400/10 justify-center items-center mt-6 rounded"
         >
-          <div font-bold mb2>General DropZone</div>
+          <div
+            font-bold
+            mb2
+          >
+            General DropZone
+          </div>
           <div>
             isOverDropZone:
             <BooleanDisplay :value="isOverDropZone" />
@@ -90,7 +100,12 @@ const { isOverDropZone: isOverImageDropZone } = useDropZone(imageDropZoneRef, {
           ref="imageDropZoneRef"
           class="flex flex-col w-full min-h-200px h-auto bg-gray-400/10 justify-center items-center mt-6 rounded"
         >
-          <div font-bold mb2>Image DropZone</div>
+          <div
+            font-bold
+            mb2
+          >
+            Image DropZone
+          </div>
           <div>
             isOverDropZone:
             <BooleanDisplay :value="isOverImageDropZone" />

@@ -11,11 +11,9 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiCog } from '@mdi/js';
 import { ref, watch } from 'vue';
 
-import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { InputText } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';
@@ -24,7 +22,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 const [show, setShow] = useShow(props.show);
-const { callMap, mapId, moduleContainerProps, order } = useMap(props);
+const { callMap, mapId, order } = useMap(props);
 const { trans } = useLang(mapId.value);
 function onToggleShow() {
   setShow(!show.value);
@@ -40,24 +38,6 @@ function onToggleShow() {
     });
   }
 }
-const { panelBind } = useRegisterMapControl(mapId, {
-  id: 'mapSettingControl',
-  panelKind: 'popup',
-  title: () => trans.value('map.setting-control.title'),
-  buttonPosition: () => props.position,
-  show,
-  setShow,
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
-  actions: [
-    {
-      type: 'mapSettingControl',
-      run: () => onToggleShow(),
-    },
-  ],
-});
 const setting = ref<{
   zoom?: number;
   center: [number, number];
@@ -79,9 +59,21 @@ const onSetSetting = () => {
     });
   });
 };
-const { state, control } = useToolbarControl(mapId.value, props, {
+const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   id: 'mapSettingControl',
-  getState() {
+  panelKind: 'popup',
+  title: () => trans.value('map.setting-control.title'),
+  from: props,
+  order,
+  show,
+  setShow,
+  actions: [
+    {
+      type: 'mapSettingControl',
+      run: () => onToggleShow(),
+    },
+  ],
+  getButtonState() {
     return mdiButtonState(mdiCog, {
       visible: true,
       active: show.value,
@@ -93,19 +85,10 @@ const { state, control } = useToolbarControl(mapId.value, props, {
     onToggleShow();
   },
 });
-watch(show, () => control.sync());
+watch(show, () => control?.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
-
     <template #draggable="slotProps">
       <DraggableItemPopup
         v-if="show"

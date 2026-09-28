@@ -53,7 +53,7 @@ import {
   RegistryItem,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
 } from '@hungpvq/vue-map-core';
 import type { Feature } from 'geojson';
 import { computed, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue';
@@ -67,7 +67,7 @@ const emit = defineEmits<{ close: [] }>();
 provideMenuConditionContext(() => ({
   control: MENU_CONTROL_ID.attributeTable,
 }));
-const { mapId, moduleContainerProps, callMap } = useMap(props);
+const { mapId, callMap } = useMap(props);
 const controlId = attributeTableControlId(props.layer.id);
 const { trans } = useLang(mapId.value);
 watch(
@@ -229,11 +229,11 @@ const title = computed(() => {
 /** Popup `close()` emits both `update:show(false)` and `close` — dismiss once. */
 let closed = false;
 
-const { panelBind } = useRegisterMapControl(mapId, {
+const { panelBind, moduleContainerProps } = useMapControl(mapId, {
   id: controlId,
   panelKind: 'popup',
   title: () => title.value,
-  buttonPosition: () => props.position,
+  from: props,
   show,
   setShow: (value) => {
     if (!value) {
@@ -243,10 +243,6 @@ const { panelBind } = useRegisterMapControl(mapId, {
     closed = false;
     show.value = true;
   },
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
   actions: [
     {
       type: ATTRIBUTE_TABLE_CONTROL.id,

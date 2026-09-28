@@ -146,7 +146,10 @@ export function ConfigMbtilesJson({
             {metaChips.length ? (
               <ul className="create-control-loaded__meta">
                 {metaChips.map((chip) => (
-                  <li key={chip} className="create-control-loaded__chip">
+                  <li
+                    key={chip}
+                    className="create-control-loaded__chip"
+                  >
                     {chip}
                   </li>
                 ))}

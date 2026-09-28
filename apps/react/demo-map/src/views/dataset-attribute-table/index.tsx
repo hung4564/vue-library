@@ -269,7 +269,10 @@ function AttributeTablePlayground({
           onChange={(e) => setSelectedKey(e.target.value as LayerKey)}
         >
           {LAYER_OPTIONS.map((opt) => (
-            <option key={opt.key} value={opt.key}>
+            <option
+              key={opt.key}
+              value={opt.key}
+            >
               {opt.label}
             </option>
           ))}
@@ -283,7 +286,10 @@ function AttributeTablePlayground({
           onChange={(e) => onOverrideKeyChange(e.target.value as OverrideKey)}
         >
           {OVERRIDE_OPTIONS.map((opt) => (
-            <option key={opt.key} value={opt.key}>
+            <option
+              key={opt.key}
+              value={opt.key}
+            >
               {opt.label}
             </option>
           ))}
@@ -354,7 +360,11 @@ function AttributeTablePlayground({
         >
           {ATTRIBUTE_TABLE_CONTROL.actionSelectRows}
         </MapControlButton>
-        <MapControlButton variant="outlined" size="small" onClick={toggleShow}>
+        <MapControlButton
+          variant="outlined"
+          size="small"
+          onClick={toggleShow}
+        >
           toggle show
         </MapControlButton>
       </div>

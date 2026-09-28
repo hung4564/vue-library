@@ -42,5 +42,5 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <SettingControl />
-</Map>
+</Map>;
 ```

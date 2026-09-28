@@ -52,7 +52,11 @@ export function MapControlGroupButton({
     <MapControlButtonGroupContext.Provider
       value={{ isGroup: true, groupSize: sizePx }}
     >
-      <div className={classes} style={containerStyle} {...props}>
+      <div
+        className={classes}
+        style={containerStyle}
+        {...props}
+      >
         <div
           className={`button-group-sheet ${
             !row ? 'button-group-sheet-column' : ''

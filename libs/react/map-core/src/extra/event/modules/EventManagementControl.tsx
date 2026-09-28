@@ -9,16 +9,14 @@ import {
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import { MapCommonButton } from '../../../components/MapCommonButton';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useMapMittStore } from '../../../store/mitt-store';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useMapControl } from '../../registry/useMapControl';
 import { useEventMapItems } from '../hook/useEventMapItems';
 
 export interface EventManagementControlProps extends WithMapPropType {
@@ -27,26 +25,9 @@ export interface EventManagementControlProps extends WithMapPropType {
 
 export function EventManagementControl(props: EventManagementControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps } = useMap({
-    ...merged,
-    controlId: 'mapEventManagementControl',
-  });
+  const { mapId, order } = useMap(merged);
   const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
-  const { panelPosition } = useRegisterMapControl(mapId, {
-    id: 'mapEventManagementControl',
-    panelKind: 'sidebar',
-    title: trans('map.event-control.title'),
-    buttonPosition: merged.position,
-    show,
-    setShow: toggleShow,
-    initialPanelPosition: { location: 'left' },
-    getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-    }),
-    actions: [{ type: 'mapEventManagementControl', run: () => toggleShow() }],
-  });
   const [events, setEvents] = useState<IEvent[]>([]);
   const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
   const { getCurrent } = useEventMapItems(mapId, {
@@ -65,37 +46,35 @@ export function EventManagementControl(props: EventManagementControlProps) {
 
   const groupedViews = useMemo(() => groupEventsByMapType(events), [events]);
 
-  const { state, control } = useToolbarControl(mapId, merged, {
-    kind: 'single',
-    id: 'mapEventManagementControl',
-    getState: () =>
-      mdiButtonState(mdiCalendarSearch, {
-        active: show,
-        title: trans('map.event-control.title'),
-      }),
-    onClick: () => toggleShow(),
-  });
-  const controlRef = useRef(control);
-  controlRef.current = control;
+  const { moduleContainerProps, panelPosition, control } = useMapControl(
+    mapId,
+    {
+      id: 'mapEventManagementControl',
+      panelKind: 'sidebar',
+      title: trans('map.event-control.title'),
+      from: merged,
+      order,
+      show,
+      setShow: toggleShow,
+      initialPanelPosition: { location: 'left' },
+      actions: [{ type: 'mapEventManagementControl', run: () => toggleShow() }],
+      getButtonState: () =>
+        mdiButtonState(mdiCalendarSearch, {
+          active: show,
+          title: trans('map.event-control.title'),
+          order,
+        }),
+      onClick: () => toggleShow(),
+    },
+  );
 
   useEffect(() => {
-    controlRef.current.sync();
-  }, [show]);
+    control.sync();
+  }, [show, control]);
 
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : null
-      }
       draggable={(bind) => (
         <DraggableItemSideBar
           show={show}
@@ -106,7 +85,10 @@ export function EventManagementControl(props: EventManagementControlProps) {
         >
           <div className="map-event-control">
             {Object.entries(groupedViews).map(([type, group]) => (
-              <div key={type} className="map-event-control__group">
+              <div
+                key={type}
+                className="map-event-control__group"
+              >
                 <h2 className="map-event-control__group-title">{type}</h2>
                 <ul className="map-event-control__list">
                   {group.map((event) => {

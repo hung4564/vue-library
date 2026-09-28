@@ -124,7 +124,10 @@ export function FieldGeometry({
             className="map-measurement-geometry__btn"
             title={titleActionFillBound}
           >
-            <Icon path={mdiCrosshairsGps} size="16px" />
+            <Icon
+              path={mdiCrosshairsGps}
+              size="16px"
+            />
           </button>
           <button
             type="button"
@@ -133,7 +136,10 @@ export function FieldGeometry({
             disabled={!value.length}
             title={titleActionDownload}
           >
-            <Icon path={mdiDownloadOutline} size="16px" />
+            <Icon
+              path={mdiDownloadOutline}
+              size="16px"
+            />
           </button>
           {isCanAdd ? (
             <button
@@ -142,14 +148,20 @@ export function FieldGeometry({
               className="map-measurement-geometry__btn"
               title={titleActionAddPoint}
             >
-              <Icon path={mdiPlus} size="16px" />
+              <Icon
+                path={mdiPlus}
+                size="16px"
+              />
             </button>
           ) : null}
         </div>
       </div>
       <div className="map-measurement-geometry__list">
         {value.map((item, index) => (
-          <div className="map-measurement-geometry__item" key={index}>
+          <div
+            className="map-measurement-geometry__item"
+            key={index}
+          >
             <div>#{index + 1}</div>
             <div>
               <input
@@ -177,7 +189,10 @@ export function FieldGeometry({
                 onClick={() => onDeleteItem(index)}
                 className="map-measurement-geometry__btn"
               >
-                <Icon path={mdiDeleteOutline} size="16px" />
+                <Icon
+                  path={mdiDeleteOutline}
+                  size="16px"
+                />
               </button>
             </div>
           </div>

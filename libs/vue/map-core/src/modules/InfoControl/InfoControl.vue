@@ -28,12 +28,10 @@ import {
 } from '@mdi/js';
 import { computed, onUnmounted, ref, watch } from 'vue';
 
-import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import MapCopyButton from '../../components/MapCopyButton.vue';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
@@ -52,27 +50,8 @@ const props = withDefaults(
 );
 
 const [show, setShow] = useShow(props.show ?? false);
-const { callMap, mapId, moduleContainerProps, order } = useMap(props);
+const { callMap, mapId, order } = useMap(props);
 const { trans } = useLang(mapId.value);
-const { panelBind } = useRegisterMapControl(mapId, {
-  id: 'mapInfoControl',
-  panelKind: 'popup',
-  title: () => trans.value('map.info-control.title'),
-  buttonPosition: () => props.position,
-  show,
-  setShow,
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-    fileName: props.fileName,
-  }),
-  actions: [
-    {
-      type: 'mapInfoControl',
-      run: () => onToggleShow(),
-    },
-  ],
-});
 
 const info = ref<MapViewInfo>({ ...EMPTY_MAP_VIEW_INFO });
 const capturing = ref(false);
@@ -133,9 +112,24 @@ const rows = computed(() => [
   },
 ]);
 
-const { state, control } = useToolbarControl(mapId.value, props, {
+const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   id: 'mapInfoControl',
-  getState() {
+  panelKind: 'popup',
+  title: () => trans.value('map.info-control.title'),
+  from: props,
+  order,
+  show,
+  setShow,
+  getProps: () => ({
+    fileName: props.fileName,
+  }),
+  actions: [
+    {
+      type: 'mapInfoControl',
+      run: () => onToggleShow(),
+    },
+  ],
+  getButtonState() {
     return mdiButtonState(mdiInformationOutline, {
       visible: true,
       active: show.value,
@@ -211,13 +205,6 @@ async function onPasteGoTo() {
 
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      />
-    </template>
     <template #draggable="slotProps">
       <DraggableItemPopup
         v-if="show"
@@ -236,7 +223,11 @@ async function onPasteGoTo() {
             @click.stop="onScreenshot"
             variant="plain"
           >
-            <SvgIcon :size="16" type="mdi" :path="mdiCameraOutline" />
+            <SvgIcon
+              :size="16"
+              type="mdi"
+              :path="mdiCameraOutline"
+            />
           </MapControlButton>
           <MapControlButton
             :title="trans('map.info-control.copy-image')"
@@ -244,7 +235,11 @@ async function onPasteGoTo() {
             @click.stop="onCopyImage"
             variant="plain"
           >
-            <SvgIcon :size="16" type="mdi" :path="mdiContentCopy" />
+            <SvgIcon
+              :size="16"
+              type="mdi"
+              :path="mdiContentCopy"
+            />
           </MapControlButton>
         </template>
         <div class="map-info-control">

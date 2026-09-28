@@ -57,7 +57,10 @@ export function DatasetMenuPage() {
 
   return (
     <MapPageShell>
-      <Map mapId={mapId} onMapLoaded={onMapLoaded}>
+      <Map
+        mapId={mapId}
+        onMapLoaded={onMapLoaded}
+      >
         <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />

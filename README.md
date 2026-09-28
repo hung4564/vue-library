@@ -144,7 +144,10 @@ function onMapLoaded(map: MapSimple) {
 
 <template>
   <Map @mapLoaded="onMapLoaded">
-    <LayerControl position="top-left" show />
+    <LayerControl
+      position="top-left"
+      show
+    />
     <BaseMapControl position="bottom-left" />
     <MeasurementControl position="top-right" />
     <PrintControl />

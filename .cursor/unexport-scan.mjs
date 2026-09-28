@@ -9,7 +9,8 @@ const APP_DIRS = [
   'apps/react/demo-draggable/src',
 ];
 const norm = (p) => p.replace(/\\/g, '/');
-const SKIP = /(\.spec\.|\.test\.|test-setup|demo\.vue$|styles\.(css|scss)$|vue-shims|shims-vue)/;
+const SKIP =
+  /(\.spec\.|\.test\.|test-setup|demo\.vue$|styles\.(css|scss)$|vue-shims|shims-vue)/;
 
 function walk(dir, out = []) {
   if (!fs.existsSync(dir)) return out;
@@ -33,14 +34,21 @@ function extractExports(content, file) {
     while ((m = re.exec(content))) {
       if (re.source.includes('\\{')) {
         for (const part of m[1].split(',')) {
-          const name = part.trim().split(/\s+as\s+/).pop()?.trim();
+          const name = part
+            .trim()
+            .split(/\s+as\s+/)
+            .pop()
+            ?.trim();
           if (name && name !== 'default') syms.push(name);
         }
       } else syms.push(m[1]);
     }
   }
   if (file.endsWith('.vue')) {
-    for (const m of content.matchAll(/defineOptions\s*\(\s*\{[^}]*name:\s*['"](\w+)['"]/g)) syms.push(m[1]);
+    for (const m of content.matchAll(
+      /defineOptions\s*\(\s*\{[^}]*name:\s*['"](\w+)['"]/g,
+    ))
+      syms.push(m[1]);
   }
   return [...new Set(syms)];
 }
@@ -62,7 +70,10 @@ for (const d of APP_DIRS) {
         }
       }
       if (cross === 0) {
-        const localUses = (c.replace(/export\s+/g, '').match(new RegExp(`\\b${sym}\\b`, 'g')) || []).length;
+        const localUses = (
+          c.replace(/export\s+/g, '').match(new RegExp(`\\b${sym}\\b`, 'g')) ||
+          []
+        ).length;
         if (localUses > 1) results.push({ file: f, sym, localUses });
       }
     }

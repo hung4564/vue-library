@@ -59,7 +59,10 @@ export function GeojsonSettings({
           String(config.crs ?? ''),
           typeof config.detectedCrs === 'string' ? config.detectedCrs : null,
         ) ? (
-          <div className="create-control-crs-mismatch" role="status">
+          <div
+            className="create-control-crs-mismatch"
+            role="status"
+          >
             {trans('map.layer-control.create.crs-mismatch')}
           </div>
         ) : null}

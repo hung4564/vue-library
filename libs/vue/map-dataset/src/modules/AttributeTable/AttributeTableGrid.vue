@@ -247,7 +247,11 @@ function columnFilterAria(column: AttributeTableColumn) {
     :aria-label="props.gridRegionLabel"
     aria-busy="true"
   >
-    <div class="attribute-table__status" role="status" aria-live="polite">
+    <div
+      class="attribute-table__status"
+      role="status"
+      aria-live="polite"
+    >
       {{ props.loadingLabel }}
     </div>
   </div>
@@ -257,7 +261,11 @@ function columnFilterAria(column: AttributeTableColumn) {
     role="region"
     :aria-label="props.gridRegionLabel"
   >
-    <div class="attribute-table__status" role="status" aria-live="polite">
+    <div
+      class="attribute-table__status"
+      role="status"
+      aria-live="polite"
+    >
       {{ props.emptyLabel }}
     </div>
   </div>
@@ -274,10 +282,17 @@ function columnFilterAria(column: AttributeTableColumn) {
       @scroll.passive="syncScrollMetrics"
       @keydown="onRegionKeydown"
     >
-      <table class="attribute-table__table" :aria-label="props.tableLabel">
+      <table
+        class="attribute-table__table"
+        :aria-label="props.tableLabel"
+      >
         <thead>
           <tr>
-            <th v-if="showCheckbox" class="attribute-table__check" scope="col">
+            <th
+              v-if="showCheckbox"
+              class="attribute-table__check"
+              scope="col"
+            >
               <input
                 type="checkbox"
                 :checked="props.allVisibleSelected"
@@ -330,8 +345,15 @@ function columnFilterAria(column: AttributeTableColumn) {
               }}</span>
             </th>
           </tr>
-          <tr v-if="showColumnFilter" class="attribute-table__filter-row">
-            <th v-if="showCheckbox" class="attribute-table__check" scope="col">
+          <tr
+            v-if="showColumnFilter"
+            class="attribute-table__filter-row"
+          >
+            <th
+              v-if="showCheckbox"
+              class="attribute-table__check"
+              scope="col"
+            >
               <span class="attribute-table__sr-only">{{
                 props.columnFilterForLabel
               }}</span>
@@ -395,7 +417,11 @@ function columnFilterAria(column: AttributeTableColumn) {
             "
             @focus="focusedRowId = row.id"
           >
-            <td v-if="showCheckbox" class="attribute-table__check" @click.stop>
+            <td
+              v-if="showCheckbox"
+              class="attribute-table__check"
+              @click.stop
+            >
               <input
                 type="checkbox"
                 :checked="props.selectedIds.has(row.id)"

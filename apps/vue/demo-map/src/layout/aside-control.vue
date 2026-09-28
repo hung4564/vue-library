@@ -1,14 +1,8 @@
 <template lang="">
-  <ModuleContainer v-bind="moduleContainerProps" :active="show">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
-
+  <ModuleContainer
+    v-bind="moduleContainerProps"
+    :active="show"
+  >
     <template #draggable="props">
       <DraggableItemSideBar
         :containerId="props.containerId"
@@ -21,10 +15,15 @@
           </span>
         </template>
         <v-list>
-          <v-list-item v-for="item in navItems" :key="item.to">
-            <RouterLink :to="item.to" @click="toggleShow(false)">{{
-              item.label
-            }}</RouterLink>
+          <v-list-item
+            v-for="item in navItems"
+            :key="item.to"
+          >
+            <RouterLink
+              :to="item.to"
+              @click="toggleShow(false)"
+              >{{ item.label }}</RouterLink
+            >
           </v-list-item>
         </v-list>
       </DraggableItemSideBar>
@@ -38,12 +37,11 @@ import { VList, VListItem } from '@hungpvq/ui-core';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   makeShowProps,
-  MapCommonButton,
   ModuleContainer,
   useLang,
   useMap,
+  useMapControl,
   useShow,
-  useToolbarControl,
   withMapProps,
 } from '@hungpvq/vue-map-core';
 import { mdiMenu } from '@mdi/js';
@@ -56,7 +54,6 @@ export default {
     ModuleContainer,
     VListItem,
     RouterLink,
-    MapCommonButton,
   },
   props: {
     ...withMapProps,
@@ -67,7 +64,7 @@ export default {
       icon: mdiMenu,
     };
     const [show, toggleShow] = useShow(props.show);
-    const { mapId, moduleContainerProps } = useMap({
+    const { mapId, order } = useMap({
       ...props,
       controlId: 'asideControl',
     });
@@ -81,20 +78,37 @@ export default {
       },
     });
 
-    const { state, control } = useToolbarControl(mapId.value, props, {
+    const { moduleContainerProps, control } = useMapControl(mapId, {
       id: 'asideControl',
-      getState() {
+      panelKind: 'sidebar',
+      title: () => trans.value('map.aside-control.title'),
+      position: () => props.position,
+      order,
+      controlLayout: () => props.controlLayout,
+      controlVisible: () => props.controlVisible,
+      buttonInMobile: () => props.buttonInMobile,
+      show,
+      setShow: (value) => toggleShow(value),
+      actions: [
+        {
+          type: 'asideControl',
+          run: () => toggleShow(),
+        },
+      ],
+      getButtonState() {
         return mdiButtonState(path.icon, {
           visible: true,
+          active: show.value,
           title: trans.value('map.aside-control.title'),
+          order: order.value,
         });
       },
       onClick() {
         toggleShow();
       },
     });
+
     return {
-      state,
       control,
       show,
       toggleShow,

@@ -47,7 +47,7 @@ import {
   RegistryItem,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
 import { loggerFactory } from '@hungpvq/shared-log';
@@ -61,7 +61,7 @@ import { AttributeTableView } from './AttributeTableView';
 export function AttributeTable(props: AttributeTableProps) {
   const merged = { ...defaultMapProps, ...props };
   const controlId = attributeTableControlId(props.layer.id);
-  const { mapId, moduleContainerProps } = useMap({
+  const { mapId } = useMap({
     ...merged,
     controlId,
   });
@@ -311,11 +311,11 @@ export function AttributeTable(props: AttributeTableProps) {
     props.onClose?.();
   }
 
-  const { panelBind } = useRegisterMapControl(mapId, {
+  const { panelBind, moduleContainerProps } = useMapControl(mapId, {
     id: controlId,
     panelKind: 'popup',
     title,
-    buttonPosition: merged.position,
+    from: merged,
     show,
     setShow: (v) => {
       if (!v) {
@@ -325,10 +325,6 @@ export function AttributeTable(props: AttributeTableProps) {
       closedRef.current = false;
       toggleShow(true);
     },
-    getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-    }),
     actions: [
       {
         type: ATTRIBUTE_TABLE_CONTROL.id,

@@ -70,7 +70,10 @@ export function MapCopyButton({
       aria-label={label}
       onClick={onClick}
     >
-      <Icon path={copied ? mdiCheck : mdiContentCopy} size={`${iconSize}px`} />
+      <Icon
+        path={copied ? mdiCheck : mdiContentCopy}
+        size={`${iconSize}px`}
+      />
     </MapControlButton>
   );
 }

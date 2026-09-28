@@ -14,7 +14,7 @@ import {
   RegistryItem,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
 } from '@hungpvq/vue-map-core';
 import { onMounted, Ref, ref, shallowRef } from 'vue';
@@ -24,7 +24,7 @@ const props = defineProps<{ item: IDataset }>();
 const { mapId, callMap } = useMap();
 const { trans } = useLang(mapId.value);
 const [show, toggleShow] = useShow(false);
-const { panelPosition } = useRegisterMapControl(mapId, {
+const { panelPosition, moduleContainerProps } = useMapControl(mapId, {
   id: 'mapStyleControl',
   panelKind: 'sidebar',
   title: () => trans.value('map.style-control.title'),

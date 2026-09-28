@@ -17,7 +17,10 @@
       </MapIcon>
     </slot>
   </MapButton>
-  <div v-else class="button-container">
+  <div
+    v-else
+    class="button-container"
+  >
     <div :title="tooltip || title">
       <slot name="content">
         <MapButton

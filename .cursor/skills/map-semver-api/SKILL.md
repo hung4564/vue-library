@@ -48,6 +48,7 @@ Can the change break an existing consumer (compile / runtime / CSS / registry ke
 - Control ids (`mapLayerControl`, …), action types, `MapControlHandle` shape
 - `LIST_VIEW_MENU_ID` / `LIST_VIEW_MENU_COMPONENT_KEY` **string values** (from `@hungpvq/map-dataset/menu`)
 - `MAP_STORE_KEY.*`, `MAP_THEME_STORAGE_KEY`, documented `--map-*` / `map-theme-*`
+- New per-`mapId` protocol bags must use domain-store helpers (`map-domain-store` skill); process-wide `.maps[mapId]` is legacy
 - Peer minimum raises; optional peer → required
 - Adapters (`vue-*` / `react-*`) must **not** re-export core protocol/types/services — consumers import platform APIs from `@hungpvq/map-core` and domain APIs from `@hungpvq/map-core/<domain>` (or `@hungpvq/map-dataset` / `@hungpvq/map-dataset/<domain>` / `map-draw` / `draggable`)
 
@@ -73,10 +74,10 @@ Renaming or removing `buttonInMobile` values / `resolveControlLayout` return sha
 
 ## When proposing a change, state
 
-1. Packages touched  
-2. Stable vs experimental  
-3. Suggested SemVer bump  
-4. Peer / coordinated release needed (yes/no)  
+1. Packages touched
+2. Stable vs experimental
+3. Suggested SemVer bump
+4. Peer / coordinated release needed (yes/no)
 5. Docs to update (`stable-api.md`, `public-api.spec.ts`, registry docs, README checklist; for draw also `libs/map-core/map-draw/docs`)
 
 ## Draw Stable surface (quick)

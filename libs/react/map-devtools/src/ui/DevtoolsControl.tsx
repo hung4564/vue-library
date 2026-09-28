@@ -1,15 +1,16 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { DEVTOOLS_CONTROL } from '@hungpvq/map-core';
+import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
   MapControlButton,
   ModuleContainer,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
 } from '@hungpvq/react-map-core';
-import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiTools } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { DEVTOOLS_CONTROL } from '@hungpvq/map-core';
+
 import { setDevtoolOpen, toggleDevtoolOpen } from '../store';
 import { useDevtoolState } from '../useDevtoolState';
 import { DevtoolsPanelBody } from './DevtoolsPanelBody';
@@ -24,27 +25,22 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
     position: 'bottom-right' as const,
     ...props,
   };
-  const { mapId, moduleContainerProps } = useMap({
-    ...merged,
-    controlId: DEVTOOLS_CONTROL.id,
-  });
+  const { mapId, order } = useMap(merged);
   const { isOpen, activeTab, logs, errors } = useDevtoolState();
 
   const setOpen = (value: boolean) => {
     setDevtoolOpen(value);
   };
 
-  const { panelBind } = useRegisterMapControl(mapId, {
+  const { panelBind, moduleContainerProps } = useMapControl(mapId, {
     id: DEVTOOLS_CONTROL.id,
     panelKind: 'popup',
     title: 'Map Devtools',
-    buttonPosition: merged.position,
+    from: merged,
+    order,
+    buttonSlot: 'custom',
     show: isOpen,
     setShow: setOpen,
-    getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-    }),
     actions: [
       {
         type: DEVTOOLS_CONTROL.id,
@@ -70,7 +66,10 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
             toggleDevtoolOpen();
           }}
         >
-          <Icon path={mdiTools} size="20px" />
+          <Icon
+            path={mdiTools}
+            size="20px"
+          />
         </MapControlButton>
       }
       draggable={(bind) => (

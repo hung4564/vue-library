@@ -13,7 +13,10 @@
             :fields="fields"
             @change="emit('refresh')"
           />
-          <MeasurementSettingFields v-else :fields="fields" />
+          <MeasurementSettingFields
+            v-else
+            :fields="fields"
+          />
 
           <div
             v-if="showSettingsSection"
@@ -118,7 +121,7 @@ import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import CrsDisplaySettings from '../../crs/CrsDisplaySettings.vue';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
+import { useMapControl } from '../../registry/useMapControl';
 import FieldGeometry from './setting/field-geometry.vue';
 import FieldPointCrs from './setting/field-point-crs.vue';
 import MeasurementSettingFields from './setting/fields-show.vue';
@@ -149,7 +152,7 @@ const props = withDefaults(
     }),
   },
 );
-const { callMap, moduleContainerProps, mapId } = useMap(props);
+const { callMap, mapId } = useMap(props);
 const { trans } = useLang(mapId.value);
 const model = defineModel<CoordinatesNumber[]>({
   default: () => [],
@@ -252,11 +255,11 @@ function onLabelToggle(key: keyof MeasurementLabelPrefs, checked: boolean) {
   emit('refresh');
 }
 
-const { panelBind } = useRegisterMapControl(mapId, {
+const { panelBind, moduleContainerProps } = useMapControl(mapId, {
   id: 'mapMeasurementSetting',
   panelKind: 'popup',
   title: () => trans.value('map.measurement.setting.title'),
-  buttonPosition: () => props.position,
+  from: props,
   show: c_show,
   setShow: (value) => {
     c_show.value = value;
@@ -266,8 +269,6 @@ const { panelBind } = useRegisterMapControl(mapId, {
     right: props.popUpPosition.right,
   },
   getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
     maxLength: props.maxLength,
     measurementType: props.measurementType,
   }),

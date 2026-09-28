@@ -10,38 +10,20 @@ import { mdiMapLegend } from '@mdi/js';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { MapCommonButton } from '../../../components/MapCommonButton';
 import { InputCheckbox } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useEventListener } from '../../event/hook/useEvent';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useMapControl } from '../../registry/useMapControl';
 import { useLayerLegend } from '../lib/useLayerLegend';
 
 export function LegendControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
   const [show, setShow] = useShow(false);
-  const { callMap, mapId, moduleContainerProps, order } = useMap({
-    ...merged,
-    controlId: 'mapLegendControl',
-  });
+  const { callMap, mapId, order } = useMap(merged);
   const { trans } = useLang(mapId);
-  const { panelBind } = useRegisterMapControl(mapId, {
-    id: 'mapLegendControl',
-    panelKind: 'popup',
-    title: trans('map.legend-control.title'),
-    buttonPosition: merged.position,
-    show,
-    setShow,
-    getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-    }),
-    actions: [{ type: 'mapLegendControl', run: () => setShow(!show) }],
-  });
   const { getLayerLegendNode } = useLayerLegend();
   const [onlyRender, setOnlyRender] = useState(false);
   const [legends, setLegends] = useState<{ icon: ReactNode; name: string }[]>(
@@ -120,10 +102,16 @@ export function LegendControl(props: WithMapPropType) {
     }
   }, [onlyRender]);
 
-  const { state, control } = useToolbarControl(mapId, merged, {
-    kind: 'single',
+  const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
     id: 'mapLegendControl',
-    getState: () =>
+    panelKind: 'popup',
+    title: trans('map.legend-control.title'),
+    from: merged,
+    order,
+    show,
+    setShow,
+    actions: [{ type: 'mapLegendControl', run: () => setShow(!show) }],
+    getButtonState: () =>
       mdiButtonState(mdiMapLegend, {
         visible: true,
         active: show,
@@ -132,27 +120,14 @@ export function LegendControl(props: WithMapPropType) {
       }),
     onClick: () => setShow(!show),
   });
-  const controlRef = useRef(control);
-  controlRef.current = control;
 
   useEffect(() => {
-    controlRef.current.sync();
-  }, [show]);
+    control.sync();
+  }, [show, control]);
 
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : null
-      }
       draggable={(bind) =>
         show ? (
           <DraggableItemPopup
@@ -167,7 +142,10 @@ export function LegendControl(props: WithMapPropType) {
             <div className="map-legend-control">
               <div className="map-legend-control__list">
                 {legends.map((item, i) => (
-                  <div key={i} className="map-legend-control__item">
+                  <div
+                    key={i}
+                    className="map-legend-control__item"
+                  >
                     <div className="map-legend-control__icon">{item.icon}</div>
                     <span>{item.name}</span>
                   </div>

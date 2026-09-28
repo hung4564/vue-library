@@ -186,8 +186,14 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
           {!mergedProps.hideZoom && (
             <div className="mouse-coordinates-part zoom-part">
               <div className="mouse-coordinates-zoom">
-                <span title="Current Zoom" className="icon">
-                  <Icon size={'16px'} path={mdiMagnify} />
+                <span
+                  title="Current Zoom"
+                  className="icon"
+                >
+                  <Icon
+                    size={'16px'}
+                    path={mdiMagnify}
+                  />
                 </span>
                 <div style={{ marginLeft: '4px' }}>{currentZoom}</div>
               </div>
@@ -215,14 +221,20 @@ export function MouseCoordinatesControl(props: MouseCoordinatesControlProps) {
                   onClick={changeDisplayTypePixelValue}
                   className="icon icon-clickable"
                 >
-                  <Icon size="16px" path={mdiCached} />
+                  <Icon
+                    size="16px"
+                    path={mdiCached}
+                  />
                 </i>
               </div>
             </div>
           )}
           {!mergedProps.hideScale && (
             <div className="mouse-coordinates-part scale-part">
-              <div ref={setScaleEl} className="scale-custom"></div>
+              <div
+                ref={setScaleEl}
+                className="scale-custom"
+              ></div>
             </div>
           )}
         </div>

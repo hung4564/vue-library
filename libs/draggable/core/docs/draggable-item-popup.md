@@ -49,13 +49,13 @@ Prefer `v-model:show` (Vue) or controlled `show` + `onUpdateShow` (React) so sto
 
 Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
 
-| Vue             | React        | Description                                      |
-| --------------- | ------------ | ------------------------------------------------ |
-| `default`       | `children`   | Content of the popup.                            |
-| `pre-title`     | `preTitle`   | Before the title group.                          |
-| `title`         | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
-| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
-| `extra-btn`     | `extraBtn`   | Trailing header actions after the spacer.        |
+| Vue           | React        | Description                                                |
+| ------------- | ------------ | ---------------------------------------------------------- |
+| `default`     | `children`   | Content of the popup.                                      |
+| `pre-title`   | `preTitle`   | Before the title group.                                    |
+| `title`       | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
+| `after-title` | `afterTitle` | Immediately after title (before spacer).                   |
+| `extra-btn`   | `extraBtn`   | Trailing header actions after the spacer.                  |
 
 ## Usage
 
@@ -68,7 +68,14 @@ import { DraggableContainer, DraggableItemPopup } from '@hungpvq/vue-draggable';
 
 <template>
   <DraggableContainer>
-    <DraggableItemPopup title="Title" show :top="10" :left="410" :width="300" :height="400">
+    <DraggableItemPopup
+      title="Title"
+      show
+      :top="10"
+      :left="410"
+      :width="300"
+      :height="400"
+    >
       <div style="height: 100vh"></div>
     </DraggableItemPopup>
   </DraggableContainer>
@@ -83,7 +90,14 @@ import { DraggableContainer, DraggableItemPopup } from '@hungpvq/react-draggable
 export function Example() {
   return (
     <DraggableContainer>
-      <DraggableItemPopup title="Title" show top={10} left={410} width={300} height={400}>
+      <DraggableItemPopup
+        title="Title"
+        show
+        top={10}
+        left={410}
+        width={300}
+        height={400}
+      >
         <div style={{ height: '100vh' }} />
       </DraggableItemPopup>
     </DraggableContainer>

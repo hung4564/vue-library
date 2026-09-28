@@ -244,11 +244,17 @@ export function AttributeTableGrid(props: AttributeTableGridProps) {
         onScroll={syncScrollMetrics}
         onKeyDown={onRegionKeydown}
       >
-        <table className="attribute-table__table" aria-label={props.tableLabel}>
+        <table
+          className="attribute-table__table"
+          aria-label={props.tableLabel}
+        >
           <thead>
             <tr>
               {showCheckbox ? (
-                <th className="attribute-table__check" scope="col">
+                <th
+                  className="attribute-table__check"
+                  scope="col"
+                >
                   <input
                     type="checkbox"
                     checked={props.allVisibleSelected}
@@ -320,7 +326,10 @@ export function AttributeTableGrid(props: AttributeTableGridProps) {
                 );
               })}
               {props.itemMenus.length > 0 ? (
-                <th className="attribute-table__actions" scope="col">
+                <th
+                  className="attribute-table__actions"
+                  scope="col"
+                >
                   <span className="attribute-table__sr-only">
                     {props.actionsColumnLabel}
                   </span>
@@ -330,7 +339,10 @@ export function AttributeTableGrid(props: AttributeTableGridProps) {
             {showColumnFilter ? (
               <tr className="attribute-table__filter-row">
                 {showCheckbox ? (
-                  <th className="attribute-table__check" scope="col">
+                  <th
+                    className="attribute-table__check"
+                    scope="col"
+                  >
                     <span className="attribute-table__sr-only">
                       {props.columnFilterForLabel}
                     </span>
@@ -359,14 +371,20 @@ export function AttributeTableGrid(props: AttributeTableGridProps) {
                   );
                 })}
                 {props.itemMenus.length > 0 ? (
-                  <th className="attribute-table__actions" scope="col" />
+                  <th
+                    className="attribute-table__actions"
+                    scope="col"
+                  />
                 ) : null}
               </tr>
             ) : null}
           </thead>
           <tbody>
             {props.virtualWindow.offsetY > 0 ? (
-              <tr className="attribute-table__spacer" aria-hidden="true">
+              <tr
+                className="attribute-table__spacer"
+                aria-hidden="true"
+              >
                 <td
                   colSpan={colSpan}
                   style={{
@@ -456,7 +474,10 @@ export function AttributeTableGrid(props: AttributeTableGridProps) {
               );
             })}
             {props.bottomSpacerHeight > 0 ? (
-              <tr className="attribute-table__spacer" aria-hidden="true">
+              <tr
+                className="attribute-table__spacer"
+                aria-hidden="true"
+              >
                 <td
                   colSpan={colSpan}
                   style={{

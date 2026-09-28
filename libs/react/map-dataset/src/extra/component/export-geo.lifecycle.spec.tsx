@@ -58,7 +58,11 @@ vi.mock('@hungpvq/react-map-core', async () => {
       onClick?: () => void;
       disabled?: boolean;
     }) => (
-      <button type="button" disabled={disabled} onClick={onClick}>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={onClick}
+      >
         {children}
       </button>
     ),
@@ -149,7 +153,10 @@ describe('ExportGeo StrictMode lifecycle', () => {
   it('downloads under StrictMode (controller not left disposed)', async () => {
     render(
       <StrictMode>
-        <ExportGeo layer={fakeLayer} getCollection={async () => fc} />
+        <ExportGeo
+          layer={fakeLayer}
+          getCollection={async () => fc}
+        />
       </StrictMode>,
     );
 
@@ -168,7 +175,10 @@ describe('ExportGeo StrictMode lifecycle', () => {
   it('shows No features to export and keeps modal open', async () => {
     render(
       <StrictMode>
-        <ExportGeo layer={fakeLayer} getCollection={async () => emptyFc} />
+        <ExportGeo
+          layer={fakeLayer}
+          getCollection={async () => emptyFc}
+        />
       </StrictMode>,
     );
 

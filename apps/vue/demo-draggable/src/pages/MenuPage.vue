@@ -43,8 +43,16 @@ function onSelect(id: MenuAction) {
 </script>
 
 <template>
-  <DraggableContainer containerId="demo-menu" class="demo-page" variant="plain">
-    <DraggableItemSideBar show title="Menu demo" location="left">
+  <DraggableContainer
+    containerId="demo-menu"
+    class="demo-page"
+    variant="plain"
+  >
+    <DraggableItemSideBar
+      show
+      title="Menu demo"
+      location="left"
+    >
       <div class="panel">
         <h2>ContextMenu + ContextMenuItem</h2>
         <p>
@@ -65,7 +73,11 @@ function onSelect(id: MenuAction) {
           <li>After open, try Arrow keys then Enter to activate.</li>
         </ul>
         <div class="actions">
-          <button type="button" class="demo-btn" @click="openMenu">
+          <button
+            type="button"
+            class="demo-btn"
+            @click="openMenu"
+          >
             Open from button
           </button>
         </div>
@@ -75,7 +87,10 @@ function onSelect(id: MenuAction) {
       </div>
     </DraggableItemSideBar>
 
-    <div class="menu-canvas" @contextmenu="openMenu">
+    <div
+      class="menu-canvas"
+      @contextmenu="openMenu"
+    >
       <p class="menu-canvas__hint">
         Right-click anywhere here, or use the button in the sidebar.
       </p>

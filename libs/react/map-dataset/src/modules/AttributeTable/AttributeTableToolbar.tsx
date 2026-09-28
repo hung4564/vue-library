@@ -73,7 +73,10 @@ export function AttributeTableToolbar(props: AttributeTableToolbarProps) {
               {props.exportLabel || 'Export'}
             </MapControlButton>
             {menuOpen && formatItems.length ? (
-              <ul className="attribute-table__export-menu" role="menu">
+              <ul
+                className="attribute-table__export-menu"
+                role="menu"
+              >
                 {formatItems.map((item) => (
                   <li
                     key={String(item.value)}

@@ -5,7 +5,11 @@
         <span class="log-viewer__count"
           >{{ listed.length }}/{{ totalCount }}</span
         >
-        <div class="log-viewer__levels" role="group" aria-label="Level filter">
+        <div
+          class="log-viewer__levels"
+          role="group"
+          aria-label="Level filter"
+        >
           <MapControlButton
             v-for="item in LEVEL_FILTERS"
             :key="item"
@@ -29,7 +33,11 @@
         >
           {{ refreshLabel }}
         </MapControlButton>
-        <MapControlButton variant="text" size="small" @click="clear">
+        <MapControlButton
+          variant="text"
+          size="small"
+          @click="clear"
+        >
           Clear
         </MapControlButton>
         <InputCheckbox
@@ -70,8 +78,14 @@
       </div>
     </div>
     <div class="log-viewer__split">
-      <div class="log-viewer__body" ref="logListRef">
-        <div v-if="listed.length === 0" class="log-viewer__empty">
+      <div
+        class="log-viewer__body"
+        ref="logListRef"
+      >
+        <div
+          v-if="listed.length === 0"
+          class="log-viewer__empty"
+        >
           {{ totalCount === 0 ? 'No logs' : 'No matching logs' }}
         </div>
         <LogRenderNode

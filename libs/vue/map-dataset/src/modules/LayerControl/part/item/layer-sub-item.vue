@@ -1,7 +1,10 @@
 <template>
   <div class="layer-sub-item-container">
     <div class="layer-sub-item__info">
-      <div v-if="isHasIcon" class="layer-sub-item__icon">
+      <div
+        v-if="isHasIcon"
+        class="layer-sub-item__icon"
+      >
         <RegistryItem
           v-if="props.item.icon?.componentKey"
           :componentKey="props.item.icon.componentKey"
@@ -10,7 +13,10 @@
           :mapId="mapId"
         ></RegistryItem>
       </div>
-      <span class="layer-sub-item__title" :title="item.getName()">
+      <span
+        class="layer-sub-item__title"
+        :title="item.getName()"
+      >
         <span>{{ item.getName() }}</span>
       </span>
       <div class="layer-sub-item__title-action">

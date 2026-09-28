@@ -161,7 +161,11 @@ function onResize() {
       class="drawer-slot drawer-slot-left"
       :id="`drawer-left-${p_container_id}`"
     />
-    <div class="draggable-container" ref="box" :id="p_container_id">
+    <div
+      class="draggable-container"
+      ref="box"
+      :id="p_container_id"
+    >
       <template v-if="p_container_id && init_done">
         <SidebarContainer location="left" />
         <SidebarContainer location="right" />
@@ -169,7 +173,10 @@ function onResize() {
         <SidebarContainer location="bottom" />
         <BottomContainer />
       </template>
-      <slot v-if="p_container_id && init_done" :containerId="p_container_id" />
+      <slot
+        v-if="p_container_id && init_done"
+        :containerId="p_container_id"
+      />
     </div>
     <div
       class="drawer-slot drawer-slot-right"
@@ -179,6 +186,9 @@ function onResize() {
       class="drawer-slot drawer-slot-bottom"
       :id="`drawer-bottom-${p_container_id}`"
     />
-    <div class="draggable-modal-layer" :id="`modal-layer-${p_container_id}`" />
+    <div
+      class="draggable-modal-layer"
+      :id="`modal-layer-${p_container_id}`"
+    />
   </div>
 </template>

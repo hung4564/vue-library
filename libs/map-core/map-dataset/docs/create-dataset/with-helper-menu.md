@@ -2,13 +2,13 @@
 
 List UI and identify nodes expose actions in five places. Build items with `createMenuBuilder()`. Click handlers receive `{ layer, mapId, value, event, meta, context }` — not `(layer, mapId)`.
 
-| `location` | Where it renders |
-| --- | --- |
-| `extra` | Icon buttons on the layer title row |
-| `title` | Panel header **`after-title` / `afterTitle`** slot (immediately after the title text — **not** trailing `extra-btn` chrome) |
-| `prebottom` | Left of the bottom row (opacity lives here by default) |
-| `bottom` | Right of the bottom row |
-| `menu` | Context menu (⋮) on the same row |
+| `location`  | Where it renders                                                                                                            |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `extra`     | Icon buttons on the layer title row                                                                                         |
+| `title`     | Panel header **`after-title` / `afterTitle`** slot (immediately after the title text — **not** trailing `extra-btn` chrome) |
+| `prebottom` | Left of the bottom row (opacity lives here by default)                                                                      |
+| `bottom`    | Right of the bottom row                                                                                                     |
+| `menu`      | Context menu (⋮) on the same row                                                                                            |
 
 UI adapters render these via **`DatasetMenus`** (`@hungpvq/vue-map-dataset` / `@hungpvq/react-map-dataset`): pass `menus`, `data`, optional `value` / `mapId`, and `locations` (e.g. `['extra','menu']` for a row, `['title']` for panel chrome). The component partitions with `partitionMenuActions` and runs `handleMenuAction` on click.
 
@@ -17,14 +17,7 @@ UI adapters render these via **`DatasetMenus`** (`@hungpvq/vue-map-dataset` / `@
 Hosts inject `context.control` (`MENU_CONTROL_ID.layerControl` | `layerDetail` | `identify` | `attributeTable`). Define once, override per host. Full tree example (menu part + list + identify): see [`with-helper-data.md` — Menu / byControl](./with-helper-data.md#example-bycontrol-layerdetail-vs-list--identify).
 
 ```ts
-import {
-  MENU_CONTROL_ID,
-  createMenuBuilder,
-  createDatasetPartMenuComponentBuilder,
-  createMenuItemToBoundActionForItem,
-  createMenuItemShowDetailForItem,
-  LIST_VIEW_MENU_ID,
-} from '@hungpvq/map-dataset/menu';
+import { MENU_CONTROL_ID, createMenuBuilder, createDatasetPartMenuComponentBuilder, createMenuItemToBoundActionForItem, createMenuItemShowDetailForItem, LIST_VIEW_MENU_ID } from '@hungpvq/map-dataset/menu';
 import { mdiCrosshairsGps } from '@mdi/js';
 
 // 1) On the menu (preferred for custom items)
@@ -54,10 +47,7 @@ const showDetail = createMenuBuilder()
 // 2) On the menu-part entry (merged onto menu.byControl)
 createDatasetPartMenuComponentBuilder('defaults')
   .addItemMenu(createMenuItemToBoundActionForItem(), LIST_VIEW_MENU_ID.item.flyTo)
-  .addItemMenu(
-    createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]),
-    LIST_VIEW_MENU_ID.item.showDetail,
-  )
+  .addItemMenu(createMenuItemShowDetailForItem([{ text: 'Name', value: 'name' }]), LIST_VIEW_MENU_ID.item.showDetail)
   .addMenu({
     for: 'item',
     key: 'fly-to-custom',
@@ -133,10 +123,7 @@ type MenuConditionContext = {
 <script setup lang="ts">
 import { reactive } from 'vue';
 import { Map } from '@hungpvq/vue-map-core';
-import {
-  LayerControl,
-  useMapDataset,
-} from '@hungpvq/vue-map-dataset';
+import { LayerControl, useMapDataset } from '@hungpvq/vue-map-dataset';
 import type { MapSimple } from '@hungpvq/map-core';
 
 const menuUi = reactive({
@@ -151,22 +138,25 @@ function onMapLoaded(map: MapSimple) {
 
 <template>
   <Map @mapLoaded="onMapLoaded">
-    <LayerControl position="top-left" show :menu-context="menuUi">
+    <LayerControl
+      position="top-left"
+      show
+      :menu-context="menuUi"
+    >
       <template #titleList>
         <label>
           <input
             type="checkbox"
             :checked="menuUi.role === 'admin'"
-            @change="
-              menuUi.role = ($event.target as HTMLInputElement).checked
-                ? 'admin'
-                : 'viewer'
-            "
+            @change="menuUi.role = ($event.target as HTMLInputElement).checked ? 'admin' : 'viewer'"
           />
           admin
         </label>
         <label>
-          <input type="checkbox" v-model="menuUi.canUsePen" />
+          <input
+            type="checkbox"
+            v-model="menuUi.canUsePen"
+          />
           pen
         </label>
       </template>
@@ -198,10 +188,7 @@ provideMenuConditionContext(() => {
 ```tsx
 import { useState } from 'react';
 import { Map } from '@hungpvq/react-map-core';
-import {
-  LayerControl,
-  useMapDataset,
-} from '@hungpvq/react-map-dataset';
+import { LayerControl, useMapDataset } from '@hungpvq/react-map-dataset';
 import type { MapSimple } from '@hungpvq/map-core';
 
 function Page() {
@@ -239,9 +226,7 @@ function Page() {
               <input
                 type="checkbox"
                 checked={menuUi.canUsePen}
-                onChange={(e) =>
-                  setMenuUi((s) => ({ ...s, canUsePen: e.target.checked }))
-                }
+                onChange={(e) => setMenuUi((s) => ({ ...s, canUsePen: e.target.checked }))}
               />
               pen
             </label>
@@ -260,7 +245,7 @@ import { MenuConditionProvider } from '@hungpvq/react-map-dataset';
 
 <MenuConditionProvider value={() => ({ role: user.role })}>
   <LayerControl />
-</MenuConditionProvider>
+</MenuConditionProvider>;
 ```
 
 List UI also injects `readonly`, `disabledMove`, `disabledCreateGroup`. Do not reuse those keys unless you want to override them.
@@ -272,25 +257,27 @@ List UI also injects `readonly`, `disabledMove`, `disabledCreateGroup`. Do not r
 ```ts
 import { createMenuBuilder } from '@hungpvq/map-dataset/menu';
 
-const item = createMenuBuilder().item() /* .set… */ .build();
+const item = createMenuBuilder()
+  .item() /* .set… */
+  .build();
 const divider = createMenuBuilder().divider().setLocation('menu').build();
 ```
 
 ### `.item()`
 
-| Method | Signature | Role |
-| --- | --- | --- |
-| `setId` | `(id: string)` | Needed for `updateMenu` / `removeMenu` |
-| `setName` | `(name: string)` | Label |
-| `setIcon` | `(mdiPath: string)` | Icon |
-| `setLocation` | `'extra' \| 'title' \| 'bottom' \| 'prebottom' \| 'menu'` | Placement (`title` → panel header after-title) |
-| `setClick` | `fn \| string \| createMenuClickBuilder()` | Action |
-| `setHidden` | `boolean \| (ctx) => boolean` | Skip render when true |
-| `setDisabled` | `boolean \| (ctx) => boolean` | Visible, not clickable |
-| `setComponentKey` | `(key: string)` | Custom **button** (extra / bottom / prebottom) |
-| `setComponentMenuKey` | `(key: string)` | Custom **context-menu row** (`location: 'menu'`) |
-| `setAdditional` | `(obj)` | Extra fields, e.g. `{ order: 10 }` |
-| `build` | `()` | `MenuAction` |
+| Method                | Signature                                                 | Role                                             |
+| --------------------- | --------------------------------------------------------- | ------------------------------------------------ |
+| `setId`               | `(id: string)`                                            | Needed for `updateMenu` / `removeMenu`           |
+| `setName`             | `(name: string)`                                          | Label                                            |
+| `setIcon`             | `(mdiPath: string)`                                       | Icon                                             |
+| `setLocation`         | `'extra' \| 'title' \| 'bottom' \| 'prebottom' \| 'menu'` | Placement (`title` → panel header after-title)   |
+| `setClick`            | `fn \| string \| createMenuClickBuilder()`                | Action                                           |
+| `setHidden`           | `boolean \| (ctx) => boolean`                             | Skip render when true                            |
+| `setDisabled`         | `boolean \| (ctx) => boolean`                             | Visible, not clickable                           |
+| `setComponentKey`     | `(key: string)`                                           | Custom **button** (extra / bottom / prebottom)   |
+| `setComponentMenuKey` | `(key: string)`                                           | Custom **context-menu row** (`location: 'menu'`) |
+| `setAdditional`       | `(obj)`                                                   | Extra fields, e.g. `{ order: 10 }`               |
+| `build`               | `()`                                                      | `MenuAction`                                     |
 
 ### `.divider()`
 
@@ -319,10 +306,7 @@ list.addMenus([
 Chain on the list builder before `.build()`:
 
 ```ts
-createDatasetPartListViewUiComponentBuilder('Layer')
-  .addMenu(item)
-  .addMenus([a, b])
-  .build();
+createDatasetPartListViewUiComponentBuilder('Layer').addMenu(item).addMenus([a, b]).build();
 ```
 
 ---
@@ -351,25 +335,22 @@ createMenuBuilder()
   .build();
 ```
 
-| Method | Use |
-| --- | --- |
-| `addCommand(name)` | Registry handler: `UniversalRegistry.registerMenuHandler(name, fn)` |
-| `addCommand(fn)` | `({ layer, mapId, value, event, meta, context }) => void` |
-| `addCommand({ execute })` | Object handler |
-| `addCommands([...])` | Several of the above |
-| `addTupleStatic(key, props)` | Dispatch `key` with extra props |
-| `addTupleDynamic(key, (props) => partial)` | Compute props then dispatch |
-| `build()` | One action, or an array if several |
+| Method                                     | Use                                                                 |
+| ------------------------------------------ | ------------------------------------------------------------------- |
+| `addCommand(name)`                         | Registry handler: `UniversalRegistry.registerMenuHandler(name, fn)` |
+| `addCommand(fn)`                           | `({ layer, mapId, value, event, meta, context }) => void`           |
+| `addCommand({ execute })`                  | Object handler                                                      |
+| `addCommands([...])`                       | Several of the above                                                |
+| `addTupleStatic(key, props)`               | Dispatch `key` with extra props                                     |
+| `addTupleDynamic(key, (props) => partial)` | Compute props then dispatch                                         |
+| `build()`                                  | One action, or an array if several                                  |
 
 Built-in click-handler keys: `LIST_VIEW_MENU_ID.addComponent`, `.fitBounds`, `.highlight`. Menu ids are nested under `LIST_VIEW_MENU_ID.layer` (list row) and `LIST_VIEW_MENU_ID.item` (identify / attribute-table row).
 
 ```ts
 createMenuClickBuilder()
   .addTupleDynamic('addComponent', ({ layer }) => ({
-    value: createMenuClickAddComponentBuilder()
-      .setComponentKey('style-control')
-      .setAttr({ item: layer })
-      .build(),
+    value: createMenuClickAddComponentBuilder().setComponentKey('style-control').setAttr({ item: layer }).build(),
   }))
   .build();
 ```
@@ -388,14 +369,7 @@ import { createMenuItemToggleShow, createMenuItemSetOpacity, createMenuItemStyle
 import { createMenuItemExportGeo } from '@hungpvq/map-dataset/geo-export';
 import { createMenuItemAttributeTable } from '@hungpvq/map-dataset/attribute-table';
 
-list.addMenus([
-  createMenuItemToggleShow(),
-  createMenuItemIdentifyForList(),
-  createMenuItemIdentifyForList({ location: 'menu' }),
-  createMenuItemStyleEdit(),
-  createMenuItemShowDetailInfoSource(),
-  createMenuItemToBoundActionForList(),
-]);
+list.addMenus([createMenuItemToggleShow(), createMenuItemIdentifyForList(), createMenuItemIdentifyForList({ location: 'menu' }), createMenuItemStyleEdit(), createMenuItemShowDetailInfoSource(), createMenuItemToBoundActionForList()]);
 
 identify.addMenus([
   createMenuItemToBoundActionForItem(),
@@ -406,20 +380,20 @@ identify.addMenus([
 ]);
 ```
 
-| Function | `for` | Default location | `id` | Auto-added |
-| --- | --- | --- | --- | --- |
-| [`createMenuItemToggleShow`](#createmenuitemtoggleshow) | `layer` | `extra` | `LIST_VIEW_MENU_ID.layer.toggleShow` | — (add yourself) |
-| [`createMenuItemSetOpacity`](#createmenuitemsetopacity) | `layer` | `prebottom` | `LIST_VIEW_MENU_ID.layer.setOpacity` | List UI unless `configDisabledOpacity()` |
-| [`createMenuItemStyleEdit`](#createmenuitemstyleedit) | `layer` | `extra` (unset → default) | `LIST_VIEW_MENU_ID.layer.styleEdit` | — |
-| [`createMenuItemShowDetailInfoSource`](#createmenuitemshowdetailinfosource) | `layer` | unset | `LIST_VIEW_MENU_ID.layer.info` | — |
-| [`createMenuItemToBoundActionForList`](#createmenuitemtoboundactionforlist) | `layer` | `extra` | `LIST_VIEW_MENU_ID.layer.fillBound` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) / raster helper |
-| [`createMenuItemIdentifyForList`](#createmenuitemidentifyforlist) | `layer` | `extra` (or `menu`) | `LIST_VIEW_MENU_ID.layer.identify` / `.identifyMenu` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) (extra); hidden without identify sibling or without IdentifyControl mounted |
-| [`createMenuItemMoveUp`](#createmenuitemmoveup--createmenuitemmovedown) / [`MoveDown`](#createmenuitemmoveup--createmenuitemmovedown) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.moveUp` / `.moveDown` | List UI unless `configDisabledMove()` |
-| [`createMenuItemAddToGroup`](#createmenuitemaddtogroup) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.addToGroup` | List UI unless `configDisabledAddToGroup()` |
-| [`createMenuItemExportGeo`](#createmenuitemexportgeo) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.exportGeo` | Opt-in via `addMenu`; [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) |
-| [`createMenuItemAttributeTable`](#createmenuitemattributetable) | `layer` | `menu` | `LIST_VIEW_MENU_ID.layer.attributeTable` | Opt-in via `addMenu`; [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) |
-| [`createMenuItemShowDetailForItem`](#createmenuitemshowdetailforitem) | `item` | `menu` | `LIST_VIEW_MENU_ID.item.showDetail` | Identify builders |
-| [`createMenuItemToBoundActionForItem`](#createmenuitemtoboundactionforitem) | `item` | `menu` | `LIST_VIEW_MENU_ID.item.flyTo` | Identify builders |
+| Function                                                                                                                              | `for`   | Default location          | `id`                                                 | Auto-added                                                                                                                              |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| [`createMenuItemToggleShow`](#createmenuitemtoggleshow)                                                                               | `layer` | `extra`                   | `LIST_VIEW_MENU_ID.layer.toggleShow`                 | — (add yourself)                                                                                                                        |
+| [`createMenuItemSetOpacity`](#createmenuitemsetopacity)                                                                               | `layer` | `prebottom`               | `LIST_VIEW_MENU_ID.layer.setOpacity`                 | List UI unless `configDisabledOpacity()`                                                                                                |
+| [`createMenuItemStyleEdit`](#createmenuitemstyleedit)                                                                                 | `layer` | `extra` (unset → default) | `LIST_VIEW_MENU_ID.layer.styleEdit`                  | —                                                                                                                                       |
+| [`createMenuItemShowDetailInfoSource`](#createmenuitemshowdetailinfosource)                                                           | `layer` | unset                     | `LIST_VIEW_MENU_ID.layer.info`                       | —                                                                                                                                       |
+| [`createMenuItemToBoundActionForList`](#createmenuitemtoboundactionforlist)                                                           | `layer` | `extra`                   | `LIST_VIEW_MENU_ID.layer.fillBound`                  | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) / raster helper                                                             |
+| [`createMenuItemIdentifyForList`](#createmenuitemidentifyforlist)                                                                     | `layer` | `extra` (or `menu`)       | `LIST_VIEW_MENU_ID.layer.identify` / `.identifyMenu` | [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) (extra); hidden without identify sibling or without IdentifyControl mounted |
+| [`createMenuItemMoveUp`](#createmenuitemmoveup--createmenuitemmovedown) / [`MoveDown`](#createmenuitemmoveup--createmenuitemmovedown) | `layer` | `menu`                    | `LIST_VIEW_MENU_ID.layer.moveUp` / `.moveDown`       | List UI unless `configDisabledMove()`                                                                                                   |
+| [`createMenuItemAddToGroup`](#createmenuitemaddtogroup)                                                                               | `layer` | `menu`                    | `LIST_VIEW_MENU_ID.layer.addToGroup`                 | List UI unless `configDisabledAddToGroup()`                                                                                             |
+| [`createMenuItemExportGeo`](#createmenuitemexportgeo)                                                                                 | `layer` | `menu`                    | `LIST_VIEW_MENU_ID.layer.exportGeo`                  | Opt-in via `addMenu`; [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md)                                                       |
+| [`createMenuItemAttributeTable`](#createmenuitemattributetable)                                                                       | `layer` | `menu`                    | `LIST_VIEW_MENU_ID.layer.attributeTable`             | Opt-in via `addMenu`; [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md)                                                       |
+| [`createMenuItemShowDetailForItem`](#createmenuitemshowdetailforitem)                                                                 | `item`  | `menu`                    | `LIST_VIEW_MENU_ID.item.showDetail`                  | Identify builders                                                                                                                       |
+| [`createMenuItemToBoundActionForItem`](#createmenuitemtoboundactionforitem)                                                           | `item`  | `menu`                    | `LIST_VIEW_MENU_ID.item.flyTo`                       | Identify builders                                                                                                                       |
 
 ---
 
@@ -427,28 +401,25 @@ identify.addMenus([
 
 Visibility toggle on the layer title row. Renders the registry component `layer-action-toggle-show` (`LIST_VIEW_MENU_COMPONENT_KEY.toggleShow`), not a plain click handler.
 
-| | |
-| --- | --- |
+|               |                                                                                                 |
+| ------------- | ----------------------------------------------------------------------------------------------- |
 | **Signature** | `(menu?: Partial<Omit<MenuItemCustomComponentBottomOrExtra, 'type' \| 'click'>>) => MenuAction` |
-| **Location** | `extra` |
-| **Id** | `LIST_VIEW_MENU_ID.layer.toggleShow` (`toggle-show`) |
-| **Needs** | List node with `WithToggleShow` (`show` / `toggleShow`) |
+| **Location**  | `extra`                                                                                         |
+| **Id**        | `LIST_VIEW_MENU_ID.layer.toggleShow` (`toggle-show`)                                            |
+| **Needs**     | List node with `WithToggleShow` (`show` / `toggleShow`)                                         |
 
 ```ts
-list.addMenus([
-  createMenuItemToggleShow(),
-  createMenuItemToggleShow({ order: 1, name: 'Visibility' }),
-]);
+list.addMenus([createMenuItemToggleShow(), createMenuItemToggleShow({ order: 1, name: 'Visibility' })]);
 ```
 
 ### Customize the toggle UI
 
 Two registry keys:
 
-| Key | Constant | Role |
-| --- | --- | --- |
-| `layer-action-toggle-show` | `toggleShow` | Full logic + default button (or custom via menu `componentKey`) |
-| `layer-action-toggle-show-button` | `toggleShowButton` | Button UI only (per-layer default and “show all”) |
+| Key                               | Constant           | Role                                                            |
+| --------------------------------- | ------------------ | --------------------------------------------------------------- |
+| `layer-action-toggle-show`        | `toggleShow`       | Full logic + default button (or custom via menu `componentKey`) |
+| `layer-action-toggle-show-button` | `toggleShowButton` | Button UI only (per-layer default and “show all”)               |
 
 **Map-wide button** (every layer using the default toggle, plus show-all): override `toggleShowButton` with `registerComponentForMap`.
 
@@ -463,16 +434,8 @@ createMenuItemToggleShow({
 });
 
 function onMapLoaded(map: MapSimple) {
-  UniversalRegistry.registerComponentForMap(
-    map.id,
-    LIST_VIEW_MENU_COMPONENT_KEY.toggleShowButton,
-    SampleToggleShowButton,
-  );
-  UniversalRegistry.registerComponentForMap(
-    map.id,
-    'demo-layer-toggle-show',
-    SampleLayerToggleShow,
-  );
+  UniversalRegistry.registerComponentForMap(map.id, LIST_VIEW_MENU_COMPONENT_KEY.toggleShowButton, SampleToggleShowButton);
+  UniversalRegistry.registerComponentForMap(map.id, 'demo-layer-toggle-show', SampleLayerToggleShow);
 }
 ```
 
@@ -486,20 +449,18 @@ Demo: Vue / React `#/dataset-menu` — collapsible **Demo guide** (lists each la
 
 Opacity slider on the bottom-left of the list row (`prebottom`). Registry key: `layer-action-set-opacity`.
 
-| | |
-| --- | --- |
+|               |                                                                        |
+| ------------- | ---------------------------------------------------------------------- |
 | **Signature** | `(menu?: Partial<Omit<MenuItemBottomOrExtra, 'click'>>) => MenuAction` |
-| **Location** | `prebottom` |
-| **Id** | `LIST_VIEW_MENU_ID.layer.setOpacity` (`set-opacity`) |
-| **Auto** | List UI unless `.configDisabledOpacity()` |
-| **Needs** | List node with opacity helpers |
+| **Location**  | `prebottom`                                                            |
+| **Id**        | `LIST_VIEW_MENU_ID.layer.setOpacity` (`set-opacity`)                   |
+| **Auto**      | List UI unless `.configDisabledOpacity()`                              |
+| **Needs**     | List node with opacity helpers                                         |
 
 ```ts
 list.addMenus([createMenuItemSetOpacity({ order: 0 })]);
 // or disable the default:
-createDatasetPartListViewUiComponentBuilder('Layer')
-  .configDisabledOpacity()
-  .build();
+createDatasetPartListViewUiComponentBuilder('Layer').configDisabledOpacity().build();
 ```
 
 ---
@@ -508,18 +469,15 @@ createDatasetPartListViewUiComponentBuilder('Layer')
 
 Opens the style editor (`style-control`) via `addComponent` for the current list layer.
 
-| | |
-| --- | --- |
-| **Signature** | `(menu?: Partial<Omit<MenuItemBottomOrExtra, 'click'>>) => MenuAction` |
-| **Id** | `LIST_VIEW_MENU_ID.layer.styleEdit` (`style-edit`) |
-| **Default name** | `Edit style` |
-| **Needs** | `ComponentManagementControl` + registry plugin; mapbox layer sibling |
+|                  |                                                                        |
+| ---------------- | ---------------------------------------------------------------------- |
+| **Signature**    | `(menu?: Partial<Omit<MenuItemBottomOrExtra, 'click'>>) => MenuAction` |
+| **Id**           | `LIST_VIEW_MENU_ID.layer.styleEdit` (`style-edit`)                     |
+| **Default name** | `Edit style`                                                           |
+| **Needs**        | `ComponentManagementControl` + registry plugin; mapbox layer sibling   |
 
 ```ts
-list.addMenus([
-  createMenuItemStyleEdit(),
-  createMenuItemStyleEdit({ location: 'menu', name: 'Style…', order: 5 }),
-]);
+list.addMenus([createMenuItemStyleEdit(), createMenuItemStyleEdit({ location: 'menu', name: 'Style…', order: 5 })]);
 ```
 
 ---
@@ -528,18 +486,15 @@ list.addMenus([
 
 Opens an info popup (`layer-detail`) built from `getDatasetDetailInfo(layer)` (list + source + layer fields). If there are no fields, the click does nothing.
 
-| | |
-| --- | --- |
-| **Signature** | `(menu?: Partial<Omit<MenuItemBottomOrExtra, 'click'>>) => MenuAction` |
-| **Id** | `LIST_VIEW_MENU_ID.layer.info` (`info`) |
-| **Default name** | `Info` |
-| **Needs** | `ComponentManagementControl` |
+|                  |                                                                        |
+| ---------------- | ---------------------------------------------------------------------- |
+| **Signature**    | `(menu?: Partial<Omit<MenuItemBottomOrExtra, 'click'>>) => MenuAction` |
+| **Id**           | `LIST_VIEW_MENU_ID.layer.info` (`info`)                                |
+| **Default name** | `Info`                                                                 |
+| **Needs**        | `ComponentManagementControl`                                           |
 
 ```ts
-list.addMenus([
-  createMenuItemShowDetailInfoSource(),
-  createMenuItemShowDetailInfoSource({ location: 'extra', order: 2 }),
-]);
+list.addMenus([createMenuItemShowDetailInfoSource(), createMenuItemShowDetailInfoSource({ location: 'extra', order: 2 })]);
 ```
 
 ---
@@ -553,13 +508,13 @@ Fits the map to the layer bbox (`fitBounds`). Resolves bbox **at click time**:
 3. nearest `metadata` part — `metadata.bbox`
 4. `layer.info.metadata.bbox` (if present)
 
-| | |
-| --- | --- |
-| **Signature** | `(props?: { bbox?: BBox; name?: string }) => MenuAction` |
-| **Location** | `extra` |
-| **Id** | `LIST_VIEW_MENU_ID.layer.fillBound` (`fill-bound`) |
-| **Default name** | `Fill bound` |
-| **Auto** | `createGeoJsonDataset` / `createRasterUrlDataset` (with a bound part) |
+|                  |                                                                       |
+| ---------------- | --------------------------------------------------------------------- |
+| **Signature**    | `(props?: { bbox?: BBox; name?: string }) => MenuAction`              |
+| **Location**     | `extra`                                                               |
+| **Id**           | `LIST_VIEW_MENU_ID.layer.fillBound` (`fill-bound`)                    |
+| **Default name** | `Fill bound`                                                          |
+| **Auto**         | `createGeoJsonDataset` / `createRasterUrlDataset` (with a bound part) |
 
 ```ts
 // Static bbox (won’t change unless you replace the menu)
@@ -573,9 +528,7 @@ list.addMenus([
 // Dynamic: omit bbox, keep a bound part, update later
 import { createDatasetPartBoundComponent } from '@hungpvq/map-dataset';
 
-const bound = createDatasetPartBoundComponent('Cities', [
-  105.83, 21.02, 105.85, 21.04,
-]);
+const bound = createDatasetPartBoundComponent('Cities', [105.83, 21.02, 105.85, 21.04]);
 dataset.add(bound);
 list.addMenus([createMenuItemToBoundActionForList()]);
 
@@ -589,14 +542,14 @@ bound.setData([105.5, 20.5, 106.5, 21.5]);
 
 Per-layer Identify toggle (same click mode as [`IdentifyControl`](../module/IdentifyControl.md), but scoped to this layer’s identify sibling).
 
-| | |
-| --- | --- |
-| **Signature** | `(options?: IdentifyForListMenuOptions) => MenuAction` |
-| **Default location** | `extra` |
-| **Id** | `LIST_VIEW_MENU_ID.layer.identify` (`identify-layer`) / `LIST_VIEW_MENU_ID.layer.identifyMenu` (`identify-layer-menu`) |
-| **Component** | `layer-action-identify` (shared for `componentKey` and `componentMenuKey`; UI branches on `location`) |
-| **Needs** | `IdentifyControl` mounted; nearest sibling `type === 'identify'` |
-| **Auto** | `createGeoJsonDataset` (extra form) |
+|                      |                                                                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Signature**        | `(options?: IdentifyForListMenuOptions) => MenuAction`                                                                 |
+| **Default location** | `extra`                                                                                                                |
+| **Id**               | `LIST_VIEW_MENU_ID.layer.identify` (`identify-layer`) / `LIST_VIEW_MENU_ID.layer.identifyMenu` (`identify-layer-menu`) |
+| **Component**        | `layer-action-identify` (shared for `componentKey` and `componentMenuKey`; UI branches on `location`)                  |
+| **Needs**            | `IdentifyControl` mounted; nearest sibling `type === 'identify'`                                                       |
+| **Auto**             | `createGeoJsonDataset` (extra form)                                                                                    |
 
 **Options:** `location?: MenuActionLocation` (`'extra' \| 'title' \| 'menu' \| 'bottom' \| 'prebottom'`), `name`, `icon`, `hidden`, `disabled`, `order`.
 
@@ -621,14 +574,14 @@ Toggle on → opens IdentifyControl, starts map click, queries only that identif
 
 Identify / feature row action: fly the camera to the feature geometry (**no highlight** — UX D). Detail/Identify `value.geometry` can be MapLibre-queried and drift with zoom; painting it would show a skewed glow.
 
-| | |
-| --- | --- |
-| **Signature** | `() => MenuAction` |
-| **Location** | `menu` (default — shows under row ⋮ via `DatasetMenus`) |
-| **Id** | `LIST_VIEW_MENU_ID.item.flyTo` (`fly-to`) |
-| **Default name** | `Fly to` |
-| **Click** | `fitBounds` on `value` / `value.geometry` only |
-| **Needs** | `value` must look like a feature (or `{ detail: Feature }`) |
+|                  |                                                             |
+| ---------------- | ----------------------------------------------------------- |
+| **Signature**    | `() => MenuAction`                                          |
+| **Location**     | `menu` (default — shows under row ⋮ via `DatasetMenus`)     |
+| **Id**           | `LIST_VIEW_MENU_ID.item.flyTo` (`fly-to`)                   |
+| **Default name** | `Fly to`                                                    |
+| **Click**        | `fitBounds` on `value` / `value.geometry` only              |
+| **Needs**        | `value` must look like a feature (or `{ detail: Feature }`) |
 
 ```ts
 identify.addMenus([createMenuItemToBoundActionForItem()]);
@@ -640,14 +593,14 @@ identify.addMenus([createMenuItemToBoundActionForItem()]);
 
 Identify / feature row: open detail panel and highlight the feature.
 
-| | |
-| --- | --- |
-| **Signature** | `(fields: FieldFeaturesDef) => MenuAction` |
-| **Location** | `menu` (default — shows under row ⋮ via `DatasetMenus`) |
-| **Id** | `LIST_VIEW_MENU_ID.item.showDetail` (`show-detail`) |
-| **Default name** | `Detail` |
-| **Click** | `addComponent` → `layer-detail` + `highlight` (`key: 'detail'`) |
-| **Needs** | `ComponentManagementControl`; `fields` define labels/keys for `value` |
+|                  |                                                                       |
+| ---------------- | --------------------------------------------------------------------- |
+| **Signature**    | `(fields: FieldFeaturesDef) => MenuAction`                            |
+| **Location**     | `menu` (default — shows under row ⋮ via `DatasetMenus`)               |
+| **Id**           | `LIST_VIEW_MENU_ID.item.showDetail` (`show-detail`)                   |
+| **Default name** | `Detail`                                                              |
+| **Click**        | `addComponent` → `layer-detail` + `highlight` (`key: 'detail'`)       |
+| **Needs**        | `ComponentManagementControl`; `fields` define labels/keys for `value` |
 
 The Layer Detail popup renders layer `location: 'title'` menus then the same item menus as Identify / Attribute Table in `#after-title` / `afterTitle`, but **omits** `show-detail` (the popup itself).
 
@@ -669,11 +622,11 @@ identify.addMenus([
 
 Reorder the list row among siblings. Click dispatches `LIST_VIEW_MENU_ID.layer.moveUp` / `LIST_VIEW_MENU_ID.layer.moveDown` (handled by LayerControl).
 
-| | Move up | Move down |
-| --- | --- | --- |
-| **Id** | `LIST_VIEW_MENU_ID.layer.moveUp` | `LIST_VIEW_MENU_ID.layer.moveDown` |
-| **Order** | `20` | `21` |
-| **Location** | `menu` | `menu` |
+|              | Move up                          | Move down                          |
+| ------------ | -------------------------------- | ---------------------------------- |
+| **Id**       | `LIST_VIEW_MENU_ID.layer.moveUp` | `LIST_VIEW_MENU_ID.layer.moveDown` |
+| **Order**    | `20`                             | `21`                               |
+| **Location** | `menu`                           | `menu`                             |
 
 **Hidden when** (`isListViewReorderMenuHidden`):
 
@@ -681,10 +634,7 @@ Reorder the list row among siblings. Click dispatches `LIST_VIEW_MENU_ID.layer.m
 - `layer.config.disabled_move` (`.configDisabledMove()`)
 
 ```ts
-list.addMenus([
-  createMenuItemMoveUp(),
-  createMenuItemMoveDown({ name: 'Down' }),
-]);
+list.addMenus([createMenuItemMoveUp(), createMenuItemMoveDown({ name: 'Down' })]);
 ```
 
 Auto-added by the list builder unless `.configDisabledMove()`.
@@ -695,13 +645,13 @@ Auto-added by the list builder unless `.configDisabledMove()`.
 
 Context-menu row with a custom submenu (`layer-action-add-to-group`): **New group** + existing groups.
 
-| | |
-| --- | --- |
+|               |                                                                        |
+| ------------- | ---------------------------------------------------------------------- |
 | **Signature** | `(menu?: Partial<Omit<MenuItemBottomOrExtra, 'click'>>) => MenuAction` |
-| **Location** | `menu` |
-| **Id** | `LIST_VIEW_MENU_ID.layer.addToGroup` (`add-to-group`) |
-| **Order** | `22` |
-| **Needs** | Registry plugin for the submenu component |
+| **Location**  | `menu`                                                                 |
+| **Id**        | `LIST_VIEW_MENU_ID.layer.addToGroup` (`add-to-group`)                  |
+| **Order**     | `22`                                                                   |
+| **Needs**     | Registry plugin for the submenu component                              |
 
 **Hidden when**: `readonly`, `disabledCreateGroup`, or `.configDisabledAddToGroup()`.
 
@@ -726,24 +676,24 @@ const items = createAddToGroupSubmenu(
 
 Export GeoJSON / KML / CSV / Shapefile from the ⋮ menu. Opens the `ExportGeo` **DraggableModal** shell via `addComponent` (same pattern as Attribute table). Full guide: [Export](./export.md).
 
-| | |
-| --- | --- |
-| **Signature** | `(menu?: ExportGeoMenuOptions) => MenuAction` |
-| **Location** | `menu` |
-| **Id** | `LIST_VIEW_MENU_ID.layer.exportGeo` (`export-geo`) |
-| **Order** | `23` |
-| **Needs** | Registry + `ComponentManagementControl`; GeoJSON / data-management data |
+|                   |                                                                                                             |
+| ----------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Signature**     | `(menu?: ExportGeoMenuOptions) => MenuAction`                                                               |
+| **Location**      | `menu`                                                                                                      |
+| **Id**            | `LIST_VIEW_MENU_ID.layer.exportGeo` (`export-geo`)                                                          |
+| **Order**         | `23`                                                                                                        |
+| **Needs**         | Registry + `ComponentManagementControl`; GeoJSON / data-management data                                     |
 | **Component key** | `GEO_EXPORT_COMPONENT_KEY.root` (`layer-action-export-geo`; alias `LIST_VIEW_MENU_COMPONENT_KEY.exportGeo`) |
 
 **Options**
 
-| Field | Role |
-| --- | --- |
-| `formats` | Subset of `'geojson' \| 'kml' \| 'csv' \| 'shapefile'` (passed to the shell) |
-| `filename` | `string` or `(layer) => string` |
-| `getCollection` | Custom FeatureCollection (sync/async) |
-| `sourceCrs` / `targetCrs` | EPSG codes for data / initial shell CRS (default `4326`) |
-| `hidden` / `disabled` / `order` / `name` / `icon` | Overlay |
+| Field                                             | Role                                                                         |
+| ------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `formats`                                         | Subset of `'geojson' \| 'kml' \| 'csv' \| 'shapefile'` (passed to the shell) |
+| `filename`                                        | `string` or `(layer) => string`                                              |
+| `getCollection`                                   | Custom FeatureCollection (sync/async)                                        |
+| `sourceCrs` / `targetCrs`                         | EPSG codes for data / initial shell CRS (default `4326`)                     |
+| `hidden` / `disabled` / `order` / `name` / `icon` | Overlay                                                                      |
 
 **Hidden when**: `menuContext.disabledExport`, or the layer has no GeoJSON / data-management export data.
 
@@ -762,13 +712,13 @@ list.addMenu(
 
 Opens the attribute table dialog. Full guide: [Attribute table](./attribute-table.md).
 
-| | |
-| --- | --- |
-| **Signature** | `(menu?: AttributeTableMenuOptions) => MenuAction` |
-| **Location** | `menu` |
-| **Id** | `LIST_VIEW_MENU_ID.layer.attributeTable` (`attribute-table`) |
-| **Order** | `24` |
-| **Needs** | Registry + `ComponentManagementControl`; GeoJSON / data-management data |
+|               |                                                                         |
+| ------------- | ----------------------------------------------------------------------- |
+| **Signature** | `(menu?: AttributeTableMenuOptions) => MenuAction`                      |
+| **Location**  | `menu`                                                                  |
+| **Id**        | `LIST_VIEW_MENU_ID.layer.attributeTable` (`attribute-table`)            |
+| **Order**     | `24`                                                                    |
+| **Needs**     | Registry + `ComponentManagementControl`; GeoJSON / data-management data |
 
 **Options**: same overlays as other items, plus `columns` to limit / rename fields (array of `{ key, label }` / `'__geometry'`, or a `Record<key, label>`).
 
@@ -777,11 +727,7 @@ Opens the attribute table dialog. Full guide: [Attribute table](./attribute-tabl
 ```ts
 list.addMenu(
   createMenuItemAttributeTable({
-    columns: [
-      { key: 'name', label: 'Name' },
-      { key: 'pop', label: 'Population' },
-      '__geometry',
-    ],
+    columns: [{ key: 'name', label: 'Name' }, { key: 'pop', label: 'Population' }, '__geometry'],
   }),
 );
 ```
@@ -855,10 +801,7 @@ import { createMenuConditionContext, isMenuItemHidden, isMenuItemDisabled, resol
 
 const ctx = createMenuConditionContext(layer, {
   mapId,
-  context: [
-    { readonly: false, disabledMove: false },
-    () => ({ role: store.role }),
-  ],
+  context: [{ readonly: false, disabledMove: false }, () => ({ role: store.role })],
 });
 
 menus.filter((m) => !isMenuItemHidden(m, ctx));
@@ -869,18 +812,18 @@ resolveMenuCondition(menu.hidden, ctx); // boolean
 
 ### Vue
 
-| Function | Role |
-| --- | --- |
-| `provideMenuConditionContext(source)` | Merges with parent inject |
-| `useMenuConditionSource()` | Raw source (object or getter) |
-| `useMenuConditionContext()` | Resolved `Record<string, any>` |
+| Function                              | Role                           |
+| ------------------------------------- | ------------------------------ |
+| `provideMenuConditionContext(source)` | Merges with parent inject      |
+| `useMenuConditionSource()`            | Raw source (object or getter)  |
+| `useMenuConditionContext()`           | Resolved `Record<string, any>` |
 
 ### React
 
-| API | Role |
-| --- | --- |
+| API                                      | Role               |
+| ---------------------------------------- | ------------------ |
 | `<MenuConditionProvider value={source}>` | Merges with parent |
-| `useMenuConditionContext()` | Resolved object |
+| `useMenuConditionContext()`              | Resolved object    |
 
 ### `isListViewReorderMenuHidden(menuId, ctx)`
 
@@ -898,13 +841,7 @@ True when `context.readonly`, `disabledMove` / `disabledCreateGroup`, or `layer.
 `setComponentMenuKey` renders your registry component instead of a label. The component owns submenu open/close.
 
 ```ts
-createMenuBuilder()
-  .item()
-  .setLocation('menu')
-  .setName('Sample')
-  .setIcon(mdiStar)
-  .setComponentMenuKey('sample-layer-menu')
-  .build();
+createMenuBuilder().item().setLocation('menu').setName('Sample').setIcon(mdiStar).setComponentMenuKey('sample-layer-menu').build();
 ```
 
 Register once (same as `createDatasetRegistryPlugin()` does for add-to-group). Prefer `registerComponentForMap` + `onMapLoaded` for page-only overrides — see [UniversalRegistry components](/map/core/registry-components).
@@ -940,10 +877,21 @@ function onDone() {
 </script>
 
 <template>
-  <li class="layer-context-menu__item" @click.stop="open = !open">
+  <li
+    class="layer-context-menu__item"
+    @click.stop="open = !open"
+  >
     <span>{{ 'name' in item ? item.name : '' }}</span>
-    <ul v-if="open" class="layer-context-menu layer-context-menu--submenu">
-      <li class="layer-context-menu__item" @click.stop="onDone">Done</li>
+    <ul
+      v-if="open"
+      class="layer-context-menu layer-context-menu--submenu"
+    >
+      <li
+        class="layer-context-menu__item"
+        @click.stop="onDone"
+      >
+        Done
+      </li>
     </ul>
   </li>
 </template>
@@ -951,13 +899,13 @@ function onDone() {
 
 **React:** same props plus `onClose?: () => void` instead of `emit('close')`.
 
-| Prop | Vue | React |
-| --- | --- | --- |
-| Menu definition | `item` | `item` |
-| Layer | `data` | `data` |
-| Map id | `mapId` | `mapId` |
-| Groups | `getGroups` | `getGroups` |
-| Close popup | `emit('close')` | `onClose()` |
+| Prop            | Vue             | React       |
+| --------------- | --------------- | ----------- |
+| Menu definition | `item`          | `item`      |
+| Layer           | `data`          | `data`      |
+| Map id          | `mapId`         | `mapId`     |
+| Groups          | `getGroups`     | `getGroups` |
+| Close popup     | `emit('close')` | `onClose()` |
 
 Parent row click should toggle a submenu, not close the popup. Call close only after a real action.
 

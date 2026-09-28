@@ -18,14 +18,12 @@ import {
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
-  MapCommonButton,
   MapControlButton,
   ModuleContainer,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
-  useToolbarControl,
   type WithShowProps,
 } from '@hungpvq/vue-map-core';
 import SvgIcon from '@jamescoyle/vue-icon';
@@ -36,7 +34,7 @@ import { useMapDataset } from '../../store/dataset-api';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
-const { mapId, moduleContainerProps, order } = useMap(props);
+const { mapId, order } = useMap(props);
 const { trans } = useLang(mapId.value);
 const path = {
   icon: mdiDatabaseOutline,
@@ -44,25 +42,6 @@ const path = {
   delete: mdiDelete,
 };
 const [show, setShow] = useShow(props.show);
-const { panelPosition } = useRegisterMapControl(mapId, {
-  id: 'mapDatasetControl',
-  panelKind: 'sidebar',
-  title: () => trans.value('map.dataset-control.title'),
-  buttonPosition: () => props.position,
-  show,
-  setShow,
-  initialPanelPosition: { location: 'left' },
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
-  actions: [
-    {
-      type: 'mapDatasetControl',
-      run: () => setShow(),
-    },
-  ],
-});
 const { getDatasets, removeDataset, datasetVersion } = useMapDataset(mapId);
 const views = shallowRef<Array<IDataset>>([]);
 function getViewFromStore() {
@@ -95,9 +74,22 @@ defineSlots<{
   item(props: { item: IDataset }): any;
   default(): any;
 }>();
-const { state, control } = useToolbarControl(mapId.value, props, {
+const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
   id: 'mapDatasetControl',
-  getState() {
+  panelKind: 'sidebar',
+  title: () => trans.value('map.dataset-control.title'),
+  from: props,
+  order,
+  show,
+  setShow,
+  initialPanelPosition: { location: 'left' },
+  actions: [
+    {
+      type: 'mapDatasetControl',
+      run: () => setShow(),
+    },
+  ],
+  getButtonState() {
     return mdiButtonState(path.icon, {
       active: show.value,
       title: trans.value('map.dataset-control.title'),
@@ -112,15 +104,6 @@ watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
-
     <template #draggable="props">
       <DraggableItemSideBar
         :containerId="props.containerId"
@@ -129,8 +112,14 @@ watch(show, () => control.sync());
         :location="panelPosition.location || 'left'"
       >
         <div class="dataset-control">
-          <template v-for="view in views" :key="view.id">
-            <slot name="item" :item="view">
+          <template
+            v-for="view in views"
+            :key="view.id"
+          >
+            <slot
+              name="item"
+              :item="view"
+            >
               <div class="dataset-item">
                 <span class="dataset-item__title">{{ view.getName() }}</span>
                 <div class="dataset-item__title-action">
@@ -138,14 +127,22 @@ watch(show, () => control.sync());
                     @click.stop="onShowDetail(view)"
                     variant="plain"
                   >
-                    <SvgIcon size="16" type="mdi" :path="path.detail" />
+                    <SvgIcon
+                      size="16"
+                      type="mdi"
+                      :path="path.detail"
+                    />
                   </MapControlButton>
 
                   <MapControlButton
                     @click.stop="onRemove(view)"
                     variant="plain"
                   >
-                    <SvgIcon size="16" type="mdi" :path="path.delete" />
+                    <SvgIcon
+                      size="16"
+                      type="mdi"
+                      :path="path.delete"
+                    />
                   </MapControlButton>
                 </div>
               </div>

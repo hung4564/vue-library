@@ -40,7 +40,11 @@ export function MenuPage() {
       className="demo-page"
       variant="plain"
     >
-      <DraggableItemSideBar show title="Menu demo" location="left">
+      <DraggableItemSideBar
+        show
+        title="Menu demo"
+        location="left"
+      >
         <div className="panel">
           <h2>ContextMenu + ContextMenuItem</h2>
           <p>
@@ -65,7 +69,11 @@ export function MenuPage() {
             <li>After open, try Arrow keys then Enter to activate.</li>
           </ul>
           <div className="actions">
-            <button type="button" className="demo-btn" onClick={openMenu}>
+            <button
+              type="button"
+              className="demo-btn"
+              onClick={openMenu}
+            >
               Open from button
             </button>
           </div>
@@ -75,7 +83,10 @@ export function MenuPage() {
         </div>
       </DraggableItemSideBar>
 
-      <div className="menu-canvas" onContextMenu={openMenu}>
+      <div
+        className="menu-canvas"
+        onContextMenu={openMenu}
+      >
         <p className="menu-canvas__hint">
           Right-click anywhere here, or use the button in the sidebar.
         </p>

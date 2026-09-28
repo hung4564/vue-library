@@ -17,7 +17,10 @@ export function LayerLegendLinearGradient({
       <div className="legend-text">{item.text}:</div>
       <div className="legend-value-container">
         {items.map((entry, i) => (
-          <div className="legend-value" key={i}>
+          <div
+            className="legend-value"
+            key={i}
+          >
             {entry.value}
           </div>
         ))}

@@ -361,7 +361,10 @@
 .log-viewer__levels .log-viewer__level.map-control-button-active,
 .log-viewer__levels .log-viewer__level[aria-pressed='true'] {
   background: var(--map-surface-color, #fff) !important;
-  color: var(--map-button-active-color, var(--map-primary-color, #004e98)) !important;
+  color: var(
+    --map-button-active-color,
+    var(--map-primary-color, #004e98)
+  ) !important;
   font-weight: 600;
   box-shadow: 0 1px 2px color-mix(in srgb, #000 12%, transparent);
 }
@@ -640,7 +643,11 @@
   bottom: 28px;
   width: 2px;
   transform: translateX(-50%);
-  background: color-mix(in srgb, var(--map-border-color, #9aa0a6) 70%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--map-border-color, #9aa0a6) 70%,
+    transparent
+  );
   pointer-events: none;
   z-index: 0;
 }
@@ -653,7 +660,11 @@
   bottom: 28px;
   width: 2px;
   transform: translateX(-50%);
-  background: color-mix(in srgb, var(--map-border-color, #9aa0a6) 55%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--map-border-color, #9aa0a6) 55%,
+    transparent
+  );
   pointer-events: none;
   z-index: 0;
 }
@@ -666,7 +677,11 @@
   bottom: 8px;
   width: 2px;
   transform: translateX(-50%);
-  background: color-mix(in srgb, var(--map-border-color, #9aa0a6) 55%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--map-border-color, #9aa0a6) 55%,
+    transparent
+  );
   pointer-events: none;
   z-index: 0;
 }
@@ -846,7 +861,11 @@
   text-transform: uppercase;
   padding: 1px 5px;
   border-radius: 4px;
-  background: color-mix(in srgb, var(--map-border-color, #ccc) 35%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--map-border-color, #ccc) 35%,
+    transparent
+  );
   opacity: 0.9;
 }
 
@@ -1281,8 +1300,7 @@
   margin-left: auto;
 }
 
-.dataset-viewer__panes .map-control-button.map-control-button-active,
-.devtools-tabs .map-control-button.map-control-button-active {
+.dataset-viewer__panes .map-control-button.map-control-button-active {
   background: color-mix(
     in srgb,
     var(--map-primary-color, #004e98) 12%,
@@ -2062,11 +2080,10 @@
   max-width: 160px;
 }
 
-.devtools-tabs {
-  display: flex;
-  gap: 2px;
-  flex-wrap: wrap;
-  align-items: center;
+.devtools-header .devtools-tabs-host,
+.devtools-header .map-tabs-root {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .devtools-content {

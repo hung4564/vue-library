@@ -15,7 +15,13 @@ defineProps({
 
 <template>
   <button type="button">
-    <SidebarExpandedIcon v-if="expand" :size="16" />
-    <SidebarCloseExpandedIcon v-else :size="16" />
+    <SidebarExpandedIcon
+      v-if="expand"
+      :size="16"
+    />
+    <SidebarCloseExpandedIcon
+      v-else
+      :size="16"
+    />
   </button>
 </template>

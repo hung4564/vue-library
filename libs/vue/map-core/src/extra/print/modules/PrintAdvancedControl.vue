@@ -5,7 +5,10 @@ import {
   type PrintAdvancedUiState,
   type PrintOption,
 } from '@hungpvq/map-core/print';
-import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import {
+  type MapControlButtonUIState,
+  mdiButtonState,
+} from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   mdiClose,
@@ -14,14 +17,13 @@ import {
   mdiPrinterEye,
 } from '@mdi/js';
 import { saveAs } from 'file-saver';
-import { onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 
 import MapCommonButton from '../../../components/MapCommonButton.vue';
 import MapControlButton from '../../../components/MapControlButton.vue';
 import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
 import { useLang } from '../../../extra/lang/hook';
-import { useRegisterMapControl } from '../../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../../extra/toolbar/helper';
+import { useMapControl } from '../../../extra/registry/useMapControl';
 import { InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
@@ -48,7 +50,7 @@ const path = {
   save: mdiContentSaveOutline,
   setting: mdiCogOutline,
 };
-const { callMap, mapId, moduleContainerProps, order } = useMap(props, onInit);
+const { callMap, mapId, order } = useMap(props, onInit);
 const { trans } = useLang(mapId.value);
 const print = ref<PrintAdvancedUiState>({
   show: false,
@@ -107,69 +109,19 @@ function onPaperChange(
   session.applyPaper(String(raw ?? '') as NonNullable<PrintOption['paper']>);
 }
 
-const { state, control } = useToolbarControl(mapId.value, props, {
-  moduleId: 'mapPrintAdvancedControl',
-  order: order.value,
-  kind: 'module',
-  orientation: 'row',
-  buttons: [
-    {
-      id: 'mapPrintShow',
-      getState: () =>
-        mdiButtonState(path.print, {
-          visible: !print.value.show,
-          title: trans.value('map.print.title'),
-        }),
-      onClick: () => session.show(print.value.setting),
-    },
-    {
-      id: 'mapPrintSave',
-      getState: () =>
-        mdiButtonState(path.save, {
-          visible: print.value.show,
-          title: trans.value('map.print.actions.save'),
-          loading: print.value.loading,
-        }),
-      onClick: () => session.save(),
-    },
-    {
-      id: 'mapPrintClose',
-      getState: () =>
-        mdiButtonState(path.close, {
-          visible: print.value.show,
-          title: trans.value('map.print.actions.clear'),
-          loading: print.value.loading,
-        }),
-      onClick: () => session.close(),
-    },
-    {
-      id: 'mapPrintSetting',
-      getState: () =>
-        mdiButtonState(path.setting, {
-          visible: true,
-          active: print.value.setting_show,
-          title: trans.value('map.print.actions.setting'),
-          loading: print.value.loading,
-        }),
-      onClick: () => session.toggleSetting(),
-    },
-  ],
-});
-syncToolbar.run = () => control.sync();
-
-watch(
-  () => print.value.setting_show,
-  () => control.sync(),
-);
-
-useRegisterMapControl(mapId, {
+const {
+  moduleContainerProps,
+  panelBind,
+  state: toolbarState,
+  control,
+} = useMapControl(mapId, {
   id: 'mapPrintAdvancedControl',
   panelKind: 'button',
-  buttonPosition: () => props.position,
+  from: props,
+  order,
+  buttonSlot: 'custom',
   defaultActionType: 'mapPrintShow',
   getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
     disabledCrosshair: props.disabledCrosshair,
     disabledPrintableArea: props.disabledPrintableArea,
   }),
@@ -191,7 +143,65 @@ useRegisterMapControl(mapId, {
       run: () => session.toggleSetting(),
     },
   ],
+  toolbar: {
+    moduleId: 'mapPrintAdvancedControl',
+    order: order.value,
+    kind: 'module',
+    orientation: 'row',
+    buttons: [
+      {
+        id: 'mapPrintShow',
+        getState: () =>
+          mdiButtonState(path.print, {
+            visible: !print.value.show,
+            title: trans.value('map.print.title'),
+          }),
+        onClick: () => session.show(print.value.setting),
+      },
+      {
+        id: 'mapPrintSave',
+        getState: () =>
+          mdiButtonState(path.save, {
+            visible: print.value.show,
+            title: trans.value('map.print.actions.save'),
+            loading: print.value.loading,
+          }),
+        onClick: () => session.save(),
+      },
+      {
+        id: 'mapPrintClose',
+        getState: () =>
+          mdiButtonState(path.close, {
+            visible: print.value.show,
+            title: trans.value('map.print.actions.clear'),
+            loading: print.value.loading,
+          }),
+        onClick: () => session.close(),
+      },
+      {
+        id: 'mapPrintSetting',
+        getState: () =>
+          mdiButtonState(path.setting, {
+            visible: true,
+            active: print.value.setting_show,
+            title: trans.value('map.print.actions.setting'),
+            loading: print.value.loading,
+          }),
+        onClick: () => session.toggleSetting(),
+      },
+    ],
+  },
 });
+const state = computed(
+  () =>
+    toolbarState.value as Record<string, MapControlButtonUIState> | undefined,
+);
+syncToolbar.run = () => control.sync();
+
+watch(
+  () => print.value.setting_show,
+  () => control.sync(),
+);
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
@@ -223,7 +233,7 @@ useRegisterMapControl(mapId, {
     <template #draggable="bind">
       <DraggableItemPopup
         v-if="print.setting_show"
-        v-bind="bind"
+        v-bind="{ ...bind, ...panelBind }"
         :height="340"
         :show="print.setting_show"
         :title="trans('map.print.setting.title')"

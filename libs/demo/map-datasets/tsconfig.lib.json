@@ -4,13 +4,6 @@
     "outDir": "../../../dist/out-tsc",
     "types": []
   },
-  "exclude": [
-    "src/**/__tests__/*",
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts"
-  ],
-  "include": [
-    "src/**/*.ts",
-    "../../../types/shims/turf-turf.d.ts"
-  ]
+  "exclude": ["src/**/__tests__/*", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "include": ["src/**/*.ts", "../../../types/shims/turf-turf.d.ts"]
 }

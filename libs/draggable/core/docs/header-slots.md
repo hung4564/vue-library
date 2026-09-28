@@ -19,14 +19,14 @@ Related: [Stable API](./stable-api.md) · [Docs hub](./index.md)
 
 ## Vue ↔ React names
 
-| Vue slot        | React prop / node | Role                                      |
-| --------------- | ----------------- | ----------------------------------------- |
-| `pre-title`     | `preTitle`        | Before the title group                    |
-| `title` (prop)  | `title`           | Plain string (switcher menu + default header) |
-| `title` (slot)  | `titleNode`       | Custom header title node (sidebar); falls back to `title` |
-| `after-title`   | `afterTitle`      | Immediately after title, before spacer    |
-| `extra-btn`     | `extraBtn`        | Trailing header actions after the spacer  |
-| `default`       | `children`        | Panel body (not part of the header row)   |
+| Vue slot       | React prop / node | Role                                                      |
+| -------------- | ----------------- | --------------------------------------------------------- |
+| `pre-title`    | `preTitle`        | Before the title group                                    |
+| `title` (prop) | `title`           | Plain string (switcher menu + default header)             |
+| `title` (slot) | `titleNode`       | Custom header title node (sidebar); falls back to `title` |
+| `after-title`  | `afterTitle`      | Immediately after title, before spacer                    |
+| `extra-btn`    | `extraBtn`        | Trailing header actions after the spacer                  |
+| `default`      | `children`        | Panel body (not part of the header row)                   |
 
 ## Rules
 
@@ -34,15 +34,15 @@ Related: [Stable API](./stable-api.md) · [Docs hub](./index.md)
 2. React sidebar: use **`title`** (string) for the switcher store label; use **`titleNode`** for a custom header node (Vue `#title` slot). Other shells may still pass a display `title` node where noted.
 3. When the visible header differs from the switcher label, set both a plain `title` string and a styled `#title` / `titleNode`.
 4. Do not place trailing chrome (close, expand, switcher) in `after-title`; those belong in `extra-btn` / built-in header actions.
-5. Not every shell exposes every slot (e.g. some omit `pre-title`). Names that *are* documented on a component remain Stable for that surface.
+5. Not every shell exposes every slot (e.g. some omit `pre-title`). Names that _are_ documented on a component remain Stable for that surface.
 
 ## Component docs
 
-| Component | Doc |
-| --------- | --- |
-| Popup | [draggable-item-popup.md](./draggable-item-popup.md) |
-| Modal | [draggable-modal.md](./draggable-modal.md) |
-| Drawer | [draggable-drawer.md](./draggable-drawer.md) |
-| Float | [draggable-item-float.md](./draggable-item-float.md) |
-| Sidebar | [draggable-item-sidebar.md](./draggable-item-sidebar.md) |
-| Bottom | [draggable-item-bottom.md](./draggable-item-bottom.md) |
+| Component | Doc                                                      |
+| --------- | -------------------------------------------------------- |
+| Popup     | [draggable-item-popup.md](./draggable-item-popup.md)     |
+| Modal     | [draggable-modal.md](./draggable-modal.md)               |
+| Drawer    | [draggable-drawer.md](./draggable-drawer.md)             |
+| Float     | [draggable-item-float.md](./draggable-item-float.md)     |
+| Sidebar   | [draggable-item-sidebar.md](./draggable-item-sidebar.md) |
+| Bottom    | [draggable-item-bottom.md](./draggable-item-bottom.md)   |

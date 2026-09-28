@@ -48,21 +48,39 @@ async function run(id: CookbookScenarioId) {
         LayerDetail cover scenarios 5–7 on the map.
       </p>
       <ul class="logging-cookbook__list">
-        <li v-for="item in COOKBOOK_CHECKLIST" :key="item.id">
-          <button type="button" @click="run(item.id)">
+        <li
+          v-for="item in COOKBOOK_CHECKLIST"
+          :key="item.id"
+        >
+          <button
+            type="button"
+            @click="run(item.id)"
+          >
             {{ done[item.id] ? '✓ ' : '' }}{{ item.label }}
           </button>
           <span class="logging-cookbook__expect">{{ item.expect }}</span>
         </li>
       </ul>
-      <p v-if="lastNote" class="logging-cookbook__note">{{ lastNote }}</p>
+      <p
+        v-if="lastNote"
+        class="logging-cookbook__note"
+      >
+        {{ lastNote }}
+      </p>
     </aside>
-    <Map class="logging-cookbook__map" @mapLoaded="onMapLoaded" :mapId="mapId">
+    <Map
+      class="logging-cookbook__map"
+      @mapLoaded="onMapLoaded"
+      :mapId="mapId"
+    >
       <DevtoolsControl position="bottom-right" />
       <DemoLanguageControl />
       <AsideControl position="top-left" />
       <BaseMapControl position="bottom-left" />
-      <LayerControl position="top-left" show>
+      <LayerControl
+        position="top-left"
+        show
+      >
         <template #endList="{ mapId: mid }">
           <BaseMapCard :mapId="mid" />
         </template>

@@ -19,7 +19,10 @@ export function InputImage({
   return (
     <div className="input-image">
       <div>
-        <InputText value={value || ''} onChange={(v) => onSetValue(v)} />
+        <InputText
+          value={value || ''}
+          onChange={(v) => onSetValue(v)}
+        />
       </div>
       <div className="fill-canvas">
         {Object.entries(images).map(([name, styleImage]) => (

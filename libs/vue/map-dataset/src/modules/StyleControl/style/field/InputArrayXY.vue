@@ -1,5 +1,8 @@
 <template lang="">
-  <div v-bind="$attrs" class="input-array-x-y">
+  <div
+    v-bind="$attrs"
+    class="input-array-x-y"
+  >
     <div class="input-array-item">
       <span> x: </span>
       <InputText

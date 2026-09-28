@@ -19,11 +19,11 @@ Prefer `installDevtools()` from `@hungpvq/vue-map-devtools` / `@hungpvq/react-ma
 
 Framework adapters render a **Dataset** tab on top of this package:
 
-| Pane | Purpose |
-| --- | --- |
-| **Roots** | Pin / open a dataset from the map store tree |
-| **Inspect** | Hierarchy, fields, children; find-by-type helpers |
-| **Menus** | Resolved menus by placement (`title` / `extra` / `menu` / …) + raw detail |
+| Pane        | Purpose                                                                   |
+| ----------- | ------------------------------------------------------------------------- |
+| **Roots**   | Pin / open a dataset from the map store tree                              |
+| **Inspect** | Hierarchy, fields, children; find-by-type helpers                         |
+| **Menus**   | Resolved menus by placement (`title` / `extra` / `menu` / …) + raw detail |
 
 Shared CSS lives in `@hungpvq/map-debug` (`style.css`) and is imported by both Vue and React map-devtools packages. See [Map Devtools](../core/docs/core/devtools.md).
 
@@ -41,21 +41,21 @@ anon:<type>-<name>-…:<resolvedIndex>
 
 Console helpers after `installDatasetDebug()` — prefer F12 `window.__hungpvqDatasetDebug` (same object as `map:debug.dataset`):
 
-| Method | Notes |
-| --- | --- |
-| `previewMenus(opts?)` | Partitioned summaries for current session |
-| `inspectMenu(menuId)` | Detail for one resolved menu |
+| Method                             | Notes                                           |
+| ---------------------------------- | ----------------------------------------------- |
+| `previewMenus(opts?)`              | Partitioned summaries for current session       |
+| `inspectMenu(menuId)`              | Detail for one resolved menu                    |
 | `explainMenus` / `explainFindPart` | Step traces for console (not shown in panel UI) |
-| `help()` | Method cheat sheet |
+| `help()`                           | Method cheat sheet                              |
 
 ## Menu: Debug dataset
 
 `installDatasetDebug` registers `createMenuItemDebugDataset` as a **global default** on every dataset:
 
-| Host | Default location |
-| --- | --- |
+| Host           | Default location                                                                                         |
+| -------------- | -------------------------------------------------------------------------------------------------------- |
 | `for: 'layer'` | `title` (LayerDetail / AttributeTable header); `menu` on layer-control / identify / attribute-table rows |
-| `for: 'item'` | `menu` |
+| `for: 'item'`  | `menu`                                                                                                   |
 
 Hidden unless `isMapDevtoolsInstalled()` (set by `installDevtoolsCore` / framework `installDevtools`).
 

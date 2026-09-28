@@ -1,5 +1,9 @@
 <template>
-  <div class="dataset-tree-nav" role="tree" :aria-label="ariaLabel">
+  <div
+    class="dataset-tree-nav"
+    role="tree"
+    :aria-label="ariaLabel"
+  >
     <DatasetTreeNavNode
       v-for="node in nodes"
       :key="node.id"
@@ -10,7 +14,12 @@
       :force-expand-ids="forceExpandIds"
       @select="$emit('select', $event)"
     />
-    <p v-if="!nodes.length" class="dataset-tree-nav__empty">No datasets</p>
+    <p
+      v-if="!nodes.length"
+      class="dataset-tree-nav__empty"
+    >
+      No datasets
+    </p>
   </div>
 </template>
 

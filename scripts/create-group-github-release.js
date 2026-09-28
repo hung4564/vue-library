@@ -87,7 +87,9 @@ async function main() {
       `No CHANGELOG section for ${version} in ${path.dirname(lead)}/CHANGELOG.md`,
     );
   } else {
-    console.log(`Using CHANGELOG section (${body.split(/\r?\n/).length} lines)`);
+    console.log(
+      `Using CHANGELOG section (${body.split(/\r?\n/).length} lines)`,
+    );
   }
 
   const repo = resolveGithubRepo();

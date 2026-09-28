@@ -10,11 +10,11 @@ category: Component
 
 ## Props
 
-| Prop                | Description                                                                               | Type                        | Required | Default Value |
-| ------------------- | ----------------------------------------------------------------------------------------- | --------------------------- | -------- | ------------- |
-| `containerId`       | Unique identifier for the container. Useful when teleporting items outside the container. | `string`                    | false    | -             |
-| `mobileBreakpoint`  | Root width (px) below which `WithMobileHandle` switches items to the bottom sheet.        | `number`                    | false    | `600`         |
-| `variant`           | `plain` drops GIS card chrome (transparent/inherit). Adds `draggable-variant-plain`.      | `'default' \| 'plain'`      | false    | `'default'`   |
+| Prop               | Description                                                                               | Type                   | Required | Default Value |
+| ------------------ | ----------------------------------------------------------------------------------------- | ---------------------- | -------- | ------------- |
+| `containerId`      | Unique identifier for the container. Useful when teleporting items outside the container. | `string`               | false    | -             |
+| `mobileBreakpoint` | Root width (px) below which `WithMobileHandle` switches items to the bottom sheet.        | `number`               | false    | `600`         |
+| `variant`          | `plain` drops GIS card chrome (transparent/inherit). Adds `draggable-variant-plain`.      | `'default' \| 'plain'` | false    | `'default'`   |
 
 ## Events
 
@@ -53,13 +53,28 @@ function init(id: string) {
 </script>
 
 <template>
-  <DraggableContainer containerId="test" @init="init">
-    <DraggableItemSideBar show title="sidebar 1">
+  <DraggableContainer
+    containerId="test"
+    @init="init"
+  >
+    <DraggableItemSideBar
+      show
+      title="sidebar 1"
+    >
       <div style="height: 100vh"></div>
     </DraggableItemSideBar>
   </DraggableContainer>
-  <Teleport :to="`#${containerId}`" v-if="containerId">
-    <DraggableItemPopup show title="Popup 2 is outside the container" :top="10" :left="410" :containerId="containerId">
+  <Teleport
+    :to="`#${containerId}`"
+    v-if="containerId"
+  >
+    <DraggableItemPopup
+      show
+      title="Popup 2 is outside the container"
+      :top="10"
+      :left="410"
+      :containerId="containerId"
+    >
       <div style="height: 100vh"></div>
     </DraggableItemPopup>
   </Teleport>
@@ -71,18 +86,20 @@ function init(id: string) {
 ```tsx
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
-import {
-  DraggableContainer,
-  DraggableItemPopup,
-  DraggableItemSideBar,
-} from '@hungpvq/react-draggable';
+import { DraggableContainer, DraggableItemPopup, DraggableItemSideBar } from '@hungpvq/react-draggable';
 
 export function Example() {
   const [containerId, setContainerId] = useState('');
   return (
     <>
-      <DraggableContainer containerId="test" onInit={setContainerId}>
-        <DraggableItemSideBar show title="sidebar 1">
+      <DraggableContainer
+        containerId="test"
+        onInit={setContainerId}
+      >
+        <DraggableItemSideBar
+          show
+          title="sidebar 1"
+        >
           <div style={{ height: '100vh' }} />
         </DraggableItemSideBar>
       </DraggableContainer>

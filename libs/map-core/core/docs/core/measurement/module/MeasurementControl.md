@@ -62,5 +62,5 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <MeasurementControl />
-</Map>
+</Map>;
 ```

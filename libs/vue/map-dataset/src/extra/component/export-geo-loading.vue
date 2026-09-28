@@ -2,7 +2,11 @@
 export default { name: 'export-geo-loading' };
 </script>
 <template>
-  <p class="export-geo__loading" role="status" aria-live="polite">
+  <p
+    class="export-geo__loading"
+    role="status"
+    aria-live="polite"
+  >
     Preparing download…
   </p>
 </template>

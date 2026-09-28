@@ -82,7 +82,10 @@ export function IdentifyLayerAction(props: WithLayerItemMenuComponentType) {
         onClick={onToggle}
       >
         <div className="layer-context-menu__item-icon">
-          <Icon path={iconPath} size={ICON_SIZE_MENU} />
+          <Icon
+            path={iconPath}
+            size={ICON_SIZE_MENU}
+          />
         </div>
         <span>{title}</span>
       </li>
@@ -101,7 +104,10 @@ export function IdentifyLayerAction(props: WithLayerItemMenuComponentType) {
       size="small"
       onClick={onToggle}
     >
-      <Icon path={iconPath} size={ICON_SIZE_EXTRA} />
+      <Icon
+        path={iconPath}
+        size={ICON_SIZE_EXTRA}
+      />
     </MapControlButton>
   );
 }

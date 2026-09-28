@@ -5,7 +5,11 @@
         >Errors {{ filteredErrors.length }}</span
       >
       <div class="error-viewer__actions">
-        <MapControlButton variant="text" size="small" @click="clearErrors">
+        <MapControlButton
+          variant="text"
+          size="small"
+          @click="clearErrors"
+        >
           Clear
         </MapControlButton>
       </div>
@@ -28,7 +32,10 @@
           }}</span>
         </div>
         <div class="error-viewer__message">{{ error.message }}</div>
-        <div v-if="errorMapId(error)" class="error-viewer__mapid">
+        <div
+          v-if="errorMapId(error)"
+          class="error-viewer__mapid"
+        >
           mapId: {{ errorMapId(error) }}
         </div>
         <div class="error-viewer__actions">
@@ -37,16 +44,25 @@
             :value="formatDevtoolErrorForCopy(error)"
           />
         </div>
-        <details v-if="error.context" class="error-viewer__details">
+        <details
+          v-if="error.context"
+          class="error-viewer__details"
+        >
           <summary>Context</summary>
           <pre>{{ JSON.stringify(error.context, null, 2) }}</pre>
         </details>
-        <details v-if="error.stack" class="error-viewer__details">
+        <details
+          v-if="error.stack"
+          class="error-viewer__details"
+        >
           <summary>Stack Trace</summary>
           <pre>{{ error.stack }}</pre>
         </details>
       </div>
-      <div v-if="filteredErrors.length === 0" class="error-viewer__empty">
+      <div
+        v-if="filteredErrors.length === 0"
+        class="error-viewer__empty"
+      >
         No errors logged
       </div>
     </div>

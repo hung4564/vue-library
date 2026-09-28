@@ -12,44 +12,24 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
 import { computed, ref, watch } from 'vue';
 
-import MapCommonButton from '../../../components/MapCommonButton.vue';
 import { Collapse, InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow, type WithShowProps } from '../../../hooks/useShow';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useMapControl } from '../../registry/useMapControl';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../useMapCrsItems';
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, order } = useMap(props);
 const { trans } = useLang(mapId.value);
 const [show, setShow] = useShow(props.show);
 
 function onToggleShow() {
   setShow(!show.value);
 }
-const { panelBind } = useRegisterMapControl(mapId, {
-  id: 'mapCrsControl',
-  panelKind: 'popup',
-  title: () => trans.value('map.crs-control.title'),
-  buttonPosition: () => props.position,
-  show,
-  setShow,
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
-  actions: [
-    {
-      type: 'mapCrsControl',
-      run: () => onToggleShow(),
-    },
-  ],
-});
 const { items: crs_items, setItems } = useMapCrsItems(mapId.value);
 const { displayEpsgs, setDisplayEpsgs } = useMapCrsDisplayEpsgs(mapId.value);
 const filterQuery = ref('');
@@ -111,13 +91,26 @@ const toggleDisplay = (epsg: string, checked: boolean) => {
   setDisplayEpsgs(displayEpsgs.value.filter((code) => code !== epsg));
 };
 
-const { state, control } = useToolbarControl(mapId.value, props, {
+const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   id: 'mapCrsControl',
-  getState() {
+  panelKind: 'popup',
+  title: () => trans.value('map.crs-control.title'),
+  from: props,
+  order,
+  show,
+  setShow,
+  actions: [
+    {
+      type: 'mapCrsControl',
+      run: () => onToggleShow(),
+    },
+  ],
+  getButtonState() {
     return mdiButtonState(mdiInboxOutline, {
       visible: true,
       active: show.value,
       title: trans.value('map.crs-control.title'),
+      order: order.value,
     });
   },
   onClick() {
@@ -128,14 +121,6 @@ watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
     <template #draggable="slotProps">
       <DraggableItemPopup
         v-if="show"
@@ -182,7 +167,10 @@ watch(show, () => control.sync());
             </ul>
           </div>
 
-          <div v-if="customItems.length" class="crs-custom">
+          <div
+            v-if="customItems.length"
+            class="crs-custom"
+          >
             <div class="crs-custom__title">
               {{ trans('map.crs-control.custom') }}
             </div>
@@ -203,7 +191,11 @@ watch(show, () => control.sync());
                         class="clickable"
                         @click.stop="onRemove(crs_item)"
                       >
-                        <SvgIcon size="16" type="mdi" :path="path.delete" />
+                        <SvgIcon
+                          size="16"
+                          type="mdi"
+                          :path="path.delete"
+                        />
                       </button>
                     </div>
                   </div>
@@ -255,7 +247,11 @@ watch(show, () => control.sync());
               class="layer-item__button clickable"
               @click.stop="onAdd()"
             >
-              <SvgIcon size="16" type="mdi" :path="path.plus" />
+              <SvgIcon
+                size="16"
+                type="mdi"
+                :path="path.plus"
+              />
             </button>
           </div>
         </div>

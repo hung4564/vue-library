@@ -266,7 +266,10 @@ watch(overrideKey, (mode) => registerOverrides(mapId.value, mode));
 </script>
 
 <template>
-  <Map @mapLoaded="onMapLoaded" :mapId="mapId">
+  <Map
+    @mapLoaded="onMapLoaded"
+    :mapId="mapId"
+  >
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
@@ -274,7 +277,10 @@ watch(overrideKey, (mode) => registerOverrides(mapId.value, mode));
       position="bottom-left"
       default-base-map="Google Satellite"
     />
-    <LayerControl position="top-left" show>
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId: mid }">
         <BaseMapCard :mapId="mid" />
       </template>
@@ -291,7 +297,11 @@ watch(overrideKey, (mode) => registerOverrides(mapId.value, mode));
         <label class="at-card__label">
           Layer
           <select v-model="selectedKey">
-            <option v-for="opt in layerOptions" :key="opt.key" :value="opt.key">
+            <option
+              v-for="opt in layerOptions"
+              :key="opt.key"
+              :value="opt.key"
+            >
               {{ opt.label }}
             </option>
           </select>
@@ -340,7 +350,11 @@ watch(overrideKey, (mode) => registerOverrides(mapId.value, mode));
           >
             Open + cell/header
           </MapControlButton>
-          <MapControlButton variant="outlined" size="small" @click="loadPage">
+          <MapControlButton
+            variant="outlined"
+            size="small"
+            @click="loadPage"
+          >
             store.list (page)
           </MapControlButton>
         </div>
@@ -350,7 +364,12 @@ watch(overrideKey, (mode) => registerOverrides(mapId.value, mode));
           <code>GeoJSON features</code> uses
           <code>createDatasetPartAttributeTable</code> (wins over menu columns).
         </div>
-        <div v-if="lastPageHint" class="at-card__meta">{{ lastPageHint }}</div>
+        <div
+          v-if="lastPageHint"
+          class="at-card__meta"
+        >
+          {{ lastPageHint }}
+        </div>
 
         <div class="at-card__section">
           {{ ATTRIBUTE_TABLE_CONTROL.id }}
@@ -370,7 +389,11 @@ watch(overrideKey, (mode) => registerOverrides(mapId.value, mode));
           >
             {{ ATTRIBUTE_TABLE_CONTROL.actionSelectRows }}
           </MapControlButton>
-          <MapControlButton variant="outlined" size="small" @click="toggleShow">
+          <MapControlButton
+            variant="outlined"
+            size="small"
+            @click="toggleShow"
+          >
             toggle show
           </MapControlButton>
         </div>

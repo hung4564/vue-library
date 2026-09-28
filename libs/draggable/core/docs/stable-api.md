@@ -15,40 +15,40 @@ Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) �
 
 ## `@hungpvq/draggable`
 
-| Area | Stable surface |
-|------|----------------|
+| Area              | Stable surface                                                                                                                                                                                                                                                                           |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Types / factories | `ItemGroupKey`, `DraggableItemType`, `LocationSideBar`, `ContainerStore*`, `BottomConfig`, `InitOption`, `Bounds`, `ItemLayoutState`, `PanelSnapshot`, `createEmptyContainer`, `createEmptyDrawer`, `createEmptySideBar`, `createEmptyItemGroup`, `createEmptyBottom`, `itemTypeToGroup` |
-| Store | `configureDragStore`, `useDragStore`, `useDragContainer`, `useDragItem`, `useSidebarItem`, `useDrawerItem`, `useBottomItem`, `useDragComponent`, `useDragIsMobile`, `useDragCommands`, `useDragLayout` |
-| Bottom | Exclusive `ContainerStore.bottom.show?: string` (one active panel); shared `BottomContainer` shell + header switcher menu |
-| Store key | `drag:core` (defineStore id / notify path prefix) |
-| Layout | `ContainerStore.layouts`, `useDragLayout` → `setItemLayout` / `getItemLayout` / `getLayout` / `applyLayout` |
-| Utils / a11y | `checkIsFirst`, `checkIsLast`, `assertDefined`, `clampBounds`, `focusFirst`, `restoreFocus`, `trapTabKey`, `getFocusableElements`, `setModalSiblingsInert`, `getMenuItems`, `handleMenuKeydown`, `clearMenuTypeahead` |
-| Package exports | `.`, `./style.css` |
+| Store             | `configureDragStore`, `useDragStore`, `useDragContainer`, `useDragItem`, `useSidebarItem`, `useDrawerItem`, `useBottomItem`, `useDragComponent`, `useDragIsMobile`, `useDragCommands`, `useDragLayout`                                                                                   |
+| Bottom            | Exclusive `ContainerStore.bottom.show?: string` (one active panel); shared `BottomContainer` shell + header switcher menu                                                                                                                                                                |
+| Store key         | `drag:core` (defineStore id / notify path prefix)                                                                                                                                                                                                                                        |
+| Layout            | `ContainerStore.layouts`, `useDragLayout` → `setItemLayout` / `getItemLayout` / `getLayout` / `applyLayout`                                                                                                                                                                              |
+| Utils / a11y      | `checkIsFirst`, `checkIsLast`, `assertDefined`, `clampBounds`, `focusFirst`, `restoreFocus`, `trapTabKey`, `getFocusableElements`, `setModalSiblingsInert`, `getMenuItems`, `handleMenuKeydown`, `clearMenuTypeahead`                                                                    |
+| Package exports   | `.`, `./style.css`                                                                                                                                                                                                                                                                       |
 
 ## `@hungpvq/vue-draggable`
 
-| Area | Stable surface |
-|------|----------------|
-| Shell | `DraggableContainer` (`containerId`, optional `mobileBreakpoint` default `600`, optional `variant` `'default' \| 'plain'`) |
-| Items | `DraggableItemPopup`, `DraggableItemFloat`, `DraggableItemBottom`, `DraggableModal`, `DraggableItemSideBar`, `DraggableDrawer` |
-| HOC | `WithMobileHandle` |
-| Hooks | `useInit*`, `useShow` / `useExpand` / `useHighlight`, `useSideBarContainer`, `useBottomContainer`, `useComponent`, `useContainerSize`, `useContainerOrder`, `useManagement`, `useIcon`, `withShow*` / `withExpand*` / `withShare*` helpers |
-| Store | Re-exports of Stable core store APIs after Vue `configureDragStore` (includes `useDragCommands`, `useDragLayout`) |
-| Props / events | Documented `id` (stable item id), `show` / `v-model:show`, `containerId`, `title`, sidebar `titleNode` (React; Vue `#title` slot), `location`, `highlightMs`, size/position props; popup/modal `update:bounds` (also written to `layouts`); controlled `left`/`top`/`width`/`height` sync after mount |
-| Package exports | `.`, `./style.css` |
+| Area            | Stable surface                                                                                                                                                                                                                                                                                        |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Shell           | `DraggableContainer` (`containerId`, optional `mobileBreakpoint` default `600`, optional `variant` `'default' \| 'plain'`)                                                                                                                                                                            |
+| Items           | `DraggableItemPopup`, `DraggableItemFloat`, `DraggableItemBottom`, `DraggableModal`, `DraggableItemSideBar`, `DraggableDrawer`                                                                                                                                                                        |
+| HOC             | `WithMobileHandle`                                                                                                                                                                                                                                                                                    |
+| Hooks           | `useInit*`, `useShow` / `useExpand` / `useHighlight`, `useSideBarContainer`, `useBottomContainer`, `useComponent`, `useContainerSize`, `useContainerOrder`, `useManagement`, `useIcon`, `withShow*` / `withExpand*` / `withShare*` helpers                                                            |
+| Store           | Re-exports of Stable core store APIs after Vue `configureDragStore` (includes `useDragCommands`, `useDragLayout`)                                                                                                                                                                                     |
+| Props / events  | Documented `id` (stable item id), `show` / `v-model:show`, `containerId`, `title`, sidebar `titleNode` (React; Vue `#title` slot), `location`, `highlightMs`, size/position props; popup/modal `update:bounds` (also written to `layouts`); controlled `left`/`top`/`width`/`height` sync after mount |
+| Package exports | `.`, `./style.css`                                                                                                                                                                                                                                                                                    |
 
 ## `@hungpvq/react-draggable`
 
-| Area | Stable surface |
-|------|----------------|
-| Shell / items | Same component names as Vue (including `variant` on `DraggableContainer`) |
-| HOC | `WithMobileHandle` |
-| Hooks | Same Stable hook set as Vue (plus React `useContainerSize` module) |
-| React-only | `ContainerProvider` / `useContainerId`, `useStoreReactive`, `useContainerReactive` |
-| Store | Re-exports of Stable core store APIs after React `configureDragStore` (includes `useDragCommands`, `useDragLayout`) |
-| Types | Import from `@hungpvq/draggable` (adapters do **not** re-export core types/factories) |
-| Props / events | Documented `id`, `show` + `onUpdateShow`, `containerId`, `location`, `mobileBreakpoint`, `highlightMs`, size/position props; popup/modal `onBoundsChange`; controlled bounds sync after mount |
-| Package exports | `.`, `./style.css` |
+| Area            | Stable surface                                                                                                                                                                                |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Shell / items   | Same component names as Vue (including `variant` on `DraggableContainer`)                                                                                                                     |
+| HOC             | `WithMobileHandle`                                                                                                                                                                            |
+| Hooks           | Same Stable hook set as Vue (plus React `useContainerSize` module)                                                                                                                            |
+| React-only      | `ContainerProvider` / `useContainerId`, `useStoreReactive`, `useContainerReactive`                                                                                                            |
+| Store           | Re-exports of Stable core store APIs after React `configureDragStore` (includes `useDragCommands`, `useDragLayout`)                                                                           |
+| Types           | Import from `@hungpvq/draggable` (adapters do **not** re-export core types/factories)                                                                                                         |
+| Props / events  | Documented `id`, `show` + `onUpdateShow`, `containerId`, `location`, `mobileBreakpoint`, `highlightMs`, size/position props; popup/modal `onBoundsChange`; controlled bounds sync after mount |
+| Package exports | `.`, `./style.css`                                                                                                                                                                            |
 
 ## CSS
 
@@ -84,10 +84,10 @@ Popup/modal drag-stop writes `layouts[id].bounds`; drawer writes `size` / `locat
 
 Still exported from the **root** barrel for 1.x compatibility; treat as unstable (may change in a **minor**). Source module: `experimental.ts` in each adapter.
 
-| Package | Experimental symbols |
-|---------|----------------------|
-| Vue | `ManagementControl`, `ContextMenu`, `ContextMenuItem` |
-| React | `ManagementControl`, `Item`, `ItemList`, `ShowStatus*`, `ContextMenu`, `ContextMenuItem` (+ related props/ref types) |
+| Package | Experimental symbols                                                                                                 |
+| ------- | -------------------------------------------------------------------------------------------------------------------- |
+| Vue     | `ManagementControl`, `ContextMenu`, `ContextMenuItem`                                                                |
+| React   | `ManagementControl`, `Item`, `ItemList`, `ShowStatus*`, `ContextMenu`, `ContextMenuItem` (+ related props/ref types) |
 
 **ContextMenu** keyboard/a11y: Esc close, Arrow/Home/End, Enter/Space, typeahead, focus restore. Prefer `ContextMenuItem` inside `<ul class="context-menu">`. Not a full WAI-ARIA menu yet (no submenu). See [context-menu.md](./context-menu.md), [a11y.md](./a11y.md), demo-draggable **Menu** (`#/menu`).
 
@@ -101,13 +101,13 @@ Documented header slot / prop names are Stable (rename = **major**). Full layout
 [ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]
 ```
 
-| Vue | React | Notes |
-| --- | --- | --- |
-| `pre-title` | `preTitle` | Before title group |
-| `title` (prop) | `title` | Plain string (switcher store + default header on sidebar) |
-| `title` (slot) | `titleNode` | Custom header node on `DraggableItemSideBar`; falls back to `title` |
-| `after-title` | `afterTitle` | Immediately after title; **`location: 'title'` maps here**, not `extra-btn` |
-| `extra-btn` | `extraBtn` | Trailing actions after spacer |
+| Vue            | React        | Notes                                                                       |
+| -------------- | ------------ | --------------------------------------------------------------------------- |
+| `pre-title`    | `preTitle`   | Before title group                                                          |
+| `title` (prop) | `title`      | Plain string (switcher store + default header on sidebar)                   |
+| `title` (slot) | `titleNode`  | Custom header node on `DraggableItemSideBar`; falls back to `title`         |
+| `after-title`  | `afterTitle` | Immediately after title; **`location: 'title'` maps here**, not `extra-btn` |
+| `extra-btn`    | `extraBtn`   | Trailing actions after spacer                                               |
 
 ## Internal chrome (not public)
 

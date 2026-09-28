@@ -1,5 +1,8 @@
 ﻿<template lang="">
-  <Map ref="mapRef" @mapLoaded="onMapLoaded">
+  <Map
+    ref="mapRef"
+    @mapLoaded="onMapLoaded"
+  >
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />

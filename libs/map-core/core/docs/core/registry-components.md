@@ -11,10 +11,10 @@ import { UniversalRegistry } from '@hungpvq/vue-map-core';
 
 ## Global vs per-map
 
-| API | Scope | Use when |
-| --- | --- | --- |
-| `registerComponent(key, Comp)` | All maps | Defaults from `installMapApp` / `createDatasetRegistryPlugin`, app-wide overrides |
-| `registerComponentForMap(mapId, key, Comp)` | One `mapId` | Page / demo overrides that must win over global (and not leak to other maps) |
+| API                                         | Scope       | Use when                                                                          |
+| ------------------------------------------- | ----------- | --------------------------------------------------------------------------------- |
+| `registerComponent(key, Comp)`              | All maps    | Defaults from `installMapApp` / `createDatasetRegistryPlugin`, app-wide overrides |
+| `registerComponentForMap(mapId, key, Comp)` | One `mapId` | Page / demo overrides that must win over global (and not leak to other maps)      |
 
 Lookup order in `getComponent(key, mapId)`: **map-specific first**, then global.
 
@@ -23,26 +23,18 @@ Lookup order in `getComponent(key, mapId)`: **map-specific first**, then global.
 UniversalRegistry.registerComponent('layer-action-toggle-show', ToggleShow);
 
 // Per map — overrides global for that map only
-UniversalRegistry.registerComponentForMap(
-  mapId,
-  'layer-action-toggle-show-button',
-  SampleToggleShowButton,
-);
+UniversalRegistry.registerComponentForMap(mapId, 'layer-action-toggle-show-button', SampleToggleShowButton);
 ```
 
 ## Register after map load
 
-Map-scoped components / methods / controls live in the shared registry maps bag (`map:registry:maps` / `map:registry:controls`). When the map unmounts, `removeMap()` → `UniversalRegistry.clearMap(mapId)` clears that map’s entries (React StrictMode remounts the map once in development).
+Map-scoped components / methods live on `map:core[mapId].registry-maps` (`MAP_STORE_KEY.REGISTRY_MAPS`); control handles on `map:core[mapId].controls`. When the map unmounts, `removeMap()` → `UniversalRegistry.clearMap(mapId)` clears that map’s entries (React StrictMode remounts the map once in development).
 
 **Prefer registering in `onMapLoaded` / `@mapLoaded`**, so entries are written after each mount:
 
 ```ts
 function onMapLoaded(map: MapSimple) {
-  UniversalRegistry.registerComponentForMap(
-    map.id,
-    'demo-layer-toggle-show',
-    SampleLayerToggleShow,
-  );
+  UniversalRegistry.registerComponentForMap(map.id, 'demo-layer-toggle-show', SampleLayerToggleShow);
   // load datasets…
 }
 ```

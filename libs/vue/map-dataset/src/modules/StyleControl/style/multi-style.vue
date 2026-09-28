@@ -111,7 +111,12 @@ const onShowAddStyle = (value: boolean) => {
         :disabled="!tab"
         variant="text"
       >
-        <SvgIcon size="14" type="mdi" :path="path.delete" :disabled="!tab" />
+        <SvgIcon
+          size="14"
+          type="mdi"
+          :path="path.delete"
+          :disabled="!tab"
+        />
       </MapControlButton>
       <MapControlButton
         class="tab-item tab-add clickable"
@@ -125,23 +130,41 @@ const onShowAddStyle = (value: boolean) => {
         />
       </MapControlButton>
     </div>
-    <div class="style-container" v-if="showAdd">
+    <div
+      class="style-container"
+      v-if="showAdd"
+    >
       <div class="add-style-container">
-        <map-control-button @click="onAddStyleLayer('area')" variant="text">
+        <map-control-button
+          @click="onAddStyleLayer('area')"
+          variant="text"
+        >
           {{ trans('map.style-control.add.area') }}
         </map-control-button>
-        <map-control-button @click="onAddStyleLayer('line')" variant="text">
+        <map-control-button
+          @click="onAddStyleLayer('line')"
+          variant="text"
+        >
           {{ trans('map.style-control.add.line') }}
         </map-control-button>
-        <map-control-button @click="onAddStyleLayer('point')" variant="text">
+        <map-control-button
+          @click="onAddStyleLayer('point')"
+          variant="text"
+        >
           {{ trans('map.style-control.add.point') }}
         </map-control-button>
-        <map-control-button @click="onAddStyleLayer('symbol')" variant="text">
+        <map-control-button
+          @click="onAddStyleLayer('symbol')"
+          variant="text"
+        >
           {{ trans('map.style-control.add.symbol') }}
         </map-control-button>
       </div>
     </div>
-    <div class="style-container" v-else-if="tab">
+    <div
+      class="style-container"
+      v-else-if="tab"
+    >
       <SingleStyle
         :modelValue="current_layer"
         :trans="trans"

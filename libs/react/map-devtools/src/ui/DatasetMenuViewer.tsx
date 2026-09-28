@@ -95,7 +95,10 @@ function DetailRow({
       <div className="dataset-viewer__row-value">{children}</div>
       {copyValue ? (
         <div className="dataset-viewer__row-copy">
-          <MapCopyButton title={`Copy ${label}`} value={copyValue} />
+          <MapCopyButton
+            title={`Copy ${label}`}
+            value={copyValue}
+          />
         </div>
       ) : null}
     </div>
@@ -656,7 +659,10 @@ export function DatasetMenuViewer() {
     <div className="dataset-viewer">
       <div className="dataset-viewer__toolbar">
         {snapshot ? (
-          <div className="dataset-viewer__current" title={snapshot.identity.id}>
+          <div
+            className="dataset-viewer__current"
+            title={snapshot.identity.id}
+          >
             <span
               className="dataset-viewer__kind"
               data-kind={snapshot.identity.kind}
@@ -707,7 +713,10 @@ export function DatasetMenuViewer() {
         </div>
       </div>
 
-      <div className="dataset-viewer__panes" role="tablist">
+      <div
+        className="dataset-viewer__panes"
+        role="tablist"
+      >
         <div className="dataset-viewer__panes-tabs">
           {visiblePanes.map((p) => (
             <MapControlButton
@@ -746,7 +755,10 @@ export function DatasetMenuViewer() {
 
       <div className="dataset-viewer__body">
         {pane === 'roots' ? (
-          <div className="dataset-viewer__roots" aria-label="Root datasets">
+          <div
+            className="dataset-viewer__roots"
+            aria-label="Root datasets"
+          >
             {rootOptions.length === 0 ? (
               <p className="dataset-viewer__empty">
                 No root datasets on this map.
@@ -774,7 +786,10 @@ export function DatasetMenuViewer() {
                       }
                     }}
                   >
-                    <div className="dataset-viewer__root-meta" title={r.id}>
+                    <div
+                      className="dataset-viewer__root-meta"
+                      title={r.id}
+                    >
                       <strong>{r.name}</strong>
                       <span className="dataset-viewer__muted">{r.type}</span>
                     </div>
@@ -868,7 +883,10 @@ export function DatasetMenuViewer() {
                         {partTypeItems.length > 0 ? (
                           <optgroup label="Part type">
                             {partTypeItems.map((item) => (
-                              <option key={item.value} value={item.value}>
+                              <option
+                                key={item.value}
+                                value={item.value}
+                              >
                                 {item.text}
                               </option>
                             ))}
@@ -911,7 +929,10 @@ export function DatasetMenuViewer() {
                       >
                         <span>{snapshot.identity.name}</span>
                       </DetailRow>
-                      <DetailRow label="ID" copyValue={snapshot.identity.id}>
+                      <DetailRow
+                        label="ID"
+                        copyValue={snapshot.identity.id}
+                      >
                         <code className="dataset-viewer__mono">
                           {snapshot.identity.id}
                         </code>
@@ -1070,7 +1091,10 @@ export function DatasetMenuViewer() {
         ) : null}
 
         {pane === 'menus' ? (
-          <div className="dataset-viewer__menus" ref={menusPaneRef}>
+          <div
+            className="dataset-viewer__menus"
+            ref={menusPaneRef}
+          >
             <div className="dataset-viewer__menus-toolbar">
               <div className="dataset-viewer__field dataset-viewer__menus-target">
                 <InputSelect
@@ -1113,7 +1137,10 @@ export function DatasetMenuViewer() {
                   visibleBuckets.map((bucket) => {
                     const items = menuBuckets[bucket] || [];
                     return (
-                      <div key={bucket} className="dataset-viewer__bucket">
+                      <div
+                        key={bucket}
+                        className="dataset-viewer__bucket"
+                      >
                         <div className="dataset-viewer__bucket-h">
                           <span>{bucket}</span>
                           <span className="dataset-viewer__count">
@@ -1208,10 +1235,16 @@ export function DatasetMenuViewer() {
                         value={JSON.stringify(menuDetail, null, 2)}
                       />
                     </div>
-                    <DetailRow label="Name" copyValue={menuDetail.name || ''}>
+                    <DetailRow
+                      label="Name"
+                      copyValue={menuDetail.name || ''}
+                    >
                       {menuDetail.name || '—'}
                     </DetailRow>
-                    <DetailRow label="ID" copyValue={menuDetail.id || ''}>
+                    <DetailRow
+                      label="ID"
+                      copyValue={menuDetail.id || ''}
+                    >
                       <code className="dataset-viewer__mono">
                         {menuDetail.id || '—'}
                       </code>

@@ -95,7 +95,10 @@ watch(draftEpsg, (value) => {
       }}
     </div>
 
-    <div v-if="compact" class="crs-display-settings__add">
+    <div
+      v-if="compact"
+      class="crs-display-settings__add"
+    >
       <InputCrs
         :key="inputKey"
         v-model="draftEpsg"
@@ -122,12 +125,19 @@ watch(draftEpsg, (value) => {
             :title="trans('map.crs-display.remove')"
             @click="onRemove(item.epsg)"
           >
-            <SvgIcon :size="14" type="mdi" :path="mdiClose" />
+            <SvgIcon
+              :size="14"
+              type="mdi"
+              :path="mdiClose"
+            />
           </MapControlButton>
         </li>
       </ul>
       <div class="crs-display-settings__add">
-        <InputCrs v-model="draftEpsg" :items="availableItems" />
+        <InputCrs
+          v-model="draftEpsg"
+          :items="availableItems"
+        />
         <MapControlButton
           class="crs-display-settings__add-btn"
           variant="text"

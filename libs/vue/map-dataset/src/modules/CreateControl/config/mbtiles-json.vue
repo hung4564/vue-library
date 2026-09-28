@@ -1,7 +1,10 @@
 <template>
   <div class="map-row create-control-settings">
     <div class="map-col-12">
-      <div v-if="showLoaded" class="create-control-loaded">
+      <div
+        v-if="showLoaded"
+        class="create-control-loaded"
+      >
         <div class="create-control-loaded__head">
           <div>
             <p class="create-control-loaded__eyebrow">
@@ -31,7 +34,10 @@
             {{ trans('map.layer-control.create.clear-data') }}
           </MapControlButton>
         </div>
-        <ul v-if="metaChips.length" class="create-control-loaded__meta">
+        <ul
+          v-if="metaChips.length"
+          class="create-control-loaded__meta"
+        >
           <li
             v-for="chip in metaChips"
             :key="chip"
@@ -48,14 +54,20 @@
             accept=".mbtiles,application/octet-stream"
             @change="onFileChange"
           />
-          <div v-if="loadingFile" class="create-control-status--busy">
+          <div
+            v-if="loadingFile"
+            class="create-control-status--busy"
+          >
             <span>{{ trans('map.layer-control.create.parsing') }}</span>
           </div>
         </div>
         <p class="create-control-status">
           {{ trans('map.layer-control.create.file-hint-mbtiles') }}
         </p>
-        <div v-if="fileError" class="create-control-sample-error">
+        <div
+          v-if="fileError"
+          class="create-control-sample-error"
+        >
           {{ fileError }}
         </div>
       </template>

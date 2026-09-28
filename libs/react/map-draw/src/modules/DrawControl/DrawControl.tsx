@@ -13,7 +13,7 @@ import {
   defaultMapProps,
   ModuleContainer,
   useMap,
-  useToolbarControl,
+  useMapControl,
 } from '@hungpvq/react-map-core';
 import {
   mdiClose,
@@ -48,7 +48,7 @@ export interface DrawControlProps extends WithMapPropType {
 
 export function DrawControl(props: DrawControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, callMap, order } = useMap(merged);
+  const { mapId, callMap, order } = useMap(merged);
   useEnsureDrawBuiltinLocales(mapId);
 
   const [isShow, setIsShow] = useState(false);
@@ -193,105 +193,121 @@ export function DrawControl(props: DrawControlProps) {
     refreshDrafts();
   };
 
-  const { control: toolbarControl } = useToolbarControl(mapId, merged, {
-    kind: 'module',
-    moduleId: 'mapDrawControl',
-    order: order,
-    orientation: 'row',
-    buttons: [
-      {
-        id: 'cancel',
-        getState: () => ({
-          visible: isShow && isDraw,
-          title: 'Cancel',
-          icon: { type: 'mdi' as const, path: mdiClose },
-        }),
-        onClick: () => onCancel(),
+  const { moduleContainerProps, control: toolbarControl } = useMapControl(
+    mapId,
+    {
+      id: 'mapDrawControl',
+      panelKind: 'button',
+      from: merged,
+      order,
+      buttonSlot: 'custom',
+      toolbar: {
+        kind: 'module',
+        moduleId: 'mapDrawControl',
+        order,
+        orientation: 'row',
+        buttons: [
+          {
+            id: 'cancel',
+            getState: () => ({
+              visible: isShow && isDraw,
+              title: 'Cancel',
+              icon: { type: 'mdi' as const, path: mdiClose },
+            }),
+            onClick: () => onCancel(),
+          },
+          {
+            id: 'save',
+            getState: () => ({
+              visible: isShow && isDraw,
+              title: 'Save',
+              icon: { type: 'mdi' as const, path: mdiContentSave },
+            }),
+            onClick: () => {
+              void onSave();
+            },
+          },
+          {
+            id: 'close',
+            getState: () => ({
+              visible: isShow && !isDraw,
+              title: 'Close',
+              icon: { type: 'mdi' as const, path: mdiClose },
+            }),
+            onClick: () => close(),
+          },
+          {
+            id: 'add',
+            getState: () => ({
+              visible: isShow && !isDraw,
+              active: method === 'create',
+              title: 'Draw',
+              icon: { type: 'mdi' as const, path: mdiPlus },
+            }),
+            onClick: (e) => onStartDraw(e as unknown as ReactMouseEvent),
+          },
+          {
+            id: 'select',
+            getState: () => ({
+              visible: isShow && !isDraw,
+              active: method === 'select',
+              title: 'Select',
+              icon: { type: 'mdi' as const, path: mdiPencil },
+            }),
+            onClick: () => onSelectMethod('select'),
+          },
+          {
+            id: 'delete',
+            getState: () => ({
+              visible: isShow && !isDraw,
+              active: method === 'delete',
+              title: 'Delete',
+              icon: { type: 'mdi' as const, path: mdiDeleteOutline },
+            }),
+            onClick: () => onSelectMethod('delete'),
+          },
+          {
+            id: 'commit',
+            getState: () => ({
+              visible: !!(
+                isDraftOption(drawOptions) && drawOptions?.draft?.show
+              ),
+              disabled: isDraw || draftCounts === 0,
+              title: 'Commit drafts',
+              icon: { type: 'mdi' as const, path: mdiContentSaveCheck },
+            }),
+            onClick: () => {
+              void onCommit();
+            },
+          },
+          {
+            id: 'discard',
+            getState: () => ({
+              visible: !!(
+                isDraftOption(drawOptions) && drawOptions?.draft?.show
+              ),
+              disabled: isDraw || draftCounts === 0,
+              title: 'Discard drafts',
+              icon: { type: 'mdi' as const, path: mdiUndoVariant },
+            }),
+            onClick: () => onDiscard(),
+          },
+          {
+            id: 'list',
+            getState: () => ({
+              visible: !!(
+                isDraftOption(drawOptions) && drawOptions?.draft?.show
+              ),
+              disabled: draftCounts === 0,
+              title: 'Draft list',
+              icon: { type: 'mdi' as const, path: mdiViewListOutline },
+            }),
+            onClick: () => onShowListDraftItem(),
+          },
+        ],
       },
-      {
-        id: 'save',
-        getState: () => ({
-          visible: isShow && isDraw,
-          title: 'Save',
-          icon: { type: 'mdi' as const, path: mdiContentSave },
-        }),
-        onClick: () => {
-          void onSave();
-        },
-      },
-      {
-        id: 'close',
-        getState: () => ({
-          visible: isShow && !isDraw,
-          title: 'Close',
-          icon: { type: 'mdi' as const, path: mdiClose },
-        }),
-        onClick: () => close(),
-      },
-      {
-        id: 'add',
-        getState: () => ({
-          visible: isShow && !isDraw,
-          active: method === 'create',
-          title: 'Draw',
-          icon: { type: 'mdi' as const, path: mdiPlus },
-        }),
-        onClick: (e) => onStartDraw(e as unknown as ReactMouseEvent),
-      },
-      {
-        id: 'select',
-        getState: () => ({
-          visible: isShow && !isDraw,
-          active: method === 'select',
-          title: 'Select',
-          icon: { type: 'mdi' as const, path: mdiPencil },
-        }),
-        onClick: () => onSelectMethod('select'),
-      },
-      {
-        id: 'delete',
-        getState: () => ({
-          visible: isShow && !isDraw,
-          active: method === 'delete',
-          title: 'Delete',
-          icon: { type: 'mdi' as const, path: mdiDeleteOutline },
-        }),
-        onClick: () => onSelectMethod('delete'),
-      },
-      {
-        id: 'commit',
-        getState: () => ({
-          visible: !!(isDraftOption(drawOptions) && drawOptions?.draft?.show),
-          disabled: isDraw || draftCounts === 0,
-          title: 'Commit drafts',
-          icon: { type: 'mdi' as const, path: mdiContentSaveCheck },
-        }),
-        onClick: () => {
-          void onCommit();
-        },
-      },
-      {
-        id: 'discard',
-        getState: () => ({
-          visible: !!(isDraftOption(drawOptions) && drawOptions?.draft?.show),
-          disabled: isDraw || draftCounts === 0,
-          title: 'Discard drafts',
-          icon: { type: 'mdi' as const, path: mdiUndoVariant },
-        }),
-        onClick: () => onDiscard(),
-      },
-      {
-        id: 'list',
-        getState: () => ({
-          visible: !!(isDraftOption(drawOptions) && drawOptions?.draft?.show),
-          disabled: draftCounts === 0,
-          title: 'Draft list',
-          icon: { type: 'mdi' as const, path: mdiViewListOutline },
-        }),
-        onClick: () => onShowListDraftItem(),
-      },
-    ],
-  });
+    },
+  );
 
   useEffect(() => {
     toolbarControl.sync();

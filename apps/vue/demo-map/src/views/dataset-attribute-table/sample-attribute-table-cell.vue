@@ -7,7 +7,10 @@ import type { AttributeTableCellProps } from '@hungpvq/map-dataset/attribute-tab
 defineProps<AttributeTableCellProps>();
 </script>
 <template>
-  <span class="at-sample-cell" :title="String(raw ?? '')">
+  <span
+    class="at-sample-cell"
+    :title="String(raw ?? '')"
+  >
     {{ value || '—' }}
   </span>
 </template>

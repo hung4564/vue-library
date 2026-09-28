@@ -121,7 +121,10 @@ export function LayerItem({
         >
           {nameParts.map((part, i) =>
             part.match ? (
-              <mark key={i} className="layer-item__search-match">
+              <mark
+                key={i}
+                className="layer-item__search-match"
+              >
                 {part.text}
               </mark>
             ) : (
@@ -145,7 +148,10 @@ export function LayerItem({
               size="small"
               onClick={() => onRemove?.(item)}
             >
-              <Icon path={mdiDelete} size={ICON_SIZE} />
+              <Icon
+                path={mdiDelete}
+                size={ICON_SIZE}
+              />
             </MapControlButton>
           )}
           {!showBottom && (

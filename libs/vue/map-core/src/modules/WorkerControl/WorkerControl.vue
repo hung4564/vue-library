@@ -25,11 +25,9 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
 import { computed, ref, watch } from 'vue';
 
-import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { useWorkerMonitor } from '../../extra/worker/useWorkerMonitor';
 import { Collapse } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -41,7 +39,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
 });
 
-const { mapId, moduleContainerProps, order } = useMap(props);
+const { mapId, order } = useMap(props);
 const { trans } = useLang(mapId.value);
 const { workers, now, busy, clearHistory } = useWorkerMonitor();
 const [show, toggleShow] = useShow(props.show);
@@ -81,29 +79,22 @@ const hasSelectedHistory = computed(() =>
 );
 const hasAnyHistory = computed(() => anyWorkerHasHistory(workers.value));
 
-const { panelPosition } = useRegisterMapControl(mapId, {
+const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
   id: 'mapWorkerControl',
   panelKind: 'sidebar',
   title: () => trans.value('map.worker-control.title'),
-  buttonPosition: () => props.position,
+  from: props,
+  order,
   show,
   setShow: toggleShow,
   initialPanelPosition: { location: 'left' },
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
   actions: [
     {
       type: 'mapWorkerControl',
       run: () => toggleShow(),
     },
   ],
-});
-
-const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapWorkerControl',
-  getState() {
+  getButtonState() {
     return mdiButtonState(mdiCogs, {
       title: trans.value('map.worker-control.title'),
       order: order.value,
@@ -165,13 +156,6 @@ function summaryText() {
 
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      />
-    </template>
     <template #draggable="slotProps">
       <DraggableItemSideBar
         :containerId="slotProps.containerId"
@@ -184,7 +168,10 @@ function summaryText() {
         </template>
         <div class="map-worker-control">
           <div class="map-worker-control__toolbar">
-            <span v-if="workers.length" class="map-worker-control__summary">
+            <span
+              v-if="workers.length"
+              class="map-worker-control__summary"
+            >
               {{ summaryText() }}
             </span>
             <div class="map-worker-control__toolbar-actions">
@@ -194,7 +181,11 @@ function summaryText() {
                 @click.stop="selected && clearHistory(selected.id)"
                 variant="plain"
               >
-                <SvgIcon :size="16" type="mdi" :path="mdiEraser" />
+                <SvgIcon
+                  :size="16"
+                  type="mdi"
+                  :path="mdiEraser"
+                />
               </MapControlButton>
               <MapControlButton
                 v-if="manyWorkers"
@@ -211,10 +202,16 @@ function summaryText() {
               </MapControlButton>
             </div>
           </div>
-          <p v-if="!workers.length" class="map-worker-control__empty">
+          <p
+            v-if="!workers.length"
+            class="map-worker-control__empty"
+          >
             {{ trans('map.worker-control.empty') }}
           </p>
-          <p v-if="!workers.length" class="map-worker-control__hint">
+          <p
+            v-if="!workers.length"
+            class="map-worker-control__hint"
+          >
             {{ trans('map.worker-control.hint') }}
           </p>
           <template v-if="manyWorkers">
@@ -225,10 +222,16 @@ function summaryText() {
               :aria-label="trans('map.worker-control.search')"
               :placeholder="trans('map.worker-control.searchPlaceholder')"
             />
-            <p v-if="!filtered.length" class="map-worker-control__empty">
+            <p
+              v-if="!filtered.length"
+              class="map-worker-control__empty"
+            >
               {{ trans('map.worker-control.emptyMatch') }}
             </p>
-            <ul v-else class="map-worker-control__list">
+            <ul
+              v-else
+              class="map-worker-control__list"
+            >
               <li
                 v-for="worker in filtered"
                 :key="worker.id"
@@ -268,7 +271,10 @@ function summaryText() {
               </li>
             </ul>
           </template>
-          <div v-if="selected" class="map-worker-control__detail">
+          <div
+            v-if="selected"
+            class="map-worker-control__detail"
+          >
             <article class="map-worker-control__worker">
               <header class="map-worker-control__head">
                 <div class="map-worker-control__name">{{ selected.name }}</div>
@@ -348,7 +354,10 @@ function summaryText() {
                     </Collapse>
                   </div>
                 </template>
-                <div v-else class="map-worker-control__task is-idle">
+                <div
+                  v-else
+                  class="map-worker-control__task is-idle"
+                >
                   <div class="map-worker-control__task-row">
                     <span>{{ trans('map.worker-control.noRunning') }}</span>
                     <span>—</span>
@@ -359,18 +368,27 @@ function summaryText() {
                   >
                     <div class="map-worker-control__bar-fill" />
                   </div>
-                  <div class="map-worker-control__progress" aria-hidden="true">
+                  <div
+                    class="map-worker-control__progress"
+                    aria-hidden="true"
+                  >
                     &nbsp;
                   </div>
                   <Collapse class="map-worker-control__task-logs">
                     <template #header>
                       {{ trans('map.worker-control.field.taskLogs') }}
                     </template>
-                    <WorkerLogList :logs="[]" compact />
+                    <WorkerLogList
+                      :logs="[]"
+                      compact
+                    />
                   </Collapse>
                 </div>
               </div>
-              <p v-if="selected.lastError" class="map-worker-control__error">
+              <p
+                v-if="selected.lastError"
+                class="map-worker-control__error"
+              >
                 {{ trans('map.worker-control.field.error') }}:
                 {{ selected.lastError }}
               </p>

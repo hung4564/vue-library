@@ -104,10 +104,20 @@ function updateScale(map: MapSimple, container: HTMLElement) {
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <div class="button-container mouse-coordinates-container">
-        <div class="mouse-coordinates-part zoom-part" v-if="!hideZoom">
+        <div
+          class="mouse-coordinates-part zoom-part"
+          v-if="!hideZoom"
+        >
           <div class="mouse-coordinates-zoom">
-            <span title="Current Zoom" class="icon">
-              <SvgIcon :size="16" type="mdi" :path="path.zoom" />
+            <span
+              title="Current Zoom"
+              class="icon"
+            >
+              <SvgIcon
+                :size="16"
+                type="mdi"
+                :path="path.zoom"
+              />
             </span>
             <div style="margin-left: 4px">{{ currentZoom }}</div>
           </div>
@@ -134,12 +144,22 @@ function updateScale(map: MapSimple, container: HTMLElement) {
               @click="changeDisplayTypePixelValue"
               class="icon icon-clickable"
             >
-              <SvgIcon :size="16" type="mdi" :path="path.change" />
+              <SvgIcon
+                :size="16"
+                type="mdi"
+                :path="path.change"
+              />
             </i>
           </div>
         </div>
-        <div class="mouse-coordinates-part scale-part" v-if="!hideScale">
-          <div ref="scale" class="scale-custom"></div>
+        <div
+          class="mouse-coordinates-part scale-part"
+          v-if="!hideScale"
+        >
+          <div
+            ref="scale"
+            class="scale-custom"
+          ></div>
         </div>
       </div>
     </template>

@@ -39,7 +39,7 @@ import '@hungpvq/react-map-core/style.css';
 
 <Map>
   <CrsControl />
-</Map>
+</Map>;
 ```
 
 ---

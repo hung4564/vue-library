@@ -10,7 +10,7 @@ import {
   MapControlButton,
   ModuleContainer,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
   type WithShowProps,
 } from '@hungpvq/vue-map-core';
@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   position: 'bottom-right',
 });
 
-const { mapId, moduleContainerProps } = useMap(props);
+const { mapId, order } = useMap(props);
 const { isOpen } = useDevtoolState();
 const [show, setShow] = useShow(props.show);
 
@@ -43,20 +43,18 @@ watch(show, (value) => {
   setDevtoolOpen(value);
 });
 
-const { panelBind } = useRegisterMapControl(mapId, {
+const { panelBind, moduleContainerProps } = useMapControl(mapId, {
   id: DEVTOOLS_CONTROL.id,
   panelKind: 'popup',
   title: () => 'Map Devtools',
-  buttonPosition: () => props.position,
+  from: props,
+  order,
+  buttonSlot: 'custom',
   show,
   setShow: (value) => {
     setShow(value);
     setDevtoolOpen(value);
   },
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
   actions: [
     {
       type: DEVTOOLS_CONTROL.id,
@@ -95,7 +93,11 @@ function onClose() {
         aria-label="Map Devtools"
         @click.stop="onToggle"
       >
-        <SvgIcon :size="20" type="mdi" :path="mdiTools" />
+        <SvgIcon
+          :size="20"
+          type="mdi"
+          :path="mdiTools"
+        />
       </MapControlButton>
     </template>
     <template #draggable="bind">

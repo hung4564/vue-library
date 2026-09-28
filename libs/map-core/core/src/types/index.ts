@@ -33,6 +33,11 @@ export interface WithMapPropType {
   controlVisible?: boolean;
   controlOrder?: number | string;
   controlLayout?: ControlLayout;
+  /**
+   * Per-control override of Map `buttonInMobile`.
+   * `undefined` = inherit Map-level value.
+   */
+  buttonInMobile?: ButtonInMobile;
   /** Control id for ModuleContainer btn class (`{controlId}-btn-module-container`) */
   controlId?: string;
 }

@@ -124,7 +124,10 @@ function onMapLoaded(map: MapSimple) {
 </script>
 
 <template>
-  <Map map-id="draw-demo" @mapLoaded="onMapLoaded">
+  <Map
+    map-id="draw-demo"
+    @mapLoaded="onMapLoaded"
+  >
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />

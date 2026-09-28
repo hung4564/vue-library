@@ -13,13 +13,13 @@ Independent versioning via Nx release groups in root `nx.json`. Conventional Com
 
 ## `nx.json` release contract
 
-| Group | Relationship | Tag | GitHub Release | Peers within group |
-|-------|--------------|-----|----------------|--------------------|
-| `draggable` | fixed | `draggable@{version}` | yes (one release via `release-group.js`) | `versionPrefix: "^"` + peers sync `^MAJOR.MINOR.0` + `updateDependents: auto` |
-| `map` | fixed | `map@{version}` | yes (one release via `release-group.js`) | same |
-| `shared-store` | fixed (single pkg) | `shared-store@{version}` | yes (one release via `release-group.js`) | peers sync `@hungpvq/shared-store` → `^MAJOR.MINOR.0` across workspace |
-| `shared-log` | fixed (single pkg) | `shared-log@{version}` | yes (one release via `release-group.js`) | peers sync `@hungpvq/shared-log` → `^MAJOR.MINOR.0` across workspace |
-| `packages` | independent | `{projectName}@{version}` | no | `versionPrefix: "^"` + `updateDependents: auto` |
+| Group          | Relationship       | Tag                       | GitHub Release                           | Peers within group                                                            |
+| -------------- | ------------------ | ------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------- |
+| `draggable`    | fixed              | `draggable@{version}`     | yes (one release via `release-group.js`) | `versionPrefix: "^"` + peers sync `^MAJOR.MINOR.0` + `updateDependents: auto` |
+| `map`          | fixed              | `map@{version}`           | yes (one release via `release-group.js`) | same                                                                          |
+| `shared-store` | fixed (single pkg) | `shared-store@{version}`  | yes (one release via `release-group.js`) | peers sync `@hungpvq/shared-store` → `^MAJOR.MINOR.0` across workspace        |
+| `shared-log`   | fixed (single pkg) | `shared-log@{version}`    | yes (one release via `release-group.js`) | peers sync `@hungpvq/shared-log` → `^MAJOR.MINOR.0` across workspace          |
+| `packages`     | independent        | `{projectName}@{version}` | no                                       | `versionPrefix: "^"` + `updateDependents: auto`                               |
 
 - **Version step:** no commit/tag (`release.version.git`); stage only.
 - **Changelog step:** commit + tag + push (`release.changelog.git`). GitHub Release is created **once per group** by `scripts/release-group.js` (needs `GH_TOKEN` / `GITHUB_TOKEN`). Backfill: `node scripts/create-group-github-release.js map@1.1.0`.

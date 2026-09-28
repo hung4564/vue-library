@@ -37,14 +37,14 @@ app.use(createMapAppPlugin());
 
 ## What you still import from domain packages
 
-| Need | Package |
-|------|---------|
-| `Map`, controls, hooks | `@hungpvq/vue-map-core` |
-| `LayerControl`, dataset UI hooks | `@hungpvq/vue-map-dataset` |
-| `getMap`, theme, measurement APIs | `@hungpvq/map-core` (+ `/<domain>` subpaths) |
-| `createGeoJsonDataset`, identify, … | `@hungpvq/map-dataset` (+ subpaths) |
-| Draw / edit | `@hungpvq/vue-map-draw` + `@hungpvq/map-draw` (separate install) |
-| Devtools | `@hungpvq/vue-map-devtools` (separate install) |
+| Need                                | Package                                                          |
+| ----------------------------------- | ---------------------------------------------------------------- |
+| `Map`, controls, hooks              | `@hungpvq/vue-map-core`                                          |
+| `LayerControl`, dataset UI hooks    | `@hungpvq/vue-map-dataset`                                       |
+| `getMap`, theme, measurement APIs   | `@hungpvq/map-core` (+ `/<domain>` subpaths)                     |
+| `createGeoJsonDataset`, identify, … | `@hungpvq/map-dataset` (+ subpaths)                              |
+| Draw / edit                         | `@hungpvq/vue-map-draw` + `@hungpvq/map-draw` (separate install) |
+| Devtools                            | `@hungpvq/vue-map-devtools` (separate install)                   |
 
 Meta does **not** re-export every component — it is an install bag + bootstrap facade.
 

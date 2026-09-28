@@ -11,14 +11,14 @@
 
 and
 
-| Prop             | Description   | Type     | Required | Default Value     |
-| ---------------- | ------------- | -------- | -------- | ----------------- |
-| `title`          |               | `string`  | `false` | ``                |
-| `defaultBaseMap` |               | `string`  | `false` | `Open Street Map` |
-| `controlIcon`    |               | `string`  | `false` | ``                |
-| `baseMaps`       | BaseMapItem[] | `array`   | `false` | ``                |
-| `showOpacity`    | Show opacity slider in the settings popup | `boolean` | `false` | `false` |
-| `allowAddBasemap` | Show an **Add** tile in the basemap grid (opens URL form). Custom tiles show a remove control on the thumbnail. | `boolean` | `false` | `false` |
+| Prop              | Description                                                                                                     | Type      | Required | Default Value     |
+| ----------------- | --------------------------------------------------------------------------------------------------------------- | --------- | -------- | ----------------- |
+| `title`           |                                                                                                                 | `string`  | `false`  | ``                |
+| `defaultBaseMap`  |                                                                                                                 | `string`  | `false`  | `Open Street Map` |
+| `controlIcon`     |                                                                                                                 | `string`  | `false`  | ``                |
+| `baseMaps`        | BaseMapItem[]                                                                                                   | `array`   | `false`  | ``                |
+| `showOpacity`     | Show opacity slider in the settings popup                                                                       | `boolean` | `false`  | `false`           |
+| `allowAddBasemap` | Show an **Add** tile in the basemap grid (opens URL form). Custom tiles show a remove control on the thumbnail. | `boolean` | `false`  | `false`           |
 
 ## Slots
 
@@ -61,5 +61,5 @@ const baseMaps = [];
 
 <Map>
   <BaseMapControl baseMaps={baseMaps} />
-</Map>
+</Map>;
 ```

@@ -2,10 +2,10 @@
 
 For apps **outside** this monorepo that consume built `@hungpvq/*` via `file:` → `dist/libs/...`.
 
-| App | Absolute path | Guide in that repo |
-|-----|---------------|--------------------|
-| Vue | `g:\code\0-library\vue-3-test-map` | `TRY-LOCAL.md` |
-| React | `g:\code\0-library\react-demo-map` | `TRY-LOCAL.md` |
+| App   | Absolute path                      | Guide in that repo |
+| ----- | ---------------------------------- | ------------------ |
+| Vue   | `g:\code\0-library\vue-3-test-map` | `TRY-LOCAL.md`     |
+| React | `g:\code\0-library\react-demo-map` | `TRY-LOCAL.md`     |
 
 From this monorepo root:
 

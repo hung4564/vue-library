@@ -149,13 +149,21 @@
   }
 
   .right-bottom-container
-    > .btn-module-container:has(> .map-toolbar-control:not(.map-toolbar-corner)),
+    > .btn-module-container:has(
+      > .map-toolbar-control:not(.map-toolbar-corner)
+    ),
   .right-top-container
-    > .btn-module-container:has(> .map-toolbar-control:not(.map-toolbar-corner)),
+    > .btn-module-container:has(
+      > .map-toolbar-control:not(.map-toolbar-corner)
+    ),
   .left-bottom-container
-    > .btn-module-container:has(> .map-toolbar-control:not(.map-toolbar-corner)),
+    > .btn-module-container:has(
+      > .map-toolbar-control:not(.map-toolbar-corner)
+    ),
   .left-top-container
-    > .btn-module-container:has(> .map-toolbar-control:not(.map-toolbar-corner)) {
+    > .btn-module-container:has(
+      > .map-toolbar-control:not(.map-toolbar-corner)
+    ) {
     align-self: flex-start;
     width: max-content;
     max-width: calc(100% - 2 * var(--map-toolbar-edge-inset));

@@ -119,7 +119,11 @@ function readChangelogSectionForVersion(relPkg, version) {
     const start = any.index;
     const rest = text.slice(start + any[0].length);
     const next = rest.search(/^## /m);
-    return (next === -1 ? text.slice(start) : text.slice(start, start + any[0].length + next)).trim();
+    return (
+      next === -1
+        ? text.slice(start)
+        : text.slice(start, start + any[0].length + next)
+    ).trim();
   }
   const start = match.index;
   const heading = match[0];
@@ -198,7 +202,9 @@ async function createOrUpdateGroupGithubRelease(tag, body) {
       body: JSON.stringify({ name: payload.name, body: payload.body }),
     });
     if (!upd.ok) {
-      throw new Error(`GitHub update release failed: ${upd.status} ${await upd.text()}`);
+      throw new Error(
+        `GitHub update release failed: ${upd.status} ${await upd.text()}`,
+      );
     }
     const data = await upd.json();
     console.log(`Updated ${data.html_url}`);
@@ -215,7 +221,9 @@ async function createOrUpdateGroupGithubRelease(tag, body) {
     body: JSON.stringify(payload),
   });
   if (!created.ok) {
-    throw new Error(`GitHub create release failed: ${created.status} ${await created.text()}`);
+    throw new Error(
+      `GitHub create release failed: ${created.status} ${await created.text()}`,
+    );
   }
   const data = await created.json();
   console.log(`Created ${data.html_url}`);

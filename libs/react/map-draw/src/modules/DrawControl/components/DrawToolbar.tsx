@@ -69,38 +69,65 @@ export function DrawToolbar({
       {isShow ? (
         isDraw ? (
           <MapControlGroupButton row>
-            <MapControlButton onClick={onCancel} title="Cancel">
-              <Icon path={mdiClose} size={0.75} />
+            <MapControlButton
+              onClick={onCancel}
+              title="Cancel"
+            >
+              <Icon
+                path={mdiClose}
+                size={0.75}
+              />
             </MapControlButton>
-            <MapControlButton onClick={onSave} title="Save">
-              <Icon path={mdiContentSave} size={0.75} />
+            <MapControlButton
+              onClick={onSave}
+              title="Save"
+            >
+              <Icon
+                path={mdiContentSave}
+                size={0.75}
+              />
             </MapControlButton>
           </MapControlGroupButton>
         ) : (
           <MapControlGroupButton row>
-            <MapControlButton onClick={onClose} title="Close">
-              <Icon path={mdiClose} size={0.75} />
+            <MapControlButton
+              onClick={onClose}
+              title="Close"
+            >
+              <Icon
+                path={mdiClose}
+                size={0.75}
+              />
             </MapControlButton>
             <MapControlButton
               active={method === 'create'}
               title="Draw"
               onClick={onStartDraw}
             >
-              <Icon path={mdiPlus} size={0.75} />
+              <Icon
+                path={mdiPlus}
+                size={0.75}
+              />
             </MapControlButton>
             <MapControlButton
               active={method === 'select'}
               title="Select"
               onClick={() => onSelectMethod('select')}
             >
-              <Icon path={mdiPencil} size={0.75} />
+              <Icon
+                path={mdiPencil}
+                size={0.75}
+              />
             </MapControlButton>
             <MapControlButton
               active={method === 'delete'}
               title="Delete"
               onClick={() => onSelectMethod('delete')}
             >
-              <Icon path={mdiDeleteOutline} size={0.75} />
+              <Icon
+                path={mdiDeleteOutline}
+                size={0.75}
+              />
             </MapControlButton>
           </MapControlGroupButton>
         )
@@ -112,21 +139,30 @@ export function DrawToolbar({
             title="Commit drafts"
             onClick={onCommit}
           >
-            <Icon path={mdiContentSaveCheck} size={0.75} />
+            <Icon
+              path={mdiContentSaveCheck}
+              size={0.75}
+            />
           </MapControlButton>
           <MapControlButton
             disabled={isDraw || draftCounts === 0}
             title="Discard drafts"
             onClick={onDiscard}
           >
-            <Icon path={mdiUndoVariant} size={0.75} />
+            <Icon
+              path={mdiUndoVariant}
+              size={0.75}
+            />
           </MapControlButton>
           <MapControlButton
             disabled={draftCounts === 0}
             title="Draft list"
             onClick={onShowList}
           >
-            <Icon path={mdiViewListOutline} size={0.75} />
+            <Icon
+              path={mdiViewListOutline}
+              size={0.75}
+            />
             {draftCounts > 0 ? (
               <span className="draft-item-count-badge map-control-badge">
                 {draftCounts}

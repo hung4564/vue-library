@@ -22,10 +22,10 @@ Identify view lists refresh when datasets change via `useMapDataset().datasetVer
 
 <!--@include: ../../core/module/props.md-->
 
-| Prop | Type | Default | Effect |
-| --- | --- | --- | --- |
-| `show` | `boolean` | — | Identify session active (toolbar) |
-| `immediately` | `boolean` | `false` | Start click-identify on mount |
+| Prop          | Type      | Default | Effect                            |
+| ------------- | --------- | ------- | --------------------------------- |
+| `show`        | `boolean` | —       | Identify session active (toolbar) |
+| `immediately` | `boolean` | `false` | Start click-identify on mount     |
 
 ## Slots
 
@@ -47,10 +47,10 @@ Turning on identify from a **layer menu** starts click mode and sets the layer f
 
 Hit UI is driven by `resolveIdentifyHitAction` (then the default `identifyResolver`):
 
-1. Builder `onSingle` / `onMultiple` (`detail` | `table` | `result` | `auto`) from the **first** hit record  
-2. `auto` (default): single layer + one feature + show-detail → **detail**; else single layer + attribute-table menu → **table**; else **result**  
-3. Always sync result-panel items (even if the panel stays closed). Exclusive detail/table does **not** auto-open the result panel, and does **not** force-close it if the user already opened it.  
-4. When the resolved action is **result** and there are hits → auto-open result panel  
+1. Builder `onSingle` / `onMultiple` (`detail` | `table` | `result` | `auto`) from the **first** hit record
+2. `auto` (default): single layer + one feature + show-detail → **detail**; else single layer + attribute-table menu → **table**; else **result**
+3. Always sync result-panel items (even if the panel stays closed). Exclusive detail/table does **not** auto-open the result panel, and does **not** force-close it if the user already opened it.
+4. When the resolved action is **result** and there are hits → auto-open result panel
 
 Each resolve first **closes** any open LayerDetail / AttributeTable (and their highlight sources) so a multi-hit table does not stack on top of a previous single-hit detail.
 
@@ -61,32 +61,19 @@ IdentifyControl toolbar **active** follows the result panel open state (not laye
 ### Builder hit policies
 
 ```ts
-createDatasetPartIdentifyComponentBuilder('Buildings')
-  .onSingle('detail')
-  .onMultiple('table')
-  .build();
+createDatasetPartIdentifyComponentBuilder('Buildings').onSingle('detail').onMultiple('table').build();
 ```
 
 Force result panel via builder (`onSingle`/`onMultiple` = `'result'`):
 
 ```ts
-createDatasetPartIdentifyComponentBuilder('Buildings')
-  .onSingle('result')
-  .onMultiple('result')
-  .build();
+createDatasetPartIdentifyComponentBuilder('Buildings').onSingle('result').onMultiple('result').build();
 ```
 
 ### Override identify resolver (global or per map)
 
 ```ts
-import {
-  createDefaultIdentifyResolver,
-  setGlobalIdentifyResolver,
-  setIdentifyResolver,
-  createDefaultHighlightResolver,
-  setGlobalHighlightResolver,
-  setHighlightResolver,
-} from '@hungpvq/map-dataset/identify';
+import { createDefaultIdentifyResolver, setGlobalIdentifyResolver, setIdentifyResolver, createDefaultHighlightResolver, setGlobalHighlightResolver, setHighlightResolver } from '@hungpvq/map-dataset/identify';
 
 // Compose on a fresh default (process default on `map:core:meta.registries`)
 const custom = createDefaultIdentifyResolver();
@@ -107,11 +94,7 @@ See [Identify](../create-dataset/identify.md) for `getFeature` / merge APIs and 
 ```vue
 <script setup lang="ts">
 import { Map } from '@hungpvq/vue-map-core';
-import {
-  IdentifyControl,
-  ComponentManagementControl,
-  useMapHighlight,
-} from '@hungpvq/vue-map-dataset';
+import { IdentifyControl, ComponentManagementControl, useMapHighlight } from '@hungpvq/vue-map-dataset';
 import { destroyHighlightController } from '@hungpvq/map-dataset/highlight';
 import { onUnmounted } from 'vue';
 import '@hungpvq/map-core/style.css';
@@ -131,7 +114,10 @@ onUnmounted(() => {
 
 <template>
   <Map>
-    <IdentifyControl position="top-right" show />
+    <IdentifyControl
+      position="top-right"
+      show
+    />
     <ComponentManagementControl />
   </Map>
 </template>
@@ -146,11 +132,7 @@ Immediate click mode:
 ## React
 
 ```tsx
-import {
-  IdentifyControl,
-  ComponentManagementControl,
-  useMapHighlight,
-} from '@hungpvq/react-map-dataset';
+import { IdentifyControl, ComponentManagementControl, useMapHighlight } from '@hungpvq/react-map-dataset';
 import { destroyHighlightController } from '@hungpvq/map-dataset/highlight';
 import { useEffect } from 'react';
 
@@ -166,7 +148,10 @@ function Page({ mapId }: { mapId: string }) {
 
   return (
     <>
-      <IdentifyControl position="top-right" show />
+      <IdentifyControl
+        position="top-right"
+        show
+      />
       <ComponentManagementControl />
     </>
   );
@@ -183,13 +168,13 @@ Right-click **Quick analysis → Identify features** (`MapContextMenuControl`) r
 
 ## Accessibility
 
-| Surface | Contract |
-|---------|----------|
-| Result panel body | `role="region"` + `aria-label` (identify title); `aria-live="polite"` so loading / empty / result updates announce |
-| Loading | `role="status"` + `aria-live="polite"` |
-| Empty / no selection | `role="status"` |
-| Errors | `role="alert"` |
-| Result list | `role="status"` wrapper; ArrowUp / ArrowDown move focus among hits; Enter activates the focused hit |
+| Surface              | Contract                                                                                                           |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Result panel body    | `role="region"` + `aria-label` (identify title); `aria-live="polite"` so loading / empty / result updates announce |
+| Loading              | `role="status"` + `aria-live="polite"`                                                                             |
+| Empty / no selection | `role="status"`                                                                                                    |
+| Errors               | `role="alert"`                                                                                                     |
+| Result list          | `role="status"` wrapper; ArrowUp / ArrowDown move focus among hits; Enter activates the focused hit                |
 
 Panel Escape / focus trap stay on the draggable popup shell.
 

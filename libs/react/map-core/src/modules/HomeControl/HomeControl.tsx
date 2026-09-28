@@ -9,10 +9,8 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiHome } from '@mdi/js';
 import React, { useCallback, useState } from 'react';
 
-import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
@@ -40,10 +38,7 @@ export function HomeControl(props: HomeControlProps) {
     [props.zoom, props.center],
   );
 
-  const { callMap, mapId, moduleContainerProps, order } = useMap(
-    { ...mergedProps, controlId: 'mapHomeControl' },
-    onInit,
-  );
+  const { callMap, mapId, order } = useMap(mergedProps, onInit);
   const { trans } = useLang(mapId);
 
   function onGoHome() {
@@ -52,14 +47,11 @@ export function HomeControl(props: HomeControlProps) {
     });
   }
 
-  useRegisterMapControl(mapId, {
+  const { moduleContainerProps } = useMapControl(mapId, {
     id: 'mapHomeControl',
     panelKind: 'button',
-    buttonPosition: mergedProps.position,
-    getProps: () => ({
-      position: mergedProps.position,
-      controlLayout: mergedProps.controlLayout,
-    }),
+    from: mergedProps,
+    order,
     actions: [
       {
         type: 'mapHomeControl',
@@ -68,12 +60,7 @@ export function HomeControl(props: HomeControlProps) {
         },
       },
     ],
-  });
-
-  const { state, control } = useToolbarControl(mapId, mergedProps, {
-    kind: 'single',
-    id: 'mapHomeControl',
-    getState: () =>
+    getButtonState: () =>
       mdiButtonState(mdiHome, {
         visible: true,
         title: trans('map.home.title'),
@@ -82,20 +69,5 @@ export function HomeControl(props: HomeControlProps) {
     onClick: () => onGoHome(),
   });
 
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e);
-            }}
-          />
-        ) : null
-      }
-    />
-  );
+  return <ModuleContainer {...moduleContainerProps} />;
 }

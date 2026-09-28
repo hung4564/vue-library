@@ -17,7 +17,11 @@ defineProps({
       {{ label }}
     </label>
     <div class="input-container">
-      <input v-bind="$attrs" v-model="model" :disabled="disabled" />
+      <input
+        v-bind="$attrs"
+        v-model="model"
+        :disabled="disabled"
+      />
     </div>
   </div>
 </template>

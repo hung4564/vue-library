@@ -98,7 +98,10 @@ const downloadFile = async () => {
 
     <div>
       <label for="formatSelect">Choose export format:</label>
-      <select id="formatSelect" v-model="fileFormat">
+      <select
+        id="formatSelect"
+        v-model="fileFormat"
+      >
         <option value="geojson">GeoJSON</option>
         <option value="shapefile">Shapefile</option>
         <option value="kml">KML</option>

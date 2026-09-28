@@ -1,5 +1,9 @@
 <template>
-  <i class="map-icon mdi" :class="iconName"> </i>
+  <i
+    class="map-icon mdi"
+    :class="iconName"
+  >
+  </i>
 </template>
 
 <script lang="ts">

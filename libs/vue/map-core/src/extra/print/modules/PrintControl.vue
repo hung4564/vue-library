@@ -6,10 +6,8 @@ import { mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { ref } from 'vue';
 
-import MapCommonButton from '../../../components/MapCommonButton.vue';
 import { useLang } from '../../../extra/lang/hook';
-import { useRegisterMapControl } from '../../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../../extra/toolbar/helper';
+import { useMapControl } from '../../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 const props = withDefaults(
@@ -26,13 +24,13 @@ const props = withDefaults(
 const path = {
   print: mdiPrinterOutline,
 };
-const { callMap, mapId, moduleContainerProps, order } = useMap(props);
+const { callMap, mapId, order } = useMap(props);
 const { trans } = useLang(mapId.value);
 const print = ref({ show: false, loading: false });
 function onPrint() {
   callMap(async (map) => {
     print.value.loading = true;
-    control.sync();
+    control?.sync();
     try {
       await printMapToFile(map, {
         fileName: props.fileName,
@@ -40,18 +38,15 @@ function onPrint() {
       });
     } finally {
       print.value.loading = false;
-      control.sync();
+      control?.sync();
     }
   });
 }
-useRegisterMapControl(mapId, {
+const { moduleContainerProps, control } = useMapControl(mapId, {
   id: 'mapPrintControl',
   panelKind: 'button',
-  buttonPosition: () => props.position,
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
+  from: props,
+  order,
   actions: [
     {
       type: 'mapPrintControl',
@@ -60,10 +55,7 @@ useRegisterMapControl(mapId, {
       },
     },
   ],
-});
-const { state, control } = useToolbarControl(mapId.value, props, {
-  id: 'mapPrintControl',
-  getState() {
+  getButtonState() {
     return mdiButtonState(path.print, {
       visible: true,
       title: trans.value('map.print.title'),
@@ -77,14 +69,5 @@ const { state, control } = useToolbarControl(mapId.value, props, {
 });
 </script>
 <template>
-  <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
-  </ModuleContainer>
+  <ModuleContainer v-bind="moduleContainerProps" />
 </template>

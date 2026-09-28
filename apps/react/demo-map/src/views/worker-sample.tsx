@@ -80,7 +80,11 @@ export function WorkerSamplePage() {
             onChange={(e) => setTo(Number(e.target.value))}
           />
         </label>
-        <button type="button" disabled={running} onClick={() => void onRun()}>
+        <button
+          type="button"
+          disabled={running}
+          onClick={() => void onRun()}
+        >
           {running ? 'Runningâ€¦' : 'Run sum-range'}
         </button>
         {result != null ? (

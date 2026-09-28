@@ -1,4 +1,8 @@
 import type { Position } from '../types';
+import type {
+  MapControlLayoutPatch,
+  MapControlLayoutState,
+} from './control-layout-store';
 
 export type MapControlPanelKind = 'popup' | 'sidebar' | 'float' | 'button';
 
@@ -43,13 +47,22 @@ export type MapControlHandle = {
   close(): void;
   toggle(): void;
   setShow(show: boolean): void;
+  /**
+   * Panel offsets / sidebar dock (not button corner).
+   * Button corner is {@link getLayout}.position.
+   */
   getPanelPosition(): MapControlPanelPosition;
   setPanelPosition(pos: MapControlPanelPosition): void;
+
+  /** Button layout SoT (visible, corner, order, controlLayout, buttonInMobile?). */
+  getLayout(): MapControlLayoutState;
+  setLayout(patch: MapControlLayoutPatch): void;
 
   /**
    * Run a button action.
    * Omit `type` to use `defaultActionType`, a single action, or an action matching the control id.
    * Multi-button controls without a default: pass the button `type`.
+   * Works even when layout.visible is false.
    */
   runAction(type?: string, event?: unknown): void;
 };

@@ -1,7 +1,10 @@
 <template>
   <div class="map-row create-control-settings">
     <div class="map-col-12">
-      <div v-if="showLoaded" class="create-control-loaded">
+      <div
+        v-if="showLoaded"
+        class="create-control-loaded"
+      >
         <div class="create-control-loaded__head">
           <div>
             <p class="create-control-loaded__eyebrow">
@@ -31,7 +34,10 @@
             {{ trans('map.layer-control.create.clear-data') }}
           </MapControlButton>
         </div>
-        <ul v-if="metaChips.length" class="create-control-loaded__meta">
+        <ul
+          v-if="metaChips.length"
+          class="create-control-loaded__meta"
+        >
           <li
             v-for="chip in metaChips"
             :key="chip"
@@ -68,10 +74,16 @@
         <p class="create-control-status">
           {{ trans('map.layer-control.create.file-hint-tilejson') }}
         </p>
-        <div v-if="loadingUrl" class="create-control-status">
+        <div
+          v-if="loadingUrl"
+          class="create-control-status"
+        >
           {{ trans('map.layer-control.create.loading-url') }}
         </div>
-        <div v-if="urlError" class="create-control-sample-error">
+        <div
+          v-if="urlError"
+          class="create-control-sample-error"
+        >
           {{ urlError }}
         </div>
       </template>

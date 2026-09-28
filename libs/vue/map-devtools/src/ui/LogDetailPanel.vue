@@ -40,12 +40,18 @@ const objects = computed(() => (props.log ? objectArgs(props.log) : []));
 </script>
 
 <template>
-  <aside class="log-viewer__detail" aria-label="Log details">
+  <aside
+    class="log-viewer__detail"
+    aria-label="Log details"
+  >
     <template v-if="log">
       <div class="log-viewer__detail-h">
         <strong>{{ title }}</strong>
         <div class="log-viewer__detail-h-actions">
-          <MapCopyButton title="Copy log JSON" :value="json" />
+          <MapCopyButton
+            title="Copy log JSON"
+            :value="json"
+          />
           <button
             v-if="showClose"
             type="button"
@@ -64,21 +70,33 @@ const objects = computed(() => (props.log ? objectArgs(props.log) : []));
           {{ formatLogTime(log.header.ts) }}
         </div>
       </div>
-      <div v-if="log.header.index != null" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.index != null"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">#</span>
         <div class="log-viewer__detail-value">{{ log.header.index }}</div>
       </div>
-      <div v-if="log.header.level" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.level"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">Level</span>
         <div class="log-viewer__detail-value">
           {{ log.header.level.toUpperCase() }}
         </div>
       </div>
-      <div v-if="textMessage(log)" class="log-viewer__detail-row">
+      <div
+        v-if="textMessage(log)"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">Message</span>
         <div class="log-viewer__detail-value">{{ textMessage(log) }}</div>
       </div>
-      <div v-if="log.header.namespaces[0]" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.namespaces[0]"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">Namespace</span>
         <div class="log-viewer__detail-value">
           <code class="log-viewer__mono">{{ log.header.namespaces[0] }}</code>
@@ -90,25 +108,40 @@ const objects = computed(() => (props.log ? objectArgs(props.log) : []));
           />
         </div>
       </div>
-      <div v-if="log.header.actionId" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.actionId"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">actionId</span>
         <div class="log-viewer__detail-value">
           <code class="log-viewer__mono">{{ log.header.actionId }}</code>
         </div>
         <div class="log-viewer__detail-copy">
-          <MapCopyButton title="Copy actionId" :value="log.header.actionId" />
+          <MapCopyButton
+            title="Copy actionId"
+            :value="log.header.actionId"
+          />
         </div>
       </div>
-      <div v-if="log.header.spanId" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.spanId"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">spanId</span>
         <div class="log-viewer__detail-value">
           <code class="log-viewer__mono">{{ log.header.spanId }}</code>
         </div>
         <div class="log-viewer__detail-copy">
-          <MapCopyButton title="Copy spanId" :value="log.header.spanId" />
+          <MapCopyButton
+            title="Copy spanId"
+            :value="log.header.spanId"
+          />
         </div>
       </div>
-      <div v-if="log.header.parentSpanId" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.parentSpanId"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">parentSpanId</span>
         <div class="log-viewer__detail-value">
           <code class="log-viewer__mono">{{ log.header.parentSpanId }}</code>
@@ -120,7 +153,10 @@ const objects = computed(() => (props.log ? objectArgs(props.log) : []));
           />
         </div>
       </div>
-      <div v-if="log.header.requestId" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.requestId"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">requestId (HTTP)</span>
         <div class="log-viewer__detail-value">
           <code class="log-viewer__mono">{{ log.header.requestId }}</code>
@@ -132,15 +168,24 @@ const objects = computed(() => (props.log ? objectArgs(props.log) : []));
           />
         </div>
       </div>
-      <div v-if="log.header.durationMs != null" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.durationMs != null"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">durationMs</span>
         <div class="log-viewer__detail-value">{{ log.header.durationMs }}</div>
       </div>
-      <div v-if="log.header.outcome" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.outcome"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">outcome</span>
         <div class="log-viewer__detail-value">{{ log.header.outcome }}</div>
       </div>
-      <div v-if="log.header.control" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.control"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">Control</span>
         <div class="log-viewer__detail-value">
           <code class="log-viewer__mono">{{ log.header.control }}</code>
@@ -155,26 +200,40 @@ const objects = computed(() => (props.log ? objectArgs(props.log) : []));
           <template v-if="log.header.menuName">{{
             log.header.menuName
           }}</template>
-          <code v-if="log.header.menuId" class="log-viewer__mono">{{
-            log.header.menuId
-          }}</code>
+          <code
+            v-if="log.header.menuId"
+            class="log-viewer__mono"
+            >{{ log.header.menuId }}</code
+          >
         </div>
       </div>
-      <div v-if="log.header.datasetId" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.datasetId"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">Dataset</span>
         <div class="log-viewer__detail-value">
           <code class="log-viewer__mono">{{ log.header.datasetId }}</code>
         </div>
       </div>
-      <div v-if="log.header.span" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.span"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">Span</span>
         <div class="log-viewer__detail-value">{{ log.header.span }}</div>
       </div>
-      <div v-if="log.header.fn" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.fn"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">fn</span>
         <div class="log-viewer__detail-value">{{ log.header.fn }}</div>
       </div>
-      <div v-if="log.header.flowKind" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.flowKind"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">flow</span>
         <div class="log-viewer__detail-value">
           {{ log.header.flowKind
@@ -183,13 +242,19 @@ const objects = computed(() => (props.log ? objectArgs(props.log) : []));
           >
         </div>
       </div>
-      <div v-if="log.header.mapId" class="log-viewer__detail-row">
+      <div
+        v-if="log.header.mapId"
+        class="log-viewer__detail-row"
+      >
         <span class="log-viewer__detail-label">mapId</span>
         <div class="log-viewer__detail-value">
           <code class="log-viewer__mono">{{ log.header.mapId }}</code>
         </div>
       </div>
-      <div v-if="objects.length" class="log-viewer__detail-args">
+      <div
+        v-if="objects.length"
+        class="log-viewer__detail-args"
+      >
         <div class="log-viewer__detail-args-h">Args</div>
         <div
           v-for="(arg, index) in objects"
@@ -200,6 +265,11 @@ const objects = computed(() => (props.log ? objectArgs(props.log) : []));
         </div>
       </div>
     </template>
-    <div v-else class="log-viewer__detail-empty">Select a log to inspect</div>
+    <div
+      v-else
+      class="log-viewer__detail-empty"
+    >
+      Select a log to inspect
+    </div>
   </aside>
 </template>

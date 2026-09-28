@@ -1,14 +1,20 @@
 <template>
   <div class="map-row create-control-settings">
     <div class="map-col-12">
-      <div v-if="showFileSummary" class="create-control-loaded">
+      <div
+        v-if="showFileSummary"
+        class="create-control-loaded"
+      >
         <div class="create-control-loaded__head">
           <div>
             <p class="create-control-loaded__eyebrow">
               {{ trans('map.layer-control.create.loaded-from-file') }}
             </p>
             <p class="create-control-loaded__title">{{ loadedSource.label }}</p>
-            <p v-if="loadedSource.detail" class="create-control-loaded__detail">
+            <p
+              v-if="loadedSource.detail"
+              class="create-control-loaded__detail"
+            >
               {{ loadedSource.detail }}
             </p>
           </div>
@@ -20,7 +26,10 @@
             {{ trans('map.layer-control.create.clear-data') }}
           </MapControlButton>
         </div>
-        <ul v-if="loadedMetaChips.length" class="create-control-loaded__meta">
+        <ul
+          v-if="loadedMetaChips.length"
+          class="create-control-loaded__meta"
+        >
           <li
             v-for="chip in loadedMetaChips"
             :key="chip"
@@ -60,7 +69,10 @@
               {{ trans('map.layer-control.create.filegdb-choose-folder') }}
             </MapControlButton>
           </div>
-          <div v-if="parsing" class="create-control-status--busy">
+          <div
+            v-if="parsing"
+            class="create-control-status--busy"
+          >
             <span>{{
               parseStatusText || trans('map.layer-control.create.parsing')
             }}</span>
@@ -76,7 +88,10 @@
         <p class="create-control-status">
           {{ trans('map.layer-control.create.file-hint-filegdb') }}
         </p>
-        <div v-if="parseError" class="create-control-sample-error">
+        <div
+          v-if="parseError"
+          class="create-control-sample-error"
+        >
           {{ parseError }}
         </div>
       </template>

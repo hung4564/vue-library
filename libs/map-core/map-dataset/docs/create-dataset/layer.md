@@ -16,14 +16,9 @@ createMultiMapboxLayerComponent(name: string, layers?: BaseLayerSpec[])
 import { createMultiMapboxLayerComponent } from '@hungpvq/map-dataset';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 
-const layer = createMultiMapboxLayerComponent('cities', [
-  new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build(),
-]);
+const layer = createMultiMapboxLayerComponent('cities', [new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build()]);
 
-const multi = createMultiMapboxLayerComponent('mixed', [
-  new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build(),
-  new LayerSimpleMapboxBuild().setStyleType('line').setColor('#4ecdc4').build(),
-]);
+const multi = createMultiMapboxLayerComponent('mixed', [new LayerSimpleMapboxBuild().setStyleType('point').setColor('#ff6b6b').build(), new LayerSimpleMapboxBuild().setStyleType('line').setColor('#4ecdc4').build()]);
 ```
 
 Or pass a raw spec:

@@ -147,7 +147,10 @@ function onStepClick(logId: string) {
           </div>
           <div class="log-request-flow__layout">
             <div class="log-request-flow__tree">
-              <div v-if="nodeCount === 0" class="log-request-flow__empty">
+              <div
+                v-if="nodeCount === 0"
+                class="log-request-flow__empty"
+              >
                 No logs for this actionId
               </div>
               <ol

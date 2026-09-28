@@ -172,7 +172,10 @@ const isAutoWidth = computed(() => {
     }"
     :style="c_style"
   >
-    <component :is="componentCard" :highlight="isHighlight">
+    <component
+      :is="componentCard"
+      :highlight="isHighlight"
+    >
       <div class="draggable-float">
         <template v-if="!disabledHeader && headerLocation === 'top'">
           <component :is="componentCardHeader">
@@ -195,8 +198,14 @@ const isAutoWidth = computed(() => {
                 :aria-expanded="expand ? 'true' : 'false'"
                 @click="onToggleExpand"
               >
-                <ExpandedIcon v-if="expand" :size="16" />
-                <CloseExpandedIcon v-else :size="16" />
+                <ExpandedIcon
+                  v-if="expand"
+                  :size="16"
+                />
+                <CloseExpandedIcon
+                  v-else
+                  :size="16"
+                />
               </drag-button>
               <template v-if="isHasItems && !disabledOrder">
                 <drag-button
@@ -251,8 +260,14 @@ const isAutoWidth = computed(() => {
                 :aria-expanded="expand ? 'true' : 'false'"
                 @click="onToggleExpand"
               >
-                <ExpandedIcon v-if="expand" :size="16" />
-                <CloseExpandedIcon v-else :size="16" />
+                <ExpandedIcon
+                  v-if="expand"
+                  :size="16"
+                />
+                <CloseExpandedIcon
+                  v-else
+                  :size="16"
+                />
               </drag-button>
               <template v-if="isHasItems && !disabledOrder">
                 <drag-button

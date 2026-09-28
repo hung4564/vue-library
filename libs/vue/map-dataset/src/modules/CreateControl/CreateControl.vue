@@ -14,13 +14,11 @@ import {
 } from '@hungpvq/map-dataset/create-control';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
-  MapCommonButton,
   MapControlButton,
   ModuleContainer,
   useLang,
   useMap,
-  useRegisterMapControl,
-  useToolbarControl,
+  useMapControl,
 } from '@hungpvq/vue-map-core';
 import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
 import { mdiPlus } from '@mdi/js';
@@ -50,7 +48,7 @@ const props = defineProps<
   }
 >();
 
-const { mapId, moduleContainerProps, order } = useMap(props);
+const { mapId, order } = useMap(props);
 const { trans } = useLang(mapId.value);
 const { addDataset } = useMapDataset(mapId);
 const emit = defineEmits(['update:show']);
@@ -68,18 +66,17 @@ const allowedTypes = computed(() =>
   resolveCreateControlLayerTypes(props.createLayerTypes),
 );
 
-const { panelBind } = useRegisterMapControl(mapId, {
+const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   id: 'mapCreateControl',
   panelKind: 'popup',
   title: () => trans.value('map.layer-control.create.title'),
-  buttonPosition: () => props.position,
+  from: props,
+  order,
   show: cShow as Ref<boolean>,
   setShow: (value) => {
     cShow.value = value;
   },
   getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
     createLayerTypes: props.createLayerTypes,
   }),
   actions: [
@@ -90,12 +87,7 @@ const { panelBind } = useRegisterMapControl(mapId, {
       },
     },
   ],
-});
-
-const { state, control } = useToolbarControl(mapId.value, props, {
-  kind: 'single',
-  id: 'mapCreateControl',
-  getState() {
+  getButtonState() {
     return mdiButtonState(mdiPlus, {
       active: cShow.value,
       title: trans.value('map.layer-control.create.title'),
@@ -301,13 +293,6 @@ function close() {
 
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      />
-    </template>
     <template #draggable="p">
       <DraggableItemPopup
         v-model:show="cShow"
@@ -376,10 +361,16 @@ function close() {
                 {{ trans(`map.layer-control.create.${key}`) }}
               </div>
             </div>
-            <div v-if="createError" class="create-control-sample-error">
+            <div
+              v-if="createError"
+              class="create-control-sample-error"
+            >
               {{ createError }}
             </div>
-            <div v-if="creating" class="create-control-actions__status">
+            <div
+              v-if="creating"
+              class="create-control-actions__status"
+            >
               {{ trans('map.layer-control.create.creating') }}
             </div>
             <MapControlButton

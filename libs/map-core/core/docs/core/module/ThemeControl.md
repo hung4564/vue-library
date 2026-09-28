@@ -8,10 +8,10 @@
 
 ### Scope
 
-| `scope` | Classes | Storage | Multi-map |
-| --- | --- | --- | --- |
-| `document` (default) | `html.map-theme-*` **and** mirror on this map’s `.map-container[data-map-id]` | `hungpvq.map-theme-mode` | One preference for the page |
-| `map` | Only `.map-container[data-map-id]` | `hungpvq.map-theme-mode:<mapId>` | Independent theme per map |
+| `scope`              | Classes                                                                       | Storage                          | Multi-map                   |
+| -------------------- | ----------------------------------------------------------------------------- | -------------------------------- | --------------------------- |
+| `document` (default) | `html.map-theme-*` **and** mirror on this map’s `.map-container[data-map-id]` | `hungpvq.map-theme-mode`         | One preference for the page |
+| `map`                | Only `.map-container[data-map-id]`                                            | `hungpvq.map-theme-mode:<mapId>` | Independent theme per map   |
 
 Use `scope="map"` when multiple maps on one page need different chrome themes. UI teleported **outside** that container still follows the document (`html`) theme unless you also bootstrap a document theme.
 
@@ -32,16 +32,16 @@ The main icon shows the **target** of that toggle (sun when the current scheme i
 
 Expands a row button group listing every mode in the `themes` prop. Pick a theme to set mode, persist, and apply. The active item matches the stored mode (`auto` is active only when mode is `auto`).
 
-| Mode | Behavior |
-| --- | --- |
-| `auto` | Resolves to `light` or `dark` via `prefers-color-scheme` |
-| `light` | Neutral white chrome + blue |
-| `dark` | Charcoal overlay + sky blue |
-| `vibrant` | Lavender panels + purple / magenta |
-| `ocean` | Aqua panels + teal / cyan |
-| `forest` | Sage panels + green |
-| `sunset` | Peach panels + coral / amber |
-| `slate` | Steel dark overlay + cyan accent |
+| Mode      | Behavior                                                 |
+| --------- | -------------------------------------------------------- |
+| `auto`    | Resolves to `light` or `dark` via `prefers-color-scheme` |
+| `light`   | Neutral white chrome + blue                              |
+| `dark`    | Charcoal overlay + sky blue                              |
+| `vibrant` | Lavender panels + purple / magenta                       |
+| `ocean`   | Aqua panels + teal / cyan                                |
+| `forest`  | Sage panels + green                                      |
+| `sunset`  | Peach panels + coral / amber                             |
+| `slate`   | Steel dark overlay + cyan accent                         |
 
 Bootstrap without the control:
 
@@ -60,10 +60,10 @@ Helpers: `MAP_THEME_IDS`, `MAP_THEME_MODES`, `resolveMapTheme`, `applyMapTheme` 
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `themes` | `MapThemeMode[]` | `MAP_THEME_MODES` | Modes shown in the hover menu. Invalid ids are filtered out. |
-| `scope` | `'document' \| 'map'` | `'document'` | Where theme classes + preference are applied. |
+| Prop     | Type                  | Default           | Description                                                  |
+| -------- | --------------------- | ----------------- | ------------------------------------------------------------ |
+| `themes` | `MapThemeMode[]`      | `MAP_THEME_MODES` | Modes shown in the hover menu. Invalid ids are filtered out. |
+| `scope`  | `'document' \| 'map'` | `'document'`      | Where theme classes + preference are applied.                |
 
 <!--@include: ./props.md-->
 

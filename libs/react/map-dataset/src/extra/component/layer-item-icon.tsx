@@ -43,11 +43,21 @@ export function LayerItemIcon({
     .join(' ');
 
   return (
-    <div className={className} title={KIND_TITLE[kind]}>
+    <div
+      className={className}
+      title={KIND_TITLE[kind]}
+    >
       {loading ? (
-        <Icon path={mdiLoading} size={ICON_SIZE} className="spin" />
+        <Icon
+          path={mdiLoading}
+          size={ICON_SIZE}
+          className="spin"
+        />
       ) : (
-        <Icon path={PATH[kind]} size={ICON_SIZE} />
+        <Icon
+          path={PATH[kind]}
+          size={ICON_SIZE}
+        />
       )}
     </div>
   );

@@ -1,6 +1,9 @@
 <template>
   <div class="dataset-viewer">
-    <p v-if="!ready" class="dataset-viewer__empty">
+    <p
+      v-if="!ready"
+      class="dataset-viewer__empty"
+    >
       Cần <code>@hungpvq/map-dataset</code> + <code>installDevtools()</code>.
       F12: <code>__hungpvqDatasetDebug.help()</code>
     </p>
@@ -21,7 +24,10 @@
           }}</span>
           <strong>{{ snapshot.identity.name }}</strong>
         </div>
-        <p v-else class="dataset-viewer__current dataset-viewer__muted">
+        <p
+          v-else
+          class="dataset-viewer__current dataset-viewer__muted"
+        >
           No dataset selected
         </p>
         <div class="dataset-viewer__actions">
@@ -47,7 +53,10 @@
         </div>
       </div>
 
-      <div class="dataset-viewer__panes" role="tablist">
+      <div
+        class="dataset-viewer__panes"
+        role="tablist"
+      >
         <div class="dataset-viewer__panes-tabs">
           <MapControlButton
             v-for="p in visiblePanes"
@@ -77,11 +86,20 @@
 
       <div class="dataset-viewer__body">
         <template v-if="pane === 'roots'">
-          <div class="dataset-viewer__roots" aria-label="Root datasets">
-            <p v-if="!rootOptions.length" class="dataset-viewer__empty">
+          <div
+            class="dataset-viewer__roots"
+            aria-label="Root datasets"
+          >
+            <p
+              v-if="!rootOptions.length"
+              class="dataset-viewer__empty"
+            >
               No root datasets on this map.
             </p>
-            <ul v-else class="dataset-viewer__root-list">
+            <ul
+              v-else
+              class="dataset-viewer__root-list"
+            >
               <li
                 v-for="r in rootOptions"
                 :key="r.id"
@@ -95,11 +113,17 @@
                 @keydown.enter.prevent="debugRoot(r.id)"
                 @keydown.space.prevent="debugRoot(r.id)"
               >
-                <div class="dataset-viewer__root-meta" :title="r.id">
+                <div
+                  class="dataset-viewer__root-meta"
+                  :title="r.id"
+                >
                   <strong>{{ r.name }}</strong>
                   <span class="dataset-viewer__muted">{{ r.type }}</span>
                 </div>
-                <div class="dataset-viewer__root-actions" @click.stop>
+                <div
+                  class="dataset-viewer__root-actions"
+                  @click.stop
+                >
                   <MapControlButton
                     variant="text"
                     size="small"
@@ -122,7 +146,10 @@
         <template v-else-if="pane === 'inspect'">
           <div class="dataset-viewer__inspect">
             <div class="dataset-viewer__inspect-layout">
-              <div class="dataset-viewer__find" aria-label="Find part by type">
+              <div
+                class="dataset-viewer__find"
+                aria-label="Find part by type"
+              >
                 <InputActionRow
                   flush
                   class="dataset-viewer__find-type"
@@ -152,7 +179,10 @@
                             {{ item.text }}
                           </option>
                         </optgroup>
-                        <optgroup v-if="partTypeItems.length" label="Part type">
+                        <optgroup
+                          v-if="partTypeItems.length"
+                          label="Part type"
+                        >
                           <option
                             v-for="item in partTypeItems"
                             :key="item.value"
@@ -178,7 +208,10 @@
                     </MapControlButton>
                   </template>
                 </InputActionRow>
-                <p v-if="findMiss" class="dataset-viewer__find-miss">
+                <p
+                  v-if="findMiss"
+                  class="dataset-viewer__find-miss"
+                >
                   Not found.
                 </p>
               </div>
@@ -294,7 +327,10 @@
                       v-if="snapshot.hierarchy.children.length"
                       class="dataset-viewer__child-list"
                     >
-                      <li v-for="c in snapshot.hierarchy.children" :key="c.id">
+                      <li
+                        v-for="c in snapshot.hierarchy.children"
+                        :key="c.id"
+                      >
                         <MapControlButton
                           variant="text"
                           size="small"
@@ -420,7 +456,10 @@
                     >
                   </section>
                 </template>
-                <p v-else class="dataset-viewer__empty">
+                <p
+                  v-else
+                  class="dataset-viewer__empty"
+                >
                   Chọn dataset từ tree hoặc search.
                 </p>
               </section>
@@ -429,7 +468,10 @@
         </template>
 
         <template v-else-if="pane === 'menus'">
-          <div class="dataset-viewer__menus" ref="menusPaneRef">
+          <div
+            class="dataset-viewer__menus"
+            ref="menusPaneRef"
+          >
             <div class="dataset-viewer__menus-toolbar">
               <div class="dataset-viewer__field dataset-viewer__menus-target">
                 <InputSelect
@@ -450,8 +492,14 @@
             </div>
 
             <div class="dataset-viewer__menus-layout">
-              <div class="dataset-viewer__buckets" aria-label="Menu buckets">
-                <p v-if="!visibleBuckets.length" class="dataset-viewer__empty">
+              <div
+                class="dataset-viewer__buckets"
+                aria-label="Menu buckets"
+              >
+                <p
+                  v-if="!visibleBuckets.length"
+                  class="dataset-viewer__empty"
+                >
                   No menus for this target / control.
                 </p>
                 <div
@@ -505,10 +553,14 @@
                           data-source="generated"
                           >anon</span
                         >
-                        <span v-if="m.hidden" class="dataset-viewer__chip"
+                        <span
+                          v-if="m.hidden"
+                          class="dataset-viewer__chip"
                           >hidden</span
                         >
-                        <span v-if="m.disabled" class="dataset-viewer__chip"
+                        <span
+                          v-if="m.disabled"
+                          class="dataset-viewer__chip"
                           >disabled</span
                         >
                       </span>
@@ -683,7 +735,10 @@
                     <TreeItem :data="menuDetail.byControl" />
                   </div>
                 </template>
-                <p v-else class="dataset-viewer__empty">
+                <p
+                  v-else
+                  class="dataset-viewer__empty"
+                >
                   Click a menu in a bucket to inspect name, id, registration
                   source, host, control placement, …
                 </p>

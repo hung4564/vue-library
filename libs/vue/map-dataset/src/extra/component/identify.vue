@@ -10,7 +10,11 @@
     size="small"
     @click.stop="onToggle"
   >
-    <SvgIcon size="14" type="mdi" :path="iconPath" />
+    <SvgIcon
+      size="14"
+      type="mdi"
+      :path="iconPath"
+    />
   </MapControlButton>
   <li
     v-else
@@ -19,7 +23,11 @@
     @click.stop="onToggle"
   >
     <div class="layer-context-menu__item-icon">
-      <SvgIcon size="16" type="mdi" :path="iconPath" />
+      <SvgIcon
+        size="16"
+        type="mdi"
+        :path="iconPath"
+      />
     </div>
     <span>{{ title }}</span>
   </li>

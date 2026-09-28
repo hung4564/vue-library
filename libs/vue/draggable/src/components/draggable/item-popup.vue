@@ -83,7 +83,7 @@ const { zIndex, itemId } = useInitItem(
     title: props.title,
     type: 'item-popup',
   },
-  props.id,
+  props.id || undefined,
 );
 const { isHighlight, setHighLight } = useHighlight(props.highlightMs);
 useInitAction(containerId.value, itemId.value, {
@@ -377,8 +377,14 @@ onBeforeUnmount(() => {
                 :aria-expanded="expand ? 'true' : 'false'"
                 @click="onToggleExpanded"
               >
-                <ExpandedIcon v-if="expand" :size="16" />
-                <CloseExpandedIcon v-else :size="16" />
+                <ExpandedIcon
+                  v-if="expand"
+                  :size="16"
+                />
+                <CloseExpandedIcon
+                  v-else
+                  :size="16"
+                />
               </drag-button>
               <drag-button
                 v-if="!disabledClose"
@@ -390,7 +396,10 @@ onBeforeUnmount(() => {
             </template>
           </component>
         </template>
-        <div v-show="expand" class="draggable-popup-desktop-content">
+        <div
+          v-show="expand"
+          class="draggable-popup-desktop-content"
+        >
           <slot></slot>
         </div>
       </div>

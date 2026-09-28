@@ -4,8 +4,10 @@ import { MAP_STORE_KEY } from '../types/constants';
 import { getMapCoreRootStore } from './map-core-meta';
 import {
   clearMapDomainStoreFactories,
+  deleteMapDomainStore,
   ensureMapDomainStore,
   hasMapDomainStoreFactory,
+  peekMapDomainStore,
   registerMapDomainStoreFactory,
 } from './map-domain-store';
 import * as platform from './map-platform-registry';
@@ -73,6 +75,15 @@ describe('map-domain-store', () => {
     const registered = registerCleanup.mock.calls[0][2];
     registered();
     expect(cleanup).toHaveBeenCalledWith('map-2', { n: 1 });
+  });
+
+  it('peekMapDomainStore does not create; deleteMapDomainStore drops key', () => {
+    registerMapDomainStoreFactory('peek-key', { create: () => ({ n: 1 }) });
+    expect(peekMapDomainStore('map-3', 'peek-key')).toBeUndefined();
+    const bag = ensureMapDomainStore<{ n: number }>('map-3', 'peek-key');
+    expect(peekMapDomainStore('map-3', 'peek-key')).toBe(bag);
+    deleteMapDomainStore('map-3', 'peek-key');
+    expect(peekMapDomainStore('map-3', 'peek-key')).toBeUndefined();
   });
 
   it('hasMapDomainStoreFactory tracks registration', () => {

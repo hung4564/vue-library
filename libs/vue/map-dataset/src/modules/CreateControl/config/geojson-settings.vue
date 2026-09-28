@@ -27,7 +27,11 @@
         :placeholder="trans('map.layer-control.field.crs-placeholder')"
         @update:model-value="onCrsChange"
       />
-      <div v-if="crsMismatch" class="create-control-crs-mismatch" role="status">
+      <div
+        v-if="crsMismatch"
+        class="create-control-crs-mismatch"
+        role="status"
+      >
         {{ trans('map.layer-control.create.crs-mismatch') }}
       </div>
     </div>

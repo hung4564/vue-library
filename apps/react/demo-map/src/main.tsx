@@ -58,28 +58,82 @@ root.render(
   // <StrictMode>
   <HashRouter>
     <Routes>
-      <Route path="/" element={<App />}>
-        <Route index element={<AllMapView />} />
-        <Route path="map-core" element={<MapCorePage />} />
-        <Route path="language" element={<LanguagePage />} />
-        <Route path="minimal" element={<MinimalPage />} />
-        <Route path="worker-sample" element={<WorkerSamplePage />} />
-        <Route path="map-dataset" element={<MapDatasetPage />} />
-        <Route path="toolbar" element={<ToolbarPage />} />
-        <Route path="mobile-menu" element={<MobileMenuPage />} />
-        <Route path="basemap" element={<BasemapPage />} />
-        <Route path="basemap-error" element={<BasemapErrorPage />} />
-        <Route path="multi-map" element={<MultiMapPage />} />
-        <Route path="measurement" element={<MeasurementPage />} />
-        <Route path="dataset-highlight" element={<DatasetHighlightPage />} />
-        <Route path="dataset-identify" element={<DatasetIdentifyPage />} />
+      <Route
+        path="/"
+        element={<App />}
+      >
+        <Route
+          index
+          element={<AllMapView />}
+        />
+        <Route
+          path="map-core"
+          element={<MapCorePage />}
+        />
+        <Route
+          path="language"
+          element={<LanguagePage />}
+        />
+        <Route
+          path="minimal"
+          element={<MinimalPage />}
+        />
+        <Route
+          path="worker-sample"
+          element={<WorkerSamplePage />}
+        />
+        <Route
+          path="map-dataset"
+          element={<MapDatasetPage />}
+        />
+        <Route
+          path="toolbar"
+          element={<ToolbarPage />}
+        />
+        <Route
+          path="mobile-menu"
+          element={<MobileMenuPage />}
+        />
+        <Route
+          path="basemap"
+          element={<BasemapPage />}
+        />
+        <Route
+          path="basemap-error"
+          element={<BasemapErrorPage />}
+        />
+        <Route
+          path="multi-map"
+          element={<MultiMapPage />}
+        />
+        <Route
+          path="measurement"
+          element={<MeasurementPage />}
+        />
+        <Route
+          path="dataset-highlight"
+          element={<DatasetHighlightPage />}
+        />
+        <Route
+          path="dataset-identify"
+          element={<DatasetIdentifyPage />}
+        />
         <Route
           path="dataset-identify-present"
           element={<DatasetIdentifyPresentPage />}
         />
-        <Route path="dataset-menu" element={<DatasetMenuPage />} />
-        <Route path="dataset-list" element={<DatasetListPage />} />
-        <Route path="registry-control" element={<RegistryControlPage />} />
+        <Route
+          path="dataset-menu"
+          element={<DatasetMenuPage />}
+        />
+        <Route
+          path="dataset-list"
+          element={<DatasetListPage />}
+        />
+        <Route
+          path="registry-control"
+          element={<RegistryControlPage />}
+        />
         <Route
           path="dataset-data-management"
           element={<DatasetDataManagementPage />}
@@ -88,17 +142,50 @@ root.render(
           path="dataset-attribute-table"
           element={<DatasetAttributeTablePage />}
         />
-        <Route path="dataset-geo-export" element={<DatasetGeoExportPage />} />
-        <Route path="story-telling" element={<StoryTellingPage />} />
-        <Route path="story-telling-gps" element={<StoryTellingGpsPage />} />
-        <Route path="legend" element={<LegendPage />} />
-        <Route path="draw" element={<DrawPage />} />
-        <Route path="print" element={<PrintPage />} />
-        <Route path="crs" element={<CrsPage />} />
-        <Route path="devtools" element={<DevtoolsPage />} />
-        <Route path="logging-cookbook" element={<LoggingCookbookPage />} />
-        <Route path="shared-log" element={<SharedLogPage />} />
-        <Route path="theme" element={<ThemePage />} />
+        <Route
+          path="dataset-geo-export"
+          element={<DatasetGeoExportPage />}
+        />
+        <Route
+          path="story-telling"
+          element={<StoryTellingPage />}
+        />
+        <Route
+          path="story-telling-gps"
+          element={<StoryTellingGpsPage />}
+        />
+        <Route
+          path="legend"
+          element={<LegendPage />}
+        />
+        <Route
+          path="draw"
+          element={<DrawPage />}
+        />
+        <Route
+          path="print"
+          element={<PrintPage />}
+        />
+        <Route
+          path="crs"
+          element={<CrsPage />}
+        />
+        <Route
+          path="devtools"
+          element={<DevtoolsPage />}
+        />
+        <Route
+          path="logging-cookbook"
+          element={<LoggingCookbookPage />}
+        />
+        <Route
+          path="shared-log"
+          element={<SharedLogPage />}
+        />
+        <Route
+          path="theme"
+          element={<ThemePage />}
+        />
       </Route>
     </Routes>
   </HashRouter>,

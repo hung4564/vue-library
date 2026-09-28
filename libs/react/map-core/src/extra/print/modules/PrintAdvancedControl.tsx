@@ -26,8 +26,7 @@ import { InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useMapControl } from '../../registry/useMapControl';
 import { useMapPrint } from '../store';
 
 const ORIENTATION_ITEMS = [
@@ -54,10 +53,7 @@ export function PrintAdvancedControl({
   ...mapProps
 }: PrintAdvancedControlProps) {
   const merged = { ...defaultMapProps, ...mapProps };
-  const { callMap, mapId, moduleContainerProps, order } = useMap(
-    { ...merged, controlId: 'mapPrintAdvancedControl' },
-    onInit,
-  );
+  const { callMap, mapId, order } = useMap(merged, onInit);
   const { trans } = useLang(mapId);
   const { initPrint } = useMapPrint(mapId);
 
@@ -163,9 +159,6 @@ export function PrintAdvancedControl({
     [order, trans, session],
   );
 
-  const { state, control } = useToolbarControl(mapId, merged, toolbarConfig);
-  controlRef.current = control;
-
   const registerActions = useMemo(
     () => [
       {
@@ -188,19 +181,24 @@ export function PrintAdvancedControl({
     [session],
   );
 
-  useRegisterMapControl(mapId, {
-    id: 'mapPrintAdvancedControl',
-    panelKind: 'button',
-    buttonPosition: merged.position,
-    defaultActionType: 'mapPrintShow',
-    getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-      disabledCrosshair,
-      disabledPrintableArea,
-    }),
-    actions: registerActions,
-  });
+  const { moduleContainerProps, panelBind, state, control } = useMapControl(
+    mapId,
+    {
+      id: 'mapPrintAdvancedControl',
+      panelKind: 'button',
+      from: merged,
+      order,
+      buttonSlot: 'custom',
+      defaultActionType: 'mapPrintShow',
+      getProps: () => ({
+        disabledCrosshair,
+        disabledPrintableArea,
+      }),
+      actions: registerActions,
+      toolbar: toolbarConfig,
+    },
+  );
+  controlRef.current = control;
 
   useEffect(() => {
     control.sync();
@@ -260,6 +258,7 @@ export function PrintAdvancedControl({
             title={trans('map.print.setting.title')}
             height={340}
             {...bind}
+            {...panelBind}
           >
             <div className="map-print-advanced-setting">
               <div>

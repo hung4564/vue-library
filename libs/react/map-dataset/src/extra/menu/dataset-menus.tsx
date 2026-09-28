@@ -135,7 +135,10 @@ export function DatasetMenus<T extends IDataset = IDataset>({
               contextMenuRef.current?.open(event);
             }}
           >
-            <Icon path={mdiDotsVertical} size={ICON_SIZE} />
+            <Icon
+              path={mdiDotsVertical}
+              size={ICON_SIZE}
+            />
           </MapControlButton>
           <ContextMenu ref={contextMenuRef}>
             <ul className="context-menu layer-context-menu dataset-menus__context">

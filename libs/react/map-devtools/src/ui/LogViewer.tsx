@@ -101,7 +101,10 @@ function LogRenderItem({
             />
           </div>
         </div>
-        <span className="log-entry__level" title={levelLabel}>
+        <span
+          className="log-entry__level"
+          title={levelLabel}
+        >
           {levelLabel}
         </span>
         {hasMeta ? (
@@ -310,7 +313,10 @@ export function LogViewer() {
         </div>
       </div>
       <div className="log-viewer__split">
-        <div className="log-viewer__body" ref={logListRef}>
+        <div
+          className="log-viewer__body"
+          ref={logListRef}
+        >
           {listed.length === 0 ? (
             <div className="log-viewer__empty">
               {totalCount === 0 ? 'No logs' : 'No matching logs'}

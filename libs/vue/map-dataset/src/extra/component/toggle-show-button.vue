@@ -6,8 +6,18 @@
     @click.stop="onToggle"
     variant="plain"
   >
-    <SvgIcon :size="iconSize" type="mdi" :path="path.show" v-if="show" />
-    <SvgIcon :size="iconSize" type="mdi" :path="path.hide" v-else />
+    <SvgIcon
+      :size="iconSize"
+      type="mdi"
+      :path="path.show"
+      v-if="show"
+    />
+    <SvgIcon
+      :size="iconSize"
+      type="mdi"
+      :path="path.hide"
+      v-else
+    />
   </MapControlButton>
 </template>
 <script setup lang="ts">

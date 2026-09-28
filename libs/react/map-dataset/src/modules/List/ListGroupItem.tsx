@@ -18,8 +18,14 @@ export function ListGroupItem({
     <ListItem disabledDrag={disabledDrag}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ flex: 1 }}>{item.name}</span>
-        <button type="button" onClick={() => setOpen(!open)}>
-          <Icon path={open ? mdiChevronDown : mdiChevronUp} size={0.6} />
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+        >
+          <Icon
+            path={open ? mdiChevronDown : mdiChevronUp}
+            size={0.6}
+          />
         </button>
       </div>
       {open && children}

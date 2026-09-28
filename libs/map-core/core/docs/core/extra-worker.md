@@ -23,8 +23,7 @@ export const MY_WORKER_ID = 'my-worker';
 const client = connectWorkerMonitor({
   id: MY_WORKER_ID,
   name: 'My worker',
-  createWorker: () =>
-    new Worker(new URL('./my.worker.ts', import.meta.url), { type: 'module' }),
+  createWorker: () => new Worker(new URL('./my.worker.ts', import.meta.url), { type: 'module' }),
 });
 
 export async function runHeavyTask(payload: unknown) {
@@ -76,10 +75,10 @@ Published as `exports["./worker"]` → `worker.js` (built separately from `index
 
 `ctx`:
 
-| API | Role |
-| --- | --- |
-| `ctx.taskId` | Same as `message.id` |
-| `ctx.log(message, { level? })` | Log **with** `taskId` |
+| API                                     | Role                                               |
+| --------------------------------------- | -------------------------------------------------- |
+| `ctx.taskId`                            | Same as `message.id`                               |
+| `ctx.log(message, { level? })`          | Log **with** `taskId`                              |
 | `ctx.report(current, total?, message?)` | Throttled progress (~80ms; always sends when done) |
 
 Runtime also:
@@ -125,21 +124,22 @@ const stop = WorkerMonitor.subscribe(() => {
 });
 ```
 
-| API | Role |
-| --- | --- |
-| `connectWorkerMonitor({ id, name, createWorker, … })` | Register + wire a Worker instance (`WorkerMonitor.connect` alias) |
-| `client.post` / `client.runTask` / `client.terminate` | Talk to the worker |
-| `runWorkerMonitor(handler, options?)` | Bind inside the worker thread |
-| `register(id, { name })` | Create or reuse a handle only |
-| `handle.startTask / setProgress / completeTask / failTask` | Manual lifecycle |
-| `handle.setStatus / setLastError` | Runtime state of the Worker instance |
-| `runMonitoredTask(id, type, primary, fallback?)` | Wrap one job + optional main-thread fallback |
-| `applyWorkerMonitorMessage(id, data)` | Apply progress **or** log `postMessage` |
-| `handle.log({ level, message, taskId })` | Append a log line on the main thread |
-| `clearHistory(id?)` | Clear logs/history for one worker, or all if omitted |
-| `subscribe(listener)` | UI updates |
+| API                                                        | Role                                                              |
+| ---------------------------------------------------------- | ----------------------------------------------------------------- |
+| `connectWorkerMonitor({ id, name, createWorker, … })`      | Register + wire a Worker instance (`WorkerMonitor.connect` alias) |
+| `client.post` / `client.runTask` / `client.terminate`      | Talk to the worker                                                |
+| `runWorkerMonitor(handler, options?)`                      | Bind inside the worker thread                                     |
+| `register(id, { name })`                                   | Create or reuse a handle only                                     |
+| `handle.startTask / setProgress / completeTask / failTask` | Manual lifecycle                                                  |
+| `handle.setStatus / setLastError`                          | Runtime state of the Worker instance                              |
+| `runMonitoredTask(id, type, primary, fallback?)`           | Wrap one job + optional main-thread fallback                      |
+| `applyWorkerMonitorMessage(id, data)`                      | Apply progress **or** log `postMessage`                           |
+| `handle.log({ level, message, taskId })`                   | Append a log line on the main thread                              |
+| `clearHistory(id?)`                                        | Clear logs/history for one worker, or all if omitted              |
+| `subscribe(listener)`                                      | UI updates                                                        |
 
 `WorkerControl` shows:
+
 - **Task log** — live lines for the **running** task only (`taskId` while pending)
 - **Worker log** — committed history (worker-level lines without `taskId`, plus a task’s lines **after** it finishes and is flushed)
 - **Recent tasks** — last **5** finished tasks (older tasks and their logs are removed from memory), each with a compact log snippet

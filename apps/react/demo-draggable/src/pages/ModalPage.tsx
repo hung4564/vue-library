@@ -12,8 +12,15 @@ export function ModalPage() {
   const [showThird, setShowThird] = useState(false);
 
   return (
-    <DraggableContainer containerId="demo-modal" className="demo-page">
-      <DraggableItemSideBar show title="Controls" location="left">
+    <DraggableContainer
+      containerId="demo-modal"
+      className="demo-page"
+    >
+      <DraggableItemSideBar
+        show
+        title="Controls"
+        location="left"
+      >
         <div className="panel">
           <h2>Modal demo</h2>
           <p>

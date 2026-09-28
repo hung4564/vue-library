@@ -3,20 +3,32 @@
     <div class="multi-map-page__maps">
       <div class="multi-map-page__pane">
         <h2 class="multi-map-page__label">Map A (<code>demo-map-a</code>)</h2>
-        <Map map-id="demo-map-a" @mapLoaded="onLoadedA">
+        <Map
+          map-id="demo-map-a"
+          @mapLoaded="onLoadedA"
+        >
           <DevtoolsControl position="bottom-right" />
           <DemoLanguageControl />
           <AsideControl position="top-left" />
           <BaseMapControl position="bottom-left" />
-          <LayerControl position="top-left" show />
+          <LayerControl
+            position="top-left"
+            show
+          />
           <DemoHelpPanel />
         </Map>
       </div>
       <div class="multi-map-page__pane">
         <h2 class="multi-map-page__label">Map B (<code>demo-map-b</code>)</h2>
-        <Map map-id="demo-map-b" @mapLoaded="onLoadedB">
+        <Map
+          map-id="demo-map-b"
+          @mapLoaded="onLoadedB"
+        >
           <BaseMapControl position="bottom-left" />
-          <LayerControl position="top-left" show />
+          <LayerControl
+            position="top-left"
+            show
+          />
           <DevtoolsControl position="bottom-right" />
         </Map>
       </div>

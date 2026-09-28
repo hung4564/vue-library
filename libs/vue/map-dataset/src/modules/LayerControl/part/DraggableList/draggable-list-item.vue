@@ -1,5 +1,8 @@
 <template>
-  <div class="draggale-item" :class="{ 'draggale-item-active': isSelected }">
+  <div
+    class="draggale-item"
+    :class="{ 'draggale-item-active': isSelected }"
+  >
     <div
       class="draggable-handle"
       v-if="!disabledDrag"
@@ -10,7 +13,11 @@
       }"
     >
       <div class="draggable-handle__icon">
-        <SvgIcon size="14" type="mdi" :path="path.draggable" />
+        <SvgIcon
+          size="14"
+          type="mdi"
+          :path="path.draggable"
+        />
       </div>
     </div>
     <div class="draggale-item__info">

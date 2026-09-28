@@ -32,10 +32,7 @@ list.off('toggleShow', handler); // optional unsubscribe
 ## Custom leaf
 
 ```ts
-import {
-  createDatasetLeaf,
-  createWithEventHelper,
-} from '@hungpvq/map-dataset';
+import { createDatasetLeaf, createWithEventHelper } from '@hungpvq/map-dataset';
 
 type MyEvents = { saved: { id: string } };
 

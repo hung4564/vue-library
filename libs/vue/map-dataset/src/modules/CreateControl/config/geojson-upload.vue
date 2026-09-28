@@ -1,9 +1,15 @@
 <template>
   <div class="map-row create-control-settings">
     <div class="map-col-12">
-      <DataSourceTabs v-model:active-tab="activeDataTab" :tabs="dataTabs">
+      <DataSourceTabs
+        v-model:active-tab="activeDataTab"
+        :tabs="dataTabs"
+      >
         <template #file>
-          <div v-if="showFileSummary" class="create-control-loaded">
+          <div
+            v-if="showFileSummary"
+            class="create-control-loaded"
+          >
             <div class="create-control-loaded__head">
               <div>
                 <p class="create-control-loaded__eyebrow">
@@ -62,7 +68,10 @@
               :resolve-drop-files="collectFilesFromDataTransfer"
               @change="onChangeFile"
             />
-            <div v-if="parsing" class="create-control-status--busy">
+            <div
+              v-if="parsing"
+              class="create-control-status--busy"
+            >
               <span>{{
                 parseStatusText || trans('map.layer-control.create.parsing')
               }}</span>
@@ -81,13 +90,19 @@
           >
             {{ trans('map.layer-control.create.file-hint') }}
           </p>
-          <div v-if="parseError" class="create-control-sample-error">
+          <div
+            v-if="parseError"
+            class="create-control-sample-error"
+          >
             {{ parseError }}
           </div>
         </template>
 
         <template #raw>
-          <div v-if="showLoadedRawCard" class="create-control-loaded">
+          <div
+            v-if="showLoadedRawCard"
+            class="create-control-loaded"
+          >
             <div class="create-control-loaded__head">
               <div>
                 <p class="create-control-loaded__eyebrow">
@@ -134,10 +149,16 @@
               "
               @update:model-value="onPasteGeojson"
             />
-            <div v-if="parsing" class="create-control-status--row">
+            <div
+              v-if="parsing"
+              class="create-control-status--row"
+            >
               <span>{{ trans('map.layer-control.create.parsing') }}</span>
             </div>
-            <div v-if="parseError" class="create-control-sample-error">
+            <div
+              v-if="parseError"
+              class="create-control-sample-error"
+            >
               {{ parseError }}
             </div>
           </template>
@@ -170,7 +191,10 @@
               </MapControlButton>
             </template>
           </InputActionRow>
-          <div v-if="urlError" class="create-control-sample-error">
+          <div
+            v-if="urlError"
+            class="create-control-sample-error"
+          >
             {{ urlError }}
           </div>
         </template>

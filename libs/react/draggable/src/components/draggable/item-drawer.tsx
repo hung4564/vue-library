@@ -348,7 +348,10 @@ export function DraggableDrawer({
       ariaLabel="Switch drawer panel"
       onOpenChange={setMenuOpen}
     >
-      <ul className="context-menu" role="presentation">
+      <ul
+        className="context-menu"
+        role="presentation"
+      >
         {drawerItems.map((item) => (
           <ContextMenuItem
             key={item.id}

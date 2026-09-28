@@ -8,11 +8,7 @@ export default {
 import type { IDataset } from '@hungpvq/map-dataset';
 import { traverseTree } from '@hungpvq/map-dataset';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import {
-  ModuleContainer,
-  useMap,
-  useRegisterMapControl,
-} from '@hungpvq/vue-map-core';
+import { ModuleContainer, useMap, useMapControl } from '@hungpvq/vue-map-core';
 import { ref, shallowRef, watch } from 'vue';
 const props = defineProps<{ dataset: IDataset }>();
 const emit = defineEmits(['close']);
@@ -24,7 +20,7 @@ function onUpdateShow(val: boolean) {
     emit('close');
   }
 }
-const { panelBind } = useRegisterMapControl(mapId, {
+const { panelBind, moduleContainerProps } = useMapControl(mapId, {
   id: 'mapDatasetDetail',
   panelKind: 'popup',
   title: () => props.dataset?.getName?.(),
@@ -62,7 +58,7 @@ watch(
 );
 </script>
 <template>
-  <ModuleContainer v-bind="$attrs">
+  <ModuleContainer v-bind="moduleContainerProps">
     <template #draggable="slotProps">
       <DraggableItemPopup
         v-bind="{ ...slotProps, ...panelBind }"

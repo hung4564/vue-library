@@ -6,20 +6,21 @@ Editable layer list: create, group, reorder, delete, run menus. Click a group na
 
 <!--@include: ../../core/module/props.md-->
 
-| Prop | Type | Default | Effect |
-| --- | --- | --- | --- |
-| `show` | `boolean` | — | Open the panel |
-| `disabledCreate` | `boolean` | `false` | Hide create-layer |
-| `disabledCreateGroup` | `boolean` | `false` | Hide create-group **and** hide Add to group in ⋮ |
-| `disabledDeleteAll` | `boolean` | `false` | Hide delete-all |
-| `disabledMove` | `boolean` | `false` | Hide Move up/down in ⋮ |
-| `menuContext` | `object \| (() => object)` | — | Bag for `setHidden` / `setDisabled` |
-| `globalVisibilityMode` | `'override' \| 'sync'` | `'sync'` | Header eye: mask map only vs sync every layer `show` |
-| `createLayerTypes` | `LayerType[]` | all types | Allowlist for nested CreateControl type select |
+| Prop                   | Type                       | Default   | Effect                                               |
+| ---------------------- | -------------------------- | --------- | ---------------------------------------------------- |
+| `show`                 | `boolean`                  | —         | Open the panel                                       |
+| `disabledCreate`       | `boolean`                  | `false`   | Hide create-layer                                    |
+| `disabledCreateGroup`  | `boolean`                  | `false`   | Hide create-group **and** hide Add to group in ⋮     |
+| `disabledDeleteAll`    | `boolean`                  | `false`   | Hide delete-all                                      |
+| `disabledMove`         | `boolean`                  | `false`   | Hide Move up/down in ⋮                               |
+| `menuContext`          | `object \| (() => object)` | —         | Bag for `setHidden` / `setDisabled`                  |
+| `globalVisibilityMode` | `'override' \| 'sync'`     | `'sync'`  | Header eye: mask map only vs sync every layer `show` |
+| `createLayerTypes`     | `LayerType[]`              | all types | Allowlist for nested CreateControl type select       |
 
 `menuContext` is merged with `readonly`, `disabledMove`, `disabledCreateGroup` and any parent `provideMenuConditionContext` / `MenuConditionProvider`. See [Menus](../create-dataset/with-helper-menu.md).
 
 `globalVisibilityMode`:
+
 - `sync` (default) — header eye sets every list item’s `show` to the all-button value and applies on the map.
 - `override` — header eye hides/restores layers on the map only; each row’s intended `show` is unchanged.
 
@@ -34,11 +35,11 @@ Keyboard: `/` focuses the layer search input for **that** map (`[data-map-layer-
 
 `LayerControl` mounts a sidebar panel. Pass a **plain `title` string** for the panel switcher menu; use Vue `#title` / React `titleNode` only for styled header text. Header layout: `[ title | after-title ] …… [ extra-btn ]` — menus with `location: 'title'` render in **`after-title` / `afterTitle`**, not trailing chrome.
 
-| | Vue | React |
-| --- | --- | --- |
+|                  | Vue                                         | React                                      |
+| ---------------- | ------------------------------------------- | ------------------------------------------ |
 | Store / switcher | `:title="trans('map.layer-control.title')"` | `title={trans('map.layer-control.title')}` |
-| Styled header | `#title` slot | `titleNode={<span className="…">…</span>}` |
-| Menus in header | `#after-title` | `afterTitle` |
+| Styled header    | `#title` slot                               | `titleNode={<span className="…">…</span>}` |
+| Menus in header  | `#after-title`                              | `afterTitle`                               |
 
 Do **not** pass a ReactNode as React `title` — the switcher store coerces non-strings to `''` and blank menu labels appear.
 
@@ -46,13 +47,13 @@ Do **not** pass a ReactNode as React `title` — the switcher store coerces non-
 
 LayerControl stays a UI host. Shared orchestration lives in `@hungpvq/map-dataset`:
 
-| Helper | Role |
-| --- | --- |
-| `getLayerControlTitleMenuState(roots)` | Aggregate `location: 'title'` menus across dataset list views for `#after-title` / `afterTitle` |
-| `registerAddGeojsonHereForMap(mapId, addDataset)` | Register context-menu “Add GeoJSON here” + default items; returns unregister for unmount |
-| `syncListViewLayerOrder(map, views)` | Apply drag-reorder / index to MapLibre layers (used by `LayerList`) |
-| `applyAllLayerVisibility(items, map, show, mode)` | Header eye: `override` (map mask) or `sync` (intended `show`) |
-| `syncAllLayerIntendedShow(items, map, show)` | Set every list item `show` and apply on map |
+| Helper                                            | Role                                                                                            |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `getLayerControlTitleMenuState(roots)`            | Aggregate `location: 'title'` menus across dataset list views for `#after-title` / `afterTitle` |
+| `registerAddGeojsonHereForMap(mapId, addDataset)` | Register context-menu “Add GeoJSON here” + default items; returns unregister for unmount        |
+| `syncListViewLayerOrder(map, views)`              | Apply drag-reorder / index to MapLibre layers (used by `LayerList`)                             |
+| `applyAllLayerVisibility(items, map, show, mode)` | Header eye: `override` (map mask) or `sync` (intended `show`)                                   |
+| `syncAllLayerIntendedShow(items, map, show)`      | Set every list item `show` and apply on map                                                     |
 
 Custom LayerControl forks should call `registerAddGeojsonHereForMap` on mount (and its cleanup on unmount) when the map also mounts [`MapContextMenuControl`](/map/core/module/MapContextMenuControl).
 
@@ -62,13 +63,13 @@ Layer list rows refresh when datasets are added/removed via `useMapDataset(mapId
 
 Flat rows and drag trees use shared types from `@hungpvq/map-dataset` (not adapter-local aliases):
 
-| Type | Role |
-| --- | --- |
-| `IListViewUI` | List protocol on a dataset part |
-| `LayerListItem` | Flat row for LayerControl drag list (`IListViewUI` + tree `Item`, group narrowed to `{ id, name }`) |
-| `LayerListTreeNode` | `TreeItem<LayerListItem>` |
-| `LayerListGroupTree` | `GroupTree<LayerListItem>` |
-| `ListViewGroupRef` | Normalized `{ id, name }` group on a flat row |
+| Type                 | Role                                                                                                |
+| -------------------- | --------------------------------------------------------------------------------------------------- |
+| `IListViewUI`        | List protocol on a dataset part                                                                     |
+| `LayerListItem`      | Flat row for LayerControl drag list (`IListViewUI` + tree `Item`, group narrowed to `{ id, name }`) |
+| `LayerListTreeNode`  | `TreeItem<LayerListItem>`                                                                           |
+| `LayerListGroupTree` | `GroupTree<LayerListItem>`                                                                          |
+| `ListViewGroupRef`   | Normalized `{ id, name }` group on a flat row                                                       |
 
 Use `convertListToTree` / `convertTreeToList` / `mergeEmptyGroups` with `LayerListItem[]`. See [List UI](../create-dataset/list.md).
 
@@ -76,11 +77,11 @@ When [`MapContextMenuControl`](/map/core/module/MapContextMenuControl) is on the
 
 ## Slots / render props
 
-| Name | Vue | React |
-| --- | --- | --- |
+| Name        | Vue              | React                                   |
+| ----------- | ---------------- | --------------------------------------- |
 | `titleList` | slot `{ mapId }` | `ReactNode \| ({ mapId }) => ReactNode` |
-| `endList` | slot `{ mapId }` | same |
-| `default` | extra children | `children` |
+| `endList`   | slot `{ mapId }` | same                                    |
+| `default`   | extra children   | `children`                              |
 
 ## Vue
 
@@ -88,10 +89,7 @@ When [`MapContextMenuControl`](/map/core/module/MapContextMenuControl) is on the
 <script setup lang="ts">
 import { reactive } from 'vue';
 import { Map, BaseMapCard } from '@hungpvq/vue-map-core';
-import {
-  LayerControl,
-  ComponentManagementControl,
-} from '@hungpvq/vue-map-dataset';
+import { LayerControl, ComponentManagementControl } from '@hungpvq/vue-map-dataset';
 import '@hungpvq/map-core/style.css';
 import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/vue-map-core/style.css';

@@ -37,46 +37,88 @@ function MdiIcon({ path, size }: { path: string; size?: number | string }) {
 export function useIcon() {
   return {
     ShowIcon: (props: IconProps) => (
-      <MdiIcon path={mdiEyeOutline} size={props.size} />
+      <MdiIcon
+        path={mdiEyeOutline}
+        size={props.size}
+      />
     ),
     HideIcon: (props: IconProps) => (
-      <MdiIcon path={mdiEyeOffOutline} size={props.size} />
+      <MdiIcon
+        path={mdiEyeOffOutline}
+        size={props.size}
+      />
     ),
     CloseIcon: (props: IconProps) => (
-      <MdiIcon path={mdiClose} size={props.size} />
+      <MdiIcon
+        path={mdiClose}
+        size={props.size}
+      />
     ),
     HighlightIcon: (props: IconProps) => (
-      <MdiIcon path={mdiMarker} size={props.size} />
+      <MdiIcon
+        path={mdiMarker}
+        size={props.size}
+      />
     ),
     FullscreenIcon: (props: IconProps) => (
-      <MdiIcon path={mdiArrowDownDropCircleOutline} size={props.size} />
+      <MdiIcon
+        path={mdiArrowDownDropCircleOutline}
+        size={props.size}
+      />
     ),
     OffFullscreenIcon: (props: IconProps) => (
-      <MdiIcon path={mdiArrowUpDropCircleOutline} size={props.size} />
+      <MdiIcon
+        path={mdiArrowUpDropCircleOutline}
+        size={props.size}
+      />
     ),
     ToBackIcon: (props: IconProps) => (
-      <MdiIcon path={mdiArrangeSendBackward} size={props.size} />
+      <MdiIcon
+        path={mdiArrangeSendBackward}
+        size={props.size}
+      />
     ),
     ToFrontIcon: (props: IconProps) => (
-      <MdiIcon path={mdiArrangeBringForward} size={props.size} />
+      <MdiIcon
+        path={mdiArrangeBringForward}
+        size={props.size}
+      />
     ),
     ExpandedIcon: (props: IconProps) => (
-      <MdiIcon path={mdiArrowUpDropCircleOutline} size={props.size} />
+      <MdiIcon
+        path={mdiArrowUpDropCircleOutline}
+        size={props.size}
+      />
     ),
     CloseExpandedIcon: (props: IconProps) => (
-      <MdiIcon path={mdiArrowDownDropCircleOutline} size={props.size} />
+      <MdiIcon
+        path={mdiArrowDownDropCircleOutline}
+        size={props.size}
+      />
     ),
     DragIcon: (props: IconProps) => (
-      <MdiIcon path={mdiDragVariant} size={props.size} />
+      <MdiIcon
+        path={mdiDragVariant}
+        size={props.size}
+      />
     ),
     SidebarExpandedIcon: (props: IconProps) => (
-      <MdiIcon path={mdiMenuLeft} size={props.size} />
+      <MdiIcon
+        path={mdiMenuLeft}
+        size={props.size}
+      />
     ),
     SidebarCloseExpandedIcon: (props: IconProps) => (
-      <MdiIcon path={mdiMenuRight} size={props.size} />
+      <MdiIcon
+        path={mdiMenuRight}
+        size={props.size}
+      />
     ),
     SidebarOpenMenu: (props: IconProps) => (
-      <MdiIcon path={mdiMenu} size={props.size} />
+      <MdiIcon
+        path={mdiMenu}
+        size={props.size}
+      />
     ),
   };
 }

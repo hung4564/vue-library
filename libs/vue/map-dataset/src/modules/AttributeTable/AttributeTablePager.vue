@@ -29,8 +29,15 @@ const pageStatus = computed(
 );
 </script>
 <template>
-  <div v-if="visible" class="attribute-table__pager">
-    <span class="attribute-table__pager-label" role="status" aria-live="polite">
+  <div
+    v-if="visible"
+    class="attribute-table__pager"
+  >
+    <span
+      class="attribute-table__pager-label"
+      role="status"
+      aria-live="polite"
+    >
       {{ pageStatus }}
     </span>
     <MapControlButton

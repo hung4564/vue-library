@@ -24,10 +24,10 @@ Map packages release together under tag `map@{version}` (fixed group). Prefer al
 
 ## Meta vs domain imports
 
-| From meta (`@hungpvq/vue-map` / `react-map`) | Still import from domain packages |
-|-----------------------------------------------|-----------------------------------|
-| `installMapApp` (+ Vue `createMapAppPlugin`) | UI: `Map`, controls → `vue-map-core` / `react-map-core` |
-| `./style.css` (all shell CSS) | Dataset UI: `LayerControl`, hooks → `vue-map-dataset` / `react-map-dataset` |
+| From meta (`@hungpvq/vue-map` / `react-map`)              | Still import from domain packages                                            |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `installMapApp` (+ Vue `createMapAppPlugin`)              | UI: `Map`, controls → `vue-map-core` / `react-map-core`                      |
+| `./style.css` (all shell CSS)                             | Dataset UI: `LayerControl`, hooks → `vue-map-dataset` / `react-map-dataset`  |
 | Transitive deps (core, dataset, draggable, shared, icons) | Builders / types: `@hungpvq/map-core`, `@hungpvq/map-dataset` (and subpaths) |
 
 Meta is an **install + bootstrap bag**, not a barrel of every component.
@@ -95,7 +95,10 @@ function onMapLoaded(map: MapSimple) {
 
 <template>
   <Map @mapLoaded="onMapLoaded">
-    <LayerControl position="top-left" show />
+    <LayerControl
+      position="top-left"
+      show
+    />
   </Map>
 </template>
 ```
@@ -150,7 +153,10 @@ export function MinimalMap() {
 
   return (
     <Map onMapLoaded={onMapLoaded}>
-      <LayerControl position="top-left" show />
+      <LayerControl
+        position="top-left"
+        show
+      />
     </Map>
   );
 }
@@ -169,14 +175,14 @@ installMapApp();
 
 Install only when you use the feature:
 
-| Feature | Packages |
-|---------|----------|
-| Print / `exportFile` | `file-saver` |
-| Legend expression eval | `@maplibre/maplibre-gl-style-spec` |
+| Feature                    | Packages                                                                                                                             |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Print / `exportFile`       | `file-saver`                                                                                                                         |
+| Legend expression eval     | `@maplibre/maplibre-gl-style-spec`                                                                                                   |
 | CreateControl file formats | `shpjs`, `papaparse`, `@tmcw/togeojson`, `@xmldom/xmldom`, `jszip`, `topojson-client`, … — [Peers and bundle](./peers-and-bundle.md) |
-| Off-main-thread GIS parse | Vite plugin `@hungpvq/map-dataset/vite` — [Worker](/map/dataset/worker) |
-| Draw / edit | `@hungpvq/vue-map-draw` or `react-map-draw` + `@hungpvq/map-draw` — [Draw](/map/draw/) |
-| Devtools panel | `@hungpvq/vue-map-devtools` or `react-map-devtools` — [Devtools](./devtools.md) |
+| Off-main-thread GIS parse  | Vite plugin `@hungpvq/map-dataset/vite` — [Worker](/map/dataset/worker)                                                              |
+| Draw / edit                | `@hungpvq/vue-map-draw` or `react-map-draw` + `@hungpvq/map-draw` — [Draw](/map/draw/)                                               |
+| Devtools panel             | `@hungpvq/vue-map-devtools` or `react-map-devtools` — [Devtools](./devtools.md)                                                      |
 
 ## Defaults (single-app / single theme)
 
@@ -189,15 +195,15 @@ For independent multi-map chrome themes use `ThemeControl` / `applyMapTheme` wit
 
 ## Troubleshooting (external)
 
-| Symptom | Check |
-|---------|--------|
-| Unstyled UI | Import `@hungpvq/vue-map/style.css` (or `react-map`) once; or the full a-la-carte CSS set |
+| Symptom                                       | Check                                                                                                                                                      |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unstyled UI                                   | Import `@hungpvq/vue-map/style.css` (or `react-map`) once; or the full a-la-carte CSS set                                                                  |
 | Horizontal scrollbar in popups / layer detail | Import map + draggable `style.css` (packages self-contain `box-sizing: border-box`) — [CSS variables → Box model](./css-variables.md#box-model-box-sizing) |
-| Empty layer menus / no style editor | Call `installMapApp` before mounting maps |
-| Two MapLibre instances / broken GL | Only one `maplibre-gl` in the app (peer); avoid bundling a second copy |
-| Peer warnings for turf / proj4 | Expected to come **with** `@hungpvq/map-core` — do not install `@turf/turf` for the library |
-| CreateControl missing format | Install the optional GIS peer for that format |
-| Types / exports missing | Import Stable symbols from documented packages — [Stable API](./stable-api.md) |
+| Empty layer menus / no style editor           | Call `installMapApp` before mounting maps                                                                                                                  |
+| Two MapLibre instances / broken GL            | Only one `maplibre-gl` in the app (peer); avoid bundling a second copy                                                                                     |
+| Peer warnings for turf / proj4                | Expected to come **with** `@hungpvq/map-core` — do not install `@turf/turf` for the library                                                                |
+| CreateControl missing format                  | Install the optional GIS peer for that format                                                                                                              |
+| Types / exports missing                       | Import Stable symbols from documented packages — [Stable API](./stable-api.md)                                                                             |
 
 ## Local consumers (`file:` dist)
 

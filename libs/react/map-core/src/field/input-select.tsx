@@ -85,12 +85,19 @@ export function InputSelect<T = SelectItem>({
           className={['input-select', className].filter(Boolean).join(' ')}
         >
           {placeholder && (
-            <option value="" disabled hidden>
+            <option
+              value=""
+              disabled
+              hidden
+            >
               {placeholder}
             </option>
           )}
           {items.map((item, index) => (
-            <option key={getKey(item, index)} value={String(getValue(item))}>
+            <option
+              key={getKey(item, index)}
+              value={String(getValue(item))}
+            >
               {getText(item)}
             </option>
           ))}

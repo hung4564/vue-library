@@ -433,7 +433,11 @@ export function DraggableModal({
         onDragStop={handleDragStop}
         onMouseDown={onToFront}
       >
-        <Card width={p_width} height={p_height} highlight={isHighlight}>
+        <Card
+          width={p_width}
+          height={p_height}
+          highlight={isHighlight}
+        >
           <div className="draggable-modal-desktop">
             {!disabledHeader && (
               <Header

@@ -5,8 +5,8 @@
 :root {
   --demo-font-family:
     ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --demo-font-size: 14px;
   --demo-line-height: 1.5;
   --demo-heading-size: 16px;
@@ -358,8 +358,10 @@ code {
   align-items: center;
   justify-content: center;
   background:
-    linear-gradient(90deg, rgba(148, 163, 184, 0.15) 1px, transparent 1px) 0 0 / 24px 24px,
-    linear-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, rgba(148, 163, 184, 0.15) 1px, transparent 1px) 0 0 /
+      24px 24px,
+    linear-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px) 0 0 / 24px
+      24px,
     #f1f5f9;
   cursor: context-menu;
   z-index: 0;

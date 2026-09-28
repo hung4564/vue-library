@@ -44,12 +44,12 @@ React: use `onUpdateShow` / `onUpdateExpand` / `onClose`.
 
 Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
 
-| Vue             | React        | Description                                      |
-| --------------- | ------------ | ------------------------------------------------ |
-| `default`       | `children`   | Content of the float panel.                      |
-| `title`         | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
-| `after-title`   | `afterTitle` | Immediately after title (before spacer).         |
-| `extra-btn`     | `extraBtn`   | Trailing header actions after the spacer.        |
+| Vue           | React        | Description                                                |
+| ------------- | ------------ | ---------------------------------------------------------- |
+| `default`     | `children`   | Content of the float panel.                                |
+| `title`       | `title`      | Title text or custom title node (`ReactNode` \| `string`). |
+| `after-title` | `afterTitle` | Immediately after title (before spacer).                   |
+| `extra-btn`   | `extraBtn`   | Trailing header actions after the spacer.                  |
 
 ## Usage
 
@@ -62,7 +62,14 @@ import { DraggableContainer, DraggableItemFloat } from '@hungpvq/vue-draggable';
 
 <template>
   <DraggableContainer>
-    <DraggableItemFloat title="Title" show :right="10" :bottom="10" :width="400" headerLocation="bottom">
+    <DraggableItemFloat
+      title="Title"
+      show
+      :right="10"
+      :bottom="10"
+      :width="400"
+      headerLocation="bottom"
+    >
       <div style="height: 100vh"></div>
     </DraggableItemFloat>
   </DraggableContainer>

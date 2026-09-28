@@ -29,14 +29,12 @@ import {
 } from '@hungpvq/map-dataset/identify';
 import {
   defaultMapProps,
-  MapCommonButton,
   ModuleContainer,
   UniversalRegistry,
   useEventMap,
   useLang,
   useMap,
-  useRegisterMapControl,
-  useToolbarControl,
+  useMapControl,
   type WithShowProps,
 } from '@hungpvq/vue-map-core';
 import { mdiHandPointingUp } from '@mdi/js';
@@ -58,7 +56,7 @@ const props = withDefaults(
   >(),
   { ...defaultMapProps },
 );
-const { mapId, moduleContainerProps, order, callMap } = useMap(props);
+const { mapId, order, callMap } = useMap(props);
 const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
 const { trans } = useLang(mapId.value);
 watch(
@@ -95,15 +93,12 @@ const {
   mapId.value,
   new EventBboxRanger().setHandler((bbox) => session.onBboxSelected(bbox)),
 );
-watch(
-  [isEventClickActive, isEventClickBox],
-  ([clickActive, boxActive]) => {
-    updateResultPanel({
-      isEventClickActive: clickActive,
-      isEventClickBox: boxActive,
-    });
-  },
-);
+watch([isEventClickActive, isEventClickBox], ([clickActive, boxActive]) => {
+  updateResultPanel({
+    isEventClickActive: clickActive,
+    isEventClickBox: boxActive,
+  });
+});
 
 function updateResultPanel(payload: IdentifyResultUpdatePayload) {
   UniversalRegistry.runControlAction(
@@ -178,11 +173,38 @@ watch(hasViews, () => {
   control.sync();
 });
 
-useRegisterMapControl(mapId, {
+function onIdentifyHere(menuProps: MapMenuItemProps) {
+  const { lng, lat } = menuProps.layer.lngLat;
+  const point = menuProps.layer.point;
+  session.onIdentifyHere(lng, lat, point ? [point.x, point.y] : undefined);
+}
+
+onMounted(() => {
+  if (props.immediately) session.toggleMapClickMode();
+  syncResultPanel();
+});
+onUnmounted(() => {
+  session.teardownInputModes({ immediate: true });
+  session.destroy();
+  UniversalRegistry.unregisterMenuHandlerForMap(
+    mapId.value,
+    MAP_CONTEXT_MENU_ID.identifyHere,
+  );
+});
+UniversalRegistry.registerMenuHandlerForMap(
+  mapId.value,
+  MAP_CONTEXT_MENU_ID.identifyHere,
+  onIdentifyHere,
+);
+
+watch(views, () => syncResultPanel(), { deep: true });
+
+const { moduleContainerProps, control } = useMapControl(mapId, {
   id: IDENTIFY_CONTROL.id,
   panelKind: 'button',
   title: () => trans.value('map.identify.title'),
-  buttonPosition: () => props.position,
+  from: props,
+  order,
   show,
   setShow: (value) => {
     session.setShow(value);
@@ -190,8 +212,6 @@ useRegisterMapControl(mapId, {
     updateResultPanel({ show: value });
   },
   getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
     immediately: props.immediately,
   }),
   actions: [
@@ -252,38 +272,7 @@ useRegisterMapControl(mapId, {
       },
     },
   ],
-});
-
-function onIdentifyHere(menuProps: MapMenuItemProps) {
-  const { lng, lat } = menuProps.layer.lngLat;
-  const point = menuProps.layer.point;
-  session.onIdentifyHere(lng, lat, point ? [point.x, point.y] : undefined);
-}
-
-onMounted(() => {
-  if (props.immediately) session.toggleMapClickMode();
-  syncResultPanel();
-});
-onUnmounted(() => {
-  session.teardownInputModes({ immediate: true });
-  session.destroy();
-  UniversalRegistry.unregisterMenuHandlerForMap(
-    mapId.value,
-    MAP_CONTEXT_MENU_ID.identifyHere,
-  );
-});
-UniversalRegistry.registerMenuHandlerForMap(
-  mapId.value,
-  MAP_CONTEXT_MENU_ID.identifyHere,
-  onIdentifyHere,
-);
-
-watch(views, () => syncResultPanel(), { deep: true });
-
-const { state, control } = useToolbarControl(mapId.value, props, {
-  kind: 'single',
-  id: IDENTIFY_CONTROL.id,
-  getState() {
+  getButtonState() {
     return mdiButtonState(path.icon, {
       visible: hasViews.value,
       active: show.value,
@@ -302,16 +291,7 @@ watch([show, loading], () => control.sync());
 </script>
 
 <template>
-  <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
-  </ModuleContainer>
+  <ModuleContainer v-bind="moduleContainerProps" />
   <IdentifyResultControl
     :position="props.position"
     :control-layout="props.controlLayout"

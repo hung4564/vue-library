@@ -9,10 +9,8 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import React, { useEffect, useState } from 'react';
 
-import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
@@ -27,7 +25,7 @@ export function FullScreenControl(props: FullScreenControlProps) {
     type: props.type || 'body',
   };
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { mapId, callMap, moduleContainerProps, order } = useMap({
+  const { mapId, callMap, order } = useMap({
     ...mergedProps,
     controlId: 'mapFullscreenControl',
   });
@@ -56,14 +54,11 @@ export function FullScreenControl(props: FullScreenControlProps) {
     setIsFullscreen(isDocumentFullscreen());
   }
 
-  useRegisterMapControl(mapId, {
+  const { moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapFullscreenControl',
     panelKind: 'button',
-    buttonPosition: mergedProps.position,
-    getProps: () => ({
-      position: mergedProps.position,
-      controlLayout: mergedProps.controlLayout,
-    }),
+    from: mergedProps,
+    order,
     actions: [
       {
         type: 'mapFullscreenControl',
@@ -72,12 +67,7 @@ export function FullScreenControl(props: FullScreenControlProps) {
         },
       },
     ],
-  });
-
-  const { state, control } = useToolbarControl(mapId, mergedProps, {
-    kind: 'single',
-    id: 'mapFullscreenControl',
-    getState: () =>
+    getButtonState: () =>
       mdiButtonState(isFullscreen ? mdiFullscreenExit : mdiFullscreen, {
         visible: true,
         active: isFullscreen,
@@ -95,20 +85,5 @@ export function FullScreenControl(props: FullScreenControlProps) {
     control.sync();
   }, [isFullscreen, control]);
 
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              void control.onAction(e);
-            }}
-          />
-        ) : null
-      }
-    />
-  );
+  return <ModuleContainer {...moduleContainerProps} />;
 }

@@ -39,7 +39,10 @@ export function BasemapErrorPage() {
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <DemoHelpPanel />
-        <div className="basemap-error-note" role="status">
+        <div
+          className="basemap-error-note"
+          role="status"
+        >
           This map loads an invalid style URL so MapLibre / init failures flow
           through <code>errorHandler</code> → <code>MapErrorToast</code> (bottom
           center).

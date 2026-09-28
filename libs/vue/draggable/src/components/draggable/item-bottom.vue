@@ -52,7 +52,10 @@ useInitAction(containerId.value, itemId.value, {
 </script>
 
 <template>
-  <BottomModule :container-id="containerId" :item-id="itemId">
+  <BottomModule
+    :container-id="containerId"
+    :item-id="itemId"
+  >
     <template #title>
       <slot name="title">
         {{ title }}

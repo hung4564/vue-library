@@ -11,7 +11,10 @@ onErrorCaptured((err) => {
 <template>
   <div class="demo wide">
     <slot />
-    <div v-if="error" class="error">
+    <div
+      v-if="error"
+      class="error"
+    >
       {{ error }}
     </div>
   </div>

@@ -23,8 +23,10 @@ export {
 export type { MapDomainStoreFactory } from './map-domain-store';
 export {
   clearMapDomainStoreFactories,
+  deleteMapDomainStore,
   ensureMapDomainStore,
   hasMapDomainStoreFactory,
+  peekMapDomainStore,
   registerMapDomainStoreFactory,
 } from './map-domain-store';
 export type { MapPlatformRegistryMethod } from './map-platform-keys';

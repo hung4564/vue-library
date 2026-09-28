@@ -245,7 +245,10 @@ function toggleCornerMore(position: Position) {
 </script>
 
 <template>
-  <ModuleContainer v-if="!menuMode" v-bind="moduleContainerProps">
+  <ModuleContainer
+    v-if="!menuMode"
+    v-bind="moduleContainerProps"
+  >
     <template #btn>
       <div
         v-if="groupedButtons.length"
@@ -273,7 +276,11 @@ function toggleCornerMore(position: Position) {
             @click.stop="moreOpen = !moreOpen"
           />
         </MapControlGroupButton>
-        <div v-if="overflowOpen" :class="overflowPanelClass" role="menu">
+        <div
+          v-if="overflowOpen"
+          :class="overflowPanelClass"
+          role="menu"
+        >
           <MapControlGroupButton
             v-for="group in toolbarSplit.overflow"
             :key="group.id"
@@ -292,7 +299,10 @@ function toggleCornerMore(position: Position) {
     <slot />
   </ModuleContainer>
 
-  <div v-else class="map-toolbar-menu-hosts">
+  <div
+    v-else
+    class="map-toolbar-menu-hosts"
+  >
     <ModuleContainer
       v-for="corner in cornerData"
       :key="corner.position"

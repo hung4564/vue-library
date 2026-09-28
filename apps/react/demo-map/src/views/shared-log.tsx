@@ -58,7 +58,10 @@ export function SharedLogPage() {
               <Link to="/logging-cookbook">#/logging-cookbook</Link>
             </p>
           </div>
-          <nav className="shared-log-demo__nav" aria-label="Demo pages">
+          <nav
+            className="shared-log-demo__nav"
+            aria-label="Demo pages"
+          >
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.to}
@@ -76,7 +79,10 @@ export function SharedLogPage() {
             <ul className="shared-log-demo__list">
               {SHARED_LOG_SCENARIOS.map((item) => (
                 <li key={item.id}>
-                  <button type="button" onClick={() => void run(item.id)}>
+                  <button
+                    type="button"
+                    onClick={() => void run(item.id)}
+                  >
                     {done[item.id] ? '✓ ' : ''}
                     {item.label}
                   </button>

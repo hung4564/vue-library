@@ -16,8 +16,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
@@ -45,10 +44,7 @@ export function LanguageControl({
   ...props
 }: LanguageControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap({
-    ...mergedProps,
-    controlId: 'mapLanguageControl',
-  });
+  const { mapId, order } = useMap(mergedProps);
   const {
     trans,
     language,
@@ -145,13 +141,13 @@ export function LanguageControl({
     if (next) void applyLanguage(next);
   }, [applyLanguage, language, languageList]);
 
-  useRegisterMapControl(mapId, {
+  const { moduleContainerProps, state, control } = useMapControl(mapId, {
     id: 'mapLanguageControl',
     panelKind: 'button',
-    buttonPosition: mergedProps.position,
+    from: mergedProps,
+    order,
+    buttonSlot: 'custom',
     getProps: () => ({
-      position: mergedProps.position,
-      controlLayout: mergedProps.controlLayout,
       languages: languageList,
       defaultLanguage,
       fallbackLanguage,
@@ -162,12 +158,7 @@ export function LanguageControl({
         run: () => toggleLanguage(),
       },
     ],
-  });
-
-  const { state, control } = useToolbarControl(mapId, mergedProps, {
-    kind: 'single',
-    id: 'mapLanguageControl',
-    getState: () =>
+    getButtonState: () =>
       textButtonState(mapLanguageCodeLabel(language), {
         visible: true,
         active: true,
@@ -185,7 +176,10 @@ export function LanguageControl({
     <ModuleContainer
       {...moduleContainerProps}
       btn={
-        <MapControlGroupButton row className="button-group-hover-expand">
+        <MapControlGroupButton
+          row
+          className="button-group-hover-expand"
+        >
           {/* DOM: current first (collapsed face), then all chips. Click current → cycle. */}
           {state ? (
             <MapCommonButton

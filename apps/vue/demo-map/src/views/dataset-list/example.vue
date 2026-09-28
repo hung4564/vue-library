@@ -2,7 +2,6 @@
 import { DEMO_SAMPLE_LAYER_MENU_KEY } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
-import { loggerFactory } from '@hungpvq/shared-log';
 import {
   BaseMapCard,
   BaseMapControl,
@@ -27,7 +26,6 @@ UniversalRegistry.registerComponent(
   DEMO_SAMPLE_LAYER_MENU_KEY,
   SampleCustomMenu,
 );
-loggerFactory.enable('menu');
 const mapId = ref(getUUIDv4());
 const menuUi = reactive({
   role: 'admin' as 'admin' | 'viewer',
@@ -39,13 +37,20 @@ function onMapLoaded(map: MapSimple) {
 }
 </script>
 <template>
-  <Map @mapLoaded="onMapLoaded" :mapId="mapId">
+  <Map
+    @mapLoaded="onMapLoaded"
+    :mapId="mapId"
+  >
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <WorkerControl position="top-left" />
-    <LayerControl position="top-left" show :menu-context="menuUi">
+    <LayerControl
+      position="top-left"
+      show
+      :menu-context="menuUi"
+    >
       <template #titleList>
         <label class="menu-condition-toggle">
           <input
@@ -60,7 +65,10 @@ function onMapLoaded(map: MapSimple) {
           admin
         </label>
         <label class="menu-condition-toggle">
-          <input type="checkbox" v-model="menuUi.canUsePen" />
+          <input
+            type="checkbox"
+            v-model="menuUi.canUsePen"
+          />
           pen
         </label>
       </template>

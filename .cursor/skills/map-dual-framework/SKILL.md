@@ -149,12 +149,11 @@ Same rule as draggable demos (`draggable-semver-api`, `vue-library-overview`).
 
 `Map` prop `buttonInMobile`: `'button' | 'toolbar' | 'menu'` (default `'button'`). Resolved via `resolveControlLayout` → `ResolvedControlLayout` (`standalone` | `toolbar` | `menu`).
 
-| Value | Behavior |
-|-------|----------|
-| `button` | Corner `#btn` unchanged |
-| `toolbar` | Promote controls into one `ToolbarControl` host (except `controlLayout="button"`) |
-| `menu` | Hide per-control corner `#btn`; fan out clusters by `position` into corner stacks; outside-in More. Overflow/budget helpers live in `@hungpvq/map-core/toolbar`. |
-
+| Value     | Behavior                                                                                                                                                         |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `button`  | Corner `#btn` unchanged                                                                                                                                          |
+| `toolbar` | Promote controls into one `ToolbarControl` host (except `controlLayout="button"`)                                                                                |
+| `menu`    | Hide per-control corner `#btn`; fan out clusters by `position` into corner stacks; outside-in More. Overflow/budget helpers live in `@hungpvq/map-core/toolbar`. |
 
 Rules:
 

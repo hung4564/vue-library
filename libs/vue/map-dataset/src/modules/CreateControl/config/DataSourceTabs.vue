@@ -1,6 +1,9 @@
 <template>
   <div class="create-control-data">
-    <div class="create-control-data__tabs" role="tablist">
+    <div
+      class="create-control-data__tabs"
+      role="tablist"
+    >
       <button
         v-for="tab in tabs"
         :key="tab"
@@ -14,10 +17,22 @@
         {{ tabLabel(tab) }}
       </button>
     </div>
-    <div class="create-control-data__panel" role="tabpanel">
-      <slot v-if="activeTab === 'file'" name="file" />
-      <slot v-if="activeTab === 'raw'" name="raw" />
-      <slot v-if="activeTab === 'url'" name="url" />
+    <div
+      class="create-control-data__panel"
+      role="tabpanel"
+    >
+      <slot
+        v-if="activeTab === 'file'"
+        name="file"
+      />
+      <slot
+        v-if="activeTab === 'raw'"
+        name="raw"
+      />
+      <slot
+        v-if="activeTab === 'url'"
+        name="url"
+      />
     </div>
   </div>
 </template>

@@ -54,13 +54,13 @@ Roots → Inspect → Menus. Anonymous menus get debug-only `anon:…` ids (`idG
 
 ## Stable API
 
-| Export | Role |
-|--------|------|
-| `installDevtools` | Bootstrap log adapter + global error capture |
-| `uninstallDevtools` | Remove global error capture |
-| `Devtools` | Map control + popup (mount inside `<Map>`) |
-| `DevtoolsControl` | Same as `Devtools` |
-| `DEVTOOLS_CONTROL` | `{ id: 'mapDevtools' }` |
+| Export              | Role                                         |
+| ------------------- | -------------------------------------------- |
+| `installDevtools`   | Bootstrap log adapter + global error capture |
+| `uninstallDevtools` | Remove global error capture                  |
+| `Devtools`          | Map control + popup (mount inside `<Map>`)   |
+| `DevtoolsControl`   | Same as `Devtools`                           |
+| `DEVTOOLS_CONTROL`  | `{ id: 'mapDevtools' }`                      |
 
 Experimental root exports (store helpers / hooks such as `useDevtoolState`, `getDevtoolState`, …) may change in a minor — see [Stable API](../../map-core/core/docs/core/stable-api.md) and `public-api.spec.ts`.
 

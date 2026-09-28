@@ -6,7 +6,10 @@
     <MeasurementControl position="top-right" />
     <ComponentManagementControl />
 
-    <LayerControl position="top-left" show>
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId: mid }">
         <BaseMapCard :mapId="mid" />
       </template>
@@ -37,7 +40,10 @@
 
     <IdentifyShowFirstControl />
 
-    <RegistryControl position="top-right" show />
+    <RegistryControl
+      position="top-right"
+      show
+    />
     <DemoHelpPanel />
   </Map>
 </template>

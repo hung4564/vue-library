@@ -1,6 +1,10 @@
 <template>
   <div class="mgmt-groups">
-    <ItemList :items="items" :itemShows="itemShows" :containerId="containerId">
+    <ItemList
+      :items="items"
+      :itemShows="itemShows"
+      :containerId="containerId"
+    >
       <template #extra="{ item, show }">
         <drag-button
           @click.stop="onHighLight(item)"

@@ -11,8 +11,15 @@ const drawerSize = ref(300);
 </script>
 
 <template>
-  <DraggableContainer containerId="demo-drawer" class="demo-page">
-    <DraggableItemSideBar show title="Controls" location="left">
+  <DraggableContainer
+    containerId="demo-drawer"
+    class="demo-page"
+  >
+    <DraggableItemSideBar
+      show
+      title="Controls"
+      location="left"
+    >
       <div class="panel">
         <h2>Drawer demo</h2>
         <p>

@@ -50,12 +50,7 @@ function handleClick() {
 ### React
 
 ```tsx
-import {
-  ModuleContainer,
-  MapControlButton,
-  defaultMapProps,
-  useMap,
-} from '@hungpvq/react-map-core';
+import { ModuleContainer, MapControlButton, defaultMapProps, useMap } from '@hungpvq/react-map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
 
 type Props = WithMapPropType & {
@@ -114,20 +109,32 @@ function toggleControl() {
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <MapControlButton @click="toggleControl" :class="{ 'bg-blue-500 text-white': isActive }">
+      <MapControlButton
+        @click="toggleControl"
+        :class="{ 'bg-blue-500 text-white': isActive }"
+      >
         <span class="text-lg">⚙️</span>
       </MapControlButton>
     </template>
 
-    <div v-if="isActive" class="p-4 bg-white rounded shadow">
+    <div
+      v-if="isActive"
+      class="p-4 bg-white rounded shadow"
+    >
       <h3 class="font-bold mb-2">Settings</h3>
       <div class="space-y-2">
         <label class="flex items-center">
-          <input type="checkbox" class="mr-2" />
+          <input
+            type="checkbox"
+            class="mr-2"
+          />
           Show labels
         </label>
         <label class="flex items-center">
-          <input type="checkbox" class="mr-2" />
+          <input
+            type="checkbox"
+            class="mr-2"
+          />
           Show grid
         </label>
       </div>
@@ -140,12 +147,7 @@ function toggleControl() {
 
 ```tsx
 import { useState } from 'react';
-import {
-  ModuleContainer,
-  MapControlButton,
-  defaultMapProps,
-  useMap,
-} from '@hungpvq/react-map-core';
+import { ModuleContainer, MapControlButton, defaultMapProps, useMap } from '@hungpvq/react-map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
 
 function SettingsControl(props: WithMapPropType) {
@@ -174,11 +176,17 @@ function SettingsControl(props: WithMapPropType) {
           <h3 className="font-bold mb-2">Settings</h3>
           <div className="space-y-2">
             <label className="flex items-center">
-              <input type="checkbox" className="mr-2" />
+              <input
+                type="checkbox"
+                className="mr-2"
+              />
               Show labels
             </label>
             <label className="flex items-center">
-              <input type="checkbox" className="mr-2" />
+              <input
+                type="checkbox"
+                className="mr-2"
+              />
               Show grid
             </label>
           </div>
@@ -259,12 +267,25 @@ function addCustomMarker() {
       </MapControlButton>
     </template>
 
-    <div v-if="isVisible" class="p-4 bg-white rounded shadow min-w-48">
+    <div
+      v-if="isVisible"
+      class="p-4 bg-white rounded shadow min-w-48"
+    >
       <h3 class="font-bold mb-3">Layer Control</h3>
       <div class="space-y-3">
-        <button @click="toggleLayer" class="w-full px-3 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">Toggle Custom Layer</button>
+        <button
+          @click="toggleLayer"
+          class="w-full px-3 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Toggle Custom Layer
+        </button>
 
-        <button @click="addCustomMarker" class="w-full px-3 py-2 text-sm bg-green-500 text-white rounded hover:bg-green-600">Add Marker</button>
+        <button
+          @click="addCustomMarker"
+          class="w-full px-3 py-2 text-sm bg-green-500 text-white rounded hover:bg-green-600"
+        >
+          Add Marker
+        </button>
       </div>
     </div>
   </ModuleContainer>
@@ -275,12 +296,7 @@ function addCustomMarker() {
 
 ```tsx
 import { useState } from 'react';
-import {
-  ModuleContainer,
-  MapControlButton,
-  defaultMapProps,
-  useMap,
-} from '@hungpvq/react-map-core';
+import { ModuleContainer, MapControlButton, defaultMapProps, useMap } from '@hungpvq/react-map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
 
 function LayerControl(props: WithMapPropType) {
@@ -406,7 +422,14 @@ function onToggleShow() {
       </MapControlButton>
     </template>
     <template #draggable="draggableProps">
-      <DraggableItemPopup v-if="showPopup" v-bind="draggableProps" v-model:show="showPopup" :title="'Draggable Popup'" :width="400" :height="300">
+      <DraggableItemPopup
+        v-if="showPopup"
+        v-bind="draggableProps"
+        v-model:show="showPopup"
+        :title="'Draggable Popup'"
+        :width="400"
+        :height="300"
+      >
         <div style="padding: 16px;">This is a draggable popup inside a custom map control.</div>
       </DraggableItemPopup>
     </template>
@@ -418,12 +441,7 @@ function onToggleShow() {
 
 ```tsx
 import { useState } from 'react';
-import {
-  ModuleContainer,
-  MapControlButton,
-  defaultMapProps,
-  useMap,
-} from '@hungpvq/react-map-core';
+import { ModuleContainer, MapControlButton, defaultMapProps, useMap } from '@hungpvq/react-map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 
@@ -454,9 +472,7 @@ function DraggablePopupControl(props: WithMapPropType) {
             height={300}
             {...draggableProps}
           >
-            <div style={{ padding: 16 }}>
-              This is a draggable popup inside a custom map control.
-            </div>
+            <div style={{ padding: 16 }}>This is a draggable popup inside a custom map control.</div>
           </DraggableItemPopup>
         ) : null
       }

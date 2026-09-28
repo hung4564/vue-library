@@ -29,14 +29,14 @@ installMapApp();
 
 ## What you still import from domain packages
 
-| Need | Package |
-|------|---------|
-| `Map`, controls, hooks | `@hungpvq/react-map-core` |
-| `LayerControl`, dataset UI hooks | `@hungpvq/react-map-dataset` |
-| `getMap`, theme, measurement APIs | `@hungpvq/map-core` (+ `/<domain>` subpaths) |
-| `createGeoJsonDataset`, identify, … | `@hungpvq/map-dataset` (+ subpaths) |
-| Draw / edit | `@hungpvq/react-map-draw` + `@hungpvq/map-draw` (separate install) |
-| Devtools | `@hungpvq/react-map-devtools` (separate install) |
+| Need                                | Package                                                            |
+| ----------------------------------- | ------------------------------------------------------------------ |
+| `Map`, controls, hooks              | `@hungpvq/react-map-core`                                          |
+| `LayerControl`, dataset UI hooks    | `@hungpvq/react-map-dataset`                                       |
+| `getMap`, theme, measurement APIs   | `@hungpvq/map-core` (+ `/<domain>` subpaths)                       |
+| `createGeoJsonDataset`, identify, … | `@hungpvq/map-dataset` (+ subpaths)                                |
+| Draw / edit                         | `@hungpvq/react-map-draw` + `@hungpvq/map-draw` (separate install) |
+| Devtools                            | `@hungpvq/react-map-devtools` (separate install)                   |
 
 Meta does **not** re-export every component — it is an install bag + bootstrap facade.
 

@@ -8,7 +8,10 @@
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <DemoHelpPanel />
-    <div class="basemap-error-note" role="status">
+    <div
+      class="basemap-error-note"
+      role="status"
+    >
       This map loads an invalid style URL so MapLibre / init failures flow
       through
       <code>errorHandler</code> → <code>MapErrorToast</code> (bottom center).

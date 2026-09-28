@@ -31,7 +31,11 @@
           :aria-label="trans('map.basemap.remove')"
           @click.stop="onRemoveCurrent"
         >
-          <SvgIcon type="mdi" :path="path.remove" size="18" />
+          <SvgIcon
+            type="mdi"
+            :path="path.remove"
+            size="18"
+          />
         </button>
       </div>
       <div class="base-map-card__select">
@@ -47,7 +51,10 @@
           @update:modelValue="onChangeBaseMap"
         />
       </div>
-      <div v-if="showOpacity" class="base-map-card__opacity">
+      <div
+        v-if="showOpacity"
+        class="base-map-card__opacity"
+      >
         <div class="base-map-card__opacity-label">
           {{ trans('map.basemap.opacity') }}
         </div>
@@ -56,7 +63,11 @@
           :aria-label="trans('map.basemap.opacity')"
         />
       </div>
-      <div v-if="allowAddBasemap" class="base-map-card__add" @click.stop>
+      <div
+        v-if="allowAddBasemap"
+        class="base-map-card__add"
+        @click.stop
+      >
         <MapControlButton
           variant="text"
           size="small"
@@ -64,7 +75,11 @@
           :aria-label="trans('map.basemap.add')"
           @click="showAddForm = true"
         >
-          <SvgIcon type="mdi" :path="path.add" size="16" />
+          <SvgIcon
+            type="mdi"
+            :path="path.add"
+            size="16"
+          />
           {{ trans('map.basemap.add') }}
         </MapControlButton>
       </div>

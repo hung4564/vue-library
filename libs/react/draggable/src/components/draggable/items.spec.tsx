@@ -74,7 +74,12 @@ async function renderItem(
   });
   const result = render(
     <ContainerProvider containerId={containerId}>
-      <Item show title="T" containerId={containerId} {...props} />
+      <Item
+        show
+        title="T"
+        containerId={containerId}
+        {...props}
+      />
     </ContainerProvider>,
   );
   await waitFor(() => {
@@ -134,8 +139,18 @@ describe('Stable item shells register into store', () => {
     });
     const { unmount } = render(
       <ContainerProvider containerId={CID}>
-        <DraggableItemBottom id="bot-a" show title="A" containerId={CID} />
-        <DraggableItemBottom id="bot-b" show title="B" containerId={CID} />
+        <DraggableItemBottom
+          id="bot-a"
+          show
+          title="A"
+          containerId={CID}
+        />
+        <DraggableItemBottom
+          id="bot-b"
+          show
+          title="B"
+          containerId={CID}
+        />
       </ContainerProvider>,
     );
     await waitFor(() => {

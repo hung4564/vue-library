@@ -5,7 +5,6 @@ import {
 } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
-import { loggerFactory } from '@hungpvq/shared-log';
 import {
   BaseMapCard,
   BaseMapControl,
@@ -26,8 +25,6 @@ import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { loadHighlightDemoDatasets } from '../../data/loaders';
 import AsideControl from '../../layout/aside-control.vue';
 
-loggerFactory.enable('map:highlight');
-loggerFactory.enable('demo:highlight');
 const mapId = ref(getUUIDv4());
 const hl = useMapHighlight(mapId.value);
 
@@ -49,17 +46,26 @@ function onMapLoaded(map: MapSimple) {
 }
 </script>
 <template>
-  <Map @mapLoaded="onMapLoaded" :mapId="mapId">
+  <Map
+    @mapLoaded="onMapLoaded"
+    :mapId="mapId"
+  >
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
-    <LayerControl position="top-left" show>
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId }">
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerControl>
-    <IdentifyControl position="top-right" immediately />
+    <IdentifyControl
+      position="top-right"
+      immediately
+    />
     <ComponentManagementControl />
     <ZoomControl />
     <DemoHelpPanel />

@@ -7,12 +7,12 @@
 
 ## Props
 
-| Prop              | Description | Type      | Required | Default Value |
-| ----------------- | ----------- | --------- | -------- | ------------- |
-| `mapId`           | Map identifier | `string` | yes      | —             |
-| `title`           |             | `string`  | `false`  | ``            |
-| `showOpacity`     | Show opacity slider | `boolean` | `false` | `false` |
-| `allowAddBasemap` | Show **Add basemap**; removable (custom) current items show × on the thumbnail | `boolean` | `false` | `false` |
+| Prop              | Description                                                                    | Type      | Required | Default Value |
+| ----------------- | ------------------------------------------------------------------------------ | --------- | -------- | ------------- |
+| `mapId`           | Map identifier                                                                 | `string`  | yes      | —             |
+| `title`           |                                                                                | `string`  | `false`  | ``            |
+| `showOpacity`     | Show opacity slider                                                            | `boolean` | `false`  | `false`       |
+| `allowAddBasemap` | Show **Add basemap**; removable (custom) current items show × on the thumbnail | `boolean` | `false`  | `false`       |
 
 ## Events
 
@@ -35,7 +35,10 @@ const baseMaps = [];
 <template>
   <Map>
     <BaseMapControl :baseMaps="baseMaps" />
-    <BaseMapCard show-opacity allow-add-basemap />
+    <BaseMapCard
+      show-opacity
+      allow-add-basemap
+    />
   </Map>
 </template>
 ```
@@ -50,6 +53,10 @@ const baseMaps = [];
 
 <Map>
   <BaseMapControl baseMaps={baseMaps} />
-  <BaseMapCard mapId="map" showOpacity allowAddBasemap />
-</Map>
+  <BaseMapCard
+    mapId="map"
+    showOpacity
+    allowAddBasemap
+  />
+</Map>;
 ```

@@ -37,7 +37,10 @@ export function ConfigRasterSettings({
         </div>
       ) : null}
       {['minx', 'miny', 'maxx', 'maxy'].map((key, i) => (
-        <div key={key} className="map-col-6">
+        <div
+          key={key}
+          className="map-col-6"
+        >
           <InputText
             label={trans(`map.layer-control.field.bound.${key}`)}
             value={String(bounds[i] ?? '')}

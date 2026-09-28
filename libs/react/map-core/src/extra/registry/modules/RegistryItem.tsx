@@ -24,5 +24,10 @@ export function RegistryItem({
     ? (getComponent(componentKey) ?? defaultComponent)
     : defaultComponent;
   if (!Comp) return null;
-  return <Comp mapId={mapId} {...rest} />;
+  return (
+    <Comp
+      mapId={mapId}
+      {...rest}
+    />
+  );
 }

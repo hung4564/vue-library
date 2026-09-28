@@ -57,7 +57,10 @@ export function LoggingCookbookPage() {
           <ul className="logging-cookbook__list">
             {COOKBOOK_CHECKLIST.map((item) => (
               <li key={item.id}>
-                <button type="button" onClick={() => void run(item.id)}>
+                <button
+                  type="button"
+                  onClick={() => void run(item.id)}
+                >
                   {done[item.id] ? '✓ ' : ''}
                   {item.label}
                 </button>
@@ -70,7 +73,10 @@ export function LoggingCookbookPage() {
           ) : null}
         </aside>
         <div className="logging-cookbook__map">
-          <Map mapId={mapId} onMapLoaded={onMapLoaded}>
+          <Map
+            mapId={mapId}
+            onMapLoaded={onMapLoaded}
+          >
             <DevtoolsControl position="bottom-right" />
             <DemoLanguageControl />
             <AsideControl position="top-left" />

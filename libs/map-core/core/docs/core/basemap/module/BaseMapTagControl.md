@@ -57,5 +57,5 @@ const baseMaps = [];
 
 <Map>
   <BaseMapTagControl baseMaps={baseMaps} />
-</Map>
+</Map>;
 ```

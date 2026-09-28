@@ -3,12 +3,7 @@
 Import from `@hungpvq/map-dataset` or `@hungpvq/vue-map-dataset`.
 
 ```typescript
-import {
-  traverseTree,
-  findAllComponentsByType,
-  findPartByType,
-  findRoot,
-} from '@hungpvq/map-dataset';
+import { traverseTree, findAllComponentsByType, findPartByType, findRoot } from '@hungpvq/map-dataset';
 
 traverseTree(root, (node, level) => {
   console.info(node.getName(), level);

@@ -13,10 +13,17 @@
     </div>
     <span>{{ 'name' in item ? item.name : 'Add to group' }}</span>
     <div class="layer-context-menu__chevron">
-      <SvgIcon size="16" type="mdi" :path="mdiChevronRight" />
+      <SvgIcon
+        size="16"
+        type="mdi"
+        :path="mdiChevronRight"
+      />
     </div>
     <ul class="context-menu layer-context-menu layer-context-menu--submenu">
-      <template v-for="(child, index) in children" :key="child.id || index">
+      <template
+        v-for="(child, index) in children"
+        :key="child.id || index"
+      >
         <li
           v-if="child.type === 'divider'"
           class="layer-context-menu__item layer-context-menu__divider"

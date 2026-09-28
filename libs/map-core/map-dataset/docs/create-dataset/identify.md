@@ -12,11 +12,11 @@ When `hitAction` is `table`, Identify opens AttributeTable and selects rows by s
 
 Shared `FallbackResolver` pipeline for **single** and **merge** (`resolveIdentifyFeatures` → `Feature[]`):
 
-0. Dedupe MapLibre hits by primary id: `field_id` → `_id` → `feature.id` → `id`  
-1. Identify `getFeature?` → always return `Feature[]` (or `null` to fall through)  
-   - 1 hit: `{ feature, source, id }`  
-   - ≥2 hits / merge: `{ features, source, ids }`  
-2. Else match **GeoJSON source** Feature by `field_id` / `_id`  
+0. Dedupe MapLibre hits by primary id: `field_id` → `_id` → `feature.id` → `id`
+1. Identify `getFeature?` → always return `Feature[]` (or `null` to fall through)
+   - 1 hit: `{ feature, source, id }`
+   - ≥2 hits / merge: `{ features, source, ids }`
+2. Else match **GeoJSON source** Feature by `field_id` / `_id`
 3. Else MapLibre `queryRenderedFeatures` geometry (may drift with zoom)
 
 Row `id` uses the same primary-id order so Identify ↔ AttributeTable stay aligned when sources use `promoteId: '_id'`.
@@ -57,11 +57,7 @@ identify.addMenus([
 ]);
 
 // Several identify nodes share one query
-const identifyMerged = createIdentifyMapboxMergedComponent(
-  'merge identify',
-  { field_id: 'id', field_name: 'name' },
-  'name-group-merge',
-);
+const identifyMerged = createIdentifyMapboxMergedComponent('merge identify', { field_id: 'id', field_name: 'name' }, 'name-group-merge');
 ```
 
 ## Builder
@@ -81,16 +77,16 @@ const identify = createDatasetPartIdentifyComponentBuilder('My identify')
 createDatasetPartIdentifyComponentBuilder('merged').isUseMerge('mapbox-group').build();
 ```
 
-| Method | Role |
-| --- | --- |
-| `configFieldId` / `configFieldName` | Property names on the feature |
-| `setConfigFields` | Columns for show-detail |
-| `setGroup` | Group in the identify panel |
-| `isUseMerge(id?)` | Merged query (`id` default `'mapbox-group'`) |
-| `onSingle(action)` | UI when exactly one feature is hit (`detail` \| `table` \| `result` \| `auto`) |
-| `onMultiple(action)` | UI when multiple features are hit (`detail` = first/top feature) |
-| `setGetFeature(fn)` | Geometry enrichment (`Feature[]`); see below |
-| `addMenu` / `addMenus` | Actions on each result |
+| Method                              | Role                                                                           |
+| ----------------------------------- | ------------------------------------------------------------------------------ |
+| `configFieldId` / `configFieldName` | Property names on the feature                                                  |
+| `setConfigFields`                   | Columns for show-detail                                                        |
+| `setGroup`                          | Group in the identify panel                                                    |
+| `isUseMerge(id?)`                   | Merged query (`id` default `'mapbox-group'`)                                   |
+| `onSingle(action)`                  | UI when exactly one feature is hit (`detail` \| `table` \| `result` \| `auto`) |
+| `onMultiple(action)`                | UI when multiple features are hit (`detail` = first/top feature)               |
+| `setGetFeature(fn)`                 | Geometry enrichment (`Feature[]`); see below                                   |
+| `addMenu` / `addMenus`              | Actions on each result                                                         |
 
 ```ts
 createDatasetPartIdentifyComponentBuilder('API identify')
@@ -112,31 +108,24 @@ createDatasetPartIdentifyComponentBuilder('API identify')
 
 IdentifyControl passes `singleLayer: true` when the layer filter (InputSelect / layer-item) scopes to one identify node. Hit UI uses `resolveIdentifyHitAction`:
 
-| Mode | Typical UI |
-| --- | --- |
+| Mode                                         | Typical UI                                                                          |
+| -------------------------------------------- | ----------------------------------------------------------------------------------- |
 | `onSingle` / `onMultiple` = `auto` (default) | Legacy: show-detail (1 feature, single layer) or attribute table; else result panel |
-| Explicit `detail` / `table` / `result` | Force that UI when menus exist (`detail` on multi opens first feature) |
-| All layers (no single-layer scope) | Usually result panel unless node policy forces detail/table |
+| Explicit `detail` / `table` / `result`       | Force that UI when menus exist (`detail` on multi opens first feature)              |
+| All layers (no single-layer scope)           | Usually result panel unless node policy forces detail/table                         |
 
 Policy when several identify nodes hit: use the **first** non-empty record’s config.
 
 Per identify (builder):
 
 ```ts
-createDatasetPartIdentifyComponentBuilder('My layer')
-  .onSingle('table')
-  .onMultiple('result')
-  .build();
+createDatasetPartIdentifyComponentBuilder('My layer').onSingle('table').onMultiple('result').build();
 ```
 
 ### Resolver override (UI)
 
 ```ts
-import {
-  createDefaultIdentifyResolver,
-  setGlobalIdentifyResolver,
-  setIdentifyResolver,
-} from '@hungpvq/map-dataset/identify';
+import { createDefaultIdentifyResolver, setGlobalIdentifyResolver, setIdentifyResolver } from '@hungpvq/map-dataset/identify';
 
 setGlobalIdentifyResolver(createDefaultIdentifyResolver());
 setIdentifyResolver(mapId, createDefaultIdentifyResolver());
@@ -153,13 +142,7 @@ await getHighlightResolver(mapId).execute({ mapId, records, signal });
 Default: one feature → paint (`source: 'identify'`); multi / empty → clear. AttributeTable uses `getHighlightResolver(mapId).execute` with `source: 'attribute-table'`.
 
 ```ts
-import {
-  createDefaultHighlightResolver,
-  setGlobalHighlightResolver,
-  setHighlightResolver,
-  getHighlightResolver,
-  highlightResolver,
-} from '@hungpvq/map-dataset/identify';
+import { createDefaultHighlightResolver, setGlobalHighlightResolver, setHighlightResolver, getHighlightResolver, highlightResolver } from '@hungpvq/map-dataset/identify';
 
 setGlobalHighlightResolver(createDefaultHighlightResolver());
 setHighlightResolver(mapId, createDefaultHighlightResolver()); // null clears
@@ -172,22 +155,19 @@ Registry keys: global `map:core:meta.registries['highlight-resolver']`; per-map 
 
 After MapLibre hit-test (and id dedupe), Identify resolves each hit to a GeoJSON `Feature` via `FallbackResolver`:
 
-1. Optional `getFeature` on the Identify node  
-2. Sibling GeoJSON **source** (match by `field_id` / `_id`)  
+1. Optional `getFeature` on the Identify node
+2. Sibling GeoJSON **source** (match by `field_id` / `_id`)
 3. MapLibre rendered geometry
 
 **Always return `Feature[]`** (or `null` / `undefined` to skip to source). Query shape:
 
-| Hits | Query | Return |
-| --- | --- | --- |
-| 1 | `{ feature, source, id }` | `Feature[]` (usually length 1) |
+| Hits             | Query                       | Return                                     |
+| ---------------- | --------------------------- | ------------------------------------------ |
+| 1                | `{ feature, source, id }`   | `Feature[]` (usually length 1)             |
 | ≥2 / merge group | `{ features, source, ids }` | `Feature[]` parallel to `features` / `ids` |
 
 ```ts
-import {
-  createIdentifyMapboxComponent,
-  createDatasetPartIdentifyComponentBuilder,
-} from '@hungpvq/map-dataset/identify';
+import { createIdentifyMapboxComponent, createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
 
 createIdentifyMapboxComponent(
   'Identify',
@@ -239,10 +219,7 @@ const a = createDatasetPartIdentifyComponentBuilder('A').isUseMerge(groupId).bui
 const b = createDatasetPartIdentifyComponentBuilder('B').isUseMerge(groupId).build();
 
 const original = a.getMergedFeatures.bind(a);
-const withApi = async (
-  identifies: Parameters<typeof original>[0],
-  payload: Parameters<typeof original>[1],
-) => {
+const withApi = async (identifies: Parameters<typeof original>[0], payload: Parameters<typeof original>[1]) => {
   await new Promise((r) => setTimeout(r, 1000));
   const rows = await original(identifies, payload);
   return rows.map((row: { feature: { data?: Record<string, unknown> } }) => ({

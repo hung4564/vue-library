@@ -27,7 +27,10 @@ export function TreeItem({ label, data, depth = 0 }: TreeItemProps) {
 
   return (
     <div className="tree-item">
-      <div className="tree-item__row" onClick={toggle}>
+      <div
+        className="tree-item__row"
+        onClick={toggle}
+      >
         {canExpand ? (
           <span
             className={`tree-item__toggle${isOpen ? ' tree-item__toggle--open' : ''}`}

@@ -2,20 +2,20 @@
 
 Debug panel for map apps: **Store**, **Logs**, **Errors**, and **Dataset** (Inspect + Menus).
 
-| Package | Bootstrap | Panel |
-|---------|-----------|-------|
-| `@hungpvq/vue-map-devtools` | `installDevtools()` | Mount `<Devtools />` **inside** `<Map>` |
+| Package                       | Bootstrap           | Panel                                   |
+| ----------------------------- | ------------------- | --------------------------------------- |
+| `@hungpvq/vue-map-devtools`   | `installDevtools()` | Mount `<Devtools />` **inside** `<Map>` |
 | `@hungpvq/react-map-devtools` | `installDevtools()` | Mount `<Devtools />` **inside** `<Map>` |
 
 Both packages export `./style.css` (imports shared chrome from `@hungpvq/map-debug`). Peers include `@hungpvq/map-core`, the matching framework map-core / map-devtools peers (`@hungpvq/vue-draggable` or `@hungpvq/react-draggable`), and `@hungpvq/shared-log`. When `map-dataset` is present, `installDevtools()` also installs `@hungpvq/map-debug/dataset` (canonical pin `map:debug.dataset`; F12 alias `window.__hungpvqDatasetDebug`).
 
 ## Dataset tab
 
-| Pane | Role |
-|------|------|
-| Roots | Pick / pin a dataset from the store tree |
-| Inspect | Node hierarchy, fields, find-by-type |
-| Menus | Resolved menus by placement + detail JSON |
+| Pane    | Role                                      |
+| ------- | ----------------------------------------- |
+| Roots   | Pick / pin a dataset from the store tree  |
+| Inspect | Node hierarchy, fields, find-by-type      |
+| Menus   | Resolved menus by placement + detail JSON |
 
 Menus without `id` show generated debug keys (`anon:…:<index>`, `idGenerated`). Selection is summary-based so anonymous items stay clickable. Shared layout/CSS is owned by `@hungpvq/map-debug` (SoT); Vue/React only host the UI.
 
@@ -59,12 +59,12 @@ installDevtools();
 
 Config and live instances live on **`getMapDebugStore()`** (`MAP_DEBUG_STORE_KEY = 'map:debug'`):
 
-| Field | Role |
-|-------|------|
+| Field             | Role                                                                                             |
+| ----------------- | ------------------------------------------------------------------------------------------------ |
 | `logStoreOptions` | Config before first create (`kind`, `limit` for memory only, `dbName` / `storeName`, or `store`) |
-| `logDataStore` | Live `LogDataStore` (created once) |
-| `logAdapter` | `DataStoreLogAdapter` wired to that store |
-| `logStoreUnsub` | Subscribe handle for UI mirror |
+| `logDataStore`    | Live `LogDataStore` (created once)                                                               |
+| `logAdapter`      | `DataStoreLogAdapter` wired to that store                                                        |
+| `logStoreUnsub`   | Subscribe handle for UI mirror                                                                   |
 
 **Default:** uncapped `IndexedDBLogDataStore` (indexes on `actionId` + `namespace`).  
 **Memory:** `logStore: 'memory'` — ring buffer; `limit` applies only here (default `10_000`).  
@@ -83,13 +83,13 @@ Logs tab **Refresh** re-reads the store (`refreshDevtoolLogsFromStore`) with sho
 
 ## Stable API
 
-| Export | Notes |
-|--------|-------|
-| `Devtools` | Map control + `DraggableItemPopup` (mount inside `<Map>`) |
-| `DevtoolsControl` | Explicit map-control popup (same as `Devtools`) |
-| `DEVTOOLS_CONTROL` | `{ id: 'mapDevtools' }` |
-| `installDevtools` / `uninstallDevtools` | Bootstrap (`installDevtools({ logStore })` optional) |
-| `setDevtoolOpen` / `toggleDevtoolOpen` / `openMapDevtoolsErrors` | Open helpers |
+| Export                                                           | Notes                                                     |
+| ---------------------------------------------------------------- | --------------------------------------------------------- |
+| `Devtools`                                                       | Map control + `DraggableItemPopup` (mount inside `<Map>`) |
+| `DevtoolsControl`                                                | Explicit map-control popup (same as `Devtools`)           |
+| `DEVTOOLS_CONTROL`                                               | `{ id: 'mapDevtools' }`                                   |
+| `installDevtools` / `uninstallDevtools`                          | Bootstrap (`installDevtools({ logStore })` optional)      |
+| `setDevtoolOpen` / `toggleDevtoolOpen` / `openMapDevtoolsErrors` | Open helpers                                              |
 
 Runtime lock: `public-api.spec.ts` in each adapter package. Experimental core helpers: `@hungpvq/map-core/devtools` (`configureDevtoolLogStore`, `getMapDebugStore`, `getDevtoolLogDataStore`, …).
 

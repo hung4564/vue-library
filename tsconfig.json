@@ -1,10 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "compileOnSave": false,
-  "files": [
-    "./types/shims/turf-turf.d.ts",
-    "./types/shims/vue-deps.d.ts"
-  ],
+  "files": ["./types/shims/turf-turf.d.ts", "./types/shims/vue-deps.d.ts"],
   "references": [
     { "path": "./apps/react/demo-draggable" },
     { "path": "./apps/react/demo-map" },

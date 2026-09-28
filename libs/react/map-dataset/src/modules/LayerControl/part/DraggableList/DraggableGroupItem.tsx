@@ -106,7 +106,10 @@ export function DraggableGroupItem({
       aria-expanded={isGroupShow}
       aria-label={layerGroup.name}
     >
-      <ListItem disabledDrag={disabledDrag} className="draggable-group__item">
+      <ListItem
+        disabledDrag={disabledDrag}
+        className="draggable-group__item"
+      >
         <div className="draggable-group__info">
           {editing ? (
             <input
@@ -149,7 +152,10 @@ export function DraggableGroupItem({
                   startRename();
                 }}
               >
-                <Icon path={mdiPencil} size={ICON_SIZE} />
+                <Icon
+                  path={mdiPencil}
+                  size={ICON_SIZE}
+                />
               </MapControlButton>
             ) : null}
             {!readonly && hasChildren && (
@@ -159,7 +165,10 @@ export function DraggableGroupItem({
                 variant="plain"
                 size="small"
               >
-                <Icon path={mdiUngroup} size={ICON_SIZE} />
+                <Icon
+                  path={mdiUngroup}
+                  size={ICON_SIZE}
+                />
               </MapControlButton>
             )}
             {!readonly && (
@@ -169,7 +178,10 @@ export function DraggableGroupItem({
                 variant="plain"
                 size="small"
               >
-                <Icon path={mdiDelete} size={ICON_SIZE} />
+                <Icon
+                  path={mdiDelete}
+                  size={ICON_SIZE}
+                />
               </MapControlButton>
             )}
             <MapControlButton

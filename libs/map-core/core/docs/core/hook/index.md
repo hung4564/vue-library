@@ -66,7 +66,10 @@ const { isShow, toggle, show, hide } = useShow();
 </script>
 
 <template>
-  <div v-if="isShow" class="map-control">
+  <div
+    v-if="isShow"
+    class="map-control"
+  >
     <button @click="toggle">Toggle</button>
     <button @click="show">Show</button>
     <button @click="hide">Hide</button>
@@ -95,10 +98,10 @@ function Panel() {
 
 ### useShow Return Values
 
-| Framework | Return | Description |
-| --------- | ------ | ----------- |
-| Vue | `{ isShow, toggle, show, hide }` | Reactive visibility helpers |
-| React | `[show, toggleShow]` | `useState`-style tuple; `toggleShow()` flips, `toggleShow(true\|false)` sets |
+| Framework | Return                           | Description                                                                  |
+| --------- | -------------------------------- | ---------------------------------------------------------------------------- |
+| Vue       | `{ isShow, toggle, show, hide }` | Reactive visibility helpers                                                  |
+| React     | `[show, toggleShow]`             | `useState`-style tuple; `toggleShow()` flips, `toggleShow(true\|false)` sets |
 
 ## Hook Usage Examples
 

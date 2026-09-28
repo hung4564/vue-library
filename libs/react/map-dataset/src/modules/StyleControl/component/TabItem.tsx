@@ -43,10 +43,16 @@ export function TabItem({
       disabled={disabled}
       variant="text"
     >
-      <div className="tab-item-title" title={String(text ?? '')}>
+      <div
+        className="tab-item-title"
+        title={String(text ?? '')}
+      >
         {String(text ?? '')}
       </div>
-      <div className="tab-item-sub-title" title={String(defaultShowInItem)}>
+      <div
+        className="tab-item-sub-title"
+        title={String(defaultShowInItem)}
+      >
         {Label ? (
           <Label
             {...labelProps}

@@ -7,8 +7,15 @@ import {
 
 export function FloatPage() {
   return (
-    <DraggableContainer containerId="demo-float" className="demo-page">
-      <DraggableItemSideBar show title="Controls" location="left">
+    <DraggableContainer
+      containerId="demo-float"
+      className="demo-page"
+    >
+      <DraggableItemSideBar
+        show
+        title="Controls"
+        location="left"
+      >
         <div className="panel">
           <h2>Float demo</h2>
           <p>Floating panels with optional bottom header and order controls.</p>

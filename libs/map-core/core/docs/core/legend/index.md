@@ -76,7 +76,7 @@ function onMapLoaded(map: any) {
 
 <Map onMapLoaded={onMapLoaded}>
   <LegendControl position="bottom-right" />
-</Map>
+</Map>;
 ```
 
 ## 🚀 Usage
@@ -87,7 +87,10 @@ function onMapLoaded(map: any) {
 
 ```vue
 <template>
-  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
+  <Map
+    :mapId="mapId"
+    @mapLoaded="onMapLoaded"
+  >
     <!-- Core controls -->
     <ZoomControl position="top-right" />
     <HomeControl position="top-right" />
@@ -109,11 +112,14 @@ import { LegendControl } from '@hungpvq/vue-map-core';
 import { Map, ZoomControl, HomeControl, LegendControl } from '@hungpvq/react-map-core';
 import '@hungpvq/react-map-core/style.css';
 
-<Map mapId={mapId} onMapLoaded={onMapLoaded}>
+<Map
+  mapId={mapId}
+  onMapLoaded={onMapLoaded}
+>
   <ZoomControl position="top-right" />
   <HomeControl position="top-right" />
   <LegendControl position="bottom-right" />
-</Map>
+</Map>;
 ```
 
 ### With Layer Management
@@ -122,8 +128,14 @@ import '@hungpvq/react-map-core/style.css';
 
 ```vue
 <template>
-  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
-    <LayerControl position="top-left" show>
+  <Map
+    :mapId="mapId"
+    @mapLoaded="onMapLoaded"
+  >
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId }">
         <!-- MapLegendCard is not available, use LegendControl instead -->
       </template>
@@ -147,14 +159,17 @@ import { LayerControl } from '@hungpvq/react-map-dataset';
 import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
 
-<Map mapId={mapId} onMapLoaded={onMapLoaded}>
+<Map
+  mapId={mapId}
+  onMapLoaded={onMapLoaded}
+>
   <LayerControl
     position="top-left"
     show
     endList={({ mapId }) => null}
   />
   <LegendControl position="bottom-right" />
-</Map>
+</Map>;
 ```
 
 ---

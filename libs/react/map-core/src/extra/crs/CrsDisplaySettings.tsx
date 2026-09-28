@@ -106,7 +106,10 @@ export function CrsDisplaySettings({
         <>
           <ul className="crs-display-settings__list">
             {displayItems.map((item) => (
-              <li key={item.epsg} className="crs-display-settings__item">
+              <li
+                key={item.epsg}
+                className="crs-display-settings__item"
+              >
                 <span className="crs-display-settings__label">
                   {formatCrsLabel(item)}
                 </span>
@@ -118,7 +121,10 @@ export function CrsDisplaySettings({
                     title={trans('map.crs-display.remove')}
                     onClick={() => onRemove(item.epsg)}
                   >
-                    <Icon path={mdiClose} size="14px" />
+                    <Icon
+                      path={mdiClose}
+                      size="14px"
+                    />
                   </MapControlButton>
                 ) : null}
               </li>

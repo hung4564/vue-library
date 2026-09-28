@@ -49,7 +49,19 @@ function resolveImport(fromFile, spec) {
   const target = spec.startsWith('@/')
     ? norm(path.join(fromFile.split('/src')[0] + '/src', spec.slice(2)))
     : norm(path.join(fromDir, spec));
-  for (const e of ['', '.ts', '.tsx', '.vue', '.js', '.jsx', '.css', '/index.ts', '/index.tsx', '/index.vue', '/index.js']) {
+  for (const e of [
+    '',
+    '.ts',
+    '.tsx',
+    '.vue',
+    '.js',
+    '.jsx',
+    '.css',
+    '/index.ts',
+    '/index.tsx',
+    '/index.vue',
+    '/index.js',
+  ]) {
     const c = target + e;
     if (fs.existsSync(c)) return c;
   }
@@ -62,11 +74,24 @@ function walkAll(dir) {
   for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, ent.name);
     if (ent.isDirectory()) {
-      if (['node_modules', 'dist', '.nx', 'deploy'].includes(ent.name)) continue;
+      if (['node_modules', 'dist', '.nx', 'deploy'].includes(ent.name))
+        continue;
       walkAll(p);
     } else {
       const ext = path.extname(ent.name);
-      if (['.ts', '.tsx', '.vue', '.js', '.jsx', '.css', '.json', '.html', '.scss'].includes(ext)) {
+      if (
+        [
+          '.ts',
+          '.tsx',
+          '.vue',
+          '.js',
+          '.jsx',
+          '.css',
+          '.json',
+          '.html',
+          '.scss',
+        ].includes(ext)
+      ) {
         allFiles.push(norm(p));
       }
     }
@@ -89,7 +114,9 @@ function collectPkgExports(pkgPath) {
     const full = norm(path.join(pkgDir, rel));
     ex.add(full);
     pkgExportFiles.add(full);
-    const srcAlt = full.replace(/\/index\.(js|d\.ts)$/, '/src/index.ts').replace(/\.css$/, '/src/style.css');
+    const srcAlt = full
+      .replace(/\/index\.(js|d\.ts)$/, '/src/index.ts')
+      .replace(/\.css$/, '/src/style.css');
     if (fs.existsSync(srcAlt)) pkgExportFiles.add(srcAlt);
   };
   add(pkg.main);
@@ -99,7 +126,11 @@ function collectPkgExports(pkgPath) {
     if (typeof obj === 'string') add(obj);
     else if (obj && typeof obj === 'object') {
       for (const [k, v] of Object.entries(obj)) {
-        if (['types', 'import', 'require', 'default'].includes(k) && typeof v === 'string') add(v);
+        if (
+          ['types', 'import', 'require', 'default'].includes(k) &&
+          typeof v === 'string'
+        )
+          add(v);
         else walkExp(v);
       }
     }
@@ -163,7 +194,8 @@ for (const file of allFiles) {
     let m;
     while ((m = re.exec(content)) !== null) {
       const spec = m[1];
-      if (spec.startsWith('.') || spec.startsWith('@/')) addImport(file, resolveImport(file, spec));
+      if (spec.startsWith('.') || spec.startsWith('@/'))
+        addImport(file, resolveImport(file, spec));
     }
   }
 }
@@ -171,7 +203,9 @@ for (const file of allFiles) {
 const pkgNameToDir = {};
 for (const [pkgDir] of packageExports) {
   try {
-    const pkg = JSON.parse(fs.readFileSync(path.join(pkgDir, 'package.json'), 'utf8'));
+    const pkg = JSON.parse(
+      fs.readFileSync(path.join(pkgDir, 'package.json'), 'utf8'),
+    );
     if (pkg.name) pkgNameToDir[pkg.name] = pkgDir;
   } catch {
     /* ignore */
@@ -193,14 +227,18 @@ for (const file of allFiles) {
     while ((m = re.exec(content)) !== null) {
       const sub = m[1];
       if (sub) {
-        for (const base of [path.join(pkgDir, 'src', sub), path.join(pkgDir, sub)]) {
+        for (const base of [
+          path.join(pkgDir, 'src', sub),
+          path.join(pkgDir, sub),
+        ]) {
           for (const e of ['', '.ts', '.tsx', '/index.ts', '/index.tsx']) {
             const full = norm(base + e);
             if (fs.existsSync(full)) addImport(file, full);
           }
         }
       } else {
-        for (const exp of packageExports.get(pkgDir) || []) addImport(file, exp);
+        for (const exp of packageExports.get(pkgDir) || [])
+          addImport(file, exp);
       }
     }
   }
@@ -217,9 +255,13 @@ function followBarrels(file, visited = new Set()) {
   } catch {
     return;
   }
-  for (const re of [/export\s+\*\s+from\s+['"]([^'"]+)['"]/g, /export\s+\{[^}]+\}\s+from\s+['"]([^'"]+)['"]/g]) {
+  for (const re of [
+    /export\s+\*\s+from\s+['"]([^'"]+)['"]/g,
+    /export\s+\{[^}]+\}\s+from\s+['"]([^'"]+)['"]/g,
+  ]) {
     let m;
-    while ((m = re.exec(content)) !== null) followBarrels(resolveImport(file, m[1]), visited);
+    while ((m = re.exec(content)) !== null)
+      followBarrels(resolveImport(file, m[1]), visited);
   }
 }
 for (const f of pkgExportFiles) followBarrels(f);
@@ -256,11 +298,14 @@ const appDirs = [
   'apps/vue/demo-draggable/src',
   'apps/react/demo-draggable/src',
 ];
-const exportRe = /export\s+(?:type\s+)?(?:declare\s+)?(?:const|function|class|interface|type|enum)\s+(\w+)/g;
+const exportRe =
+  /export\s+(?:type\s+)?(?:declare\s+)?(?:const|function|class|interface|type|enum)\s+(\w+)/g;
 const unexport = [];
 for (const d of appDirs) {
   const dir = path.join(ROOT, d);
-  const files = walk(dir).filter((f) => /\.(ts|tsx)$/.test(f) && !SKIP.some((p) => p.test(f)));
+  const files = walk(dir).filter(
+    (f) => /\.(ts|tsx)$/.test(f) && !SKIP.some((p) => p.test(f)),
+  );
   const allAppFiles = walk(dir).filter((f) => !SKIP.some((p) => p.test(f)));
   for (const file of files) {
     const content = fs.readFileSync(file, 'utf8');
@@ -270,7 +315,11 @@ for (const d of appDirs) {
     while ((m = exportRe.exec(content)) !== null) exports.push(m[1]);
     for (const em of content.matchAll(/export\s+\{([^}]+)\}/g)) {
       for (const part of em[1].split(',')) {
-        const name = part.trim().split(/\s+as\s+/).pop()?.trim();
+        const name = part
+          .trim()
+          .split(/\s+as\s+/)
+          .pop()
+          ?.trim();
         if (name) exports.push(name);
       }
     }
@@ -288,7 +337,9 @@ for (const d of appDirs) {
       if (crossFileRefs === 0) {
         // used in same file?
         const withoutExport = content.replace(/export\s+/g, '');
-        const localUses = (withoutExport.match(new RegExp(`\\b${sym}\\b`, 'g')) || []).length;
+        const localUses = (
+          withoutExport.match(new RegExp(`\\b${sym}\\b`, 'g')) || []
+        ).length;
         if (localUses > 0) unexport.push({ file, sym });
       }
     }

@@ -23,11 +23,21 @@ function onMapLoaded(map: MapSimple) {
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
-    <BaseMapControl position="bottom-left" show-opacity />
+    <BaseMapControl
+      position="bottom-left"
+      show-opacity
+    />
     <BaseMapTagControl position="bottom-left" />
-    <div class="demo-basemap-card-panel" v-if="mapId">
+    <div
+      class="demo-basemap-card-panel"
+      v-if="mapId"
+    >
       <MapCard>
-        <BaseMapCard :mapId="mapId" show-opacity allow-add-basemap />
+        <BaseMapCard
+          :mapId="mapId"
+          show-opacity
+          allow-add-basemap
+        />
       </MapCard>
     </div>
     <DemoHelpPanel />

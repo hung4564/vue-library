@@ -80,7 +80,10 @@ function StepRow({
       <span className="log-request-flow__delta">
         {formatFlowDelta(node.deltaMs)}
       </span>
-      <span className="log-request-flow__rail" aria-hidden="true">
+      <span
+        className="log-request-flow__rail"
+        aria-hidden="true"
+      >
         <span className="log-request-flow__dot" />
       </span>
       <span className="log-request-flow__card">

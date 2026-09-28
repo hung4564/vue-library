@@ -111,7 +111,10 @@ const isCanAdd = computed(() => {
 <template>
   <div class="map-measurement-geometry">
     <div class="map-measurement-geometry__header">
-      <div v-if="title" class="map-measurement-geometry__title">
+      <div
+        v-if="title"
+        class="map-measurement-geometry__title"
+      >
         {{ title }}
       </div>
       <div class="map-measurement-geometry__actions">
@@ -148,7 +151,11 @@ const isCanAdd = computed(() => {
           class="map-measurement-geometry__btn"
           v-if="isCanAdd"
         >
-          <SvgIcon :size="16" type="mdi" :path="path.add" />
+          <SvgIcon
+            :size="16"
+            type="mdi"
+            :path="path.add"
+          />
         </button>
       </div>
     </div>
@@ -185,7 +192,11 @@ const isCanAdd = computed(() => {
             @click="onDeleteItem(index)"
             class="map-measurement-geometry__btn"
           >
-            <SvgIcon :size="16" type="mdi" :path="path.delete" />
+            <SvgIcon
+              :size="16"
+              type="mdi"
+              :path="path.delete"
+            />
           </button>
         </div>
       </div>

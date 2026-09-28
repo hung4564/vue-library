@@ -41,7 +41,11 @@
   margin: var(--map-space-sm, 4px) 0;
   padding: var(--map-space-sm, 4px) var(--map-space-md, 8px);
   border-radius: var(--map-radius-sm, 4px);
-  background: color-mix(in srgb, var(--map-color-danger, #c62828) 10%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--map-color-danger, #c62828) 10%,
+    transparent
+  );
 }
 
 .create-control-actions .create-control-sample-error {
@@ -102,7 +106,11 @@
   margin-top: var(--map-space-sm, 4px);
   padding: var(--map-space-sm, 6px) var(--map-space-md, 8px);
   border-radius: var(--map-radius-sm, 4px);
-  background: color-mix(in srgb, var(--map-accent-color, #1a73e8) 12%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--map-accent-color, #1a73e8) 12%,
+    transparent
+  );
 }
 
 .create-control-status--busy {
@@ -206,16 +214,22 @@
   background: transparent;
 }
 
-.form-group .input-container.create-control-color > input[type='color']::-webkit-color-swatch-wrapper {
+.form-group
+  .input-container.create-control-color
+  > input[type='color']::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-.form-group .input-container.create-control-color > input[type='color']::-webkit-color-swatch {
+.form-group
+  .input-container.create-control-color
+  > input[type='color']::-webkit-color-swatch {
   border: none;
   border-radius: calc(var(--map-radius-sm, 4px) - 1px);
 }
 
-.form-group .input-container.create-control-color > input[type='color']::-moz-color-swatch {
+.form-group
+  .input-container.create-control-color
+  > input[type='color']::-moz-color-swatch {
   border: none;
   border-radius: calc(var(--map-radius-sm, 4px) - 1px);
 }

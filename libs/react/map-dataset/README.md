@@ -35,14 +35,8 @@ Create-layer reads GIS files and reprojects CRS in a Web Worker. Apps that insta
 ```tsx
 import type { MapSimple } from '@hungpvq/map-core';
 import { Map } from '@hungpvq/react-map-core';
-import {
-  LayerControl,
-  useMapDataset,
-} from '@hungpvq/react-map-dataset';
-import {
-  createRootDataset,
-  createDatasetPartListViewUiComponentBuilder,
-} from '@hungpvq/map-dataset';
+import { LayerControl, useMapDataset } from '@hungpvq/react-map-dataset';
+import { createRootDataset, createDatasetPartListViewUiComponentBuilder } from '@hungpvq/map-dataset';
 
 function Page() {
   function onMapLoaded(map: MapSimple) {
@@ -54,7 +48,10 @@ function Page() {
 
   return (
     <Map onMapLoaded={onMapLoaded}>
-      <LayerControl position="top-left" show />
+      <LayerControl
+        position="top-left"
+        show
+      />
     </Map>
   );
 }

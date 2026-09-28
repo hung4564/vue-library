@@ -8,13 +8,11 @@ import {
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiCog } from '@mdi/js';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlButton } from '../../components/MapControlButton';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { InputText } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow } from '../../hooks/useShow';
@@ -33,10 +31,7 @@ type SettingState = {
 
 export function SettingControl(props: SettingControlProps) {
   const mergedProps = { ...defaultMapProps, ...props };
-  const { callMap, mapId, moduleContainerProps, order } = useMap({
-    ...mergedProps,
-    controlId: 'mapSettingControl',
-  });
+  const { callMap, mapId, order } = useMap(mergedProps);
   const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const [setting, setSetting] = useState<SettingState>({
@@ -66,20 +61,6 @@ export function SettingControl(props: SettingControlProps) {
     }
   }
 
-  const { panelBind } = useRegisterMapControl(mapId, {
-    id: 'mapSettingControl',
-    panelKind: 'popup',
-    title: trans('map.setting-control.title'),
-    buttonPosition: mergedProps.position,
-    show,
-    setShow: toggleShow,
-    getProps: () => ({
-      position: mergedProps.position,
-      controlLayout: mergedProps.controlLayout,
-    }),
-    actions: [{ type: 'mapSettingControl', run: () => handleToggle() }],
-  });
-
   function onSetSetting() {
     callMap((map) => {
       applyMapStyleSettings(map, {
@@ -91,10 +72,16 @@ export function SettingControl(props: SettingControlProps) {
     });
   }
 
-  const { state, control } = useToolbarControl(mapId, mergedProps, {
-    kind: 'single',
+  const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
     id: 'mapSettingControl',
-    getState: () =>
+    panelKind: 'popup',
+    title: trans('map.setting-control.title'),
+    from: mergedProps,
+    order,
+    show,
+    setShow: toggleShow,
+    actions: [{ type: 'mapSettingControl', run: () => handleToggle() }],
+    getButtonState: () =>
       mdiButtonState(mdiCog, {
         visible: true,
         active: show,
@@ -103,27 +90,14 @@ export function SettingControl(props: SettingControlProps) {
       }),
     onClick: () => handleToggle(),
   });
-  const controlRef = useRef(control);
-  controlRef.current = control;
 
   useEffect(() => {
-    controlRef.current.sync();
-  }, [show]);
+    control.sync();
+  }, [show, control]);
 
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : null
-      }
       draggable={(bind) =>
         show ? (
           <DraggableItemPopup

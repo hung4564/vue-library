@@ -57,7 +57,10 @@ export function LayerSubItem({
             />
           </div>
         )}
-        <span className="layer-sub-item__title" title={item.getName()}>
+        <span
+          className="layer-sub-item__title"
+          title={item.getName()}
+        >
           <span>{item.getName()}</span>
         </span>
         <div className="layer-sub-item__title-action">

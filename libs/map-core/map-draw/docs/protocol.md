@@ -6,11 +6,11 @@ Adapters (`@hungpvq/vue-map-draw` / `@hungpvq/react-map-draw`) export **UI/hooks
 
 ## Packages
 
-| Package | Role |
-| --- | --- |
-| `@hungpvq/map-draw` | `MapDraw`, `DrawService`, `DrawingType`, `StaticMode`, `getDrawStyles`, id helpers, inspect helpers |
-| `@hungpvq/vue-map-draw` | `DrawControl`, `InspectControl`, `useMapDraw`, locales, CSS |
-| `@hungpvq/react-map-draw` | Same public control names; shared InspectController (style + popup/hover) |
+| Package                   | Role                                                                                                |
+| ------------------------- | --------------------------------------------------------------------------------------------------- |
+| `@hungpvq/map-draw`       | `MapDraw`, `DrawService`, `DrawingType`, `StaticMode`, `getDrawStyles`, id helpers, inspect helpers |
+| `@hungpvq/vue-map-draw`   | `DrawControl`, `InspectControl`, `useMapDraw`, locales, CSS                                         |
+| `@hungpvq/react-map-draw` | Same public control names; shared InspectController (style + popup/hover)                           |
 
 ## `MapDraw` (editing)
 
@@ -65,9 +65,9 @@ collection.features = collection.features.filter((f) => !sameFeature(f, hit));
 
 ## Control ids
 
-| Id | Purpose |
-| --- | --- |
-| `mapDrawDraftList` | Draft feature list panel when draft mode is on |
+| Id                  | Purpose                                                  |
+| ------------------- | -------------------------------------------------------- |
+| `mapDrawDraftList`  | Draft feature list panel when draft mode is on           |
 | `mapInspectControl` | Inspect button (Vue + React; shared `InspectController`) |
 
 Keep these ids identical across Vue and React.

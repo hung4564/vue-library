@@ -130,7 +130,10 @@ export function DrawPage() {
 
   return (
     <MapPageShell>
-      <Map mapId={MAP_ID} onMapLoaded={onMapLoaded}>
+      <Map
+        mapId={MAP_ID}
+        onMapLoaded={onMapLoaded}
+      >
         <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />

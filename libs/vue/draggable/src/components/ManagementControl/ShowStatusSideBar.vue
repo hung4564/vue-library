@@ -1,6 +1,10 @@
 <template>
   <div class="mgmt-groups">
-    <div v-for="(state, side) in filledSides" :key="side" class="mgmt-group">
+    <div
+      v-for="(state, side) in filledSides"
+      :key="side"
+      class="mgmt-group"
+    >
       <div class="mgmt-group__title">
         <span>{{ capitalize(side) }}</span>
         <span class="mgmt__count">{{ state.items.length }}</span>

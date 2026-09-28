@@ -17,13 +17,11 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlButton } from '../../components/MapControlButton';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { useWorkerMonitor } from '../../extra/worker/useWorkerMonitor';
 import { BaseCollapse } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -50,10 +48,7 @@ function progressText(task: WorkerTaskSnapshot) {
 
 export function WorkerControl(props: WorkerControlProps) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps, order } = useMap({
-    ...merged,
-    controlId: 'mapWorkerControl',
-  });
+  const { mapId, order } = useMap(merged);
   const { trans } = useLang(mapId);
   const [show, toggleShow] = useShow(props.show);
   const { workers, now, busy, clearHistory } = useWorkerMonitor();
@@ -82,38 +77,31 @@ export function WorkerControl(props: WorkerControlProps) {
     [filtered, selectedId],
   );
 
-  const { panelPosition } = useRegisterMapControl(mapId, {
-    id: 'mapWorkerControl',
-    panelKind: 'sidebar',
-    title: trans('map.worker-control.title'),
-    buttonPosition: merged.position,
-    show,
-    setShow: toggleShow,
-    initialPanelPosition: { location: 'left' },
-    getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-    }),
-    actions: [{ type: 'mapWorkerControl', run: () => toggleShow() }],
-  });
-
-  const { state, control } = useToolbarControl(mapId, merged, {
-    kind: 'single',
-    id: 'mapWorkerControl',
-    getState: () =>
-      mdiButtonState(mdiCogs, {
-        title: trans('map.worker-control.title'),
-        order,
-        active: show || busy,
-      }),
-    onClick: () => toggleShow(),
-  });
-  const controlRef = useRef(control);
-  controlRef.current = control;
+  const { moduleContainerProps, panelPosition, control } = useMapControl(
+    mapId,
+    {
+      id: 'mapWorkerControl',
+      panelKind: 'sidebar',
+      title: trans('map.worker-control.title'),
+      from: merged,
+      order,
+      show,
+      setShow: toggleShow,
+      initialPanelPosition: { location: 'left' },
+      actions: [{ type: 'mapWorkerControl', run: () => toggleShow() }],
+      getButtonState: () =>
+        mdiButtonState(mdiCogs, {
+          title: trans('map.worker-control.title'),
+          order,
+          active: show || busy,
+        }),
+      onClick: () => toggleShow(),
+    },
+  );
 
   useEffect(() => {
-    controlRef.current.sync();
-  }, [show, busy]);
+    control.sync();
+  }, [show, busy, control]);
 
   const busyCount = countBusyWorkers(workers);
   const manyWorkers = workers.length > 1;
@@ -140,17 +128,6 @@ export function WorkerControl(props: WorkerControlProps) {
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : null
-      }
       draggable={(bind) => (
         <DraggableItemSideBar
           show={show}
@@ -176,7 +153,10 @@ export function WorkerControl(props: WorkerControlProps) {
                     if (selected) clearHistory(selected.id);
                   }}
                 >
-                  <Icon path={mdiEraser} size="16px" />
+                  <Icon
+                    path={mdiEraser}
+                    size="16px"
+                  />
                 </MapControlButton>
                 {manyWorkers ? (
                   <MapControlButton
@@ -188,7 +168,10 @@ export function WorkerControl(props: WorkerControlProps) {
                       clearHistory();
                     }}
                   >
-                    <Icon path={mdiNotificationClearAll} size="16px" />
+                    <Icon
+                      path={mdiNotificationClearAll}
+                      size="16px"
+                    />
                   </MapControlButton>
                 ) : null}
               </div>
@@ -323,7 +306,10 @@ function WorkerCard(props: {
             const percent = progressPercent(task);
             const text = progressText(task);
             return (
-              <div key={task.id} className="map-worker-control__task">
+              <div
+                key={task.id}
+                className="map-worker-control__task"
+              >
                 <div className="map-worker-control__task-row">
                   <span>{task.type}</span>
                   <span>
@@ -374,17 +360,26 @@ function WorkerCard(props: {
               <span>{trans('map.worker-control.noRunning')}</span>
               <span>—</span>
             </div>
-            <div className="map-worker-control__bar is-idle" aria-hidden>
+            <div
+              className="map-worker-control__bar is-idle"
+              aria-hidden
+            >
               <div className="map-worker-control__bar-fill" />
             </div>
-            <div className="map-worker-control__progress" aria-hidden>
+            <div
+              className="map-worker-control__progress"
+              aria-hidden
+            >
               &nbsp;
             </div>
             <BaseCollapse
               className="map-worker-control__task-logs"
               header={trans('map.worker-control.field.taskLogs')}
             >
-              <WorkerLogList logs={[]} compact />
+              <WorkerLogList
+                logs={[]}
+                compact
+              />
             </BaseCollapse>
           </div>
         )}
@@ -427,7 +422,10 @@ function WorkerCard(props: {
               }
             >
               {task.logs?.length ? (
-                <WorkerLogList logs={workerLogsForDisplay(task.logs)} compact />
+                <WorkerLogList
+                  logs={workerLogsForDisplay(task.logs)}
+                  compact
+                />
               ) : null}
             </BaseCollapse>
           ))}

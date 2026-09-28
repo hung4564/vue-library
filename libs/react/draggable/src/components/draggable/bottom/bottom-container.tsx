@@ -162,13 +162,19 @@ export function BottomContainer() {
                       <OffFullscreenIcon size={'16px'} />
                     )}
                   </DragButton>
-                  <DragButton onClick={onClose} aria-label="Close bottom">
+                  <DragButton
+                    onClick={onClose}
+                    aria-label="Close bottom"
+                  >
                     <CloseIcon size={'16px'} />
                   </DragButton>
                 </>
               }
             />
-            <div className="draggable-bottom-content" id={contentTo} />
+            <div
+              className="draggable-bottom-content"
+              id={contentTo}
+            />
           </div>
         </Card>
       </div>
@@ -177,7 +183,10 @@ export function BottomContainer() {
         ariaLabel="Switch bottom panel"
         onOpenChange={setMenuOpen}
       >
-        <ul className="context-menu" role="presentation">
+        <ul
+          className="context-menu"
+          role="presentation"
+        >
           {allItems.map((item) => (
             <ContextMenuItem
               key={item.id}

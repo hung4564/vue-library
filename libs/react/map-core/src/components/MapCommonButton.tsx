@@ -33,10 +33,19 @@ export function MapCommonButton({
           viewBox="0 0 24 24"
           width="22"
         >
-          <g fill="none" fillRule="evenodd">
+          <g
+            fill="none"
+            fillRule="evenodd"
+          >
             <path d="M0 0h24v24H0z"></path>
-            <path d="M12 3l4 8H8z" fill="#f44336"></path>
-            <path d="M12 21l-4-8h8z" fill="#9E9E9E"></path>
+            <path
+              d="M12 3l4 8H8z"
+              fill="#f44336"
+            ></path>
+            <path
+              d="M12 21l-4-8h8z"
+              fill="#9E9E9E"
+            ></path>
           </g>
         </svg>
       ) : option.text ? (
@@ -56,7 +65,10 @@ export function MapCommonButton({
           {option.text}
         </span>
       ) : option.icon?.type === 'mdi' && option.icon.path ? (
-        <Icon path={option.icon.path} size="18px" />
+        <Icon
+          path={option.icon.path}
+          size="18px"
+        />
       ) : null}
     </MapControlButton>
   );

@@ -11,6 +11,8 @@ export {
 export { MapControlGroupButton } from './components/MapControlGroupButton';
 export type { MapCopyButtonProps } from './components/MapCopyButton';
 export { MapCopyButton } from './components/MapCopyButton';
+export type { MapTabItem, MapTabsProps } from './components/MapTabs';
+export { MapTabs } from './components/MapTabs';
 export {
   MapContext,
   MapContextProvider,
@@ -55,11 +57,7 @@ export {
   UniversalRegistry,
   useUniversalRegistry,
 } from './extra/registry/plugin';
-export { useRegisterMapControl } from './extra/registry/useRegisterMapControl';
-export {
-  useInitToolbarControl,
-  useToolbarControl,
-} from './extra/toolbar/helper';
+export { useMapControl } from './extra/registry/useMapControl';
 export { ToolbarControl } from './extra/toolbar/modules/ToolbarControl';
 export {
   useMapToolbar,

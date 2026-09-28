@@ -26,11 +26,17 @@ export function Item({ item, containerId }: ItemProps) {
   return (
     <span className="mgmt-item-meta">
       {typeLabel ? (
-        <span className="mgmt-type" data-type={typeKey}>
+        <span
+          className="mgmt-type"
+          data-type={typeKey}
+        >
           {typeLabel}
         </span>
       ) : null}
-      <span className="mgmt-item-title" title={title}>
+      <span
+        className="mgmt-item-title"
+        title={title}
+      >
         {title}
       </span>
     </span>

@@ -12,6 +12,13 @@ onStartTyping(() => {
 
 <template>
   <note>Type anything</note>
-  <input ref="input" type="text" placeholder="Start typing to focus" />
-  <input type="text" placeholder="Start typing has no effect here" />
+  <input
+    ref="input"
+    type="text"
+    placeholder="Start typing to focus"
+  />
+  <input
+    type="text"
+    placeholder="Start typing has no effect here"
+  />
 </template>

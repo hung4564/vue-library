@@ -1,8 +1,9 @@
 /**
  * Framework-agnostic UniversalRegistry.
  * Methods, menu handlers, components, and control handles share one resolve path.
- * Backing bags live in `@hungpvq/shared-store` (globalThis) so duplicate package
- * copies still share memory — no class-static `new Map` singletons.
+ * Process-wide globals: `map:registry:global` (`@hungpvq/shared-store`).
+ * Per-map namespaced method/menu/component bags + control handles / layout /
+ * auto-button live on `map:core[mapId]` (domain stores).
  * Vue/React subclasses only add typed `registerComponent` / `getComponent`
  * (e.g. Vue `markRaw`); storage is owned here.
  */
@@ -11,6 +12,24 @@ import { getOrCreateStore } from '@hungpvq/shared-store';
 
 import { logHelper } from '../utils/log';
 import { type MapControlHandle, type MapControlPanelPosition } from './control';
+import { clearControlAutoButtonsForMap } from './control-auto-button-store';
+import {
+  clearControlLayoutsForMap,
+  getControlLayout,
+  type MapControlLayoutPatch,
+  type MapControlLayoutState,
+  setControlLayout,
+} from './control-layout-store';
+import {
+  clearMapControlsStore,
+  ensureMapControlsStore,
+  peekMapControlsStore,
+} from './controls-store';
+import {
+  clearMapRegistryMapsStore,
+  ensureMapRegistryMapsStore,
+  peekMapRegistryMapsStore,
+} from './registry-maps-store';
 
 export type RegistryFn = (...args: any[]) => unknown;
 
@@ -27,16 +46,7 @@ export const REGISTRY_NAMESPACES = {
 /** Shared key for the global registry bag (methods / menu / components). */
 export const REGISTRY_GLOBAL_STORE_KEY = 'map:registry:global';
 
-/** Per-map namespaced fn/component bags. */
-export const REGISTRY_MAPS_STORE_KEY = 'map:registry:maps';
-
-/** Per-map control handles. */
-export const REGISTRY_CONTROLS_STORE_KEY = 'map:registry:controls';
-
 type RegistryBag = Record<string, unknown>;
-type RegistryMapsBag = Record<string, RegistryBag>;
-type ControlBag = Record<string, MapControlHandle>;
-type ControlsMapsBag = Record<string, ControlBag>;
 
 const logger = loggerFactory.createLogger().setNamespace('map:registry', 2);
 
@@ -50,40 +60,13 @@ function globalBag(): RegistryBag {
   return getOrCreateStore<RegistryBag>(REGISTRY_GLOBAL_STORE_KEY, () => ({}));
 }
 
-function mapsBag(): RegistryMapsBag {
-  return getOrCreateStore<RegistryMapsBag>(REGISTRY_MAPS_STORE_KEY, () => ({}));
-}
-
-function controlsBag(): ControlsMapsBag {
-  return getOrCreateStore<ControlsMapsBag>(
-    REGISTRY_CONTROLS_STORE_KEY,
-    () => ({}),
-  );
-}
-
-function ensureMapBag(mapId: string): RegistryBag {
-  const maps = mapsBag();
-  if (!maps[mapId]) {
-    maps[mapId] = {};
-  }
-  return maps[mapId];
-}
-
-function ensureControlBag(mapId: string): ControlBag {
-  const controls = controlsBag();
-  if (!controls[mapId]) {
-    controls[mapId] = {};
-  }
-  return controls[mapId];
-}
-
 export class UniversalRegistry {
   private static resolveValue<T>(
     namespacedKey: string,
     mapId?: string,
   ): T | undefined {
     if (mapId) {
-      const mapStore = mapsBag()[mapId];
+      const mapStore = peekMapRegistryMapsStore(mapId);
       if (mapStore && namespacedKey in mapStore) {
         return mapStore[namespacedKey] as T;
       }
@@ -96,7 +79,7 @@ export class UniversalRegistry {
     namespacedKey: string,
     value: unknown,
   ) {
-    const store = ensureMapBag(mapId);
+    const store = ensureMapRegistryMapsStore(mapId);
     if (namespacedKey in store) {
       warnOverwrite(mapId, namespacedKey);
     }
@@ -104,7 +87,7 @@ export class UniversalRegistry {
   }
 
   private static deleteMapValue(mapId: string, namespacedKey: string) {
-    const store = mapsBag()[mapId];
+    const store = peekMapRegistryMapsStore(mapId);
     if (store) {
       delete store[namespacedKey];
     }
@@ -171,7 +154,7 @@ export class UniversalRegistry {
   }
 
   static registerControl(mapId: string, key: string, handle: MapControlHandle) {
-    const store = ensureControlBag(mapId);
+    const store = ensureMapControlsStore(mapId);
     if (key in store) {
       warnOverwrite(mapId, REGISTRY_NAMESPACES.CONTROL + key);
     }
@@ -179,18 +162,20 @@ export class UniversalRegistry {
   }
 
   static unregisterControl(mapId: string, key: string) {
-    const store = controlsBag()[mapId];
+    const store = peekMapControlsStore(mapId);
     if (store) {
       delete store[key];
     }
+    // Layout SoT is cleared only on removeControlLayout / clearMap (not on
+    // intentional handle refresh via unregister+register).
   }
 
   static getControl(key: string, mapId: string): MapControlHandle | undefined {
-    return controlsBag()[mapId]?.[key];
+    return peekMapControlsStore(mapId)?.[key];
   }
 
   static listControls(mapId: string): MapControlHandle[] {
-    const store = controlsBag()[mapId];
+    const store = peekMapControlsStore(mapId);
     return store ? Object.values(store) : [];
   }
 
@@ -202,12 +187,34 @@ export class UniversalRegistry {
     this.getControl(key, mapId)?.close();
   }
 
+  /**
+   * Panel offsets / sidebar dock (not button corner).
+   * For button corner / visibility / order / controlLayout use {@link setControlLayout}.
+   */
   static setControlPosition(
     mapId: string,
     key: string,
     pos: MapControlPanelPosition,
   ) {
     this.getControl(key, mapId)?.setPanelPosition(pos);
+  }
+
+  /** Button layout SoT patch (visible, corner position, order, controlLayout, buttonInMobile). */
+  static setControlLayout(
+    mapId: string,
+    key: string,
+    patch: MapControlLayoutPatch,
+  ): MapControlLayoutState {
+    return setControlLayout(mapId, key, patch);
+  }
+
+  static getControlLayout(
+    mapId: string,
+    key: string,
+  ): MapControlLayoutState | undefined {
+    return (
+      getControlLayout(mapId, key) ?? this.getControl(key, mapId)?.getLayout()
+    );
   }
 
   static runControlAction(
@@ -224,7 +231,7 @@ export class UniversalRegistry {
     namespace: RegistryNamespaceKind,
   ): string[] {
     if (namespace === 'control') {
-      const store = controlsBag()[mapId];
+      const store = peekMapControlsStore(mapId);
       return store ? Object.keys(store) : [];
     }
     const prefix =
@@ -233,16 +240,18 @@ export class UniversalRegistry {
         : namespace === 'menu-handler'
           ? REGISTRY_NAMESPACES.MENU_HANDLER
           : REGISTRY_NAMESPACES.COMPONENT;
-    const store = mapsBag()[mapId];
+    const store = peekMapRegistryMapsStore(mapId);
     if (!store) return [];
     return Object.keys(store)
       .filter((key) => key.startsWith(prefix))
       .map((key) => key.slice(prefix.length));
   }
 
-  /** Drop per-map methods, menu handlers, components, and controls (removeMap). */
+  /** Drop per-map methods, menu handlers, components, controls, and layouts (removeMap). */
   static clearMap(mapId: string) {
-    delete mapsBag()[mapId];
-    delete controlsBag()[mapId];
+    clearMapRegistryMapsStore(mapId);
+    clearMapControlsStore(mapId);
+    clearControlLayoutsForMap(mapId);
+    clearControlAutoButtonsForMap(mapId);
   }
 }

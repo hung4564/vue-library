@@ -10,7 +10,10 @@
     @end="onEnd"
   >
     <template #item="{ element, index }">
-      <div v-if="element.isGroup" class="draggable__item item">
+      <div
+        v-if="element.isGroup"
+        class="draggable__item item"
+      >
         <DraggableListGroupItem
           :key="element.id"
           :layer-group="element"

@@ -32,14 +32,20 @@ export function ToolbarPage() {
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <ToolbarControl position="top-right" />
-        <GotoControl position="top-right" controlLayout="toolbar" />
+        <GotoControl
+          position="top-right"
+          controlLayout="toolbar"
+        />
         <MeasurementControl position="top-left" />
         <CrsControl />
         <GlobeControl />
         <SettingControl />
         <FullScreenControl />
         <EventManagementControl />
-        <ZoomControl controlLayout="toolbar" controlOrder={99} />
+        <ZoomControl
+          controlLayout="toolbar"
+          controlOrder={99}
+        />
         <HomeControl controlLayout="toolbar" />
         <MouseCoordinatesControl />
         <BaseMapControl position="bottom-left" />
@@ -49,8 +55,14 @@ export function ToolbarPage() {
           controlLayout="toolbar"
           controlOrder={5}
         />
-        <PrintControl position="top-left" controlLayout="toolbar" />
-        <PrintAdvancedControl position="top-left" controlLayout="toolbar" />
+        <PrintControl
+          position="top-left"
+          controlLayout="toolbar"
+        />
+        <PrintAdvancedControl
+          position="top-left"
+          controlLayout="toolbar"
+        />
         <DemoHelpPanel />
       </Map>
     </MapPageShell>

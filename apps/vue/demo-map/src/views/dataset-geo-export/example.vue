@@ -65,13 +65,19 @@ function onMapLoaded(map: MapSimple) {
 }
 </script>
 <template>
-  <Map @mapLoaded="onMapLoaded" :mapId="mapId">
+  <Map
+    @mapLoaded="onMapLoaded"
+    :mapId="mapId"
+  >
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <WorkerControl position="top-left" />
-    <LayerControl position="top-left" show>
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #titleList>
         <pre class="geo-export-demo-legend">{{ GEO_EXPORT_DEMO_LEGEND }}</pre>
       </template>

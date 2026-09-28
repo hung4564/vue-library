@@ -43,7 +43,18 @@ function resolveImport(fromFile, spec) {
   const target = spec.startsWith('@/')
     ? norm(path.join(fromFile.split('/src')[0] + '/src', spec.slice(2)))
     : norm(path.join(fromDir, spec));
-  for (const e of ['', '.ts', '.tsx', '.vue', '.js', '.jsx', '.css', '/index.ts', '/index.tsx', '/index.vue']) {
+  for (const e of [
+    '',
+    '.ts',
+    '.tsx',
+    '.vue',
+    '.js',
+    '.jsx',
+    '.css',
+    '/index.ts',
+    '/index.tsx',
+    '/index.vue',
+  ]) {
     const c = target + e;
     if (fs.existsSync(c)) return c;
   }
@@ -56,11 +67,25 @@ const allFiles = [];
   for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, ent.name);
     if (ent.isDirectory()) {
-      if (['node_modules', 'dist', '.nx', 'deploy'].includes(ent.name)) continue;
+      if (['node_modules', 'dist', '.nx', 'deploy'].includes(ent.name))
+        continue;
       walkAll(p);
     } else {
       const ext = path.extname(ent.name);
-      if (['.ts', '.tsx', '.vue', '.js', '.jsx', '.css', '.md', '.scss', '.html', '.json'].includes(ext)) {
+      if (
+        [
+          '.ts',
+          '.tsx',
+          '.vue',
+          '.js',
+          '.jsx',
+          '.css',
+          '.md',
+          '.scss',
+          '.html',
+          '.json',
+        ].includes(ext)
+      ) {
         allFiles.push(norm(p));
       }
     }
@@ -85,7 +110,11 @@ function collectPkgExports(pkgPath) {
     if (typeof obj === 'string') add(obj);
     else if (obj && typeof obj === 'object') {
       for (const [k, v] of Object.entries(obj)) {
-        if (['types', 'import', 'require', 'default'].includes(k) && typeof v === 'string') add(v);
+        if (
+          ['types', 'import', 'require', 'default'].includes(k) &&
+          typeof v === 'string'
+        )
+          add(v);
         else walkExp(v);
       }
     }
@@ -94,7 +123,9 @@ function collectPkgExports(pkgPath) {
   // source-side export entry files
   for (const rel of ex) {
     pkgExportFiles.add(rel);
-    const srcAlt = rel.replace(/\/index\.(js|d\.ts)$/, '/src/index.ts').replace(/\.css$/, '/src/style.css');
+    const srcAlt = rel
+      .replace(/\/index\.(js|d\.ts)$/, '/src/index.ts')
+      .replace(/\.css$/, '/src/style.css');
     if (fs.existsSync(srcAlt)) pkgExportFiles.add(srcAlt);
   }
   packageExports.set(pkgDir, ex);
@@ -103,7 +134,9 @@ function collectPkgExports(pkgPath) {
 for (const d of SCAN_DIRS) {
   const bases = [path.join(ROOT, d)];
   if (fs.existsSync(path.join(ROOT, d))) {
-    for (const sub of fs.readdirSync(path.join(ROOT, d), { withFileTypes: true })) {
+    for (const sub of fs.readdirSync(path.join(ROOT, d), {
+      withFileTypes: true,
+    })) {
       if (sub.isDirectory()) bases.push(path.join(ROOT, d, sub.name));
     }
   }
@@ -141,7 +174,8 @@ for (const file of allFiles) {
     let m;
     while ((m = re.exec(content)) !== null) {
       const spec = m[1];
-      if (spec.startsWith('.') || spec.startsWith('@/')) addImport(file, resolveImport(file, spec));
+      if (spec.startsWith('.') || spec.startsWith('@/'))
+        addImport(file, resolveImport(file, spec));
     }
   }
 }
@@ -157,9 +191,13 @@ function followBarrels(file, visited = new Set()) {
   } catch {
     return;
   }
-  for (const re of [/export\s+\*\s+from\s+['"]([^'"]+)['"]/g, /export\s+\{[^}]+\}\s+from\s+['"]([^'"]+)['"]/g]) {
+  for (const re of [
+    /export\s+\*\s+from\s+['"]([^'"]+)['"]/g,
+    /export\s+\{[^}]+\}\s+from\s+['"]([^'"]+)['"]/g,
+  ]) {
     let m;
-    while ((m = re.exec(content)) !== null) followBarrels(resolveImport(file, m[1]), visited);
+    while ((m = re.exec(content)) !== null)
+      followBarrels(resolveImport(file, m[1]), visited);
   }
 }
 for (const f of filtered) {
@@ -192,11 +230,14 @@ const demoDirs = [
   'apps/vue/demo-draggable/src',
   'apps/react/demo-draggable/src',
 ];
-const exportRe = /export\s+(?:type\s+)?(?:declare\s+)?(?:const|function|class|interface|type|enum)\s+(\w+)/g;
+const exportRe =
+  /export\s+(?:type\s+)?(?:declare\s+)?(?:const|function|class|interface|type|enum)\s+(\w+)/g;
 const unusedExports = [];
 for (const d of demoDirs) {
   const dir = path.join(ROOT, d);
-  const files = walk(dir).filter((f) => /\.(ts|tsx)$/.test(f) && !SKIP.some((p) => p.test(f)));
+  const files = walk(dir).filter(
+    (f) => /\.(ts|tsx)$/.test(f) && !SKIP.some((p) => p.test(f)),
+  );
   for (const file of files) {
     const content = fs.readFileSync(file, 'utf8');
     const base = path.basename(file, path.extname(file));
@@ -207,7 +248,11 @@ for (const d of demoDirs) {
     // also export { X }
     for (const em of content.matchAll(/export\s+\{([^}]+)\}/g)) {
       for (const part of em[1].split(',')) {
-        const name = part.trim().split(/\s+as\s+/).pop()?.trim();
+        const name = part
+          .trim()
+          .split(/\s+as\s+/)
+          .pop()
+          ?.trim();
         if (name) exports.push(name);
       }
     }

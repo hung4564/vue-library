@@ -9,45 +9,25 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';
 
-import MapCommonButton from '../../../components/MapCommonButton.vue';
 import { InputCheckbox } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useEventListener } from '../../event/hook/useEvent';
 import { useLang } from '../../lang/hook';
-import { useRegisterMapControl } from '../../registry/useRegisterMapControl';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useMapControl } from '../../registry/useMapControl';
 import { useLayerLegend } from '../lib/useLayerLegend';
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
 const [show, setShow] = useShow(false);
-const { callMap, mapId, moduleContainerProps, order } = useMap(props);
+const { callMap, mapId, order } = useMap(props);
 const { trans } = useLang(mapId.value);
 const { getLayerLegendVNode } = useLayerLegend();
 
 function onToggleShow() {
   setShow(!show.value);
 }
-const { panelBind } = useRegisterMapControl(mapId, {
-  id: 'mapLegendControl',
-  panelKind: 'popup',
-  title: () => trans.value('map.legend-control.title'),
-  buttonPosition: () => props.position,
-  show,
-  setShow,
-  getProps: () => ({
-    position: props.position,
-    controlLayout: props.controlLayout,
-  }),
-  actions: [
-    {
-      type: 'mapLegendControl',
-      run: () => onToggleShow(),
-    },
-  ],
-});
 const onlyRender = ref(false);
 const legends = shallowRef<{ icon: any; name: string }[]>([]);
 function updateLegend(map: MapSimple) {
@@ -105,9 +85,21 @@ watch(onlyRender, (newValue) => {
     remove();
   }
 });
-const { state, control } = useToolbarControl(mapId.value, props, {
+const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   id: 'mapLegendControl',
-  getState() {
+  panelKind: 'popup',
+  title: () => trans.value('map.legend-control.title'),
+  from: props,
+  order,
+  show,
+  setShow,
+  actions: [
+    {
+      type: 'mapLegendControl',
+      run: () => onToggleShow(),
+    },
+  ],
+  getButtonState() {
     return mdiButtonState(mdiMapLegend, {
       visible: true,
       active: show.value,
@@ -123,15 +115,6 @@ watch(show, () => control.sync());
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
-
     <template #draggable="slotProps">
       <DraggableItemPopup
         v-if="show"

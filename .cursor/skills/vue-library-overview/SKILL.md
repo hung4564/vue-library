@@ -13,14 +13,14 @@ Nx + TypeScript monorepo publishing `@hungpvq/*` packages for MapLibre GIS maps,
 
 ## Package map
 
-| Area | Paths | npm scope examples |
-|------|-------|-------------------|
-| Map engine | `libs/map-core/core`, `map-dataset`, `map-draw`, `map-debug` | `@hungpvq/map-core`, `map-dataset`, `map-draw`, `map-debug` |
-| Vue map | `libs/vue/map-core`, `map-dataset`, `map-draw`, `map-devtools` | `@hungpvq/vue-map-*` |
-| React map | `libs/react/map-core`, `map-dataset`, `map-draw`, `map-devtools` | `@hungpvq/react-map-*` |
-| Draggable | `libs/draggable/core`, `libs/vue/draggable`, `libs/react/draggable` | `@hungpvq/draggable`, `vue-draggable`, `react-draggable` |
-| Share / UI | `libs/share/*`, `libs/ui/core`, `libs/router` | `@hungpvq/shared*`, UI kit |
-| Demos / docs | Nx serve demos, `docs/`, `deploy/demo-*` | VitePress sites |
+| Area         | Paths                                                               | npm scope examples                                          |
+| ------------ | ------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Map engine   | `libs/map-core/core`, `map-dataset`, `map-draw`, `map-debug`        | `@hungpvq/map-core`, `map-dataset`, `map-draw`, `map-debug` |
+| Vue map      | `libs/vue/map-core`, `map-dataset`, `map-draw`, `map-devtools`      | `@hungpvq/vue-map-*`                                        |
+| React map    | `libs/react/map-core`, `map-dataset`, `map-draw`, `map-devtools`    | `@hungpvq/react-map-*`                                      |
+| Draggable    | `libs/draggable/core`, `libs/vue/draggable`, `libs/react/draggable` | `@hungpvq/draggable`, `vue-draggable`, `react-draggable`    |
+| Share / UI   | `libs/share/*`, `libs/ui/core`, `libs/router`                       | `@hungpvq/shared*`, UI kit                                  |
+| Demos / docs | Nx serve demos, `docs/`, `deploy/demo-*`                            | VitePress sites                                             |
 
 Nx tags: `map`, `draggable`, `share`, `demo`, `e2e`, plus framework tags. `tag:map` / `tag:draggable` are for publishable libs (+ demo apps); e2e and private fixtures like `demo-map-datasets` do **not** carry those release tags. Release groups: `map`, `draggable`, `shared-store`, `shared-log` (see root `nx.json`).
 
@@ -34,6 +34,8 @@ Nx tags: `map`, `draggable`, `share`, `demo`, `e2e`, plus framework tags. `tag:m
 6. **Shared non-map utils** → `libs/share/*`.
 
 **Process / app stores:** always `@hungpvq/shared-store` (`getOrCreateStore` / `defineStore` / `GlobalStoreService` → `globalThis.$_hungpv_store`, process-wide SSR). Never invent a parallel bag on `@hungpvq/shared`.
+
+**Per-map protocol stores:** always `map:core[mapId]` via `registerMapDomainStoreFactory` / `ensureMapDomainStore` / `peekMapDomainStore` (see **map-domain-store** skill and `libs/map-core/core/docs/core/map-store.md`). Do not add new `getOrCreateStore(…).maps[mapId]` bags.
 
 Do not put MapLibre business logic only in a Vue or React package if it belongs in `map-core` / `map-dataset` / `map-draw`.
 
@@ -54,10 +56,7 @@ import { loggerFactory } from '@hungpvq/shared-log';
 
 const logger = loggerFactory.createLogger().setNamespace('demo:list', 2);
 
-logger.with({ fn: 'onLayerSelect', span: 'menu.action' }).info(
-  'Dataset layer selected from the list.',
-  { mapId, layerId },
-);
+logger.with({ fn: 'onLayerSelect', span: 'menu.action' }).info('Dataset layer selected from the list.', { mapId, layerId });
 ```
 
 - **`fn`**: name of the **enclosing** function/method where the log is written (not a free-form description). Nested/anon handlers: nearest meaningful name (`onFavorite`, `processChunk`, …).
@@ -122,6 +121,7 @@ When adding a function, changing a business flow, or touching a logger, check:
 ### Devtools mount
 
 Mount `@hungpvq/vue-map-devtools` / `react-map-devtools` `<Devtools />` **inside** `<Map>` (`DraggableItemPopup`). Do not remount a global overlay shell. Log store default is IndexedDB on `getMapDebugStore()` (`map:debug`); see `libs/map-core/core/docs/core/devtools.md`.
+
 ## Common scripts (root `package.json`)
 
 ```bash

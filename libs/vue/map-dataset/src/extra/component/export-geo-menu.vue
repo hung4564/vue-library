@@ -5,11 +5,19 @@
     @click.stop="open = !open"
   >
     <div class="layer-context-menu__item-icon">
-      <SvgIcon size="16" type="mdi" :path="mdiDownload" />
+      <SvgIcon
+        size="16"
+        type="mdi"
+        :path="mdiDownload"
+      />
     </div>
     <span>{{ 'name' in item ? item.name : 'Export' }}</span>
     <div class="layer-context-menu__chevron">
-      <SvgIcon size="16" type="mdi" :path="mdiChevronRight" />
+      <SvgIcon
+        size="16"
+        type="mdi"
+        :path="mdiChevronRight"
+      />
     </div>
     <ul class="context-menu layer-context-menu layer-context-menu--submenu">
       <li
@@ -19,7 +27,11 @@
         @click.stop="onFormat(fmt)"
       >
         <div class="layer-context-menu__item-icon">
-          <SvgIcon size="16" type="mdi" :path="mdiDownload" />
+          <SvgIcon
+            size="16"
+            type="mdi"
+            :path="mdiDownload"
+          />
         </div>
         <span>{{ GEO_EXPORT_FORMAT_META[fmt].name }}</span>
       </li>

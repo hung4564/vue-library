@@ -1,5 +1,9 @@
 <template>
-  <div v-if="hasAnything" class="dataset-menus" :class="rootClass">
+  <div
+    v-if="hasAnything"
+    class="dataset-menus"
+    :class="rootClass"
+  >
     <DatasetMenuButton
       v-for="(menu, i) in inlineMenus"
       :key="menu.id || `inline-${i}`"
@@ -18,7 +22,11 @@
       aria-haspopup="menu"
       @click.prevent.stop="openOverflow"
     >
-      <SvgIcon size="14" type="mdi" :path="mdiDotsVertical" />
+      <SvgIcon
+        size="14"
+        type="mdi"
+        :path="mdiDotsVertical"
+      />
     </MapControlButton>
     <ContextMenu ref="contextMenuRef">
       <ul class="context-menu layer-context-menu dataset-menus__context">

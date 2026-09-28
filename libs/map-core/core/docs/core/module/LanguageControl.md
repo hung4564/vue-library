@@ -15,15 +15,15 @@ under `localStorage` key `hungpvq.map-language`.
 
 ## Props
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `labels` | `Record<string, string>` | — | Tooltip titles (chips still show uppercase codes `EN` / `VI`) |
-| `languages` | `string[]` | `['en','vi']` | Codes shown as text chips (e.g. `['en','vi','fr']`) |
-| `defaultLanguage` | `string` | `'vi'` | Used when nothing stored / stored code not in `languages` |
-| `fallbackLanguage` | `string` | `'en'` store default | Catalog used when a key is missing |
-| `localeLoader` | `(lang) => Promise<flat \| nested>` | — | Fetch on mount (initial) and when selecting a language |
-| `reloadOnSelect` | `boolean` | `false` | Force re-fetch on every select |
-| `translate` | `MapTranslateFunction \| null` | — | External i18n (`(key, params, fallback) => string`); `null` clears |
+| Prop               | Type                                | Default              | Description                                                        |
+| ------------------ | ----------------------------------- | -------------------- | ------------------------------------------------------------------ |
+| `labels`           | `Record<string, string>`            | —                    | Tooltip titles (chips still show uppercase codes `EN` / `VI`)      |
+| `languages`        | `string[]`                          | `['en','vi']`        | Codes shown as text chips (e.g. `['en','vi','fr']`)                |
+| `defaultLanguage`  | `string`                            | `'vi'`               | Used when nothing stored / stored code not in `languages`          |
+| `fallbackLanguage` | `string`                            | `'en'` store default | Catalog used when a key is missing                                 |
+| `localeLoader`     | `(lang) => Promise<flat \| nested>` | —                    | Fetch on mount (initial) and when selecting a language             |
+| `reloadOnSelect`   | `boolean`                           | `false`              | Force re-fetch on every select                                     |
+| `translate`        | `MapTranslateFunction \| null`      | —                    | External i18n (`(key, params, fallback) => string`); `null` clears |
 
 <!--@include: ./props.md-->
 
@@ -74,7 +74,7 @@ import { MAP_DATASET_LOCALE_VI } from '@hungpvq/map-dataset';
     }}
   />
   <HomeControl />
-</Map>
+</Map>;
 ```
 
 Demo: `/#/language` (Vue & React demo-map).

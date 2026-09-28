@@ -2,23 +2,23 @@
 
 ## Props
 
-| Prop                | Description | Type     | Required | Default Value |
-| ------------------- | ----------- | -------- | -------- | ------------- |
-| `mapboxAccessToken` |             | `string` | `fasle`  | --            |
-| `initOptions`       |             | `object` | `fasle`  | --            |
-| `dragId`            |             | `string` | `fasle`  | --            |
-| `mapId`             |             | `string` | `fasle`  | --            |
-| `buttonInMobile`    | Mobile (≤640px) control chrome: `button` \| `toolbar` \| `menu` | `string` | `false` | `'button'` |
+| Prop                | Description                                                     | Type     | Required | Default Value |
+| ------------------- | --------------------------------------------------------------- | -------- | -------- | ------------- |
+| `mapboxAccessToken` |                                                                 | `string` | `fasle`  | --            |
+| `initOptions`       |                                                                 | `object` | `fasle`  | --            |
+| `dragId`            |                                                                 | `string` | `fasle`  | --            |
+| `mapId`             |                                                                 | `string` | `fasle`  | --            |
+| `buttonInMobile`    | Mobile (≤640px) control chrome: `button` \| `toolbar` \| `menu` | `string` | `false`  | `'button'`    |
 
 See [control props](./props.md) and [ToolbarControl](./ToolbarControl.md) for `buttonInMobile` / `controlLayout` behavior.
 
 ## Events
 
-| Name          | Description                |
-| ------------- | -------------------------- |
-| `mapLoaded`   | `(map: MapSimple) => void` — React: `onMapLoaded` |
-| `mapDestroy`  | `(map: MapSimple) => void` — React: `onMapDestroy` |
-| `error`       | `(error: Error) => void` — React: `onError` |
+| Name         | Description                                        |
+| ------------ | -------------------------------------------------- |
+| `mapLoaded`  | `(map: MapSimple) => void` — React: `onMapLoaded`  |
+| `mapDestroy` | `(map: MapSimple) => void` — React: `onMapDestroy` |
+| `error`      | `(error: Error) => void` — React: `onError`        |
 
 ## Slots
 
@@ -48,7 +48,7 @@ import { Map } from '@hungpvq/vue-map-core';
 import { Map } from '@hungpvq/react-map-core';
 import '@hungpvq/react-map-core/style.css';
 
-<Map />
+<Map />;
 ```
 
 ### Custom initOptions
@@ -86,7 +86,7 @@ const initOptions = {
   attributionControl: false,
 };
 
-<Map initOptions={initOptions} />
+<Map initOptions={initOptions} />;
 ```
 
 ### Handle events
@@ -106,7 +106,10 @@ function onMapDestroy(map) {
 </script>
 
 <template>
-  <Map @mapLoaded="onMapLoaded" @mapDestroy="onMapDestroy" />
+  <Map
+    @mapLoaded="onMapLoaded"
+    @mapDestroy="onMapDestroy"
+  />
 </template>
 ```
 
@@ -123,7 +126,10 @@ function onMapDestroy(map) {
   console.info('destroy', map);
 }
 
-<Map onMapLoaded={onMapLoaded} onMapDestroy={onMapDestroy} />
+<Map
+  onMapLoaded={onMapLoaded}
+  onMapDestroy={onMapDestroy}
+/>;
 ```
 
 ### Multiple maps
@@ -155,7 +161,7 @@ import '@hungpvq/react-map-core/style.css';
 <div className="grid grid-cols-2 gap-4">
   <Map mapId="map-1" />
   <Map mapId="map-2" />
-</div>
+</div>;
 ```
 
 ### Dynamic style switch

@@ -10,9 +10,9 @@ Root list rows refresh via `useMapDataset().datasetVersion` — see [useMapDatas
 
 <!--@include: ../../core/module/props.md-->
 
-| Prop | Type | Default | Effect |
-| --- | --- | --- | --- |
-| `show` | `boolean` | — | Open the panel |
+| Prop   | Type      | Default | Effect         |
+| ------ | --------- | ------- | -------------- |
+| `show` | `boolean` | —       | Open the panel |
 
 **Events:** none.
 
@@ -21,10 +21,7 @@ Root list rows refresh via `useMapDataset().datasetVersion` — see [useMapDatas
 ```vue
 <script setup lang="ts">
 import { Map } from '@hungpvq/vue-map-core';
-import {
-  DatasetControl,
-  ComponentManagementControl,
-} from '@hungpvq/vue-map-dataset';
+import { DatasetControl, ComponentManagementControl } from '@hungpvq/vue-map-dataset';
 import '@hungpvq/map-core/style.css';
 import '@hungpvq/map-dataset/style.css';
 import '@hungpvq/vue-map-core/style.css';
@@ -34,7 +31,10 @@ import '@hungpvq/vue-draggable/style.css';
 
 <template>
   <Map>
-    <DatasetControl position="top-left" show />
+    <DatasetControl
+      position="top-left"
+      show
+    />
     <ComponentManagementControl />
   </Map>
 </template>

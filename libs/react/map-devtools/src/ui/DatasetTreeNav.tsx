@@ -84,7 +84,10 @@ function DatasetTreeNavNode({
         </MapControlButton>
       </div>
       {hasChildren && open ? (
-        <div className="dataset-tree-nav-node__children" role="group">
+        <div
+          className="dataset-tree-nav-node__children"
+          role="group"
+        >
           {node.children.map((child) => (
             <DatasetTreeNavNode
               key={child.id}
@@ -118,7 +121,11 @@ export function DatasetTreeNav({
   onSelect: (id: string) => void;
 }) {
   return (
-    <div className="dataset-tree-nav" role="tree" aria-label={ariaLabel}>
+    <div
+      className="dataset-tree-nav"
+      role="tree"
+      aria-label={ariaLabel}
+    >
       {nodes.map((node) => (
         <DatasetTreeNavNode
           key={node.id}

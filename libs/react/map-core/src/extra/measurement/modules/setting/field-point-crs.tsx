@@ -61,8 +61,14 @@ export function FieldPointCrs({ fields = [], onChange }: FieldPointCrsProps) {
   return (
     <div className="map-measurement-point-crs">
       {rows.map((row) => (
-        <div key={row.epsg} className="map-measurement-point-crs__row">
-          <span className="map-measurement-point-crs__epsg" title={row.title}>
+        <div
+          key={row.epsg}
+          className="map-measurement-point-crs__row"
+        >
+          <span
+            className="map-measurement-point-crs__epsg"
+            title={row.title}
+          >
             EPSG:{row.epsg}
           </span>
           <span className="map-measurement-point-crs__value">{row.value}</span>
@@ -81,7 +87,10 @@ export function FieldPointCrs({ fields = [], onChange }: FieldPointCrsProps) {
                 title={trans('map.crs-display.remove')}
                 onClick={() => onRemove(row.epsg)}
               >
-                <Icon path={mdiDeleteOutline} size="14px" />
+                <Icon
+                  path={mdiDeleteOutline}
+                  size="14px"
+                />
               </MapControlButton>
             ) : null}
           </div>

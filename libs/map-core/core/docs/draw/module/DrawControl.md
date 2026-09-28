@@ -11,9 +11,9 @@ Toolbar that mounts `@mapbox/mapbox-gl-draw` (`MapDraw`) on the map and drives s
 
 Shared map control layout props (position, visibility, order) match other map controls.
 
-| Prop | Description | Type | Required | Default |
-| --- | --- | --- | --- | --- |
-| `drawOptions` | Optional initial / bound draw session config | `MapDrawOption` | false | `undefined` |
+| Prop          | Description                                  | Type            | Required | Default     |
+| ------------- | -------------------------------------------- | --------------- | -------- | ----------- |
+| `drawOptions` | Optional initial / bound draw session config | `MapDrawOption` | false    | `undefined` |
 
 Prefer starting a session with `useMapDraw(mapId).start(config)` so CRUD and `drawSupports` stay in sync. See [protocol](../protocol.md).
 
@@ -33,12 +33,12 @@ Prefer starting a session with `useMapDraw(mapId).start(config)` so CRUD and `dr
 
 Vue and React `useDrawEvents` wrap Experimental **`createDrawSession`** (`@hungpvq/map-draw`):
 
-| Host action | Session API |
-| --- | --- |
-| draw.create / update / delete + map-click select/delete | `getMapDrawHandlers` / `handleMapClick` / `selectMethod` / `startCreate` |
-| Toolbar **Save** (before store persist) | `prepareSave()` — select mode + clear `isDraw` / current feature |
-| Toolbar **Cancel** | `finishCancel(onCancel?)` — optional feature callback, select reset, then `redrawNonDraft()` once |
-| Non-draft redraw after delete/cancel | `redrawNonDraft()` (no-op when option is draft) |
+| Host action                                             | Session API                                                                                       |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| draw.create / update / delete + map-click select/delete | `getMapDrawHandlers` / `handleMapClick` / `selectMethod` / `startCreate`                          |
+| Toolbar **Save** (before store persist)                 | `prepareSave()` — select mode + clear `isDraw` / current feature                                  |
+| Toolbar **Cancel**                                      | `finishCancel(onCancel?)` — optional feature callback, select reset, then `redrawNonDraft()` once |
+| Non-draft redraw after delete/cancel                    | `redrawNonDraft()` (no-op when option is draft)                                                   |
 
 Hosts still own `save(...)` / draft list UI, and `cleanAfterDone` `deleteAll`. Prefer Experimental **`createMapDrawControl`** for MapDraw construct + mount instead of inlining `new MapDraw` in adapters.
 
@@ -69,7 +69,10 @@ function onMapLoaded(_map: MapSimple) {
 </script>
 
 <template>
-  <Map map-id="demo" @mapLoaded="onMapLoaded">
+  <Map
+    map-id="demo"
+    @mapLoaded="onMapLoaded"
+  >
     <DrawControl position="top-right" />
   </Map>
 </template>
@@ -102,7 +105,10 @@ export function Example() {
   }
 
   return (
-    <Map mapId="demo" onMapLoaded={onMapLoaded}>
+    <Map
+      mapId="demo"
+      onMapLoaded={onMapLoaded}
+    >
       <DrawControl position="top-right" />
     </Map>
   );
@@ -115,10 +121,10 @@ Export `InspectControl` from vue/react-map-draw with control id **`mapInspectCon
 
 ## Accessibility
 
-| Surface | Contract |
-|---------|----------|
-| Draw toolbar | `role="toolbar"` + `aria-label="Draw tools"` |
-| Mode / action buttons | `MapControlButton` `title` → accessible name (Cancel, Save, Close, Draw, Select, Delete, draft actions) |
-| Escape | When focus is inside the draw toolbar and a draw is in progress (`isDraw`), Escape emits cancel (same as Cancel) |
+| Surface               | Contract                                                                                                         |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Draw toolbar          | `role="toolbar"` + `aria-label="Draw tools"`                                                                     |
+| Mode / action buttons | `MapControlButton` `title` → accessible name (Cancel, Save, Close, Draw, Select, Delete, draft actions)          |
+| Escape                | When focus is inside the draw toolbar and a draw is in progress (`isDraw`), Escape emits cancel (same as Cancel) |
 
 Document-level Escape for open panels remains on `bindMapKeyboardShortcuts` / the draggable shell; toolbar Escape only cancels an active draw when the toolbar chrome has focus.

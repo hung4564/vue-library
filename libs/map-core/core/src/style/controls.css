@@ -386,8 +386,10 @@
 .map-user-location-show-heading .map-user-location-heading::after,
 .mapboxgl-user-location-show-heading .mapboxgl-user-location-heading::before,
 .mapboxgl-user-location-show-heading .mapboxgl-user-location-heading::after,
-.maplibregl-user-location-show-heading .maplibregl-user-location-heading::before,
-.maplibregl-user-location-show-heading .maplibregl-user-location-heading::after {
+.maplibregl-user-location-show-heading
+  .maplibregl-user-location-heading::before,
+.maplibregl-user-location-show-heading
+  .maplibregl-user-location-heading::after {
   content: '';
   border-bottom: 7.5px solid var(--map-geolocate-dot-color, #4aa1eb);
   position: absolute;
@@ -395,14 +397,16 @@
 
 .map-user-location-show-heading .map-user-location-heading::before,
 .mapboxgl-user-location-show-heading .mapboxgl-user-location-heading::before,
-.maplibregl-user-location-show-heading .maplibregl-user-location-heading::before {
+.maplibregl-user-location-show-heading
+  .maplibregl-user-location-heading::before {
   border-left: 7.5px solid transparent;
   transform: translate(0, -28px) skewY(-20deg);
 }
 
 .map-user-location-show-heading .map-user-location-heading::after,
 .mapboxgl-user-location-show-heading .mapboxgl-user-location-heading::after,
-.maplibregl-user-location-show-heading .maplibregl-user-location-heading::after {
+.maplibregl-user-location-show-heading
+  .maplibregl-user-location-heading::after {
   border-right: 7.5px solid transparent;
   transform: translate(7.5px, -28px) skewY(20deg);
 }
@@ -793,7 +797,11 @@
   padding: 2px;
   border-radius: var(--map-radius-sm, 4px);
   /* Soft veil so icons stay readable over the value */
-  background: color-mix(in srgb, var(--map-surface-color, #fff) 92%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--map-surface-color, #fff) 92%,
+    transparent
+  );
   box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 8%, transparent);
   opacity: 0;
   pointer-events: none;
@@ -801,7 +809,8 @@
 }
 
 .map-measurement-point-crs__row:hover .map-measurement-point-crs__actions,
-.map-measurement-point-crs__row:focus-within .map-measurement-point-crs__actions {
+.map-measurement-point-crs__row:focus-within
+  .map-measurement-point-crs__actions {
   opacity: 1;
   pointer-events: auto;
 }
@@ -975,7 +984,8 @@
   padding: var(--map-space-md, 8px) var(--map-space-sm, 4px);
   position: relative;
   min-height: 32px;
-  border-bottom: thin solid var(--map-divider-color, var(--map-border-color, #eee));
+  border-bottom: thin solid
+    var(--map-divider-color, var(--map-border-color, #eee));
   border-radius: 2px;
   transition: background-color 0.12s ease;
 }
@@ -1462,9 +1472,13 @@
   display: flex;
   flex-direction: column;
   gap: var(--map-space-xs, 4px);
-  flex: 0 0 200px;
-  height: 200px;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: auto;
+}
+
+.map-registry-control--list .map-registry-control__list {
+  flex: 1 1 auto;
 }
 
 .map-registry-control__item.is-selected .map-registry-control__select {
@@ -1497,23 +1511,28 @@
   font-size: var(--map-font-size-xs, 10px);
 }
 
-.map-registry-control__detail {
-  margin-top: var(--map-space-lg, 12px);
-  padding-top: var(--map-space-lg, 12px);
-  border-top: 1px solid hsla(0, 0%, 100%, 0.16);
-  display: flex;
-  flex-direction: column;
-  gap: var(--map-space-md, 8px);
-  flex: 1 1 auto;
-  min-height: 0;
+.map-registry-control--detail {
+  gap: var(--map-space-sm, 6px);
   overflow: hidden;
 }
 
-.map-registry-control__detail h3 {
-  margin: 0;
-  flex: 0 0 auto;
-  font-size: var(--map-font-size-md, 14px);
-  font-weight: var(--map-font-weight-semibold, 600);
+.map-registry-control--detail > .map-tabs-root {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.map-registry-control--detail .map-tabs__pane > .map-registry-control__layout {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.map-registry-control--detail
+  .map-registry-control__props-pane
+  > .map-registry-control__props {
+  flex: 1 1 auto;
+  max-height: none;
+  min-height: 0;
 }
 
 .map-registry-control__props {
@@ -1526,16 +1545,104 @@
   word-break: break-word;
   flex: 1 1 auto;
   min-height: 0;
-  max-height: 100px;
   overflow: auto;
 }
 
-.map-registry-control__actions {
+.map-registry-control__layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-md, 8px);
+  flex: 0 0 auto;
+  margin: 0;
+  padding: var(--map-space-md, 8px);
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  border-radius: var(--map-radius-md, 6px);
+  background: color-mix(in srgb, currentColor 6%, transparent);
+}
+
+.map-registry-control__layout-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--map-space-md, 8px) var(--map-space-sm, 6px);
+  align-items: start;
+}
+
+.map-registry-control__layout-fields > .form-group {
+  margin: 0;
+  min-width: 0;
+}
+
+.map-registry-control__layout-span {
+  grid-column: 1 / -1;
+}
+
+.map-registry-control__layout-span > .form-group {
+  margin: 0;
+  min-width: 0;
+}
+
+.map-registry-control__layout .input-container,
+.map-registry-control__layout .input-container > input,
+.map-registry-control__layout .input-container > select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.map-registry-control__layout-footer {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: var(--map-space-sm, 6px);
+  padding-top: var(--map-space-xs, 4px);
+}
+
+/* Shared tab strip (RegistryControl, Devtools, …) */
+.map-tabs-root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--map-space-md, 8px);
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.map-tabs-root--bar-only {
   flex: 0 0 auto;
-  margin-top: auto;
+}
+
+.map-tabs {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.map-tabs .map-control-button.map-control-button-active {
+  background: color-mix(
+    in srgb,
+    var(--map-primary-color, #004e98) 12%,
+    transparent
+  );
+  color: var(--map-button-active-color, var(--map-primary-color, #004e98));
+  font-weight: 600;
+}
+
+.map-tabs__panes {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.map-tabs__pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.map-tabs__pane[hidden] {
+  display: none !important;
 }
 
 .map-registry-control__run {

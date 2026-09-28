@@ -165,12 +165,22 @@ function createDatasetMeasure(
     <AsideControl position="top-left" />
     <ToolbarControl position="top-left" />
     <ComponentManagementControl />
-    <MeasurementControl position="top-right" :actions="actionMeasures" />
+    <MeasurementControl
+      position="top-right"
+      :actions="actionMeasures"
+    />
     <IdentifyControl position="top-right" />
     <DrawControl position="top-right" />
-    <LayerControl position="top-left" show>
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId }">
-        <BaseMapCard :mapId="mapId" showOpacity allow-add-basemap />
+        <BaseMapCard
+          :mapId="mapId"
+          showOpacity
+          allow-add-basemap
+        />
       </template>
     </LayerControl>
     <InspectControl position="top-right" />
@@ -192,7 +202,10 @@ function createDatasetMeasure(
     <HomeControl />
     <MouseCoordinatesControl />
     <MapContextMenuControl />
-    <BaseMapControl position="bottom-left" allow-add-basemap />
+    <BaseMapControl
+      position="bottom-left"
+      allow-add-basemap
+    />
     <DatasetControl position="top-left" />
     <EventManagementControl position="top-left" />
   </Map>

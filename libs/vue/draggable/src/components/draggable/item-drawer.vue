@@ -307,7 +307,10 @@ const resizeHandleClass = computed(() => {
 </script>
 
 <template>
-  <Teleport v-if="show" :to="slotTo">
+  <Teleport
+    v-if="show"
+    :to="slotTo"
+  >
     <div
       ref="drawerRoot"
       class="draggable-drawer"
@@ -319,7 +322,10 @@ const resizeHandleClass = computed(() => {
         { 'draggable-drawer--resizing': isResizing },
       ]"
     >
-      <component :is="componentCard" :highlight="isHighlight">
+      <component
+        :is="componentCard"
+        :highlight="isHighlight"
+      >
         <div class="draggable-drawer-inner">
           <template v-if="!disabledHeader">
             <component :is="componentCardHeader">
@@ -373,7 +379,10 @@ const resizeHandleClass = computed(() => {
     aria-label="Switch drawer panel"
     @update:open="menuOpen = $event"
   >
-    <ul class="context-menu" role="presentation">
+    <ul
+      class="context-menu"
+      role="presentation"
+    >
       <ContextMenuItem
         v-for="option in availableDrawerItems"
         :key="option.id"

@@ -21,7 +21,10 @@ export function InputArrayIndex({
   return (
     <div className="input-array-index">
       {items.map((arr, index) => (
-        <div className="input-array-item" key={`array_${index}`}>
+        <div
+          className="input-array-item"
+          key={`array_${index}`}
+        >
           <span> {arr.text}: </span>
           <InputText
             value={String(form[index] ?? '')}

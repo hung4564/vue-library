@@ -13,11 +13,11 @@
 
 ## Slots
 
-| Name         | Description |
-| ------------ | ----------- |
-| `btn`        | Control chrome inside `.btn-module-container` (flex `order` applies here) |
+| Name         | Description                                                                                                                                                                                             |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `btn`        | Control chrome inside `.btn-module-container` (flex `order` applies here)                                                                                                                               |
 | `btnOutside` | Same corner Teleport target as `btn`, but **sibling outside** `.btn-module-container` — use for absolute panels that must pin to the map corner host (e.g. toolbar/menu More). React: `btnOutside` prop |
-| `draggable`  |             |
+| `draggable`  |                                                                                                                                                                                                         |
 
 ## Usage
 
@@ -39,7 +39,11 @@ const { moduleContainerProps } = useMap(props);
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <MapControlButton>
-        <SvgIcon :size="18" type="mdi" :path="mdiHome" />
+        <SvgIcon
+          :size="18"
+          type="mdi"
+          :path="mdiHome"
+        />
       </MapControlButton>
     </template>
     <slot />
@@ -68,7 +72,11 @@ const { moduleContainerProps } = useMap(props);
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <MapControlButton>
-        <SvgIcon :size="18" type="mdi" :path="mdiHome" />
+        <SvgIcon
+          :size="18"
+          type="mdi"
+          :path="mdiHome"
+        />
       </MapControlButton>
     </template>
     <slot />
@@ -79,12 +87,7 @@ const { moduleContainerProps } = useMap(props);
 ### React
 
 ```tsx
-import {
-  MapControlButton,
-  ModuleContainer,
-  defaultMapProps,
-  useMap,
-} from '@hungpvq/react-map-core';
+import { MapControlButton, ModuleContainer, defaultMapProps, useMap } from '@hungpvq/react-map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { Icon } from '@mdi/react';
 import { mdiHome } from '@mdi/js';
@@ -104,7 +107,10 @@ function HomeModule(props: Props) {
       {...moduleContainerProps}
       btn={
         <MapControlButton>
-          <Icon path={mdiHome} size="18px" />
+          <Icon
+            path={mdiHome}
+            size="18px"
+          />
         </MapControlButton>
       }
     >

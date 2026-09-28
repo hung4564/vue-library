@@ -41,7 +41,10 @@ npm install @hungpvq/react-map-core
 
 ```vue
 <template>
-  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
+  <Map
+    :mapId="mapId"
+    @mapLoaded="onMapLoaded"
+  >
     <!-- Core controls -->
     <ZoomControl position="top-right" />
     <HomeControl position="top-right" />
@@ -63,11 +66,14 @@ import { MeasurementControl } from '@hungpvq/vue-map-core';
 import { Map, ZoomControl, HomeControl, MeasurementControl } from '@hungpvq/react-map-core';
 import '@hungpvq/react-map-core/style.css';
 
-<Map mapId={mapId} onMapLoaded={onMapLoaded}>
+<Map
+  mapId={mapId}
+  onMapLoaded={onMapLoaded}
+>
   <ZoomControl position="top-right" />
   <HomeControl position="top-right" />
   <MeasurementControl position="top-right" />
-</Map>
+</Map>;
 ```
 
 ### With Dataset Management
@@ -76,8 +82,14 @@ import '@hungpvq/react-map-core/style.css';
 
 ```vue
 <template>
-  <Map :mapId="mapId" @mapLoaded="onMapLoaded">
-    <LayerControl position="top-left" show>
+  <Map
+    :mapId="mapId"
+    @mapLoaded="onMapLoaded"
+  >
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId }">
         <MeasurementControl :mapId="mapId" />
       </template>
@@ -101,14 +113,17 @@ import { LayerControl } from '@hungpvq/react-map-dataset';
 import '@hungpvq/react-map-core/style.css';
 import '@hungpvq/react-map-dataset/style.css';
 
-<Map mapId={mapId} onMapLoaded={onMapLoaded}>
+<Map
+  mapId={mapId}
+  onMapLoaded={onMapLoaded}
+>
   <LayerControl
     position="top-left"
     show
     endList={({ mapId }) => <MeasurementControl mapId={mapId} />}
   />
   <MeasurementControl position="top-right" />
-</Map>
+</Map>;
 ```
 
 ### Usage Notes

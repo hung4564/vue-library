@@ -17,7 +17,10 @@ export function RecursiveList({
 }) {
   if (isGroup(item)) {
     return (
-      <ListGroupItem item={item} disabledDrag={disabledDrag}>
+      <ListGroupItem
+        item={item}
+        disabledDrag={disabledDrag}
+      >
         <div
           style={{
             display: 'flex',
@@ -40,7 +43,10 @@ export function RecursiveList({
     );
   }
   return (
-    <ListItem disabledDrag={disabledDrag} item={item as Item}>
+    <ListItem
+      disabledDrag={disabledDrag}
+      item={item as Item}
+    >
       {renderLeaf ? (
         renderLeaf(item as Item)
       ) : (

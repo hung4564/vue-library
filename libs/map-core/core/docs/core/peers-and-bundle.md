@@ -6,12 +6,12 @@ Related: [Install from npm](./install-from-npm.md) · [Minimal starter](./minima
 
 ## Required vs shipped vs optional
 
-| Kind | Packages | Who installs |
-|------|----------|--------------|
-| **Meta package (recommended)** | `@hungpvq/vue-map` / `@hungpvq/react-map` | App installs meta + `maplibre-gl` + framework; pulls core/dataset/draggable/shared |
-| **Required peers** | `maplibre-gl`, `vue`/`react` (and `react-dom`) | App (must be single MapLibre instance) |
-| **Shipped with `@hungpvq/map-core`** (dependencies, still external in dist) | Granular `@turf/*`, `proj4`, `@mdi/js`, `mitt` | Automatic with `map-core` — **do not** install `@turf/turf` for the library |
-| **Optional peers** | `file-saver` (print), `@maplibre/maplibre-gl-style-spec` (legend expression eval), GIS format parsers on `map-dataset` | App when using that feature |
+| Kind                                                                        | Packages                                                                                                               | Who installs                                                                       |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| **Meta package (recommended)**                                              | `@hungpvq/vue-map` / `@hungpvq/react-map`                                                                              | App installs meta + `maplibre-gl` + framework; pulls core/dataset/draggable/shared |
+| **Required peers**                                                          | `maplibre-gl`, `vue`/`react` (and `react-dom`)                                                                         | App (must be single MapLibre instance)                                             |
+| **Shipped with `@hungpvq/map-core`** (dependencies, still external in dist) | Granular `@turf/*`, `proj4`, `@mdi/js`, `mitt`                                                                         | Automatic with `map-core` — **do not** install `@turf/turf` for the library        |
+| **Optional peers**                                                          | `file-saver` (print), `@maplibre/maplibre-gl-style-spec` (legend expression eval), GIS format parsers on `map-dataset` | App when using that feature                                                        |
 
 ## Meta package recipe (preferred)
 
@@ -78,25 +78,25 @@ There is no separate npm “lite” package beyond `@hungpvq/vue-map` / `@hungpv
 
 ## Feature optional peers (`@hungpvq/map-core`)
 
-| Peer | When needed |
-|------|-------------|
-| `file-saver` | Print / `exportFile` (`@hungpvq/map-core/print`) |
+| Peer                               | When needed                                               |
+| ---------------------------------- | --------------------------------------------------------- |
+| `file-saver`                       | Print / `exportFile` (`@hungpvq/map-core/print`)          |
 | `@maplibre/maplibre-gl-style-spec` | Legend expression evaluation (`@hungpvq/map-core/legend`) |
 
 ## Full GIS / CreateControl
 
 When using CreateControl file upload / `loadGis*` / worker parse, install optional peers as needed:
 
-| Peer | Formats |
-|------|---------|
-| `shpjs` | Shapefile |
-| `papaparse` | CSV |
-| `@tmcw/togeojson` + `@xmldom/xmldom` | KML / GPX |
-| `jszip` | KMZ / zipped shapefile |
-| `topojson-client` | TopoJSON |
-| `gdal3.js` | FileGDB (`.gdb.zip` / `*_gdb.zip` / `.gdb` folder) — load UMD from CDN / static path on the **main thread**; do not Vite-`import` the package or load it inside the GIS worker |
-| `sql.js` | MBTiles (CreateControl + `mbtiles-local://`) — prefer npm peer; if Vite CJS interop fails, falls back to CDN `sql-wasm.js` (works in the vector-tile worker too) |
-| `pmtiles` | PMTiles (CreateControl + `pmtiles-local://` via `getZxy`) |
+| Peer                                 | Formats                                                                                                                                                                        |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `shpjs`                              | Shapefile                                                                                                                                                                      |
+| `papaparse`                          | CSV                                                                                                                                                                            |
+| `@tmcw/togeojson` + `@xmldom/xmldom` | KML / GPX                                                                                                                                                                      |
+| `jszip`                              | KMZ / zipped shapefile                                                                                                                                                         |
+| `topojson-client`                    | TopoJSON                                                                                                                                                                       |
+| `gdal3.js`                           | FileGDB (`.gdb.zip` / `*_gdb.zip` / `.gdb` folder) — load UMD from CDN / static path on the **main thread**; do not Vite-`import` the package or load it inside the GIS worker |
+| `sql.js`                             | MBTiles (CreateControl + `mbtiles-local://`) — prefer npm peer; if Vite CJS interop fails, falls back to CDN `sql-wasm.js` (works in the vector-tile worker too)               |
+| `pmtiles`                            | PMTiles (CreateControl + `pmtiles-local://` via `getZxy`)                                                                                                                      |
 
 Wire the worker with `@hungpvq/map-dataset/vite` → `mapDatasetGisWorker()` when parsing off the main thread. Soft client size limit: `CREATE_CONTROL_MAX_FILE_BYTES` / `assertCreateControlFileSize` on `@hungpvq/map-dataset/create-control`. CreateControl remembers last name/type/CRS in `sessionStorage` (`load/saveCreateControlDraft`).
 

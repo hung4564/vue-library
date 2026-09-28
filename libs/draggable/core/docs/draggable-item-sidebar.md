@@ -12,19 +12,19 @@ Only one sidebar is visible per edge. If several sidebars share the same `locati
 
 ## Props
 
-| Prop             | Description                                         | Type            | Required | Default Value |
-| ---------------- | --------------------------------------------------- | --------------- | -------- | ------------- |
-| `id`             | Stable item id for store commands / remount.        | `string`        | false    | auto UUID     |
-| `show`           | Controls the visibility of the sidebar.             | `boolean`       | false    | false         |
-| `expand`         | Whether the sidebar is expanded.                    | `boolean`       | false    | false         |
-| `width`          | Width of the sidebar.                               | `number,string` | false    | 'auto'        |
-| `location`       | Sidebar position: 'left', 'right', 'top', 'bottom'. | `string`        | false    | 'left'        |
-| `title`          | Plain title for switcher store and default header.  | `string`        | false    | -             |
-| `titleNode`      | React only: custom header node (Vue `#title` slot). Falls back to `title`. | `ReactNode` | false | - |
-| `disabledExpand` | Disables the expand/collapse feature.               | `boolean`       | false    | false         |
-| `disabledHeader` | Hides the header section.                           | `boolean`       | false    | false         |
-| `disabledClose`  | Hides the close button.                             | `boolean`       | false    | false         |
-| `containerId`    | ID of the parent container (for teleporting).       | `string`        | false    | -             |
+| Prop             | Description                                                                | Type            | Required | Default Value |
+| ---------------- | -------------------------------------------------------------------------- | --------------- | -------- | ------------- |
+| `id`             | Stable item id for store commands / remount.                               | `string`        | false    | auto UUID     |
+| `show`           | Controls the visibility of the sidebar.                                    | `boolean`       | false    | false         |
+| `expand`         | Whether the sidebar is expanded.                                           | `boolean`       | false    | false         |
+| `width`          | Width of the sidebar.                                                      | `number,string` | false    | 'auto'        |
+| `location`       | Sidebar position: 'left', 'right', 'top', 'bottom'.                        | `string`        | false    | 'left'        |
+| `title`          | Plain title for switcher store and default header.                         | `string`        | false    | -             |
+| `titleNode`      | React only: custom header node (Vue `#title` slot). Falls back to `title`. | `ReactNode`     | false    | -             |
+| `disabledExpand` | Disables the expand/collapse feature.                                      | `boolean`       | false    | false         |
+| `disabledHeader` | Hides the header section.                                                  | `boolean`       | false    | false         |
+| `disabledClose`  | Hides the close button.                                                    | `boolean`       | false    | false         |
+| `containerId`    | ID of the parent container (for teleporting).                              | `string`        | false    | -             |
 
 ## Events
 
@@ -40,12 +40,12 @@ React: use `onUpdateShow` / `onUpdateExpand` / `onClose`.
 
 Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]`. Full contract: [header-slots.md](./header-slots.md).
 
-| Vue             | React           | Description                                      |
-| --------------- | --------------- | ------------------------------------------------ |
-| `default`       | `children`      | Content of the sidebar.                          |
-| `title` (prop)  | `title`         | Plain string for the switcher menu and default header. |
-| `title` (slot)  | `titleNode`     | Custom header title node; falls back to `title`. |
-| `after-title`   | `afterTitle`    | Immediately after title (before spacer).         |
+| Vue            | React        | Description                                            |
+| -------------- | ------------ | ------------------------------------------------------ |
+| `default`      | `children`   | Content of the sidebar.                                |
+| `title` (prop) | `title`      | Plain string for the switcher menu and default header. |
+| `title` (slot) | `titleNode`  | Custom header title node; falls back to `title`.       |
+| `after-title`  | `afterTitle` | Immediately after title (before spacer).               |
 
 ## Usage
 
@@ -58,7 +58,11 @@ import { DraggableContainer, DraggableItemSideBar } from '@hungpvq/vue-draggable
 
 <template>
   <DraggableContainer>
-    <DraggableItemSideBar title="Title" show location="right">
+    <DraggableItemSideBar
+      title="Title"
+      show
+      location="right"
+    >
       <div style="height: 100vh"></div>
     </DraggableItemSideBar>
   </DraggableContainer>
@@ -73,7 +77,11 @@ import { DraggableContainer, DraggableItemSideBar } from '@hungpvq/react-draggab
 export function Example() {
   return (
     <DraggableContainer>
-      <DraggableItemSideBar title="Title" show location="right">
+      <DraggableItemSideBar
+        title="Title"
+        show
+        location="right"
+      >
         <div style={{ height: '100vh' }} />
       </DraggableItemSideBar>
     </DraggableContainer>

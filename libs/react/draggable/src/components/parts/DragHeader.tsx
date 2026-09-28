@@ -17,7 +17,10 @@ function DragHeader({
 }: DragHeaderProps) {
   return (
     <>
-      <hr className="map-divider" aria-hidden="true" />
+      <hr
+        className="map-divider"
+        aria-hidden="true"
+      />
       <div className="draggable-header">
         <div className="draggable-header__content">
           {preTitle}
@@ -31,7 +34,10 @@ function DragHeader({
           {extraBtn}
         </div>
       </div>
-      <hr className="map-divider" aria-hidden="true" />
+      <hr
+        className="map-divider"
+        aria-hidden="true"
+      />
     </>
   );
 }

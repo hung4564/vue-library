@@ -62,7 +62,10 @@ function clear() {
           <RouterLink to="/logging-cookbook">#/logging-cookbook</RouterLink>
         </p>
       </div>
-      <nav class="shared-log-demo__nav" aria-label="Demo pages">
+      <nav
+        class="shared-log-demo__nav"
+        aria-label="Demo pages"
+      >
         <RouterLink
           v-for="item in navItems"
           :key="item.to"
@@ -77,15 +80,30 @@ function clear() {
       <aside class="shared-log-demo__panel">
         <h2>Scenarios</h2>
         <ul class="shared-log-demo__list">
-          <li v-for="item in SHARED_LOG_SCENARIOS" :key="item.id">
-            <button type="button" @click="run(item.id)">
+          <li
+            v-for="item in SHARED_LOG_SCENARIOS"
+            :key="item.id"
+          >
+            <button
+              type="button"
+              @click="run(item.id)"
+            >
               {{ done[item.id] ? '✓ ' : '' }}{{ item.label }}
             </button>
             <span class="shared-log-demo__expect">{{ item.expect }}</span>
           </li>
         </ul>
-        <p v-if="lastNote" class="shared-log-demo__note">{{ lastNote }}</p>
-        <button type="button" class="shared-log-demo__clear" @click="clear">
+        <p
+          v-if="lastNote"
+          class="shared-log-demo__note"
+        >
+          {{ lastNote }}
+        </p>
+        <button
+          type="button"
+          class="shared-log-demo__clear"
+          @click="clear"
+        >
           Clear buffer
         </button>
       </aside>

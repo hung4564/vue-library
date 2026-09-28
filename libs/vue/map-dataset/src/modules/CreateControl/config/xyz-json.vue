@@ -23,10 +23,16 @@
           </MapControlButton>
         </template>
       </InputActionRow>
-      <div v-if="loadingUrl" class="create-control-status">
+      <div
+        v-if="loadingUrl"
+        class="create-control-status"
+      >
         {{ trans('map.layer-control.create.loading-url') }}
       </div>
-      <div v-if="urlError" class="create-control-sample-error">
+      <div
+        v-if="urlError"
+        class="create-control-sample-error"
+      >
         {{ urlError }}
       </div>
     </div>

@@ -223,8 +223,7 @@
 
 .map-range-slider:focus::-webkit-slider-runnable-track,
 .layer-item-slider:focus::-webkit-slider-runnable-track,
-.layer-item__opacity
-  input[type='range']:focus::-webkit-slider-runnable-track {
+.layer-item__opacity input[type='range']:focus::-webkit-slider-runnable-track {
   background: transparent;
 }
 
@@ -451,10 +450,7 @@ input[type='range']:focus::-ms-fill-upper {
     --map-card-bg,
     var(--card-background-color, rgba(32, 43, 54, 0.95))
   );
-  color: var(
-    --map-card-text,
-    var(--card-color, #fff)
-  );
+  color: var(--map-card-text, var(--card-color, #fff));
   border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
   border-radius: var(--map-radius-sm, 4px);
   box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
@@ -483,10 +479,7 @@ input[type='range']:focus::-ms-fill-upper {
 }
 
 .input-crs__option._active {
-  color: var(
-    --map-card-text,
-    var(--card-color, #fff)
-  );
+  color: var(--map-card-text, var(--card-color, #fff));
 }
 
 /* ---------- InputActionRow (joined field + action button) ---------- */
@@ -494,7 +487,8 @@ input[type='range']:focus::-ms-fill-upper {
   --input-action-row-h: max(
     2rem,
     calc(
-      1em * var(--map-line-height, 1.4) + 2 * var(--map-padding-input, 8px) + 2px
+      1em * var(--map-line-height, 1.4) + 2 * var(--map-padding-input, 8px) +
+        2px
     )
   );
   display: flex;

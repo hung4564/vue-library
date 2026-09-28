@@ -2,15 +2,15 @@
 
 Framework-agnostic MapLibre GIS kit with Vue and React adapters.
 
-| Package | Description |
-|---------|-------------|
-| [`@hungpvq/map-core`](./core/) | Engine helpers, store, theme, locale, registry types, workers |
-| [`@hungpvq/map-dataset`](./map-dataset/) | Dataset tree, builders, identify, style, GIS worker |
-| [`@hungpvq/map-draw`](./map-draw/) | DrawService, DrawingType, styles, inspect helpers |
-| [`@hungpvq/vue-map`](../vue/map/) / [`@hungpvq/react-map`](../react/map/) | Meta bag: deps + `installMapApp` + `./style.css` |
-| [`@hungpvq/vue-map-core`](../vue/map-core/) / [`@hungpvq/react-map-core`](../react/map-core/) | Map container, controls, hooks |
-| [`@hungpvq/vue-map-dataset`](../vue/map-dataset/) / [`@hungpvq/react-map-dataset`](../react/map-dataset/) | Dataset UI, hooks, plugin, and adapter stores |
-| [`@hungpvq/vue-map-draw`](../vue/map-draw/) / [`@hungpvq/react-map-draw`](../react/map-draw/) | Draw / edit UI (shared InspectController) |
+| Package                                                                                                   | Description                                                   |
+| --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| [`@hungpvq/map-core`](./core/)                                                                            | Engine helpers, store, theme, locale, registry types, workers |
+| [`@hungpvq/map-dataset`](./map-dataset/)                                                                  | Dataset tree, builders, identify, style, GIS worker           |
+| [`@hungpvq/map-draw`](./map-draw/)                                                                        | DrawService, DrawingType, styles, inspect helpers             |
+| [`@hungpvq/vue-map`](../vue/map/) / [`@hungpvq/react-map`](../react/map/)                                 | Meta bag: deps + `installMapApp` + `./style.css`              |
+| [`@hungpvq/vue-map-core`](../vue/map-core/) / [`@hungpvq/react-map-core`](../react/map-core/)             | Map container, controls, hooks                                |
+| [`@hungpvq/vue-map-dataset`](../vue/map-dataset/) / [`@hungpvq/react-map-dataset`](../react/map-dataset/) | Dataset UI, hooks, plugin, and adapter stores                 |
+| [`@hungpvq/vue-map-draw`](../vue/map-draw/) / [`@hungpvq/react-map-draw`](../react/map-draw/)             | Draw / edit UI (shared InspectController)                     |
 
 **Docs hub:** [core/docs/index.md](./core/docs/index.md) · **Demos:** [Vue](https://hung4564.github.io/demo-map/vue/) · [React](https://hung4564.github.io/demo-map/react/)
 
@@ -24,15 +24,15 @@ Packages are on **`1.0.x`** — SemVer applies strictly: breaking → **major**,
 
 ## 0. Surface map (version together)
 
-| Package | Public entries | Peer lock notes |
-|---------|----------------|-----------------|
-| `@hungpvq/map-core` | `.` + `./style.css` + `./assets/*` + `./worker` + domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`) | peer maplibre `^5` + shared-*; **deps** granular `@turf/*`, `proj4`, `@mdi/js`; optional peers `file-saver`, `@maplibre/maplibre-gl-style-spec` |
-| `@hungpvq/map-dataset` | `.` + `./style.css` + `./vite` + `./assets/*` + domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`, `./data-management`) — **moving root→subpath is major** | depends on `map-core@~1.0.1`; peer `maplibre-gl` `^5` (required, same as map-core); deps `@turf/helpers`, `@turf/boolean-intersects`; GIS parsers optional peers for create-control |
-| `@hungpvq/map-draw` | `.` | peer `map-core ~1.0.1`, maplibre-gl (built-in MapDraw) |
-| `@hungpvq/vue-map-core` / `react-map-core` | `.` + `./style.css` + `./fields` | peer `map-core` **`~1.0.1`**; draggable optional peer (needed for default `Map` shell / panels) |
-| `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css`; adapter UI/hooks/plugin only | **peer** `map-dataset` + `map-core` + framework map-core `~1.0.1` (apps must install `@hungpvq/map-dataset`); shared peers `~` current (not `>=0.0.1`); draggable optional peer (needed for LayerControl panels) |
-| `@hungpvq/vue-map` / `react-map` | `.` + `./style.css`; facade `installMapApp` (+ Vue `createMapAppPlugin`) | **deps** map stack + draggable + shared; **peer** framework + `maplibre-gl` only |
-| `@hungpvq/vue-map-draw` / `react-map-draw` | `.` + `./style.css` | peer `map-draw ~1.0.1`, map-core, framework map-core |
+| Package                                          | Public entries                                                                                                                                                                                                                            | Peer lock notes                                                                                                                                                                                                  |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@hungpvq/map-core`                              | `.` + `./style.css` + `./assets/*` + `./worker` + domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`)                                                  | peer maplibre `^5` + shared-*; **deps** granular `@turf/*`, `proj4`, `@mdi/js`; optional peers `file-saver`, `@maplibre/maplibre-gl-style-spec`                                                                  |
+| `@hungpvq/map-dataset`                           | `.` + `./style.css` + `./vite` + `./assets/*` + domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`, `./data-management`) — **moving root→subpath is major** | depends on `map-core@~1.0.1`; peer `maplibre-gl` `^5` (required, same as map-core); deps `@turf/helpers`, `@turf/boolean-intersects`; GIS parsers optional peers for create-control                              |
+| `@hungpvq/map-draw`                              | `.`                                                                                                                                                                                                                                       | peer `map-core ~1.0.1`, maplibre-gl (built-in MapDraw)                                                                                                                                                           |
+| `@hungpvq/vue-map-core` / `react-map-core`       | `.` + `./style.css` + `./fields`                                                                                                                                                                                                          | peer `map-core` **`~1.0.1`**; draggable optional peer (needed for default `Map` shell / panels)                                                                                                                  |
+| `@hungpvq/vue-map-dataset` / `react-map-dataset` | `.` + `./style.css`; adapter UI/hooks/plugin only                                                                                                                                                                                         | **peer** `map-dataset` + `map-core` + framework map-core `~1.0.1` (apps must install `@hungpvq/map-dataset`); shared peers `~` current (not `>=0.0.1`); draggable optional peer (needed for LayerControl panels) |
+| `@hungpvq/vue-map` / `react-map`                 | `.` + `./style.css`; facade `installMapApp` (+ Vue `createMapAppPlugin`)                                                                                                                                                                  | **deps** map stack + draggable + shared; **peer** framework + `maplibre-gl` only                                                                                                                                 |
+| `@hungpvq/vue-map-draw` / `react-map-draw`       | `.` + `./style.css`                                                                                                                                                                                                                       | peer `map-draw ~1.0.1`, map-core, framework map-core                                                                                                                                                             |
 
 **Monorepo rule:** map release group is **`fixed`** (one version, tag `map@{version}` via Nx `releaseTag.pattern`). Bumping any map package bumps the whole group; in-family peers stay `~` aligned.
 
@@ -83,7 +83,7 @@ Breaking if you:
 
 ### C. Runtime protocol (breaking even if TS still compiles)
 
-#### Control ids (`UniversalRegistry` / `useRegisterMapControl`)
+#### Control ids (`UniversalRegistry` / `useMapControl`)
 
 Documented ids include `mapLayerControl`, `mapThemeControl`, `mapIdentifyControl`, `mapNavigationControl`, …
 
@@ -103,7 +103,7 @@ See `LIST_VIEW_MENU_COMPONENT_KEY` and `LIST_VIEW_MENU_ID` in `@hungpvq/map-data
 
 #### Store / storage / event keys
 
-- [ ] Change `MAP_STORE_KEY.*` values (`registry`, `basemap`, …)
+- [ ] Change `MAP_STORE_KEY.*` values (`controls`, `basemap`, …)
 - [ ] Change `MAP_THEME_STORAGE_KEY` (`hungpvq.map-theme-mode`)
 - [ ] Change theme class names (`map-theme-light`, …) or remove a published `MAP_THEME_IDS` entry
 - [ ] Change mitt / lang event name contracts
@@ -186,22 +186,22 @@ Documented `--map-*` tokens and `style.css` entries:
 
 ## 6. Common changes → suggested bump
 
-| Change | Bump |
-|--------|------|
-| Add ThemeControl modes / new themes | minor |
-| Change `hungpvq.map-theme-mode` or `map-theme-*` classes | major |
-| Rename `mapLayerControl` / `layer-action-*` | major |
-| Add `LIST_VIEW_MENU_COMPONENT_KEY.foo` | minor |
-| Change menu click handler args | major |
-| Add optional `LayerControl` prop | minor |
-| Rename `@mapLoaded` | major |
-| Remove a util export from `map-core` | major |
-| Internal refactor with identical API | patch |
-| Raise `maplibre-gl` peer to a new major | major (unless dual-range + verified) |
-| Merge UniversalRegistry host but keep facade signatures | patch/minor; if static API changes → major |
-| Align Vue/React `getMethod` behavior (bugfix) | patch/minor — note if apps relied on divergence |
-| Change `DatasetService` add order | major |
-| Docs-only registry updates | patch |
+| Change                                                   | Bump                                            |
+| -------------------------------------------------------- | ----------------------------------------------- |
+| Add ThemeControl modes / new themes                      | minor                                           |
+| Change `hungpvq.map-theme-mode` or `map-theme-*` classes | major                                           |
+| Rename `mapLayerControl` / `layer-action-*`              | major                                           |
+| Add `LIST_VIEW_MENU_COMPONENT_KEY.foo`                   | minor                                           |
+| Change menu click handler args                           | major                                           |
+| Add optional `LayerControl` prop                         | minor                                           |
+| Rename `@mapLoaded`                                      | major                                           |
+| Remove a util export from `map-core`                     | major                                           |
+| Internal refactor with identical API                     | patch                                           |
+| Raise `maplibre-gl` peer to a new major                  | major (unless dual-range + verified)            |
+| Merge UniversalRegistry host but keep facade signatures  | patch/minor; if static API changes → major      |
+| Align Vue/React `getMethod` behavior (bugfix)            | patch/minor — note if apps relied on divergence |
+| Change `DatasetService` add order                        | major                                           |
+| Docs-only registry updates                               | patch                                           |
 
 ## 7. Reducing “everything is breaking”
 

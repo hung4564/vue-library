@@ -10,7 +10,7 @@ import React, { useCallback, useEffect } from 'react';
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
-import { useToolbarControl } from '../../toolbar/helper';
+import { useMapControl } from '../../registry/useMapControl';
 import { useBaseMap } from '../hooks/useBaseMap';
 
 export interface BaseMapTagControlProps extends WithMapPropType {
@@ -29,7 +29,7 @@ export function BaseMapTagControl({
     baseMaps,
     defaultBaseMap,
   };
-  const { mapId, moduleContainerProps, mapInstance, order } = useMap(props);
+  const { mapId, mapInstance, order } = useMap(props);
   const {
     setBaseMaps,
     baseMaps: c_baseMaps,
@@ -65,29 +65,36 @@ export function BaseMapTagControl({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mount/unmount with map only
   }, [mapInstance]);
 
-  const { control } = useToolbarControl(mapId, props, {
-    kind: 'module',
-    moduleId: 'mapBaseMapTagControl',
-    order: order,
-    orientation: 'row',
-    buttons: (baseMaps as BaseMapItem[]).map((baseMap) => ({
-      id: String(baseMap.id),
-      getState: () => {
-        const live =
-          c_baseMaps.find((item) => item.id === baseMap.id) ?? baseMap;
-        return {
-          visible: true,
-          active: current_baseMaps?.id === live.id,
-          title: live.title,
-          icon: { type: 'mdi' as const, path: mdiLayersOutline },
-        };
-      },
-      onClick: () => {
-        const live =
-          c_baseMaps.find((item) => item.id === baseMap.id) ?? baseMap;
-        onClick(live);
-      },
-    })),
+  const { moduleContainerProps, control } = useMapControl(mapId, {
+    id: 'mapBaseMapTagControl',
+    panelKind: 'button',
+    from: props,
+    order,
+    buttonSlot: 'custom',
+    toolbar: {
+      kind: 'module',
+      moduleId: 'mapBaseMapTagControl',
+      order,
+      orientation: 'row',
+      buttons: (baseMaps as BaseMapItem[]).map((baseMap) => ({
+        id: String(baseMap.id),
+        getState: () => {
+          const live =
+            c_baseMaps.find((item) => item.id === baseMap.id) ?? baseMap;
+          return {
+            visible: true,
+            active: current_baseMaps?.id === live.id,
+            title: live.title,
+            icon: { type: 'mdi' as const, path: mdiLayersOutline },
+          };
+        },
+        onClick: () => {
+          const live =
+            c_baseMaps.find((item) => item.id === baseMap.id) ?? baseMap;
+          onClick(live);
+        },
+      })),
+    },
   });
 
   useEffect(() => {
@@ -95,7 +102,10 @@ export function BaseMapTagControl({
   }, [current_baseMaps, c_baseMaps, control]);
 
   const btnContent = current_baseMaps ? (
-    <MapControlGroupButton row size={24}>
+    <MapControlGroupButton
+      row
+      size={24}
+    >
       {c_baseMaps.map((baseMap) => (
         <button
           key={baseMap.id}
@@ -114,6 +124,10 @@ export function BaseMapTagControl({
   ) : null;
 
   return (
-    <ModuleContainer {...moduleContainerProps} btnWidth={24} btn={btnContent} />
+    <ModuleContainer
+      {...moduleContainerProps}
+      btnWidth={24}
+      btn={btnContent}
+    />
   );
 }

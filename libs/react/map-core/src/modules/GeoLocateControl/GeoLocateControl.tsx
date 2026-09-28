@@ -5,13 +5,12 @@ import {
   type MapSimple,
   type WithMapPropType,
 } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { useEffect, useRef, useState } from 'react';
 
-import { MapCommonButton } from '../../components/MapCommonButton';
 import { useLang } from '../../extra/lang/hook';
-import { useRegisterMapControl } from '../../extra/registry/useRegisterMapControl';
-import { useToolbarControl } from '../../extra/toolbar/helper';
+import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
 
@@ -58,14 +57,10 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
     onTrackUserLocationEnd: props.onTrackUserLocationEnd,
   };
 
-  const { callMap, mapId, moduleContainerProps, order } = useMap(
-    { ...mergedProps, controlId: 'mapGeoLocateControl' },
-    undefined,
-    () => {
-      sessionRef.current?.destroy();
-      sessionRef.current = undefined;
-    },
-  );
+  const { callMap, mapId, order } = useMap(mergedProps, undefined, () => {
+    sessionRef.current?.destroy();
+    sessionRef.current = undefined;
+  });
   const { trans } = useLang(mapId);
 
   useEffect(() => {
@@ -136,15 +131,13 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
     });
   }
 
-  useRegisterMapControl(mapId, {
+  const error = ui.errorMessage;
+  const { moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapGeoLocateControl',
     panelKind: 'button',
-    buttonPosition: mergedProps.position,
-    getProps: () => ({
-      position: mergedProps.position,
-      controlLayout: mergedProps.controlLayout,
-      ...sessionOptions(),
-    }),
+    from: mergedProps,
+    order,
+    getProps: () => ({ ...sessionOptions() }),
     actions: [
       {
         type: 'mapGeoLocateControl',
@@ -153,14 +146,8 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
         },
       },
     ],
-  });
-
-  const error = ui.errorMessage;
-  const { state, control } = useToolbarControl(mapId, mergedProps, {
-    kind: 'single',
-    id: 'mapGeoLocateControl',
-    getState() {
-      return {
+    getButtonState() {
+      return mdiButtonState(error ? mdiCrosshairsOff : mdiCrosshairsGps, {
         visible: true,
         active: ui.active,
         disabled: ui.disabled,
@@ -171,11 +158,7 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
           : ui.background
             ? trans('map.action.geolocate-control-tracking-background')
             : trans('map.action.geolocate-control-find-my-location'),
-        icon: {
-          type: 'mdi',
-          path: error ? mdiCrosshairsOff : mdiCrosshairsGps,
-        },
-      };
+      });
     },
     onClick() {
       onClick();
@@ -186,20 +169,5 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
     control.sync();
   }, [ui, control]);
 
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        state ? (
-          <MapCommonButton
-            option={state}
-            onClick={(e) => {
-              e.stopPropagation();
-              control.onAction(e.nativeEvent);
-            }}
-          />
-        ) : undefined
-      }
-    />
-  );
+  return <ModuleContainer {...moduleContainerProps} />;
 }

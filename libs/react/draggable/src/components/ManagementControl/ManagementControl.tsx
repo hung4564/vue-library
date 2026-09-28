@@ -91,7 +91,10 @@ export function ManagementControl({
             <h3 className="mgmt__title">Sidebars</h3>
             <span className="mgmt__count">{sidebarCount}</span>
           </header>
-          <ShowStatusSideBar items={sidebarMap} containerId={containerId} />
+          <ShowStatusSideBar
+            items={sidebarMap}
+            containerId={containerId}
+          />
         </section>
       )}
 
@@ -101,7 +104,10 @@ export function ManagementControl({
             <h3 className="mgmt__title">Drawers</h3>
             <span className="mgmt__count">{drawerCount}</span>
           </header>
-          <ShowStatusDrawer items={drawerMap} containerId={containerId} />
+          <ShowStatusDrawer
+            items={drawerMap}
+            containerId={containerId}
+          />
         </section>
       )}
 

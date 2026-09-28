@@ -82,7 +82,10 @@ async function next(state: PagerState) {
 </script>
 
 <template>
-  <Map @mapLoaded="onMapLoaded" :mapId="mapId">
+  <Map
+    @mapLoaded="onMapLoaded"
+    :mapId="mapId"
+  >
     <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
@@ -90,7 +93,10 @@ async function next(state: PagerState) {
       position="bottom-left"
       default-base-map="Google Satellite"
     />
-    <LayerControl position="top-left" show>
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId: mid }">
         <BaseMapCard :mapId="mid" />
       </template>
@@ -112,8 +118,18 @@ async function next(state: PagerState) {
         </div>
         <div>
           page {{ state.page }} / total {{ state.total }}
-          <button type="button" @click="prev(state)">Prev</button>
-          <button type="button" @click="next(state)">Next</button>
+          <button
+            type="button"
+            @click="prev(state)"
+          >
+            Prev
+          </button>
+          <button
+            type="button"
+            @click="next(state)"
+          >
+            Next
+          </button>
         </div>
       </section>
     </div>

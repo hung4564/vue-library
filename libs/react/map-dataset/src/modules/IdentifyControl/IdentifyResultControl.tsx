@@ -33,7 +33,7 @@ import {
   UniversalRegistry,
   useLang,
   useMap,
-  useRegisterMapControl,
+  useMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
 import { InputSelect } from '@hungpvq/react-map-core/fields';
@@ -52,7 +52,7 @@ function runIdentifyAction(mapId: string, type: string, event?: unknown) {
 
 export function IdentifyResultControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
-  const { mapId, moduleContainerProps } = useMap({
+  const { mapId } = useMap({
     ...merged,
     controlId: IDENTIFY_RESULT_CONTROL.id,
   });
@@ -145,20 +145,16 @@ export function IdentifyResultControl(props: WithMapPropType) {
     void paintIdentifyResultFocus(mapId, hit?.child);
   }, [show, focusedChildKey, flatChildren, mapId]);
 
-  const { panelBind } = useRegisterMapControl(mapId, {
+  const { panelBind, moduleContainerProps } = useMapControl(mapId, {
     id: IDENTIFY_RESULT_CONTROL.id,
     panelKind: 'popup',
     title: trans('map.identify.title'),
-    buttonPosition: merged.position,
+    from: merged,
     show,
     setShow: (value) => {
       toggleShow(value);
       if (!value) clearIdentifyResultHighlight(mapId);
     },
-    getProps: () => ({
-      position: merged.position,
-      controlLayout: merged.controlLayout,
-    }),
     actions: [
       {
         type: IDENTIFY_RESULT_CONTROL.actionUpdate,
@@ -286,7 +282,10 @@ export function IdentifyResultControl(props: WithMapPropType) {
                       );
                     }}
                   >
-                    <Icon path={mdiCursorPointer} size={ICON_SIZE} />
+                    <Icon
+                      path={mdiCursorPointer}
+                      size={ICON_SIZE}
+                    />
                   </MapControlButton>
                   <MapControlButton
                     variant="plain"
@@ -301,7 +300,10 @@ export function IdentifyResultControl(props: WithMapPropType) {
                       );
                     }}
                   >
-                    <Icon path={mdiSelect} size={ICON_SIZE} />
+                    <Icon
+                      path={mdiSelect}
+                      size={ICON_SIZE}
+                    />
                   </MapControlButton>
                 </>
               }
@@ -338,7 +340,10 @@ export function IdentifyResultControl(props: WithMapPropType) {
                     </div>
                   ) : null}
                 </div>
-                <hr className="identify-control-separator" aria-hidden="true" />
+                <hr
+                  className="identify-control-separator"
+                  aria-hidden="true"
+                />
                 <div
                   className="identify-control-body"
                   tabIndex={0}
@@ -362,7 +367,10 @@ export function IdentifyResultControl(props: WithMapPropType) {
                       </div>
                     </div>
                   ) : errorMessage ? (
-                    <div className="identify-control-state" role="alert">
+                    <div
+                      className="identify-control-state"
+                      role="alert"
+                    >
                       <div className="identify-control-state__content">
                         <span>
                           {errorMessage || trans('map.identify.error')}
@@ -370,13 +378,19 @@ export function IdentifyResultControl(props: WithMapPropType) {
                       </div>
                     </div>
                   ) : items.length === 0 && !hasSelectedPoint ? (
-                    <div className="identify-control-state" role="status">
+                    <div
+                      className="identify-control-state"
+                      role="status"
+                    >
                       <div className="identify-control-state__content">
                         <span>{trans('map.identify.no_selection')}</span>
                       </div>
                     </div>
                   ) : items.length === 0 ? (
-                    <div className="identify-control-state" role="status">
+                    <div
+                      className="identify-control-state"
+                      role="status"
+                    >
                       <div className="identify-control-state__content">
                         <span>
                           {selectedLayerId !== IDENTIFY_ALL_LAYERS_VALUE
@@ -386,7 +400,10 @@ export function IdentifyResultControl(props: WithMapPropType) {
                       </div>
                     </div>
                   ) : (
-                    <div className="identify-control-results" role="status">
+                    <div
+                      className="identify-control-results"
+                      role="status"
+                    >
                       {items.map((item) => (
                         <div
                           key={item.id}

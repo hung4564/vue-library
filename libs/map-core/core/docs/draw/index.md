@@ -46,7 +46,10 @@ import '@hungpvq/react-map-draw/style.css';
 
 ```vue
 <template>
-  <Map map-id="demo" @mapLoaded="onMapLoaded">
+  <Map
+    map-id="demo"
+    @mapLoaded="onMapLoaded"
+  >
     <DrawControl position="top-right" />
   </Map>
 </template>
@@ -92,11 +95,7 @@ export function DrawExample() {
 
   function onMapLoaded(_map: MapSimple) {
     const config: MapDrawOption = {
-      drawSupports: [
-        DrawingType.POINT,
-        DrawingType.LINE_STRING,
-        DrawingType.POLYGON,
-      ],
+      drawSupports: [DrawingType.POINT, DrawingType.LINE_STRING, DrawingType.POLYGON],
       cleanAfterDone: true,
       addFeature: async () => undefined,
       updateFeature: async () => undefined,
@@ -111,7 +110,10 @@ export function DrawExample() {
   }
 
   return (
-    <Map mapId="demo" onMapLoaded={onMapLoaded}>
+    <Map
+      mapId="demo"
+      onMapLoaded={onMapLoaded}
+    >
       <DrawControl position="top-right" />
     </Map>
   );
@@ -122,11 +124,11 @@ export function DrawExample() {
 
 Inspect is part of the **draw** packages (same control id on Vue and React): `mapInspectControl`.
 
-| | Vue `@hungpvq/vue-map-draw` | React `@hungpvq/react-map-draw` |
-| --- | --- | --- |
-| Export | `InspectControl` | `InspectControl` |
-| Behavior | Shared `InspectController` (style + popup/hover) | Same |
-| Helpers | `@hungpvq/map-draw` inspect helpers | Same |
+|          | Vue `@hungpvq/vue-map-draw`                      | React `@hungpvq/react-map-draw` |
+| -------- | ------------------------------------------------ | ------------------------------- |
+| Export   | `InspectControl`                                 | `InspectControl`                |
+| Behavior | Shared `InspectController` (style + popup/hover) | Same                            |
+| Helpers  | `@hungpvq/map-draw` inspect helpers              | Same                            |
 
 Mount next to `DrawControl` when you need layer inspect; there is no separate demo route — use `/#/draw` and add `<InspectControl />` in your app if needed.
 
