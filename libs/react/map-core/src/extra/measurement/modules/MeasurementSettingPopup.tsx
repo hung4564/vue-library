@@ -43,12 +43,6 @@ export interface MeasurementSettingPopupProps extends WithMapPropType {
   fields?: IViewSettingField[];
   measurementType?: string;
   onRefresh?: () => void;
-  popUpPosition?: {
-    top?: number;
-    right?: number;
-    width?: number;
-    height?: number;
-  };
 }
 
 export function MeasurementSettingPopup({
@@ -60,7 +54,6 @@ export function MeasurementSettingPopup({
   fields = [{ text: 'Status', value: 'waiting...' }],
   measurementType,
   onRefresh,
-  popUpPosition = { top: 50, right: 40, width: 350, height: 300 },
   ...mapProps
 }: MeasurementSettingPopupProps) {
   const merged = { ...defaultMapProps, ...mapProps };
@@ -124,10 +117,7 @@ export function MeasurementSettingPopup({
     from: merged,
     show,
     setShow: (v) => onUpdateShow?.(v),
-    initialPanelPosition: {
-      top: popUpPosition.top,
-      right: popUpPosition.right,
-    },
+    defaultPanelSize: { width: 350, height: 300 },
     getProps: () => ({
       maxLength,
       measurementType,
@@ -165,13 +155,10 @@ export function MeasurementSettingPopup({
         show ? (
           <DraggableItemPopup
             {...bind}
-            {...popUpPosition}
             {...panelBind}
             show={show}
             onUpdateShow={(v) => onUpdateShow?.(!!v)}
             title={trans('map.measurement.setting.title')}
-            width={popUpPosition.width ?? 350}
-            height={popUpPosition.height ?? 300}
           >
             <div className="map-measurement-setting">
               {measurementType === 'point' ? (

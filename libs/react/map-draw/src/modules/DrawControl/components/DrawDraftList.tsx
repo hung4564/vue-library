@@ -1,3 +1,4 @@
+import type { MapPopupProps } from '@hungpvq/map-core';
 import type { IDraftRecord } from '@hungpvq/map-draw';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
@@ -16,6 +17,7 @@ export interface DrawDraftListProps {
   mapId: string;
   onFlyTo: (feature: Feature) => void;
   onDiscardItem: (item: IDraftRecord) => void;
+  popupProps?: MapPopupProps;
   /** ModuleContainer bindDrag spread onto popup position */
   bindDrag?: {
     top?: number;
@@ -35,12 +37,14 @@ export function DrawDraftList({
   onFlyTo,
   onDiscardItem,
   bindDrag,
+  popupProps,
 }: DrawDraftListProps) {
   const { trans } = useLang(mapId);
   const { panelBind } = useMapControl(mapId, {
     id: 'mapDrawDraftList',
     panelKind: 'popup',
     title: trans('map.draw-control.draftList.title'),
+    from: { popupProps },
     show,
     setShow,
     actions: [

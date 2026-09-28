@@ -51,6 +51,7 @@ const { panelBind, moduleContainerProps } = useMapControl(mapId, {
   order,
   buttonSlot: 'custom',
   show,
+  defaultPanelSize: { width: 600, height: 400 },
   setShow: (value) => {
     setShow(value);
     setDevtoolOpen(value);
@@ -104,8 +105,6 @@ function onClose() {
       <DraggableItemPopup
         v-bind="{ ...bind, ...panelBind }"
         :show="isOpen"
-        :width="600"
-        :height="400"
         title="Map Devtools"
         @close="onClose"
         @update:show="onUpdateShow"

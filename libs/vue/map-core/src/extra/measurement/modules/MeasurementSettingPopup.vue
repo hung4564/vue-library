@@ -2,7 +2,7 @@
   <ModuleContainer v-bind="moduleContainerProps">
     <template #draggable="slotProps">
       <DraggableItemPopup
-        v-bind="{ ...slotProps, ...popUpPosition, ...panelBind }"
+        v-bind="{ ...slotProps, ...panelBind }"
         v-if="c_show"
         v-model:show="c_show"
         :title="trans('map.measurement.setting.title')"
@@ -132,24 +132,12 @@ const props = withDefaults(
       maxLength?: number;
       fields?: IViewSettingField[];
       measurementType?: string;
-      popUpPosition?: {
-        top: number;
-        right: number;
-        width: number;
-        height: number;
-      };
     }
   >(),
   {
     ...defaultMapProps,
     maxLength: 0,
     fields: () => [{ text: 'Status', value: 'waiting...' }],
-    popUpPosition: () => ({
-      top: 50,
-      right: 40,
-      width: 350,
-      height: 300,
-    }),
   },
 );
 const { callMap, mapId } = useMap(props);
@@ -261,12 +249,9 @@ const { panelBind, moduleContainerProps } = useMapControl(mapId, {
   title: () => trans.value('map.measurement.setting.title'),
   from: props,
   show: c_show,
+  defaultPanelSize: { width: 350, height: 300 },
   setShow: (value) => {
     c_show.value = value;
-  },
-  initialPanelPosition: {
-    top: props.popUpPosition.top,
-    right: props.popUpPosition.right,
   },
   getProps: () => ({
     maxLength: props.maxLength,

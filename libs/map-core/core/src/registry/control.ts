@@ -1,19 +1,20 @@
 import type { Position } from '../types';
+import type { MapControlPanelPosition } from '../types/panel';
 import type {
   MapControlLayoutPatch,
   MapControlLayoutState,
 } from './control-layout-store';
 
-export type MapControlPanelKind = 'popup' | 'sidebar' | 'float' | 'button';
+export type {
+  MapControlPanelPosition,
+  MapPopupPanelPosition,
+  MapPopupProps,
+  MapSidebarDock,
+  MapSidebarPanelPosition,
+  MapSidebarProps,
+} from '../types/panel';
 
-export type MapControlPanelPosition = {
-  top?: number;
-  left?: number;
-  right?: number;
-  bottom?: number;
-  /** Sidebar dock side */
-  location?: 'left' | 'right' | 'top' | 'bottom';
-};
+export type MapControlPanelKind = 'popup' | 'sidebar' | 'float' | 'button';
 
 export type MapControlAction = {
   /** Button / action id, e.g. `mapZoomIn` | `distance` */

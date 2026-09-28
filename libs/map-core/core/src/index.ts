@@ -202,12 +202,16 @@ export {
 export {
   boundsFromPanelPosition,
   buildModuleBindPosition,
+  buildPopupPropsForPosition,
+  DEFAULT_POPUP_POSITION_DEFAULTS,
+  DEFAULT_POPUP_VERTICAL_OFFSET,
   isModuleCornerChromeVisible,
   moduleBtnContainerClassName,
   moduleCornerHostId,
   moduleCornerHostSelector,
   moduleDraggableHostId,
   moduleDraggableHostSelector,
+  panelEdgesForCorner,
   panelPositionFromBounds,
   queryModuleHostElement,
   resolveEffectivePanelPosition,
@@ -331,7 +335,6 @@ export type {
   MapControlActionMeta,
   MapControlHandle,
   MapControlPanelKind,
-  MapControlPanelPosition,
 } from './registry/control';
 export type { ControlAutoButtonEntry } from './registry/control-auto-button-store';
 export type {
@@ -355,6 +358,7 @@ export type {
   Coordinates,
   CoordinatesNumber,
   DraftCoordinatesNumber,
+  MapControlPanelPosition,
   MapFCOnUseMap,
   MapLangFlatMessages,
   MapLangLocale,
@@ -363,6 +367,11 @@ export type {
   MapLoadLocaleOptions,
   MapLocaleLoader,
   MapLocateStore,
+  MapPopupPanelPosition,
+  MapPopupProps,
+  MapSidebarDock,
+  MapSidebarPanelPosition,
+  MapSidebarProps,
   MapSimple,
   MapTranslateFallback,
   MapTranslateFunction,
@@ -377,6 +386,7 @@ export type {
   MapButtonVariant,
 } from './ui/map-button';
 export type {
+  MapPopupPositionDefaults,
   ModuleBindPosition,
   ModuleCornerChromeLayout,
   PanelBoundsRect,

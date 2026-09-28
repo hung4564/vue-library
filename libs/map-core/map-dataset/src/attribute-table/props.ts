@@ -1,6 +1,7 @@
 import type {
   ButtonInMobile,
   ControlLayout,
+  MapPopupProps,
   Position,
 } from '@hungpvq/map-core';
 
@@ -176,6 +177,8 @@ export type AttributeTableProps = {
   buttonInMobile?: ButtonInMobile;
   controlOrder?: number | string;
   btnWidth?: number;
+  /** Per-control popup offset overrides (after Map `popupPositionDefaults`). */
+  popupProps?: MapPopupProps;
   /**
    * Bumped by ComponentManagement on each `addComponent` upsert.
    * AttributeTable watches this to set `show=true` when re-opened while hidden.

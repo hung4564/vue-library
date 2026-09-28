@@ -5,6 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
+import type { MapPopupProps } from '@hungpvq/map-core';
 import { type FieldFeaturesDef, type IDataset } from '@hungpvq/map-dataset';
 import {
   bindHighlightMittBridge,
@@ -34,11 +35,10 @@ const props = withDefaults(
     item?: Record<string, unknown>;
     view?: IDataset;
     fields?: FieldFeaturesDef;
-    popupProps?: Record<string, unknown>;
+    popupProps?: MapPopupProps;
   }>(),
   {
     fields: () => [],
-    popupProps: () => ({}),
   },
 );
 
@@ -99,6 +99,7 @@ const { panelBind } = useMapControl(mapId, {
   id: 'mapLayerDetail',
   panelKind: 'popup',
   title: () => trans.value('map.layer-control.info.title'),
+  from: () => ({ popupProps: props.popupProps }),
   show,
   setShow: (value) => {
     if (!value) {
@@ -133,7 +134,7 @@ const { panelBind } = useMapControl(mapId, {
         @close="handleClose"
         @update:show="onUpdateShow"
         :width="520"
-        v-bind="{ ...slotProps, ...popupProps, ...panelBind }"
+        v-bind="{ ...slotProps, ...panelBind }"
         :title="trans('map.layer-control.info.title')"
       >
         <template #title>

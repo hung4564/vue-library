@@ -1,3 +1,4 @@
+import type { MapPopupProps } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import { traverseTree } from '@hungpvq/map-dataset';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
@@ -12,10 +13,12 @@ export function DatasetDetail({
   dataset,
   onClose,
   mapId: propsMapId,
+  popupProps,
 }: {
   dataset: IDataset;
   onClose?: () => void;
   mapId?: string;
+  popupProps?: MapPopupProps;
 }) {
   const { mapId } = useMap({
     mapId: propsMapId,
@@ -26,6 +29,7 @@ export function DatasetDetail({
     id: 'mapDatasetDetail',
     panelKind: 'popup',
     title: dataset.getName(),
+    from: { popupProps },
     show,
     setShow: (v) => {
       toggleShow(v);

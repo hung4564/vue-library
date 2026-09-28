@@ -56,6 +56,7 @@ const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   order,
   show,
   setShow,
+  defaultPanelSize: { width: 400, height: 300 },
   actions: [
     {
       type: 'mapGotoControl',
@@ -81,8 +82,6 @@ watch(show, () => control?.sync());
     <template #draggable="slotProps">
       <DraggableItemPopup
         v-if="show"
-        :height="300"
-        :width="400"
         v-bind="{ ...slotProps, ...panelBind }"
         v-model:show="show"
         :title="trans('map.goto-control.title')"

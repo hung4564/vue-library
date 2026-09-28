@@ -4,6 +4,7 @@
  */
 
 import type { ButtonInMobile } from '@hungpvq/map-core';
+import type { MapPopupPositionDefaults } from '@hungpvq/map-core';
 import { createContext, type ReactNode, useContext } from 'react';
 
 export interface MapContextValue {
@@ -12,6 +13,7 @@ export interface MapContextValue {
   registerModuleOrder?: (key: string) => number;
   buttonInMobile?: ButtonInMobile;
   isMobile?: boolean;
+  popupPositionDefaults?: MapPopupPositionDefaults;
 }
 
 export const MapContext = createContext<MapContextValue | null>(null);

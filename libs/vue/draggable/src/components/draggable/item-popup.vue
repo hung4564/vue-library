@@ -224,13 +224,27 @@ watch([containerWidth, containerHeight], (next, prev) => {
   }
 });
 watch(
-  () => [props.left, props.top, props.width, props.height] as const,
-  ([left, top, width, height]) => {
+  () =>
+    [
+      props.left,
+      props.top,
+      props.right,
+      props.bottom,
+      props.width,
+      props.height,
+    ] as const,
+  ([left, top, right, bottom, width, height]) => {
     if (!init_done.value || !show.value) return;
     if (width != null) p_width.value = width;
     if (height != null) p_height.value = height;
     if (left != null) p_x.value = left;
     if (top != null) p_y.value = top;
+    if (right != null) {
+      p_x.value = containerWidth.value - right - p_width.value;
+    }
+    if (bottom != null) {
+      p_y.value = containerHeight.value - bottom - p_height.value;
+    }
     applyClamp();
   },
 );

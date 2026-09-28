@@ -2,14 +2,13 @@
 export default {
   name: 'MapTabs',
 };
+export type { MapTabItem } from './map-tabs';
 </script>
 <script setup lang="ts">
 import { computed, useSlots } from 'vue';
 
 import type { MapTabItem } from './map-tabs';
 import MapControlButton from './MapControlButton.vue';
-
-export type { MapTabItem } from './map-tabs';
 
 const props = withDefaults(
   defineProps<{

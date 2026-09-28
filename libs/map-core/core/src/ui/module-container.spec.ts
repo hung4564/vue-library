@@ -3,12 +3,14 @@ import { describe, expect, it } from 'vitest';
 import {
   boundsFromPanelPosition,
   buildModuleBindPosition,
+  buildPopupPropsForPosition,
   isModuleCornerChromeVisible,
   moduleBtnContainerClassName,
   moduleCornerHostId,
   moduleCornerHostSelector,
   moduleDraggableHostId,
   moduleDraggableHostSelector,
+  panelEdgesForCorner,
   panelPositionFromBounds,
   resolveEffectivePanelPosition,
 } from './module-container';
@@ -58,7 +60,7 @@ describe('module-container helpers', () => {
         panelKind: 'popup',
         buttonCorner: 'top-right',
       }),
-    ).toEqual({ top: 10, right: 58 });
+    ).toEqual({ top: 50, right: 58 });
     expect(
       resolveEffectivePanelPosition({
         panelKind: 'popup',
@@ -66,6 +68,31 @@ describe('module-container helpers', () => {
         overrides: { top: 80 },
       }),
     ).toEqual({ top: 80, right: 58 });
+  });
+
+  it('buildPopupPropsForPosition merges Map table then control overrides', () => {
+    expect(buildPopupPropsForPosition('top-right')).toEqual({
+      top: 50,
+      right: 58,
+    });
+    expect(buildPopupPropsForPosition('bottom-left')).toEqual({
+      bottom: 50,
+      left: 58,
+    });
+    expect(
+      buildPopupPropsForPosition(
+        'top-right',
+        { top: 80 },
+        {
+          cornerDefaults: { 'top-right': { top: 40 } },
+        },
+      ),
+    ).toEqual({ top: 80, right: 58 });
+    expect(
+      buildPopupPropsForPosition('top-right', undefined, {
+        cornerDefaults: { 'top-right': { top: 40 } },
+      }),
+    ).toEqual({ top: 40, right: 58 });
   });
 
   it('resolveEffectivePanelPosition uses location for sidebar', () => {
@@ -90,7 +117,37 @@ describe('module-container helpers', () => {
         { x: 100, y: 40, width: 200, height: 150 },
         { width: 800, height: 600 },
       ),
-    ).toEqual({ left: 100, top: 40, right: 500, bottom: 410 });
+    ).toEqual({
+      left: 100,
+      top: 40,
+      right: 500,
+      bottom: 410,
+      width: 200,
+      height: 150,
+    });
+  });
+
+  it('panelEdgesForCorner keeps axes for the button corner', () => {
+    const all = {
+      left: 100,
+      top: 40,
+      right: 500,
+      bottom: 410,
+      width: 200,
+      height: 150,
+    };
+    expect(panelEdgesForCorner(all, 'top-right')).toEqual({
+      top: 40,
+      right: 500,
+      width: 200,
+      height: 150,
+    });
+    expect(panelEdgesForCorner(all, 'bottom-left')).toEqual({
+      bottom: 410,
+      left: 100,
+      width: 200,
+      height: 150,
+    });
   });
 
   it('boundsFromPanelPosition fills missing edges from size and container', () => {

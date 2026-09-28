@@ -68,6 +68,7 @@ export function GotoControl(props: GotoControlProps) {
     order,
     show,
     setShow: toggleShow,
+    defaultPanelSize: { width: 400, height: 300 },
     actions: [{ type: 'mapGotoControl', run: () => handleToggle() }],
     getButtonState: () =>
       mdiButtonState(mdiMapMarkerOutline, {
@@ -92,8 +93,6 @@ export function GotoControl(props: GotoControlProps) {
             show={show}
             onUpdateShow={(v) => toggleShow(!!v)}
             title={trans('map.goto-control.title')}
-            height={300}
-            width={400}
             {...bind}
             {...panelBind}
           >

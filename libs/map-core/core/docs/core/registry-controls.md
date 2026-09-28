@@ -37,6 +37,8 @@ UniversalRegistry.closeControl(mapId, 'mapGotoControl');
 UniversalRegistry.setControlPosition(mapId, 'mapGotoControl', {
   top: 80,
   right: 60,
+  width: 360,
+  height: 420,
 });
 UniversalRegistry.setControlPosition(mapId, 'mapLayerControl', {
   location: 'right',
@@ -56,6 +58,52 @@ UniversalRegistry.runControlAction(mapId, 'mapHomeControl');
 ```
 
 `setControlPosition` = **panel** offsets/dock. `setControlLayout.position` = **button corner**.
+
+## Popup panel defaults (Map + control)
+
+Mount seed for popup/float panels (sidebar keeps `{ location }` only):
+
+1. Package corner baseline (`top`/`bottom` `50`, `left`/`right` `18+btnWidth`) — see `DEFAULT_POPUP_POSITION_DEFAULTS` / `buildPopupPropsForPosition` (button chrome still uses `top`/`bottom` `10` via `buildModuleBindPosition`)
+2. Map `popupPositionDefaults[position]` (partial edges; missing keys keep package baseline)
+3. Control `popupProps` (wins)
+
+```vue
+<Map>
+  <GotoControl position="top-right" />
+  <!-- popup opens with top: 50, right: 18+btnWidth -->
+  <SettingControl position="bottom-left" />
+  <!-- popup opens with bottom: 50, left: 18+btnWidth -->
+  <GotoControl position="top-right" :popup-props="{ top: 80 }" />
+  <!-- this one top: 80 -->
+</Map>
+```
+
+```tsx
+<Map popupPositionDefaults={{ 'top-right': { top: 80 } }}>
+  <GotoControl position="top-right" />
+  {/* Map table overrides package top: 50 → 80 */}
+</Map>
+```
+
+`useMapControl` seeds `panelBind` via `buildPopupPropsForPosition` when `panelKind` is `popup` or `float`. Pass chrome through `from: props` so `popupProps` / `btnWidth` / `position` are picked up. Runtime `UniversalRegistry.setControlPosition` still patches after mount.
+
+```ts
+import {
+  buildPopupPropsForPosition,
+  type MapPopupPanelPosition,
+  type MapPopupPositionDefaults,
+  type MapPopupProps,
+  type MapSidebarPanelPosition,
+  type MapSidebarProps,
+} from '@hungpvq/map-core';
+
+// popup/float control chrome
+popupProps?: MapPopupProps; // edges + optional width/height
+
+// sidebar useMapControl seed
+initialPanelPosition?: MapSidebarPanelPosition; // { location: 'left' }
+// alias: MapSidebarProps
+```
 
 ## Run button actions
 
@@ -146,7 +194,7 @@ const { moduleContainerProps, panelBind } = useMapControl(mapId, {
   id: 'mapLayerControl',
   panelKind: 'sidebar', // or 'popup' | 'float' | 'button'
   title: () => 'Layers',
-  from: props,
+  from: props, // includes position, popupProps, buttonInMobile, …
   order,
   show,
   setShow,
@@ -158,7 +206,8 @@ const { moduleContainerProps, panelBind } = useMapControl(mapId, {
 });
 
 // Spread `from: props` (+ `order` from useMap) onto useMapControl — chrome mount
-// defaults. Dual popups: override with an explicit `:id` / `id=` **after** `{...panelBind}`.
+// defaults (incl. Map popupPositionDefaults + control popupProps for popup/float).
+// Dual popups: override with an explicit `:id` / `id=` **after** `{...panelBind}`.
 ```
 
 App usage (same for every demo / page):

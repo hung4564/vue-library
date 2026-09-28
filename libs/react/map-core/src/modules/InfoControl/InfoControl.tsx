@@ -129,6 +129,7 @@ export function InfoControl(props: InfoControlProps) {
     order,
     show,
     setShow,
+    defaultPanelSize: { width: 360, height: 380 },
     getProps: () => ({
       fileName: mergedProps.fileName,
     }),
@@ -187,8 +188,6 @@ export function InfoControl(props: InfoControlProps) {
           show={show}
           onUpdateShow={setShow}
           title={trans('map.info-control.title')}
-          width={360}
-          height={380}
           extraBtn={
             <>
               <MapControlButton

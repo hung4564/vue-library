@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { MapPopupProps } from '@hungpvq/map-core';
 import type { IDraftRecord } from '@hungpvq/map-draw';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
@@ -15,6 +16,7 @@ const props = defineProps<{
   show: boolean;
   draftItems: IDraftRecord[];
   mapId: string;
+  popupProps?: MapPopupProps;
 }>();
 
 const emit = defineEmits<{
@@ -34,6 +36,7 @@ const { panelBind } = useMapControl(() => props.mapId, {
   id: 'mapDrawDraftList',
   panelKind: 'popup',
   title: () => trans.value('map.draw-control.draftList.title'),
+  from: () => ({ popupProps: props.popupProps }),
   show: show as Ref<boolean>,
   setShow: (value) => {
     show.value = value;

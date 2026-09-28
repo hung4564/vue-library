@@ -110,6 +110,7 @@ export function LegendControl(props: WithMapPropType) {
     order,
     show,
     setShow,
+    defaultPanelSize: { width: 400, height: 400 },
     actions: [{ type: 'mapLegendControl', run: () => setShow(!show) }],
     getButtonState: () =>
       mdiButtonState(mdiMapLegend, {
@@ -134,8 +135,6 @@ export function LegendControl(props: WithMapPropType) {
             show={show}
             onUpdateShow={(v) => setShow(!!v)}
             title={trans('map.legend-control.title')}
-            width={400}
-            height={400}
             {...bind}
             {...panelBind}
           >

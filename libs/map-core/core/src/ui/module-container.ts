@@ -3,7 +3,10 @@ import type {
   MapControlPanelPosition,
 } from '../registry/control';
 import type { Position } from '../types';
+import type { MapPopupPanelPosition } from '../types/panel';
 import type { ResolvedControlLayout } from '../utils/control-layout';
+
+export type { MapPopupProps } from '../types/panel';
 
 /** Layout values that hide per-control corner `#btn` chrome (toolbar / menu hosts own it). */
 export type ModuleCornerChromeLayout =
@@ -88,6 +91,59 @@ export function buildModuleBindPosition(options: {
 }
 
 /**
+ * Partial edge overrides for popup/float panels, keyed by button corner.
+ * Used by Map `popupPositionDefaults` and per-control `popupProps`.
+ */
+export type MapPopupPositionDefaults = Partial<
+  Record<Position, MapPopupPanelPosition>
+>;
+
+/** Package vertical edge defaults for popup/float panels (button chrome stays at 10). */
+export const DEFAULT_POPUP_VERTICAL_OFFSET = 50;
+
+/**
+ * Built-in Map `popupPositionDefaults`: `top-*` → `top: 50`, `bottom-*` → `bottom: 50`.
+ * Horizontal edges still come from {@link buildModuleBindPosition} (`18+btnWidth`).
+ */
+export const DEFAULT_POPUP_POSITION_DEFAULTS: MapPopupPositionDefaults = {
+  'top-left': { top: DEFAULT_POPUP_VERTICAL_OFFSET },
+  'top-right': { top: DEFAULT_POPUP_VERTICAL_OFFSET },
+  'bottom-left': { bottom: DEFAULT_POPUP_VERTICAL_OFFSET },
+  'bottom-right': { bottom: DEFAULT_POPUP_VERTICAL_OFFSET },
+};
+
+/**
+ * Package corner baseline + optional Map table + control overrides.
+ * Vertical edges default to {@link DEFAULT_POPUP_VERTICAL_OFFSET}; horizontal
+ * match {@link buildModuleBindPosition}.
+ */
+export function buildPopupPropsForPosition(
+  position: Position,
+  overrides?: MapPopupPanelPosition,
+  options?: {
+    btnWidth?: number;
+    cornerDefaults?: MapPopupPositionDefaults;
+  },
+): MapPopupPanelPosition {
+  const bind = buildModuleBindPosition({
+    position,
+    btnWidth: options?.btnWidth ?? 40,
+    containerId: '_',
+  });
+  const base: MapPopupPanelPosition = {
+    ...(bind.top != null ? { top: DEFAULT_POPUP_VERTICAL_OFFSET } : {}),
+    ...(bind.left != null ? { left: bind.left } : {}),
+    ...(bind.right != null ? { right: bind.right } : {}),
+    ...(bind.bottom != null ? { bottom: DEFAULT_POPUP_VERTICAL_OFFSET } : {}),
+  };
+  return {
+    ...base,
+    ...(options?.cornerDefaults?.[position] ?? {}),
+    ...(overrides ?? {}),
+  };
+}
+
+/**
  * Effective panel offsets / dock for Registry inspect + setPanelPosition.
  * Popup/float default to ModuleContainer corner bind; overrides win.
  */
@@ -110,10 +166,10 @@ export function resolveEffectivePanelPosition(options: {
     containerId: '_',
   });
   return {
-    ...(bind.top != null ? { top: bind.top } : {}),
+    ...(bind.top != null ? { top: DEFAULT_POPUP_VERTICAL_OFFSET } : {}),
     ...(bind.left != null ? { left: bind.left } : {}),
     ...(bind.right != null ? { right: bind.right } : {}),
-    ...(bind.bottom != null ? { bottom: bind.bottom } : {}),
+    ...(bind.bottom != null ? { bottom: DEFAULT_POPUP_VERTICAL_OFFSET } : {}),
     ...overrides,
   };
 }
@@ -142,7 +198,29 @@ export function panelPositionFromBounds(
     top: bounds.y,
     right: Math.max(0, cw - bounds.x - bounds.width),
     bottom: Math.max(0, ch - bounds.y - bounds.height),
+    width: bounds.width,
+    height: bounds.height,
   };
+}
+
+/**
+ * Keep only edges that match a button corner (e.g. `top-right` → `top`+`right`).
+ * Avoids Registry drafts carrying both `left` and `right` from bounds, where
+ * {@link boundsFromPanelPosition} would prefer `left` and ignore `right` edits.
+ */
+export function panelEdgesForCorner(
+  pos: MapControlPanelPosition,
+  corner: Position,
+): MapControlPanelPosition {
+  const out: MapControlPanelPosition = {};
+  if (corner.includes('top') && pos.top != null) out.top = pos.top;
+  if (corner.includes('bottom') && pos.bottom != null) out.bottom = pos.bottom;
+  if (corner.includes('left') && pos.left != null) out.left = pos.left;
+  if (corner.includes('right') && pos.right != null) out.right = pos.right;
+  if (pos.location != null) out.location = pos.location;
+  if (pos.width != null) out.width = pos.width;
+  if (pos.height != null) out.height = pos.height;
+  return out;
 }
 
 /**

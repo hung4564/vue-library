@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import '@hungpvq/map-core';
 
-import type { ButtonInMobile, MapSimple } from '@hungpvq/map-core';
-import { bindMapKeyboardShortcuts } from '@hungpvq/map-core';
+import type {
+  ButtonInMobile,
+  MapPopupPositionDefaults,
+  MapSimple,
+} from '@hungpvq/map-core';
+import {
+  bindMapKeyboardShortcuts,
+  DEFAULT_POPUP_POSITION_DEFAULTS,
+} from '@hungpvq/map-core';
 import { DraggableContainer } from '@hungpvq/vue-draggable';
 import { MapOptions } from 'maplibre-gl';
 import { computed, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
@@ -29,12 +36,18 @@ const props = withDefaults(
     keyboardShortcuts?: boolean;
     /** On viewports ≤640px: `button` unchanged, `toolbar` merge into ToolbarControl, `menu` cap groups at ½×½ map. */
     buttonInMobile?: ButtonInMobile;
+    /**
+     * Default popup/float edge offsets per button corner.
+     * Merged under each control’s `popupProps` (see `buildPopupPropsForPosition`).
+     */
+    popupPositionDefaults?: MapPopupPositionDefaults;
   }>(),
   {
     mapboxAccessToken: '',
     initOptions: () => ({}),
     keyboardShortcuts: true,
     buttonInMobile: 'button',
+    popupPositionDefaults: () => ({ ...DEFAULT_POPUP_POSITION_DEFAULTS }),
   },
 );
 
@@ -79,6 +92,10 @@ provide<string>('$map.id', id.value);
 provide(
   '$map.buttonInMobile',
   computed(() => props.buttonInMobile ?? 'button'),
+);
+provide(
+  '$map.popupPositionDefaults',
+  computed(() => props.popupPositionDefaults ?? {}),
 );
 provide('$map.isMobile', isMobile);
 

@@ -1,3 +1,4 @@
+import type { MapPopupProps } from '@hungpvq/map-core';
 import { type FieldFeaturesDef, type IDataset } from '@hungpvq/map-dataset';
 import {
   bindHighlightMittBridge,
@@ -30,7 +31,7 @@ type LayerDetailProps = {
   item?: Record<string, unknown>;
   view?: IDataset;
   fields?: DetailField[];
-  popupProps?: Record<string, unknown>;
+  popupProps?: MapPopupProps;
   onClose?: () => void;
 };
 
@@ -100,7 +101,7 @@ export function LayerDetail({
   item,
   view,
   fields = [],
-  popupProps = {},
+  popupProps,
   onClose,
 }: LayerDetailProps) {
   const { mapId } = useMap({
@@ -149,6 +150,7 @@ export function LayerDetail({
     id: 'mapLayerDetail',
     panelKind: 'popup',
     title: trans('map.layer-control.info.title'),
+    from: { popupProps },
     show,
     setShow: (v) => {
       if (!v) {
@@ -188,7 +190,6 @@ export function LayerDetail({
             width={520}
             {...bind}
             {...panelBind}
-            {...popupProps}
             title={trans('map.layer-control.info.title')}
             afterTitle={
               view ? (

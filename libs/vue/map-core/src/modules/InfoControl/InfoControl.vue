@@ -120,6 +120,7 @@ const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   order,
   show,
   setShow,
+  defaultPanelSize: { width: 360, height: 380 },
   getProps: () => ({
     fileName: props.fileName,
   }),
@@ -212,8 +213,6 @@ async function onPasteGoTo() {
         :show="show"
         @update:show="setShow"
         @close="setShow(false)"
-        :width="360"
-        :height="380"
         :title="trans('map.info-control.title')"
       >
         <template #extra-btn>

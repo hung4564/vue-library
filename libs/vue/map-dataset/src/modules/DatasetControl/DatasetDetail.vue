@@ -5,12 +5,16 @@ export default {
 </script>
 
 <script setup lang="ts">
+import type { MapPopupProps } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
 import { traverseTree } from '@hungpvq/map-dataset';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { ModuleContainer, useMap, useMapControl } from '@hungpvq/vue-map-core';
 import { ref, shallowRef, watch } from 'vue';
-const props = defineProps<{ dataset: IDataset }>();
+const props = defineProps<{
+  dataset: IDataset;
+  popupProps?: MapPopupProps;
+}>();
 const emit = defineEmits(['close']);
 const { mapId } = useMap();
 const show = ref(true);
@@ -24,6 +28,7 @@ const { panelBind, moduleContainerProps } = useMapControl(mapId, {
   id: 'mapDatasetDetail',
   panelKind: 'popup',
   title: () => props.dataset?.getName?.(),
+  from: () => ({ popupProps: props.popupProps }),
   show,
   setShow: (value) => {
     show.value = value;

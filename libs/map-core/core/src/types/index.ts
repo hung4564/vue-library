@@ -2,6 +2,17 @@
  * Framework-agnostic types for map core
  */
 
+import type { MapPopupProps } from './panel';
+
+export type {
+  MapControlPanelPosition,
+  MapPopupPanelPosition,
+  MapPopupProps,
+  MapSidebarDock,
+  MapSidebarPanelPosition,
+  MapSidebarProps,
+} from './panel';
+
 /**
  * Map control position type
  */
@@ -38,6 +49,11 @@ export interface WithMapPropType {
    * `undefined` = inherit Map-level value.
    */
   buttonInMobile?: ButtonInMobile;
+  /**
+   * Per-control popup/float panel overrides (after Map
+   * `popupPositionDefaults` for this control’s `position`).
+   */
+  popupProps?: MapPopupProps;
   /** Control id for ModuleContainer btn class (`{controlId}-btn-module-container`) */
   controlId?: string;
 }

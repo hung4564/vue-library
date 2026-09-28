@@ -41,6 +41,7 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
     buttonSlot: 'custom',
     show: isOpen,
     setShow: setOpen,
+    defaultPanelSize: { width: 600, height: 400 },
     actions: [
       {
         type: DEVTOOLS_CONTROL.id,
@@ -75,8 +76,6 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
       draggable={(bind) => (
         <DraggableItemPopup
           show={isOpen}
-          width={600}
-          height={400}
           title="Map Devtools"
           onClose={() => setOpen(false)}
           onUpdateShow={setOpen}

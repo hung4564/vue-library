@@ -60,6 +60,7 @@ export function CrsControl(props: CrsControlProps) {
     order,
     show,
     setShow: toggleShow,
+    defaultPanelSize: { width: 400, height: 480 },
     actions: [{ type: 'mapCrsControl', run: () => handleToggle() }],
     getButtonState() {
       return mdiButtonState(mdiInboxOutline, {
@@ -121,8 +122,6 @@ export function CrsControl(props: CrsControlProps) {
             show={show}
             onUpdateShow={(v) => toggleShow(!!v)}
             title={trans('map.crs-control.title')}
-            height={480}
-            width={400}
             {...bind}
             {...panelBind}
           >

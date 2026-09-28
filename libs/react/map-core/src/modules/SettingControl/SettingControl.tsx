@@ -80,6 +80,7 @@ export function SettingControl(props: SettingControlProps) {
     order,
     show,
     setShow: toggleShow,
+    defaultPanelSize: { width: 400, height: 400 },
     actions: [{ type: 'mapSettingControl', run: () => handleToggle() }],
     getButtonState: () =>
       mdiButtonState(mdiCog, {
@@ -104,8 +105,6 @@ export function SettingControl(props: SettingControlProps) {
             show={show}
             onUpdateShow={(v) => toggleShow(!!v)}
             title={trans('map.setting-control.title')}
-            height={400}
-            width={400}
             {...bind}
             {...panelBind}
           >

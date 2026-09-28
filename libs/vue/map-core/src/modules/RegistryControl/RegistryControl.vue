@@ -17,7 +17,7 @@ import {
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup, useDragStore } from '@hungpvq/vue-draggable';
 import { mdiConsole } from '@mdi/js';
-import { computed, onUnmounted, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onUnmounted, reactive, ref, watch } from 'vue';
 
 import type { MapTabItem } from '../../components/map-tabs';
 import MapControlButton from '../../components/MapControlButton.vue';
@@ -37,7 +37,11 @@ type PanelOffsetDraft = {
   right: string;
   bottom: string;
   left: string;
+  width: string;
+  height: string;
   location: 'left' | 'right' | 'top' | 'bottom';
+  /** Desired open/closed after Apply panel. */
+  open: boolean;
 };
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
@@ -71,7 +75,10 @@ const panelDraft = reactive<PanelOffsetDraft>({
   right: '',
   bottom: '',
   left: '',
+  width: '',
+  height: '',
   location: 'left',
+  open: false,
 });
 
 const detailTab = ref('props');
@@ -85,6 +92,17 @@ const selected = computed(
 const showPanelSection = computed(() => {
   const kind = selected.value?.panelKind;
   return kind === 'popup' || kind === 'float' || kind === 'sidebar';
+});
+
+/** Popup/float only use the two edges of the button corner (e.g. bottom-right). */
+const panelEdgeFields = computed(() => {
+  const corner = layoutDraft.position;
+  return {
+    top: corner.includes('top'),
+    bottom: corner.includes('bottom'),
+    left: corner.includes('left'),
+    right: corner.includes('right'),
+  };
 });
 
 const detailTabItems = computed((): MapTabItem[] => {
@@ -176,6 +194,7 @@ const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   order,
   show,
   setShow,
+  defaultPanelSize: { width: 360, height: 420 },
   actions: [
     {
       type: CONTROL_ID,
@@ -236,10 +255,15 @@ function syncPanelDraft(ctrl: MapControlHandle | null) {
   panelDraft.right = pos.right != null ? String(pos.right) : '';
   panelDraft.bottom = pos.bottom != null ? String(pos.bottom) : '';
   panelDraft.left = pos.left != null ? String(pos.left) : '';
+  panelDraft.width = pos.width != null ? String(pos.width) : '';
+  panelDraft.height = pos.height != null ? String(pos.height) : '';
   panelDraft.location = pos.location || 'left';
+  panelDraft.open = ctrl.isOpen();
 }
 
 const dragStore = useDragStore();
+/** Skip bounds→draft sync while Apply panel is settling setPanelPosition. */
+let applyingPanel = false;
 watch(
   () => {
     if (!showDetail.value || !selectedId.value || !mapId.value) return null;
@@ -248,6 +272,7 @@ watch(
       ?.bounds;
   },
   () => {
+    if (applyingPanel) return;
     if (!showDetail.value || !selectedId.value) return;
     const ctrl = controls.value.find((c) => c.id === selectedId.value) ?? null;
     syncPanelDraft(ctrl);
@@ -255,8 +280,14 @@ watch(
   { deep: true },
 );
 
-function parseOptionalNumber(raw: string): number | undefined {
-  const trimmed = raw.trim();
+function parseOptionalNumber(
+  raw: string | number | null | undefined,
+): number | undefined {
+  if (raw == null || raw === '') return undefined;
+  if (typeof raw === 'number') {
+    return Number.isFinite(raw) ? raw : undefined;
+  }
+  const trimmed = String(raw).trim();
   if (!trimmed) return undefined;
   const n = Number(trimmed);
   return Number.isFinite(n) ? n : undefined;
@@ -286,18 +317,6 @@ function select(id: string) {
   refresh();
 }
 
-function open() {
-  if (!selectedId.value) return;
-  UniversalRegistry.openControl(mapId.value, selectedId.value);
-  refresh();
-}
-
-function close() {
-  if (!selectedId.value) return;
-  UniversalRegistry.closeControl(mapId.value, selectedId.value);
-  refresh();
-}
-
 function applyLayout() {
   if (!selectedId.value) return;
   UniversalRegistry.setControlLayout(mapId.value, selectedId.value, {
@@ -319,17 +338,59 @@ function applyPanel() {
   if (kind === 'sidebar') {
     pos.location = panelDraft.location;
   } else {
-    const top = parseOptionalNumber(panelDraft.top);
-    const right = parseOptionalNumber(panelDraft.right);
-    const bottom = parseOptionalNumber(panelDraft.bottom);
-    const left = parseOptionalNumber(panelDraft.left);
-    if (top != null) pos.top = top;
-    if (right != null) pos.right = right;
-    if (bottom != null) pos.bottom = bottom;
-    if (left != null) pos.left = left;
+    const edges = panelEdgeFields.value;
+    if (edges.top) {
+      const top = parseOptionalNumber(panelDraft.top);
+      if (top != null) pos.top = top;
+    }
+    if (edges.right) {
+      const right = parseOptionalNumber(panelDraft.right);
+      if (right != null) pos.right = right;
+    }
+    if (edges.bottom) {
+      const bottom = parseOptionalNumber(panelDraft.bottom);
+      if (bottom != null) pos.bottom = bottom;
+    }
+    if (edges.left) {
+      const left = parseOptionalNumber(panelDraft.left);
+      if (left != null) pos.left = left;
+    }
+    const width = parseOptionalNumber(panelDraft.width);
+    const height = parseOptionalNumber(panelDraft.height);
+    if (width != null) pos.width = width;
+    if (height != null) pos.height = height;
   }
+  const snapshot = {
+    top: panelDraft.top,
+    right: panelDraft.right,
+    bottom: panelDraft.bottom,
+    left: panelDraft.left,
+    width: panelDraft.width,
+    height: panelDraft.height,
+    location: panelDraft.location,
+    open: panelDraft.open,
+  };
+  applyingPanel = true;
   UniversalRegistry.setControlPosition(mapId.value, selectedId.value, pos);
-  refresh();
+  // Wait for useMapControl setPanelPosition close→writeBounds→reopen tick,
+  // then apply show state. Avoid refresh/sync reading stale drag bounds.
+  void nextTick(() => {
+    if (snapshot.open) {
+      UniversalRegistry.openControl(mapId.value, selectedId.value);
+    } else {
+      UniversalRegistry.closeControl(mapId.value, selectedId.value);
+    }
+    refresh();
+    panelDraft.top = snapshot.top;
+    panelDraft.right = snapshot.right;
+    panelDraft.bottom = snapshot.bottom;
+    panelDraft.left = snapshot.left;
+    panelDraft.width = snapshot.width;
+    panelDraft.height = snapshot.height;
+    panelDraft.location = snapshot.location;
+    panelDraft.open = snapshot.open;
+    applyingPanel = false;
+  });
 }
 
 function run() {
@@ -373,8 +434,6 @@ onUnmounted(() => {
         v-if="show"
         v-model:show="show"
         :title="trans('map.registry-control.title')"
-        :height="420"
-        :width="360"
         v-bind="{ ...slotProps, ...panelBind }"
         :id="`${CONTROL_ID}-list`"
       >
@@ -557,49 +616,59 @@ onUnmounted(() => {
                       item-text="text"
                     />
                   </div>
+                  <div class="map-registry-control__layout-span">
+                    <InputCheckbox
+                      v-model="panelDraft.open"
+                      :label="trans('map.registry-control.panelShowState')"
+                    />
+                  </div>
                 </div>
                 <div
                   v-else
                   class="map-registry-control__layout-fields"
                 >
                   <InputText
+                    v-if="panelEdgeFields.top"
                     v-model="panelDraft.top"
                     type="number"
                     :label="trans('map.registry-control.panelTop')"
                   />
                   <InputText
+                    v-if="panelEdgeFields.right"
                     v-model="panelDraft.right"
                     type="number"
                     :label="trans('map.registry-control.panelRight')"
                   />
                   <InputText
+                    v-if="panelEdgeFields.bottom"
                     v-model="panelDraft.bottom"
                     type="number"
                     :label="trans('map.registry-control.panelBottom')"
                   />
                   <InputText
+                    v-if="panelEdgeFields.left"
                     v-model="panelDraft.left"
                     type="number"
                     :label="trans('map.registry-control.panelLeft')"
                   />
+                  <InputText
+                    v-model="panelDraft.width"
+                    type="number"
+                    :label="trans('map.registry-control.panelWidth')"
+                  />
+                  <InputText
+                    v-model="panelDraft.height"
+                    type="number"
+                    :label="trans('map.registry-control.panelHeight')"
+                  />
+                  <div class="map-registry-control__layout-span">
+                    <InputCheckbox
+                      v-model="panelDraft.open"
+                      :label="trans('map.registry-control.panelShowState')"
+                    />
+                  </div>
                 </div>
                 <div class="map-registry-control__layout-footer">
-                  <MapControlButton
-                    class="map-registry-control__btn"
-                    variant="outlined"
-                    size="small"
-                    @click="open"
-                  >
-                    {{ trans('map.registry-control.open') }}
-                  </MapControlButton>
-                  <MapControlButton
-                    class="map-registry-control__btn"
-                    variant="outlined"
-                    size="small"
-                    @click="close"
-                  >
-                    {{ trans('map.registry-control.close') }}
-                  </MapControlButton>
                   <MapControlButton
                     class="map-registry-control__btn"
                     variant="outlined"

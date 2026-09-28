@@ -1,6 +1,7 @@
 import {
   boundsFromPanelPosition,
   buildMapControlHandle,
+  buildPopupPropsForPosition,
   type ButtonInMobile,
   type ControlLayout,
   ensureControlLayout,
@@ -12,8 +13,13 @@ import {
   type MapControlLayoutState,
   type MapControlPanelKind,
   type MapControlPanelPosition,
+  type MapPopupPanelPosition,
+  type MapPopupPositionDefaults,
+  type MapPopupProps,
+  type MapSidebarPanelPosition,
   moduleDraggableHostId,
   notifyControlAutoButton,
+  panelEdgesForCorner,
   panelPositionFromBounds,
   type Position,
   registerControlAutoButton,
@@ -38,6 +44,7 @@ import {
 import { useDragLayout, useDragStore } from '@hungpvq/vue-draggable';
 import {
   computed,
+  inject,
   type MaybeRefOrGetter,
   nextTick,
   onMounted,
@@ -74,6 +81,8 @@ export type UseMapControlOptions = {
           | 'controlVisible'
           | 'buttonInMobile'
           | 'controlOrder'
+          | 'popupProps'
+          | 'btnWidth'
         >
       >
     | null
@@ -89,7 +98,17 @@ export type UseMapControlOptions = {
   getProps?: () => Record<string, unknown>;
   show?: Ref<boolean>;
   setShow?: (value: boolean) => void;
+  /**
+   * Explicit panel seed.
+   * - popup/float: edges (+ optional width/height) merged mid-layer before `from.popupProps`
+   * - sidebar: `{ location }` only — no corner table
+   */
   initialPanelPosition?: MapControlPanelPosition;
+  /**
+   * Default popup/float size seeded into panel position and exposed via `panelBind`.
+   * Do not also set `:width` / `:height` on the popup — use this only.
+   */
+  defaultPanelSize?: { width?: number; height?: number };
   actions?: MaybeRefOrGetter<MapControlAction[]>;
   defaultActionType?: MaybeRefOrGetter<string | undefined>;
   /** Simple single-button controls (`mdiButtonState` / UI snapshot). */
@@ -202,8 +221,8 @@ function writeDragBoundsFromPanelPosition(
   const dragLayout = useDragLayout(containerId);
   const existing = dragLayout.getItemLayout(controlId)?.bounds;
   const size = {
-    width: existing?.width ?? 200,
-    height: existing?.height ?? 200,
+    width: pos.width ?? existing?.width ?? 200,
+    height: pos.height ?? existing?.height ?? 200,
   };
   const bounds = boundsFromPanelPosition(
     pos,
@@ -217,6 +236,82 @@ function writeDragBoundsFromPanelPosition(
   dragLayout.setItemLayout(controlId, { bounds });
 }
 
+function pickPanelSize(
+  p?: { width?: number; height?: number } | null,
+): Pick<MapControlPanelPosition, 'width' | 'height'> {
+  if (!p) return {};
+  return {
+    ...(p.width != null ? { width: p.width } : {}),
+    ...(p.height != null ? { height: p.height } : {}),
+  };
+}
+
+function replacePanelEdges(
+  target: MapControlPanelPosition,
+  next: MapControlPanelPosition,
+) {
+  delete target.top;
+  delete target.left;
+  delete target.right;
+  delete target.bottom;
+  delete target.location;
+  delete target.width;
+  delete target.height;
+  Object.assign(target, next);
+}
+
+function pickPanelEdges(
+  p?: MapPopupPanelPosition | MapPopupProps | null,
+): MapPopupPanelPosition {
+  if (!p) return {};
+  const out: MapPopupPanelPosition = {};
+  if (p.top != null) out.top = p.top;
+  if (p.left != null) out.left = p.left;
+  if (p.right != null) out.right = p.right;
+  if (p.bottom != null) out.bottom = p.bottom;
+  return out;
+}
+
+function seedPopupPanelPosition(
+  panelKind: MapControlPanelKind,
+  options: {
+    position?: Position;
+    from?: Partial<
+      Pick<WithMapPropType, 'position' | 'popupProps' | 'btnWidth'>
+    > | null;
+    initialPanelPosition?: MapControlPanelPosition;
+    defaultPanelSize?: { width?: number; height?: number };
+    cornerDefaults?: MapPopupPositionDefaults;
+  },
+): MapControlPanelPosition {
+  if (panelKind !== 'popup' && panelKind !== 'float') {
+    return {
+      ...((options.initialPanelPosition as MapSidebarPanelPosition) ?? {}),
+    };
+  }
+  const src = options.from;
+  const corner = (options.position ||
+    src?.position ||
+    'bottom-right') as Position;
+  const edges = buildPopupPropsForPosition(
+    corner,
+    {
+      ...pickPanelEdges(options.initialPanelPosition),
+      ...pickPanelEdges(src?.popupProps),
+    },
+    {
+      btnWidth: src?.btnWidth,
+      cornerDefaults: options.cornerDefaults,
+    },
+  );
+  return {
+    ...edges,
+    ...pickPanelSize(options.defaultPanelSize),
+    ...pickPanelSize(options.initialPanelPosition),
+    ...pickPanelSize(src?.popupProps),
+  };
+}
+
 /**
  * Single author API: register handle + layout store + toolbar strategy + optional auto-button.
  */
@@ -226,9 +321,19 @@ export function useMapControl(
 ) {
   provide(MAP_MODULE_CONTROL_ID_KEY, options.id);
 
-  const panelPosition = reactive<MapControlPanelPosition>({
-    ...(options.initialPanelPosition ?? {}),
-  });
+  const mapPopupDefaults = inject<
+    MaybeRefOrGetter<MapPopupPositionDefaults> | MapPopupPositionDefaults
+  >('$map.popupPositionDefaults', {});
+
+  const panelPosition = reactive<MapControlPanelPosition>(
+    seedPopupPanelPosition(options.panelKind, {
+      position: toValue(options.position),
+      from: toValue(options.from),
+      initialPanelPosition: options.initialPanelPosition,
+      defaultPanelSize: options.defaultPanelSize,
+      cornerDefaults: toValue(mapPopupDefaults) ?? {},
+    }),
+  );
 
   const layoutTick = ref(0);
 
@@ -327,34 +432,72 @@ export function useMapControl(
       isOpen: () => !!options.show?.value,
       setShow,
       getPanelPosition: () => {
+        let pos: MapControlPanelPosition;
         if (
           (options.panelKind === 'popup' || options.panelKind === 'float') &&
           mid
         ) {
           const fromDrag = readDragBoundsPanelPosition(mid, options.id);
-          if (fromDrag) return fromDrag;
-        }
-        return resolveEffectivePanelPosition({
-          panelKind: options.panelKind,
-          buttonCorner: layout.value.position,
-          overrides: { ...panelPosition },
-        });
-      },
-      setPanelPosition(pos) {
-        Object.assign(panelPosition, pos);
-        if (
-          mid &&
-          (options.panelKind === 'popup' || options.panelKind === 'float')
-        ) {
-          writeDragBoundsFromPanelPosition(mid, options.id, {
-            ...panelPosition,
+          if (fromDrag) {
+            pos = panelEdgesForCorner(fromDrag, layout.value.position);
+          } else {
+            pos = resolveEffectivePanelPosition({
+              panelKind: options.panelKind,
+              buttonCorner: layout.value.position,
+              overrides: { ...panelPosition },
+            });
+          }
+        } else {
+          pos = resolveEffectivePanelPosition({
+            panelKind: options.panelKind,
+            buttonCorner: layout.value.position,
+            overrides: { ...panelPosition },
           });
         }
         if (options.panelKind === 'popup' || options.panelKind === 'float') {
-          if (options.show?.value) {
-            setShow(false);
-            void nextTick(() => setShow(true));
+          return {
+            ...pos,
+            width: pos.width ?? panelPosition.width,
+            height: pos.height ?? panelPosition.height,
+          };
+        }
+        return pos;
+      },
+      setPanelPosition(pos) {
+        if (options.panelKind === 'popup' || options.panelKind === 'float') {
+          replacePanelEdges(
+            panelPosition,
+            panelEdgesForCorner(
+              { ...panelPosition, ...pos },
+              layout.value.position,
+            ),
+          );
+        } else {
+          Object.assign(panelPosition, pos);
+        }
+        const writeBounds = () => {
+          if (
+            mid &&
+            (options.panelKind === 'popup' || options.panelKind === 'float')
+          ) {
+            writeDragBoundsFromPanelPosition(mid, options.id, {
+              ...panelPosition,
+            });
           }
+        };
+        if (
+          (options.panelKind === 'popup' || options.panelKind === 'float') &&
+          options.show?.value
+        ) {
+          // Close first so item-popup emitBounds persists old coords, then
+          // write the Registry target and re-open (avoids wipe of writeBounds).
+          setShow(false);
+          void nextTick(() => {
+            writeBounds();
+            setShow(true);
+          });
+        } else {
+          writeBounds();
         }
       },
       getLayout: () =>
@@ -422,6 +565,8 @@ export function useMapControl(
       panelPosition.right,
       panelPosition.bottom,
       panelPosition.location,
+      panelPosition.width,
+      panelPosition.height,
       layout.value.position,
       layout.value.visible,
       layout.value.controlLayout,
@@ -586,10 +731,19 @@ export function useMapControl(
     }
   });
 
-  const panelBind = computed(() => ({
-    id: options.id,
-    ...panelPosition,
-  }));
+  const panelBind = computed(() => {
+    const popupProps = toValue(options.from)?.popupProps;
+    return {
+      id: options.id,
+      ...panelPosition,
+      ...(panelPosition.width == null && popupProps?.width != null
+        ? { width: popupProps.width }
+        : {}),
+      ...(panelPosition.height == null && popupProps?.height != null
+        ? { height: popupProps.height }
+        : {}),
+    };
+  });
 
   const moduleContainerProps = computed(() => ({
     mapId: mapIdRef.value,

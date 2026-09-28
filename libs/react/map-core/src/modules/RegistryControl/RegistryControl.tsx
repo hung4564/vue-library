@@ -15,7 +15,7 @@ import {
   useDragStore,
 } from '@hungpvq/react-draggable';
 import { mdiConsole } from '@mdi/js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { MapControlButton } from '../../components/MapControlButton';
 import { type MapTabItem, MapTabs } from '../../components/MapTabs';
@@ -58,11 +58,21 @@ type PanelOffsetDraft = {
   right: string;
   bottom: string;
   left: string;
+  width: string;
+  height: string;
   location: 'left' | 'right' | 'top' | 'bottom';
+  /** Desired open/closed after Apply panel. */
+  open: boolean;
 };
 
-function parseOptionalNumber(raw: string): number | undefined {
-  const trimmed = raw.trim();
+function parseOptionalNumber(
+  raw: string | number | null | undefined,
+): number | undefined {
+  if (raw == null || raw === '') return undefined;
+  if (typeof raw === 'number') {
+    return Number.isFinite(raw) ? raw : undefined;
+  }
+  const trimmed = String(raw).trim();
   if (!trimmed) return undefined;
   const n = Number(trimmed);
   return Number.isFinite(n) ? n : undefined;
@@ -97,7 +107,10 @@ export function RegistryControl(props: RegistryControlProps) {
     right: '',
     bottom: '',
     left: '',
+    width: '',
+    height: '',
     location: 'left',
+    open: false,
   });
   const [detailTab, setDetailTab] = useState('props');
 
@@ -128,7 +141,10 @@ export function RegistryControl(props: RegistryControlProps) {
       right: pos.right != null ? String(pos.right) : '',
       bottom: pos.bottom != null ? String(pos.bottom) : '',
       left: pos.left != null ? String(pos.left) : '',
+      width: pos.width != null ? String(pos.width) : '',
+      height: pos.height != null ? String(pos.height) : '',
       location: pos.location || 'left',
+      open: ctrl.isOpen(),
     });
   }, []);
 
@@ -140,7 +156,10 @@ export function RegistryControl(props: RegistryControlProps) {
       ? dragStore.container[dragContainerId]?.layouts?.[selectedId]?.bounds
       : undefined;
 
+  const applyingPanelRef = useRef(false);
+
   useEffect(() => {
+    if (applyingPanelRef.current) return;
     if (!showDetail || !selectedId) return;
     const ctrl = controls.find((c) => c.id === selectedId) ?? null;
     syncPanelDraft(ctrl);
@@ -187,6 +206,17 @@ export function RegistryControl(props: RegistryControlProps) {
     selected?.panelKind === 'popup' ||
     selected?.panelKind === 'float' ||
     selected?.panelKind === 'sidebar';
+
+  /** Popup/float only use the two edges of the button corner (e.g. bottom-right). */
+  const panelEdgeFields = useMemo(() => {
+    const corner = layoutDraft.position;
+    return {
+      top: corner.includes('top'),
+      bottom: corner.includes('bottom'),
+      left: corner.includes('left'),
+      right: corner.includes('right'),
+    };
+  }, [layoutDraft.position]);
 
   const detailTabItems = useMemo((): MapTabItem[] => {
     const items: MapTabItem[] = [
@@ -259,6 +289,7 @@ export function RegistryControl(props: RegistryControlProps) {
     order,
     show,
     setShow,
+    defaultPanelSize: { width: 360, height: 420 },
     actions: [{ type: CONTROL_ID, run: () => handleToggle() }],
     getButtonState: () =>
       mdiButtonState(mdiConsole, {
@@ -289,18 +320,6 @@ export function RegistryControl(props: RegistryControlProps) {
     refresh();
   }
 
-  function open() {
-    if (!selectedId) return;
-    UniversalRegistry.openControl(mapId, selectedId);
-    refresh();
-  }
-
-  function close() {
-    if (!selectedId) return;
-    UniversalRegistry.closeControl(mapId, selectedId);
-    refresh();
-  }
-
   function applyLayout() {
     if (!selectedId) return;
     UniversalRegistry.setControlLayout(mapId, selectedId, {
@@ -322,17 +341,41 @@ export function RegistryControl(props: RegistryControlProps) {
     if (kind === 'sidebar') {
       pos.location = panelDraft.location;
     } else {
-      const top = parseOptionalNumber(panelDraft.top);
-      const right = parseOptionalNumber(panelDraft.right);
-      const bottom = parseOptionalNumber(panelDraft.bottom);
-      const left = parseOptionalNumber(panelDraft.left);
-      if (top != null) pos.top = top;
-      if (right != null) pos.right = right;
-      if (bottom != null) pos.bottom = bottom;
-      if (left != null) pos.left = left;
+      if (panelEdgeFields.top) {
+        const top = parseOptionalNumber(panelDraft.top);
+        if (top != null) pos.top = top;
+      }
+      if (panelEdgeFields.right) {
+        const right = parseOptionalNumber(panelDraft.right);
+        if (right != null) pos.right = right;
+      }
+      if (panelEdgeFields.bottom) {
+        const bottom = parseOptionalNumber(panelDraft.bottom);
+        if (bottom != null) pos.bottom = bottom;
+      }
+      if (panelEdgeFields.left) {
+        const left = parseOptionalNumber(panelDraft.left);
+        if (left != null) pos.left = left;
+      }
+      const width = parseOptionalNumber(panelDraft.width);
+      const height = parseOptionalNumber(panelDraft.height);
+      if (width != null) pos.width = width;
+      if (height != null) pos.height = height;
     }
+    const snapshot = { ...panelDraft };
+    applyingPanelRef.current = true;
     UniversalRegistry.setControlPosition(mapId, selectedId, pos);
-    refresh();
+    // Wait for useMapControl setPanelPosition close→writeBounds→reopen tick.
+    queueMicrotask(() => {
+      if (snapshot.open) {
+        UniversalRegistry.openControl(mapId, selectedId);
+      } else {
+        UniversalRegistry.closeControl(mapId, selectedId);
+      }
+      refresh();
+      setPanelDraft(snapshot);
+      applyingPanelRef.current = false;
+    });
   }
 
   function run() {
@@ -355,8 +398,6 @@ export function RegistryControl(props: RegistryControlProps) {
               show={show}
               onUpdateShow={(value) => setShow(!!value)}
               title={trans('map.registry-control.title')}
-              height={420}
-              width={360}
               {...bind}
               {...panelBind}
               id={`${CONTROL_ID}-list`}
@@ -576,72 +617,116 @@ export function RegistryControl(props: RegistryControlProps) {
                                 }
                               />
                             </div>
+                            <div className="map-registry-control__layout-span">
+                              <InputCheckbox
+                                label={trans(
+                                  'map.registry-control.panelShowState',
+                                )}
+                                checked={panelDraft.open}
+                                onChange={(checked) =>
+                                  setPanelDraft((prev) => ({
+                                    ...prev,
+                                    open: checked,
+                                  }))
+                                }
+                              />
+                            </div>
                           </div>
                         ) : (
                           <div className="map-registry-control__layout-fields">
+                            {panelEdgeFields.top ? (
+                              <InputText
+                                type="number"
+                                label={trans('map.registry-control.panelTop')}
+                                value={panelDraft.top}
+                                onChange={(value) =>
+                                  setPanelDraft((prev) => ({
+                                    ...prev,
+                                    top: value,
+                                  }))
+                                }
+                              />
+                            ) : null}
+                            {panelEdgeFields.right ? (
+                              <InputText
+                                type="number"
+                                label={trans('map.registry-control.panelRight')}
+                                value={panelDraft.right}
+                                onChange={(value) =>
+                                  setPanelDraft((prev) => ({
+                                    ...prev,
+                                    right: value,
+                                  }))
+                                }
+                              />
+                            ) : null}
+                            {panelEdgeFields.bottom ? (
+                              <InputText
+                                type="number"
+                                label={trans(
+                                  'map.registry-control.panelBottom',
+                                )}
+                                value={panelDraft.bottom}
+                                onChange={(value) =>
+                                  setPanelDraft((prev) => ({
+                                    ...prev,
+                                    bottom: value,
+                                  }))
+                                }
+                              />
+                            ) : null}
+                            {panelEdgeFields.left ? (
+                              <InputText
+                                type="number"
+                                label={trans('map.registry-control.panelLeft')}
+                                value={panelDraft.left}
+                                onChange={(value) =>
+                                  setPanelDraft((prev) => ({
+                                    ...prev,
+                                    left: value,
+                                  }))
+                                }
+                              />
+                            ) : null}
                             <InputText
                               type="number"
-                              label={trans('map.registry-control.panelTop')}
-                              value={panelDraft.top}
+                              label={trans('map.registry-control.panelWidth')}
+                              value={panelDraft.width}
                               onChange={(value) =>
                                 setPanelDraft((prev) => ({
                                   ...prev,
-                                  top: value,
+                                  width: value,
                                 }))
                               }
                             />
                             <InputText
                               type="number"
-                              label={trans('map.registry-control.panelRight')}
-                              value={panelDraft.right}
+                              label={trans('map.registry-control.panelHeight')}
+                              value={panelDraft.height}
                               onChange={(value) =>
                                 setPanelDraft((prev) => ({
                                   ...prev,
-                                  right: value,
+                                  height: value,
                                 }))
                               }
                             />
-                            <InputText
-                              type="number"
-                              label={trans('map.registry-control.panelBottom')}
-                              value={panelDraft.bottom}
-                              onChange={(value) =>
-                                setPanelDraft((prev) => ({
-                                  ...prev,
-                                  bottom: value,
-                                }))
-                              }
-                            />
-                            <InputText
-                              type="number"
-                              label={trans('map.registry-control.panelLeft')}
-                              value={panelDraft.left}
-                              onChange={(value) =>
-                                setPanelDraft((prev) => ({
-                                  ...prev,
-                                  left: value,
-                                }))
-                              }
-                            />
+                            <div className="map-registry-control__layout-span">
+                              <InputCheckbox
+                                label={trans(
+                                  'map.registry-control.panelShowState',
+                                )}
+                                checked={panelDraft.open}
+                                onChange={(checked) =>
+                                  setPanelDraft((prev) => ({
+                                    ...prev,
+                                    open: checked,
+                                  }))
+                                }
+                              />
+                            </div>
                           </div>
                         )}
                         <div className="map-registry-control__layout-footer">
-                          <MapControlButton
-                            className="map-registry-control__btn"
-                            variant="outlined"
-                            size="small"
-                            onClick={open}
-                          >
-                            {trans('map.registry-control.open')}
-                          </MapControlButton>
-                          <MapControlButton
-                            className="map-registry-control__btn"
-                            variant="outlined"
-                            size="small"
-                            onClick={close}
-                          >
-                            {trans('map.registry-control.close')}
-                          </MapControlButton>
                           <MapControlButton
                             className="map-registry-control__btn"
                             variant="outlined"

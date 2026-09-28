@@ -177,10 +177,12 @@ const validPositions: Position[] = [
   'bottom-right',
 ];
 
-export const defaultMapProps: Partial<WithMapPropType> = {
+/** Scalar defaults only — object props (`popupProps`, `controlLayout`) must use
+ * factories in `withDefaults`, so they stay out of this object’s type. */
+export const defaultMapProps = {
   mapId: '',
   dragId: '',
   btnWidth: 40,
-  position: 'bottom-right',
+  position: 'bottom-right' as Position,
   controlVisible: true,
-};
+} satisfies Partial<WithMapPropType>;

@@ -400,6 +400,20 @@ export function DraggableItemPopup({
       y = top;
       changed = true;
     }
+    if (right != null) {
+      const nextX = containerWidth - right - w;
+      if (nextX !== x) {
+        x = nextX;
+        changed = true;
+      }
+    }
+    if (bottom != null) {
+      const nextY = containerHeight - bottom - h;
+      if (nextY !== y) {
+        y = nextY;
+        changed = true;
+      }
+    }
     if (!changed) return;
     const next = clampBounds(x, y, w, h, containerWidth, containerHeight);
     setPX(next.x);
@@ -410,6 +424,8 @@ export function DraggableItemPopup({
   }, [
     left,
     top,
+    right,
+    bottom,
     propWidth,
     propHeight,
     initDone,
