@@ -14,7 +14,11 @@ import {
   subscribePrefersContrastMore,
   toggleMapThemeLightDark,
 } from '@hungpvq/map-core/theme';
-import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import {
+  ensureMapToolbarApi,
+  type MapControlButtonUIState,
+  mdiButtonState,
+} from '@hungpvq/map-core/toolbar';
 import {
   mdiCircleHalfFull,
   mdiPalette,
@@ -67,6 +71,7 @@ export function ThemeControl({
     getStoredMapThemeMode('auto', storageOpts),
   );
   const [prefersDark, setPrefersDark] = useState(() => getPrefersDark());
+  const [groupExpanded, setGroupExpanded] = useState(false);
 
   const themeModes = useMemo(
     () => normalizeMapThemeModes(themes ?? MAP_THEME_MODES),
@@ -124,6 +129,8 @@ export function ThemeControl({
   function applyMode(next: MapThemeMode) {
     setMode(next);
     setStoredMapThemeMode(next, storageOpts);
+    setGroupExpanded(false);
+    if (mapId) ensureMapToolbarApi(mapId).setExpandedModule(null);
   }
 
   function toggleTheme() {
@@ -132,7 +139,11 @@ export function ThemeControl({
 
   const titleKey = getMapThemeLocaleKey(toggleTarget);
 
-  const { moduleContainerProps, state, control } = useMapControl(mapId, {
+  const {
+    moduleContainerProps,
+    state: moduleState,
+    control,
+  } = useMapControl(mapId, {
     id: 'mapThemeControl',
     panelKind: 'button',
     from: mergedProps,
@@ -147,19 +158,43 @@ export function ThemeControl({
         type: 'mapThemeControl',
         run: () => toggleTheme(),
       },
+      ...MAP_THEME_MODES.map((themeId) => ({
+        type: `mapThemeControl:${themeId}`,
+        run: () => applyMode(themeId),
+      })),
     ],
-    getButtonState: () =>
-      mdiButtonState(toggleIcon, {
-        visible: true,
-        order,
-        title: trans(titleKey),
-      }),
-    onClick: () => toggleTheme(),
+    toolbar: {
+      kind: 'module-expandable',
+      moduleId: 'mapThemeControl',
+      orientation: 'row',
+      order,
+      expandableButton: ({ active }) =>
+        mdiButtonState(toggleIcon, {
+          visible: true,
+          active,
+          order,
+          title: trans(titleKey),
+        }),
+      buttons: MAP_THEME_MODES.map((themeId) => ({
+        id: themeId,
+        getState: () =>
+          mdiButtonState(MODE_ICONS[themeId], {
+            visible: themeModes.includes(themeId),
+            active: mode === themeId,
+            title: trans(getMapThemeLocaleKey(themeId)),
+          }),
+        onClick: () => applyMode(themeId),
+      })),
+    },
   });
+
+  const launcherState = (
+    moduleState as Record<string, MapControlButtonUIState> | undefined
+  )?.launcher;
 
   useEffect(() => {
     control.sync();
-  }, [mode, prefersDark, toggleIcon, titleKey, control]);
+  }, [mode, prefersDark, toggleIcon, titleKey, themeModes, control]);
 
   return (
     <ModuleContainer
@@ -167,14 +202,14 @@ export function ThemeControl({
       btn={
         <MapControlGroupButton
           row
-          className="button-group-hover-expand"
+          className={`button-group-click-expand${groupExpanded ? ' is-expanded' : ''}`}
         >
-          {state ? (
+          {launcherState ? (
             <MapCommonButton
-              option={state}
+              option={launcherState}
               onClick={(e) => {
                 e.stopPropagation();
-                control.onAction(e);
+                setGroupExpanded((v) => !v);
               }}
             />
           ) : null}

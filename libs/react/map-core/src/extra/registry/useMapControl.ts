@@ -33,12 +33,12 @@ import {
   type AnyToolbarOptions,
   type ControlStrategy,
   createLiveToolbarStrategy,
+  ensureMapToolbarApi,
   type MapControlButtonState,
   type MapControlButtonUIState,
-  type ModuleStrategy,
   type Toolbar,
-  type ToolbarKind,
-  type ToolbarSingleOptions,
+  type ToolbarOptionsSingle,
+  withLayoutToolbarOptions,
 } from '@hungpvq/map-core/toolbar';
 import {
   useDragLayout as getDragLayout,
@@ -188,7 +188,7 @@ function withPosition(
   };
 }
 
-function stubToolbarOptions(id: string): ToolbarSingleOptions {
+function stubToolbarOptions(id: string): ToolbarOptionsSingle {
   return {
     kind: 'single',
     id,
@@ -197,42 +197,6 @@ function stubToolbarOptions(id: string): ToolbarSingleOptions {
         id,
         visible: false,
       }) as MapControlButtonUIState,
-  };
-}
-
-/** Apply layout SoT onto author button UI state (visible / order / position). */
-function applyLayoutToButtonState(
-  author: MapControlButtonUIState,
-  lay: MapControlLayoutState,
-): MapControlButtonUIState {
-  return {
-    ...author,
-    visible: lay.visible && author.visible !== false,
-    order: lay.order,
-    position: lay.position,
-  };
-}
-
-/** Wrap toolbar options so sync/mount always read current layout store. */
-function withLayoutToolbarOptions(
-  opts: AnyToolbarOptions,
-  getLayout: () => MapControlLayoutState,
-): AnyToolbarOptions {
-  if (opts.kind === 'module') {
-    return {
-      ...opts,
-      get order() {
-        return getLayout().order;
-      },
-      buttons: opts.buttons.map((btn) => ({
-        ...btn,
-        getState: () => applyLayoutToButtonState(btn.getState(), getLayout()),
-      })),
-    };
-  }
-  return {
-    ...opts,
-    getState: () => applyLayoutToButtonState(opts.getState(), getLayout()),
   };
 }
 
@@ -582,10 +546,27 @@ export function useMapControl(mapId: string, options: UseMapControlOptions) {
   const optionsToolbarRef = useRef(toolbarOpts);
   optionsToolbarRef.current = toolbarOpts;
 
-  const kind: ToolbarKind = (toolbarOpts.kind ?? 'single') as ToolbarKind;
+  const mapIdForExpandRef = useRef(mapId);
+  mapIdForExpandRef.current = mapId;
+
+  const toolbarRef = useRef(toolbar);
+  toolbarRef.current = toolbar;
 
   const [control] = useState(() =>
-    createLiveToolbarStrategy(() => optionsToolbarRef.current, toolbar, kind),
+    createLiveToolbarStrategy(
+      () => optionsToolbarRef.current,
+      {
+        register: (state) => toolbarRef.current.register(state),
+        update: (id, patch) => toolbarRef.current.update(id, patch),
+        unregister: (id) => toolbarRef.current.unregister(id),
+      },
+      {
+        getExpandedModuleId: () => {
+          const id = mapIdForExpandRef.current;
+          return id ? ensureMapToolbarApi(id).getExpandedModuleId() : null;
+        },
+      },
+    ),
   );
 
   type StateType =
@@ -673,7 +654,7 @@ export function useMapControl(mapId: string, options: UseMapControlOptions) {
     layout,
     resolvedLayout,
     state,
-    control: control as ControlStrategy & ModuleStrategy,
+    control: control,
     moduleContainerProps,
   };
 }

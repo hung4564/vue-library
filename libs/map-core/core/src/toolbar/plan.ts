@@ -128,3 +128,81 @@ export function planToolbarLayout(
     corners,
   };
 }
+
+export type PlanToolbarExpansionResult = {
+  primaryGroups: ToolbarButtonGroup[];
+  secondaryButtons: MapControlButtonState[];
+};
+
+/**
+ * Split expandable modules: primary keeps launchers; options go to secondary
+ * when `expandedModuleId` matches the group id.
+ */
+export function planToolbarExpansion(
+  groups: ToolbarButtonGroup[],
+  expandedModuleId: string | null,
+): PlanToolbarExpansionResult {
+  const secondaryButtons: MapControlButtonState[] = [];
+  const primaryGroups: ToolbarButtonGroup[] = [];
+
+  for (const group of groups) {
+    const expandable = group.buttons.some((b) => b.expandable);
+    if (!expandable) {
+      primaryGroups.push(group);
+      continue;
+    }
+
+    const launchers = group.buttons.filter(
+      (b) => b.role === 'launcher' || (b.expandable && !b.role),
+    );
+    const options = group.buttons.filter((b) => b.role === 'option');
+
+    if (expandedModuleId === group.id) {
+      secondaryButtons.push(...options);
+    }
+
+    primaryGroups.push({
+      ...group,
+      buttons: launchers.length > 0 ? launchers : group.buttons,
+    });
+  }
+
+  return {
+    primaryGroups: primaryGroups.filter((g) => g.buttons.length > 0),
+    secondaryButtons,
+  };
+}
+
+/**
+ * Shared click path: launcher toggles expand; everything else runs `action`.
+ */
+export function handleToolbarButtonClick(
+  btn: MapControlButtonState,
+  e: MouseEvent,
+  api: { toggleExpandedModule: (id: string) => void },
+): void {
+  if (btn.expandable && (btn.role === 'launcher' || !btn.role)) {
+    const moduleId = btn.group || btn.id.replace(/:launcher$/, '');
+    e.stopPropagation?.();
+    api.toggleExpandedModule(moduleId);
+    return;
+  }
+  btn.action(e);
+}
+
+/**
+ * Whether pointerdown outside the toolbar should collapse the open module.
+ * Reads `closeOnOutsideClick` stamped on the launcher (default true).
+ */
+export function shouldCloseExpandedOnOutsideClick(
+  buttons: MapControlButtonState[],
+  expandedModuleId: string | null,
+): boolean {
+  if (!expandedModuleId) return false;
+  const launcher = buttons.find(
+    (b) =>
+      b.group === expandedModuleId &&
+      (b.role === 'launcher' || (b.expandable && !b.role)),
+  );
+  return launcher?.closeOnOutsideClick !== false;
+}

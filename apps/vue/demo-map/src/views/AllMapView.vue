@@ -56,7 +56,7 @@ import {
 import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { mdiPlus } from '@mdi/js';
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import AsideControl from '../layout/aside-control.vue';
@@ -153,6 +153,20 @@ function createDatasetMeasure(
   dataset.add(groupLayer1);
   return dataset;
 }
+const isMobile = ref(false);
+const MOBILE_MQ = '(max-width: 640px)';
+let mq: MediaQueryList | undefined;
+onMounted(() => {
+  mq = window.matchMedia(MOBILE_MQ);
+  syncMobile();
+  mq.addEventListener('change', syncMobile);
+});
+function syncMobile() {
+  isMobile.value = !!mq?.matches;
+}
+onUnmounted(() => {
+  mq?.removeEventListener('change', syncMobile);
+});
 </script>
 <template>
   <Map
@@ -175,7 +189,10 @@ function createDatasetMeasure(
       position="top-left"
       show
     >
-      <template #endList="{ mapId }">
+      <template
+        #endList="{ mapId }"
+        v-if="!isMobile"
+      >
         <BaseMapCard
           :mapId="mapId"
           showOpacity

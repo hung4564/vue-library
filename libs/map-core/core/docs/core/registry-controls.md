@@ -182,6 +182,8 @@ The inspector uses `ModuleContainer` + `DraggableItemPopup` + `useMapControl`, s
 
 Canonical pattern — **`useMapControl` only** (register handle + layout store + toolbar + optional auto-button).
 
+Toolbar kinds, expandable secondary row, and overflow helpers: [Toolbar](./toolbar.md).
+
 `setShow` **must** accept a boolean (`true` / `false`). `openControl` / `closeControl` call `setShow(true|false)`; do not pass a toggle-only function.
 
 Simple single-button controls omit `#btn` / `btn` — ModuleContainer auto-renders `MapCommonButton` from `getButtonState`. Custom UI passes `buttonSlot: 'custom'` and keeps `#btn`.

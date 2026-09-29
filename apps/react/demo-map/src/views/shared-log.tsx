@@ -15,11 +15,12 @@ import { Link } from 'react-router';
 
 import { MapPageShell } from '../components/MapPageShell';
 
-loggerFactory.enableEverything();
-
 const NAV_ITEMS = getDemoAsideNavItems('react');
 
 export function SharedLogPage() {
+  useEffect(() => {
+    loggerFactory.enableEverything();
+  }, []);
   const [records, setRecords] = useState<LogRecord[]>([]);
   const [lastNote, setLastNote] = useState('');
   const [done, setDone] = useState<Record<string, boolean>>({});

@@ -61,6 +61,13 @@
       "category": "Core",
       "order": 1.5
     },
+    {
+      "name": "Toolbar",
+      "package": "Map - Core",
+      "docs": "/map/core/toolbar",
+      "category": "Core",
+      "order": 1.55
+    },
 
     {
       "name": "Map",

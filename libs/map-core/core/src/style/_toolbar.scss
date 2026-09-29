@@ -81,6 +81,16 @@
   justify-content: flex-end;
 }
 
+.map-toolbar-secondary-row {
+  width: max-content;
+  max-width: 100%;
+  pointer-events: all;
+}
+
+.map-toolbar-control > .map-toolbar-secondary-row {
+  margin-top: 6px;
+}
+
 /* Corner More (#btnOutside): pin to map corner host, not btn wrapper. */
 .right-top-container > .map-toolbar-overflow,
 .left-top-container > .map-toolbar-overflow,

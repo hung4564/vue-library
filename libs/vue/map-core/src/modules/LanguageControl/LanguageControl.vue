@@ -11,8 +11,11 @@ import {
   resolveInitialMapLanguage,
   type WithMapPropType,
 } from '@hungpvq/map-core';
-import { textButtonState } from '@hungpvq/map-core/toolbar';
-import { computed, onMounted, watch } from 'vue';
+import {
+  type MapControlButtonUIState,
+  textButtonState,
+} from '@hungpvq/map-core/toolbar';
+import { computed, onMounted, ref, watch } from 'vue';
 
 import MapCommonButton from '../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
@@ -55,6 +58,8 @@ const {
   loadLocale,
   whenLocaleIdle,
 } = useLang(mapId.value);
+
+const groupExpanded = ref(false);
 
 const languageList = computed(() =>
   (props.languages?.length ? props.languages : [...MAP_BUILTIN_LANGUAGES]).map(
@@ -99,6 +104,7 @@ async function applyLanguage(code: MapLanguageCode) {
   }
   if (seq !== applySeq) return;
   setLanguage(code);
+  groupExpanded.value = false;
 }
 
 function toggleLanguage() {
@@ -119,7 +125,11 @@ watch(
   { immediate: true },
 );
 
-const { moduleContainerProps, state, control } = useMapControl(mapId, {
+const {
+  moduleContainerProps,
+  state: moduleState,
+  control,
+} = useMapControl(mapId, {
   id: 'mapLanguageControl',
   panelKind: 'button',
   from: props,
@@ -130,36 +140,56 @@ const { moduleContainerProps, state, control } = useMapControl(mapId, {
     defaultLanguage: props.defaultLanguage,
     fallbackLanguage: props.fallbackLanguage,
   }),
-  actions: [
+  actions: () => [
     {
       type: 'mapLanguageControl',
       run: () => toggleLanguage(),
     },
+    ...languageList.value.map((code) => ({
+      type: `mapLanguageControl:${code}`,
+      run: () => void applyLanguage(code),
+    })),
   ],
-  getButtonState() {
-    return textButtonState(mapLanguageCodeLabel(language.value), {
-      visible: true,
-      active: true,
-      order: order.value,
-      title: `${trans.value('map.language-control.title')}: ${titleFor(language.value)}`,
-    });
-  },
-  onClick() {
-    toggleLanguage();
+  toolbar: {
+    kind: 'module-expandable',
+    moduleId: 'mapLanguageControl',
+    expandableButton: ({ active }) => {
+      return textButtonState(mapLanguageCodeLabel(language.value), {
+        active,
+        title: `${trans.value('map.language-control.title')}: ${titleFor(language.value)}`,
+      });
+    },
+    orientation: 'row',
+    order: order.value,
+    buttons: [...MAP_BUILTIN_LANGUAGES].map((code) => ({
+      id: code,
+      getState: () =>
+        textButtonState(mapLanguageCodeLabel(code), {
+          visible: languageList.value.includes(code),
+          active: language.value === code,
+          title: titleFor(code),
+        }),
+      onClick: () => void applyLanguage(code),
+    })),
   },
 });
 
+const launcherState = computed((): MapControlButtonUIState | undefined => {
+  const s = moduleState.value as
+    Record<string, MapControlButtonUIState> | undefined;
+  return s?.launcher;
+});
+
 watch(language, () => control.sync());
+watch(languageList, () => control.sync());
 
 onMounted(() => {
   void (async () => {
-    // Wait for package/control registerLocale waves to flush (one emit).
     await whenLocaleIdle();
     const initial = resolveInitialMapLanguage(
       languageList.value,
       props.defaultLanguage ?? 'vi',
     );
-    // Load overlays (e.g. demo-i18n) before activating language so UI sees merges.
     if (props.localeLoader) {
       try {
         await loadLocale(initial, props.localeLoader);
@@ -175,19 +205,15 @@ onMounted(() => {
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
-      <!--
-        DOM: <current> first (collapsed face; RTL right corners keep it outer),
-        then all language chips. Visual expand ≈ fr | vi | en | <current>.
-        Click chip → select; click current → cycle.
-      -->
       <MapControlGroupButton
         row
-        class="button-group-hover-expand"
+        class="button-group-click-expand"
+        :class="{ 'is-expanded': groupExpanded }"
       >
         <MapCommonButton
-          v-if="state"
-          :option="state"
-          @click.stop="control.onAction"
+          v-if="launcherState"
+          :option="launcherState"
+          @click.stop="groupExpanded = !groupExpanded"
         />
         <MapCommonButton
           v-for="code in languageList"

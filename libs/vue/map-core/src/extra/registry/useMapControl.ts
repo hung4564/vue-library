@@ -34,12 +34,12 @@ import {
   type AnyToolbarOptions,
   type ControlStrategy,
   createLiveToolbarStrategy,
+  ensureMapToolbarApi,
   type MapControlButtonState,
   type MapControlButtonUIState,
-  type ModuleStrategy,
   type Toolbar,
-  type ToolbarKind,
-  type ToolbarSingleOptions,
+  type ToolbarOptionsSingle,
+  withLayoutToolbarOptions,
 } from '@hungpvq/map-core/toolbar';
 import { useDragLayout, useDragStore } from '@hungpvq/vue-draggable';
 import {
@@ -143,7 +143,7 @@ function withPosition(
   };
 }
 
-function stubToolbarOptions(id: string): ToolbarSingleOptions {
+function stubToolbarOptions(id: string): ToolbarOptionsSingle {
   return {
     kind: 'single',
     id,
@@ -152,42 +152,6 @@ function stubToolbarOptions(id: string): ToolbarSingleOptions {
         id,
         visible: false,
       }) as MapControlButtonUIState,
-  };
-}
-
-/** Apply layout SoT onto author button UI state (visible / order / position). */
-function applyLayoutToButtonState(
-  author: MapControlButtonUIState,
-  lay: MapControlLayoutState,
-): MapControlButtonUIState {
-  return {
-    ...author,
-    visible: lay.visible && author.visible !== false,
-    order: lay.order,
-    position: lay.position,
-  };
-}
-
-/** Wrap toolbar options so sync/mount always read current layout store. */
-function withLayoutToolbarOptions(
-  opts: AnyToolbarOptions,
-  getLayout: () => MapControlLayoutState,
-): AnyToolbarOptions {
-  if (opts.kind === 'module') {
-    return {
-      ...opts,
-      get order() {
-        return getLayout().order;
-      },
-      buttons: opts.buttons.map((btn) => ({
-        ...btn,
-        getState: () => applyLayoutToButtonState(btn.getState(), getLayout()),
-      })),
-    };
-  }
-  return {
-    ...opts,
-    getState: () => applyLayoutToButtonState(opts.getState(), getLayout()),
   };
 }
 
@@ -593,7 +557,7 @@ export function useMapControl(
         id: options.id,
         getState: options.getButtonState,
         onClick: options.onClick,
-      } satisfies ToolbarSingleOptions;
+      } satisfies ToolbarOptionsSingle;
     } else {
       base = stubToolbarOptions(options.id);
     }
@@ -636,11 +600,15 @@ export function useMapControl(
     { deep: true },
   );
 
-  const kind: ToolbarKind = (toolbarOpts.value.kind ?? 'single') as ToolbarKind;
   const controlStrategy = createLiveToolbarStrategy(
     () => optionsRef.value,
     toolbar,
-    kind,
+    {
+      getExpandedModuleId: () =>
+        mapIdRef.value
+          ? ensureMapToolbarApi(mapIdRef.value).getExpandedModuleId()
+          : null,
+    },
   );
 
   type StateType =
@@ -760,7 +728,7 @@ export function useMapControl(
     layout,
     resolvedLayout,
     state,
-    control: controlStrategy as ControlStrategy & ModuleStrategy,
+    control: controlStrategy,
     moduleContainerProps,
   };
 }

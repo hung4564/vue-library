@@ -14,7 +14,7 @@ import {
 import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { loggerFactory } from '@hungpvq/shared-log';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
@@ -23,14 +23,14 @@ import { loadIdentifyDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 
-loggerFactory.enableEverything();
-
 export function LoggingCookbookPage() {
   useDatasetRegistry();
   const mapId = useMemo(() => getUUIDv4(), []);
   const [lastNote, setLastNote] = useState('');
   const [done, setDone] = useState<Record<string, boolean>>({});
-
+  useEffect(() => {
+    loggerFactory.enableEverything();
+  }, []);
   const onMapLoaded = useCallback((map: MapSimple) => {
     loadIdentifyDemoDatasets(map.id);
   }, []);

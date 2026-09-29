@@ -6,14 +6,18 @@ import {
 } from '@hungpvq/map-core';
 import type { MapControlButtonState } from '@hungpvq/map-core/toolbar';
 import {
+  groupToolbarButtons,
+  handleToolbarButtonClick,
   mdiButtonState,
   measureCornerMenuUsedPx,
   measureCornerStandaloneReserved,
+  planToolbarExpansion,
   planToolbarLayout,
+  shouldCloseExpandedOnOutsideClick,
   toolbarAvailableWidth,
   toolbarOverflowPanelClassName,
 } from '@hungpvq/map-core/toolbar';
-import { mdiDotsHorizontal } from '@mdi/js';
+import { mdiClose, mdiDotsHorizontal } from '@mdi/js';
 import {
   computed,
   type ComputedRef,
@@ -66,6 +70,7 @@ const menuMode = computed(
 );
 
 const buttons = ref<MapControlButtonState[]>([]);
+const expandedModuleId = ref<string | null>(null);
 const store = useMapToolbar(mapId.value);
 const moreOpen = ref(false);
 const moreOpenCorner = ref<Position | null>(null);
@@ -82,7 +87,20 @@ const rootRef = ref<HTMLElement | null>(null);
 let unsubStore: (() => void) | undefined;
 let offResize: (() => void) | undefined;
 let offDoc: (() => void) | undefined;
+let offKey: (() => void) | undefined;
 let resizeObserver: ResizeObserver | undefined;
+
+function syncStoreSnapshot() {
+  const expanded = store.getExpandedModuleId();
+  expandedModuleId.value = expanded;
+  buttons.value = store
+    .getAll()
+    .map((btn) =>
+      btn.expandable && (btn.role === 'launcher' || !btn.role)
+        ? { ...btn, active: expanded === (btn.group || btn.id) }
+        : { ...btn },
+    );
+}
 
 function findMapContainer(): HTMLElement | null {
   const fromRef = rootRef.value?.closest('.map-container');
@@ -145,29 +163,53 @@ function observeHost() {
   }
 }
 
+function collapseExpanded() {
+  store.setExpandedModule(null);
+}
+
+function onToolbarButtonClick(btn: MapControlButtonState, e: MouseEvent) {
+  handleToolbarButtonClick(btn, e, store);
+  moreOpen.value = false;
+  moreOpenCorner.value = null;
+}
+
 onMounted(() => {
-  unsubStore = store.subscribe(() => {
-    buttons.value = store.getAll();
-  });
-  buttons.value = store.getAll();
+  unsubStore = store.subscribe(syncStoreSnapshot);
+  syncStoreSnapshot();
 
   window.addEventListener('resize', syncHost);
   offResize = () => window.removeEventListener('resize', syncHost);
 
   const onDoc = (e: MouseEvent) => {
-    if (!moreOpen.value && !moreOpenCorner.value) return;
     const t = e.target;
-    if (
+    const inside =
       t instanceof Element &&
-      t.closest('.map-toolbar-control, .map-toolbar-overflow')
-    ) {
-      return;
+      t.closest(
+        '.map-toolbar-control, .map-toolbar-overflow, .map-toolbar-secondary-row',
+      );
+    if (!inside) {
+      moreOpen.value = false;
+      moreOpenCorner.value = null;
+      if (
+        expandedModuleId.value &&
+        shouldCloseExpandedOnOutsideClick(buttons.value, expandedModuleId.value)
+      ) {
+        collapseExpanded();
+      }
     }
-    moreOpen.value = false;
-    moreOpenCorner.value = null;
   };
   document.addEventListener('pointerdown', onDoc);
   offDoc = () => document.removeEventListener('pointerdown', onDoc);
+
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      moreOpen.value = false;
+      moreOpenCorner.value = null;
+      collapseExpanded();
+    }
+  };
+  document.addEventListener('keydown', onKey);
+  offKey = () => document.removeEventListener('keydown', onKey);
 });
 
 watch(
@@ -183,12 +225,31 @@ onUnmounted(() => {
   unsubStore?.();
   offResize?.();
   offDoc?.();
+  offKey?.();
   resizeObserver?.disconnect();
+});
+
+const expansion = computed(() =>
+  planToolbarExpansion(
+    groupToolbarButtons(buttons.value),
+    expandedModuleId.value,
+  ),
+);
+
+const primaryButtons = computed(() =>
+  expansion.value.primaryGroups.flatMap((g) => g.buttons),
+);
+
+const secondaryButtons = computed(() => expansion.value.secondaryButtons);
+
+const secondaryPosition = computed((): Position => {
+  const fromBtn = secondaryButtons.value[0]?.position;
+  return (fromBtn || props.position || 'bottom-right') as Position;
 });
 
 const layout = computed(() =>
   planToolbarLayout({
-    buttons: buttons.value,
+    buttons: primaryButtons.value,
     menuMode: menuMode.value,
     hostHeight: hostHeight.value,
     availableWidth: availableWidth.value,
@@ -219,11 +280,23 @@ const moreOption = computed(() =>
   }),
 );
 
+const closeOption = computed(() =>
+  mdiButtonState(mdiClose, {
+    title: trans.value('map.toolbar.close'),
+    role: 'close',
+  }),
+);
+
 function cornerMoreOption(position: Position) {
   return mdiButtonState(mdiDotsHorizontal, {
     title: trans.value('map.toolbar.more'),
     active: moreOpenCorner.value === position,
   });
+}
+
+function secondaryForCorner(position: Position) {
+  if (!secondaryButtons.value.length) return [];
+  return secondaryPosition.value === position ? secondaryButtons.value : [];
 }
 
 watch(
@@ -234,9 +307,7 @@ watch(
 );
 
 function onOverflowAction(btn: MapControlButtonState, e: MouseEvent) {
-  btn.action(e);
-  moreOpen.value = false;
-  moreOpenCorner.value = null;
+  onToolbarButtonClick(btn, e);
 }
 
 function toggleCornerMore(position: Position) {
@@ -251,11 +322,14 @@ function toggleCornerMore(position: Position) {
   >
     <template #btn>
       <div
-        v-if="groupedButtons.length"
+        v-if="groupedButtons.length || secondaryButtons.length"
         ref="rootRef"
         class="map-toolbar-control"
       >
-        <MapControlGroupButton row>
+        <MapControlGroupButton
+          v-if="toolbarSplit.visible.length || toolbarSplit.overflow.length"
+          row
+        >
           <MapControlGroupButton
             v-for="group in toolbarSplit.visible"
             :key="group.id"
@@ -265,7 +339,7 @@ function toggleCornerMore(position: Position) {
               v-for="btn in group.buttons"
               :key="btn.id"
               :option="btn"
-              @click="btn.action($event)"
+              @click="onToolbarButtonClick(btn, $event)"
             />
           </MapControlGroupButton>
           <MapCommonButton
@@ -291,6 +365,26 @@ function toggleCornerMore(position: Position) {
               :key="btn.id"
               :option="btn"
               @click="onOverflowAction(btn, $event)"
+            />
+          </MapControlGroupButton>
+        </div>
+        <div
+          v-if="secondaryButtons.length"
+          class="map-toolbar-secondary-row"
+          role="toolbar"
+        >
+          <MapControlGroupButton
+            :row="secondaryButtons[0]?.orientation === 'row'"
+          >
+            <MapCommonButton
+              :option="closeOption"
+              @click.stop="collapseExpanded"
+            />
+            <MapCommonButton
+              v-for="btn in secondaryButtons"
+              :key="btn.id"
+              :option="btn"
+              @click="onToolbarButtonClick(btn, $event)"
             />
           </MapControlGroupButton>
         </div>
@@ -333,9 +427,31 @@ function toggleCornerMore(position: Position) {
                 v-for="btn in group.buttons"
                 :key="btn.id"
                 :option="btn"
-                @click="btn.action($event)"
+                @click="onToolbarButtonClick(btn, $event)"
               />
             </MapControlGroupButton>
+            <div
+              v-if="secondaryForCorner(corner.position).length"
+              class="map-toolbar-secondary-row"
+              role="toolbar"
+            >
+              <MapControlGroupButton
+                :row="
+                  secondaryForCorner(corner.position)[0]?.orientation === 'row'
+                "
+              >
+                <MapCommonButton
+                  :option="closeOption"
+                  @click.stop="collapseExpanded"
+                />
+                <MapCommonButton
+                  v-for="btn in secondaryForCorner(corner.position)"
+                  :key="btn.id"
+                  :option="btn"
+                  @click="onToolbarButtonClick(btn, $event)"
+                />
+              </MapControlGroupButton>
+            </div>
             <MapCommonButton
               v-if="corner.showMore && corner.prefer === 'start'"
               :option="cornerMoreOption(corner.position)"
@@ -366,6 +482,39 @@ function toggleCornerMore(position: Position) {
               @click="onOverflowAction(btn, $event)"
             />
           </MapControlGroupButton>
+        </div>
+      </template>
+    </ModuleContainer>
+    <ModuleContainer
+      v-if="
+        secondaryButtons.length &&
+        !cornerData.some((c) => c.position === secondaryPosition)
+      "
+      v-bind="moduleContainerProps"
+      :position="secondaryPosition"
+      :control-order="0"
+    >
+      <template #btn>
+        <div class="map-toolbar-control">
+          <div
+            class="map-toolbar-secondary-row"
+            role="toolbar"
+          >
+            <MapControlGroupButton
+              :row="secondaryButtons[0]?.orientation === 'row'"
+            >
+              <MapCommonButton
+                :option="closeOption"
+                @click.stop="collapseExpanded"
+              />
+              <MapCommonButton
+                v-for="btn in secondaryButtons"
+                :key="btn.id"
+                :option="btn"
+                @click="onToolbarButtonClick(btn, $event)"
+              />
+            </MapControlGroupButton>
+          </div>
         </div>
       </template>
     </ModuleContainer>

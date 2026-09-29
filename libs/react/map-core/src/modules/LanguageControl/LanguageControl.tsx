@@ -10,8 +10,12 @@ import {
   resolveInitialMapLanguage,
   type WithMapPropType,
 } from '@hungpvq/map-core';
-import { textButtonState } from '@hungpvq/map-core/toolbar';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import {
+  ensureMapToolbarApi,
+  type MapControlButtonUIState,
+  textButtonState,
+} from '@hungpvq/map-core/toolbar';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { MapCommonButton } from '../../components/MapCommonButton';
 import { MapControlGroupButton } from '../../components/MapControlGroupButton';
@@ -57,6 +61,7 @@ export function LanguageControl({
     whenLocaleIdle,
   } = useLang(mapId);
   const applySeq = useRef(0);
+  const [groupExpanded, setGroupExpanded] = useState(false);
 
   const languageList = useMemo(
     () =>
@@ -102,7 +107,6 @@ export function LanguageControl({
         languageList,
         defaultLanguage ?? 'vi',
       );
-      // Load overlays (e.g. demo-i18n) before activating language so UI sees merges.
       if (localeLoader) {
         try {
           await loadLocale(initial, localeLoader);
@@ -132,8 +136,10 @@ export function LanguageControl({
       }
       if (seq !== applySeq.current) return;
       setLanguage(code);
+      setGroupExpanded(false);
+      if (mapId) ensureMapToolbarApi(mapId).setExpandedModule(null);
     },
-    [language, loadLocale, localeLoader, reloadOnSelect, setLanguage],
+    [language, loadLocale, localeLoader, mapId, reloadOnSelect, setLanguage],
   );
 
   const toggleLanguage = useCallback(() => {
@@ -141,7 +147,11 @@ export function LanguageControl({
     if (next) void applyLanguage(next);
   }, [applyLanguage, language, languageList]);
 
-  const { moduleContainerProps, state, control } = useMapControl(mapId, {
+  const {
+    moduleContainerProps,
+    state: moduleState,
+    control,
+  } = useMapControl(mapId, {
     id: 'mapLanguageControl',
     panelKind: 'button',
     from: mergedProps,
@@ -157,20 +167,43 @@ export function LanguageControl({
         type: 'mapLanguageControl',
         run: () => toggleLanguage(),
       },
+      ...MAP_BUILTIN_LANGUAGES.map((code) => ({
+        type: `mapLanguageControl:${code}`,
+        run: () => void applyLanguage(code),
+      })),
     ],
-    getButtonState: () =>
-      textButtonState(mapLanguageCodeLabel(language), {
-        visible: true,
-        active: true,
-        order,
-        title: `${trans('map.language-control.title')}: ${titleFor(language)}`,
-      }),
-    onClick: () => toggleLanguage(),
+    toolbar: {
+      kind: 'module-expandable',
+      moduleId: 'mapLanguageControl',
+      orientation: 'row',
+      order,
+      expandableButton: ({ active }) =>
+        textButtonState(mapLanguageCodeLabel(language), {
+          visible: true,
+          active,
+          order,
+          title: `${trans('map.language-control.title')}: ${titleFor(language)}`,
+        }),
+      buttons: MAP_BUILTIN_LANGUAGES.map((code) => ({
+        id: code,
+        getState: () =>
+          textButtonState(mapLanguageCodeLabel(code), {
+            visible: languageList.includes(code),
+            active: language === code,
+            title: titleFor(code),
+          }),
+        onClick: () => void applyLanguage(code),
+      })),
+    },
   });
+
+  const launcherState = (
+    moduleState as Record<string, MapControlButtonUIState> | undefined
+  )?.launcher;
 
   useEffect(() => {
     control.sync();
-  }, [language, titleFor, control]);
+  }, [language, titleFor, languageList, control]);
 
   return (
     <ModuleContainer
@@ -178,15 +211,14 @@ export function LanguageControl({
       btn={
         <MapControlGroupButton
           row
-          className="button-group-hover-expand"
+          className={`button-group-click-expand${groupExpanded ? ' is-expanded' : ''}`}
         >
-          {/* DOM: current first (collapsed face), then all chips. Click current → cycle. */}
-          {state ? (
+          {launcherState ? (
             <MapCommonButton
-              option={state}
+              option={launcherState}
               onClick={(e) => {
                 e.stopPropagation();
-                control.onAction(e);
+                setGroupExpanded((v) => !v);
               }}
             />
           ) : null}

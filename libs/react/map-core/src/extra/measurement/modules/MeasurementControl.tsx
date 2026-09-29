@@ -20,6 +20,7 @@ import {
 } from '@hungpvq/map-core/measurement';
 import {
   type MapControlButtonUIState,
+  mdiButtonState,
   mdiIcon,
   type ToolbarButtonConfig,
 } from '@hungpvq/map-core/toolbar';
@@ -320,8 +321,15 @@ export function MeasurementControl(props: MeasurementControlProps) {
     defaultActionType: 'distance',
     actions: registerActions,
     toolbar: {
-      kind: 'module',
+      kind: 'module-expandable',
       moduleId: 'mapMeasurementControl',
+      closeOnOutsideClick: false,
+      expandableButton: ({ active }) => {
+        return mdiButtonState(PATH.distance, {
+          title: trans('map.measurement.title'),
+          active,
+        });
+      },
       order,
       orientation: 'row',
       buttons: [...buttonShow, ...buttonHandle, ...(props.actions || [])].map(

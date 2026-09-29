@@ -315,8 +315,15 @@ const {
     ),
   toolbar: {
     moduleId: 'mapMeasurementControl',
-    kind: 'module',
+    kind: 'module-expandable',
     order: order.value,
+    closeOnOutsideClick: false,
+    expandableButton: ({ active }) => {
+      return mdiButtonState(path.distance, {
+        title: trans.value('map.measurement.title'),
+        active,
+      });
+    },
     orientation: 'row',
     buttons: [...button_show, ...button_handle, ...(props.actions || [])].map(
       toToolbarButton,

@@ -35,7 +35,7 @@ import {
 import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { DrawControl, InspectControl } from '@hungpvq/react-map-draw';
 import { mdiPlus } from '@mdi/js';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
@@ -43,6 +43,7 @@ import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 import { createDatasetMeasure } from './all-map-view-measure';
 
+const MOBILE_MQ = '(max-width: 640px)';
 export function AllMapView() {
   useDatasetRegistry();
   const { addDataset, setMapId } = useMapDataset();
@@ -77,6 +78,20 @@ export function AllMapView() {
     [addDataset],
   );
 
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(MOBILE_MQ).matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_MQ);
+    const onChange = () => {
+      const next = mq.matches;
+      setIsMobile(() => {
+        return next;
+      });
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
   return (
     <MapPageShell>
       <Map
@@ -96,13 +111,15 @@ export function AllMapView() {
         <LayerControl
           position="top-left"
           show
-          endList={({ mapId }) => (
-            <BaseMapCard
-              mapId={mapId}
-              showOpacity
-              allowAddBasemap
-            />
-          )}
+          endList={({ mapId }) =>
+            !isMobile && (
+              <BaseMapCard
+                mapId={mapId}
+                showOpacity
+                allowAddBasemap
+              />
+            )
+          }
         />
         <InspectControl position="top-right" />
         <PrintAdvancedControl />

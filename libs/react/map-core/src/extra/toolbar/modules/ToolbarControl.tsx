@@ -6,14 +6,18 @@ import {
 import type { MapControlButtonState } from '@hungpvq/map-core/toolbar';
 import {
   createToolbarStoreApi,
+  groupToolbarButtons,
+  handleToolbarButtonClick,
   mdiButtonState,
   measureCornerMenuUsedPx,
   measureCornerStandaloneReserved,
+  planToolbarExpansion,
   planToolbarLayout,
+  shouldCloseExpandedOnOutsideClick,
   toolbarAvailableWidth,
   toolbarOverflowPanelClassName,
 } from '@hungpvq/map-core/toolbar';
-import { mdiDotsHorizontal } from '@mdi/js';
+import { mdiClose, mdiDotsHorizontal } from '@mdi/js';
 import {
   useCallback,
   useContext,
@@ -62,6 +66,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
 
   const { trans } = useLang(mapId);
   const [buttons, setButtons] = useState<MapControlButtonState[]>([]);
+  const [expandedModuleId, setExpandedModuleId] = useState<string | null>(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [moreOpenCorner, setMoreOpenCorner] = useState<Position | null>(null);
   const [availableWidth, setAvailableWidth] = useState(() =>
@@ -78,6 +83,10 @@ export function ToolbarControl(props: ToolbarControlProps) {
   >({});
   const rootRef = useRef<HTMLDivElement | null>(null);
   const toolbarStore = useMapToolbarStore(mapId);
+  const storeApi = useMemo(
+    () => createToolbarStoreApi(toolbarStore),
+    [toolbarStore],
+  );
 
   const findMapContainer = useCallback(() => {
     const fromRef = rootRef.current?.closest('.map-container');
@@ -122,14 +131,23 @@ export function ToolbarControl(props: ToolbarControlProps) {
   }, [findMapContainer, mapId, menuMode]);
 
   useEffect(() => {
-    const store = createToolbarStoreApi(toolbarStore);
     const syncButtons = () => {
-      setButtons(store.getAll().map((btn) => ({ ...btn })));
+      const expanded = storeApi.getExpandedModuleId();
+      setExpandedModuleId(expanded);
+      setButtons(
+        storeApi
+          .getAll()
+          .map((btn) =>
+            btn.expandable && (btn.role === 'launcher' || !btn.role)
+              ? { ...btn, active: expanded === (btn.group || btn.id) }
+              : { ...btn },
+          ),
+      );
     };
-    const unsub = store.subscribe(syncButtons);
+    const unsub = storeApi.subscribe(syncButtons);
     syncButtons();
     return unsub;
-  }, [toolbarStore]);
+  }, [storeApi]);
 
   useEffect(() => {
     syncHost();
@@ -148,27 +166,59 @@ export function ToolbarControl(props: ToolbarControlProps) {
     window.addEventListener('resize', syncHost);
     const onDoc = (e: MouseEvent) => {
       const t = e.target;
-      if (
+      const inside =
         t instanceof Element &&
-        t.closest('.map-toolbar-control, .map-toolbar-overflow')
-      ) {
-        return;
+        t.closest(
+          '.map-toolbar-control, .map-toolbar-overflow, .map-toolbar-secondary-row',
+        );
+      if (!inside) {
+        setMoreOpen(false);
+        setMoreOpenCorner(null);
+        const expanded = storeApi.getExpandedModuleId();
+        if (
+          expanded &&
+          shouldCloseExpandedOnOutsideClick(storeApi.getAll(), expanded)
+        ) {
+          storeApi.setExpandedModule(null);
+        }
       }
-      setMoreOpen(false);
-      setMoreOpenCorner(null);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMoreOpen(false);
+        setMoreOpenCorner(null);
+        storeApi.setExpandedModule(null);
+      }
     };
     document.addEventListener('pointerdown', onDoc);
+    document.addEventListener('keydown', onKey);
     return () => {
       observer?.disconnect();
       window.removeEventListener('resize', syncHost);
       document.removeEventListener('pointerdown', onDoc);
+      document.removeEventListener('keydown', onKey);
     };
-  }, [menuMode, mapId, buttons.length, findMapContainer, syncHost]);
+  }, [menuMode, mapId, buttons.length, findMapContainer, syncHost, storeApi]);
+
+  const expansion = useMemo(
+    () => planToolbarExpansion(groupToolbarButtons(buttons), expandedModuleId),
+    [buttons, expandedModuleId],
+  );
+
+  const primaryButtons = useMemo(
+    () => expansion.primaryGroups.flatMap((g) => g.buttons),
+    [expansion],
+  );
+
+  const secondaryButtons = expansion.secondaryButtons;
+  const secondaryPosition = (secondaryButtons[0]?.position ||
+    merged.position ||
+    'bottom-right') as Position;
 
   const layout = useMemo(
     () =>
       planToolbarLayout({
-        buttons,
+        buttons: primaryButtons,
         menuMode,
         hostHeight,
         availableWidth,
@@ -179,7 +229,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
         cornerPositions: CORNER_POSITIONS,
       }),
     [
-      buttons,
+      primaryButtons,
       menuMode,
       hostHeight,
       availableWidth,
@@ -196,12 +246,54 @@ export function ToolbarControl(props: ToolbarControlProps) {
     title: trans('map.toolbar.more'),
     active: moreOpen,
   });
+  const closeOption = mdiButtonState(mdiClose, {
+    title: trans('map.toolbar.close'),
+    role: 'close',
+  });
+
+  const onToolbarButtonClick = useCallback(
+    (btn: MapControlButtonState, e: MouseEvent) => {
+      handleToolbarButtonClick(btn, e, storeApi);
+      setMoreOpen(false);
+      setMoreOpenCorner(null);
+    },
+    [storeApi],
+  );
 
   useEffect(() => {
     if (!toolbarSplit.overflow.length) setMoreOpen(false);
   }, [toolbarSplit.overflow.length]);
 
+  const secondaryRow = (buttonsForRow: MapControlButtonState[]) =>
+    buttonsForRow.length ? (
+      <div
+        className="map-toolbar-secondary-row"
+        role="toolbar"
+      >
+        <MapControlGroupButton row={buttonsForRow[0]?.orientation === 'row'}>
+          <MapCommonButton
+            option={closeOption}
+            onClick={(e) => {
+              e.stopPropagation();
+              storeApi.setExpandedModule(null);
+            }}
+          />
+          {buttonsForRow.map((btn) => (
+            <MapCommonButton
+              key={btn.id}
+              option={btn}
+              onClick={(e) => onToolbarButtonClick(btn, e.nativeEvent)}
+            />
+          ))}
+        </MapControlGroupButton>
+      </div>
+    ) : null;
+
   if (menuMode) {
+    const orphanSecondary =
+      secondaryButtons.length > 0 &&
+      !cornerData.some((c) => c.position === secondaryPosition);
+
     return (
       <div className="map-toolbar-menu-hosts">
         {cornerData.map((corner) => {
@@ -216,6 +308,8 @@ export function ToolbarControl(props: ToolbarControlProps) {
               cur === corner.position ? null : corner.position,
             );
           };
+          const cornerSecondary =
+            secondaryPosition === corner.position ? secondaryButtons : [];
           return (
             <ModuleContainer
               key={corner.position}
@@ -246,11 +340,14 @@ export function ToolbarControl(props: ToolbarControlProps) {
                           <MapCommonButton
                             key={btn.id}
                             option={btn}
-                            onClick={(e) => btn.action(e.nativeEvent)}
+                            onClick={(e) =>
+                              onToolbarButtonClick(btn, e.nativeEvent)
+                            }
                           />
                         ))}
                       </MapControlGroupButton>
                     ))}
+                    {secondaryRow(cornerSecondary)}
                     {corner.showMore && corner.prefer === 'start' ? (
                       <MapCommonButton
                         option={moreOpt}
@@ -280,7 +377,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
                             key={btn.id}
                             option={btn}
                             onClick={(e) => {
-                              btn.action(e.nativeEvent);
+                              onToolbarButtonClick(btn, e.nativeEvent);
                               setMoreOpenCorner(null);
                             }}
                           />
@@ -293,11 +390,23 @@ export function ToolbarControl(props: ToolbarControlProps) {
             />
           );
         })}
+        {orphanSecondary ? (
+          <ModuleContainer
+            {...moduleContainerProps}
+            position={secondaryPosition}
+            controlOrder={0}
+            btn={
+              <div className="map-toolbar-control">
+                {secondaryRow(secondaryButtons)}
+              </div>
+            }
+          />
+        ) : null}
       </div>
     );
   }
 
-  if (!groups.length) {
+  if (!groups.length && !secondaryButtons.length) {
     return <ModuleContainer {...moduleContainerProps} />;
   }
 
@@ -309,33 +418,35 @@ export function ToolbarControl(props: ToolbarControlProps) {
           ref={rootRef}
           className="map-toolbar-control"
         >
-          <MapControlGroupButton row>
-            {toolbarSplit.visible.map((group) => (
-              <MapControlGroupButton
-                key={group.id}
-                row
-              >
-                {group.buttons.map((btn) => (
-                  <MapCommonButton
-                    key={btn.id}
-                    option={btn}
-                    onClick={(e) => btn.action(e.nativeEvent)}
-                  />
-                ))}
-              </MapControlGroupButton>
-            ))}
-            {toolbarSplit.overflow.length ? (
-              <MapCommonButton
-                option={moreOption}
-                aria-haspopup="true"
-                aria-expanded={overflowOpen}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setMoreOpen((open) => !open);
-                }}
-              />
-            ) : null}
-          </MapControlGroupButton>
+          {toolbarSplit.visible.length || toolbarSplit.overflow.length ? (
+            <MapControlGroupButton row>
+              {toolbarSplit.visible.map((group) => (
+                <MapControlGroupButton
+                  key={group.id}
+                  row
+                >
+                  {group.buttons.map((btn) => (
+                    <MapCommonButton
+                      key={btn.id}
+                      option={btn}
+                      onClick={(e) => onToolbarButtonClick(btn, e.nativeEvent)}
+                    />
+                  ))}
+                </MapControlGroupButton>
+              ))}
+              {toolbarSplit.overflow.length ? (
+                <MapCommonButton
+                  option={moreOption}
+                  aria-haspopup="true"
+                  aria-expanded={overflowOpen}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMoreOpen((open) => !open);
+                  }}
+                />
+              ) : null}
+            </MapControlGroupButton>
+          ) : null}
           {overflowOpen ? (
             <div
               className={toolbarOverflowPanelClassName(pos)}
@@ -351,7 +462,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
                       key={btn.id}
                       option={btn}
                       onClick={(e) => {
-                        btn.action(e.nativeEvent);
+                        onToolbarButtonClick(btn, e.nativeEvent);
                         setMoreOpen(false);
                       }}
                     />
@@ -360,6 +471,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
               ))}
             </div>
           ) : null}
+          {secondaryRow(secondaryButtons)}
         </div>
       }
     />
