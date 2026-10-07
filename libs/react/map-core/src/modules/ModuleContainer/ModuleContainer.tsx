@@ -9,11 +9,10 @@ import {
   queryModuleHostElement,
   subscribeControlAutoButton,
 } from '@hungpvq/map-core';
-import type { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { MapCommonButton } from '../../components/MapCommonButton';
+import { MapAutoHostButtons } from '../../components/MapAutoHostButtons';
 import { useMapContext } from '../../context/MapContext';
 
 export interface ModuleContainerProps {
@@ -118,11 +117,11 @@ export function ModuleContainer({
 
   const autoState = useMemo(() => {
     void autoTick;
-    return autoEntry?.getUiState() as MapControlButtonUIState | undefined;
+    return autoEntry?.getUiState();
   }, [autoTick, autoEntry]);
 
   const hasBtn = !!btn;
-  const hasAutoBtn = !hasBtn && !!autoEntry && !!autoState;
+  const hasAutoBtn = !hasBtn && !!autoEntry && autoState != null;
   const hasBtnOutside = !!btnOutside;
   const hasCornerChrome = hasBtn || hasAutoBtn || hasBtnOutside;
   const showCornerChrome = isModuleCornerChromeVisible(controlLayout);
@@ -165,12 +164,10 @@ export function ModuleContainer({
   const btnContent = hasBtn ? (
     btn
   ) : hasAutoBtn ? (
-    <MapCommonButton
-      option={autoState!}
-      onClick={(e) => {
-        e.stopPropagation();
-        autoEntry?.onAction(e);
-      }}
+    <MapAutoHostButtons
+      state={autoState}
+      position={position}
+      onAction={(...args) => autoEntry?.onAction(...args)}
     />
   ) : null;
 

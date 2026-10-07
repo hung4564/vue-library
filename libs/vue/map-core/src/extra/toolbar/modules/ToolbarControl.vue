@@ -14,6 +14,7 @@ import {
   planToolbarExpansion,
   planToolbarLayout,
   shouldCloseExpandedOnOutsideClick,
+  TOOLBAR_EXPAND_OUTSIDE_IGNORE_SELECTOR,
   toolbarAvailableWidth,
   toolbarOverflowPanelClassName,
 } from '@hungpvq/map-core/toolbar';
@@ -93,13 +94,7 @@ let resizeObserver: ResizeObserver | undefined;
 function syncStoreSnapshot() {
   const expanded = store.getExpandedModuleId();
   expandedModuleId.value = expanded;
-  buttons.value = store
-    .getAll()
-    .map((btn) =>
-      btn.expandable && (btn.role === 'launcher' || !btn.role)
-        ? { ...btn, active: expanded === (btn.group || btn.id) }
-        : { ...btn },
-    );
+  buttons.value = store.getAll({ location: 'toolbar' });
 }
 
 function findMapContainer(): HTMLElement | null {
@@ -184,9 +179,7 @@ onMounted(() => {
     const t = e.target;
     const inside =
       t instanceof Element &&
-      t.closest(
-        '.map-toolbar-control, .map-toolbar-overflow, .map-toolbar-secondary-row',
-      );
+      t.closest(TOOLBAR_EXPAND_OUTSIDE_IGNORE_SELECTOR);
     if (!inside) {
       moreOpen.value = false;
       moreOpenCorner.value = null;

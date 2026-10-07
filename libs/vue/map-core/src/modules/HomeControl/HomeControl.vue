@@ -10,6 +10,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiHome } from '@mdi/js';
 import { ref } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -43,20 +44,9 @@ function onInit(_map: MapSimple) {
     center: props.center,
   });
 }
-const { moduleContainerProps } = useMapControl(mapId, {
-  id: 'mapHomeControl',
-  panelKind: 'button',
-  from: props,
-  order,
-  actions: [
-    {
-      type: 'mapHomeControl',
-      run: () => {
-        onGoHome();
-      },
-    },
-  ],
-  getButtonState() {
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
     return mdiButtonState(mdiHome, {
       visible: true,
       title: trans.value('map.home.title'),
@@ -66,6 +56,22 @@ const { moduleContainerProps } = useMapControl(mapId, {
   onClick() {
     onGoHome();
   },
+};
+const { moduleContainerProps } = useMapControl(mapId, {
+  id: 'mapHomeControl',
+  panelKind: 'button',
+  from: props,
+  order,
+  host: { button: singleButton },
+  toolbar: singleButton,
+  actions: [
+    {
+      type: 'mapHomeControl',
+      run: () => {
+        onGoHome();
+      },
+    },
+  ],
 });
 </script>
 <template>

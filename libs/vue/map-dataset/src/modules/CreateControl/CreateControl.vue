@@ -24,6 +24,7 @@ import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
 import { mdiPlus } from '@mdi/js';
 import { type Component, computed, onMounted, type Ref, ref, watch } from 'vue';
 
+import { defineEmits, defineOptions, defineProps } from 'vue';
 import { useMapDataset } from '../../store/dataset-api';
 import ConfigArchiveSettings from './config/archive-settings.vue';
 import ConfigFilegdbSettings from './config/filegdb-settings.vue';
@@ -66,6 +67,19 @@ const allowedTypes = computed(() =>
   resolveCreateControlLayerTypes(props.createLayerTypes),
 );
 
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
+    return mdiButtonState(mdiPlus, {
+      active: cShow.value,
+      title: trans.value('map.layer-control.create.title'),
+      order: order.value,
+    });
+  },
+  onClick() {
+    cShow.value = !cShow.value;
+  },
+};
 const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   id: 'mapCreateControl',
   panelKind: 'popup',
@@ -76,9 +90,6 @@ const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   setShow: (value) => {
     cShow.value = value;
   },
-  getProps: () => ({
-    createLayerTypes: props.createLayerTypes,
-  }),
   actions: [
     {
       type: 'mapCreateControl',
@@ -87,16 +98,8 @@ const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
       },
     },
   ],
-  getButtonState() {
-    return mdiButtonState(mdiPlus, {
-      active: cShow.value,
-      title: trans.value('map.layer-control.create.title'),
-      order: order.value,
-    });
-  },
-  onClick() {
-    cShow.value = !cShow.value;
-  },
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 watch(cShow, () => control.sync());
 

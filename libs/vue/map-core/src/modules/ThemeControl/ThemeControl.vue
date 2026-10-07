@@ -15,10 +15,7 @@ import {
   subscribePrefersContrastMore,
   toggleMapThemeLightDark,
 } from '@hungpvq/map-core/theme';
-import {
-  type MapControlButtonUIState,
-  mdiButtonState,
-} from '@hungpvq/map-core/toolbar';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   mdiCircleHalfFull,
   mdiPalette,
@@ -31,8 +28,7 @@ import {
 } from '@mdi/js';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
-import MapCommonButton from '../../components/MapCommonButton.vue';
-import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
+import { defineProps, withDefaults } from 'vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -77,7 +73,6 @@ const mode = ref<MapThemeMode>(
   getStoredMapThemeMode('auto', storageOpts.value),
 );
 const prefersDark = ref(getPrefersDark());
-const groupExpanded = ref(false);
 
 const themeModes = computed(() => normalizeMapThemeModes(props.themes));
 
@@ -102,7 +97,6 @@ function setMode(next: MapThemeMode) {
   mode.value = next;
   setStoredMapThemeMode(next, storageOpts.value);
   applyCurrentTheme();
-  groupExpanded.value = false;
 }
 
 function toggleTheme() {
@@ -111,20 +105,36 @@ function toggleTheme() {
 
 const titleKey = computed(() => getMapThemeLocaleKey(toggleTarget.value));
 
-const {
-  moduleContainerProps,
-  state: moduleState,
-  control,
-} = useMapControl(mapId, {
+const themeModeButtons = [...MAP_THEME_MODES].map((themeId) => ({
+  id: themeId,
+  getState: () =>
+    mdiButtonState(MODE_ICONS[themeId], {
+      visible: themeModes.value.includes(themeId),
+      active: mode.value === themeId,
+      title: trans.value(getMapThemeLocaleKey(themeId)),
+    }),
+  onClick: () => setMode(themeId),
+}));
+
+const expandableChrome = computed(() => ({
+  kind: 'module-expandable' as const,
+  moduleId: 'mapThemeControl',
+  orientation: 'row' as const,
+  order: order.value,
+  expandableButton: ({ active }: { active: boolean }) =>
+    mdiButtonState(toggleIcon.value, {
+      active,
+      title: trans.value(titleKey.value),
+    }),
+  buttons: themeModeButtons,
+}));
+
+const { moduleContainerProps, control } = useMapControl(mapId, {
   id: 'mapThemeControl',
   panelKind: 'button',
   from: props,
   order,
-  buttonSlot: 'custom',
-  getProps: () => ({
-    themes: themeModes.value,
-    scope: props.scope,
-  }),
+  host: { button: expandableChrome },
   actions: () => [
     {
       type: 'mapThemeControl',
@@ -135,34 +145,7 @@ const {
       run: () => setMode(themeId),
     })),
   ],
-  toolbar: {
-    kind: 'module-expandable',
-    moduleId: 'mapThemeControl',
-    expandableButton: ({ active }) => {
-      return mdiButtonState(toggleIcon.value, {
-        active,
-        title: trans.value(titleKey.value),
-      });
-    },
-    orientation: 'row',
-    order: order.value,
-    buttons: [...MAP_THEME_MODES].map((themeId) => ({
-      id: themeId,
-      getState: () =>
-        mdiButtonState(MODE_ICONS[themeId], {
-          visible: themeModes.value.includes(themeId),
-          active: mode.value === themeId,
-          title: trans.value(getMapThemeLocaleKey(themeId)),
-        }),
-      onClick: () => setMode(themeId),
-    })),
-  },
-});
-
-const launcherState = computed((): MapControlButtonUIState | undefined => {
-  const s = moduleState.value as
-    Record<string, MapControlButtonUIState> | undefined;
-  return s?.launcher;
+  toolbar: expandableChrome,
 });
 
 watch(mode, () => control.sync());
@@ -215,31 +198,6 @@ onUnmounted(() => {
 
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapControlGroupButton
-        row
-        class="button-group-click-expand"
-        :class="{ 'is-expanded': groupExpanded }"
-      >
-        <MapCommonButton
-          v-if="launcherState"
-          :option="launcherState"
-          @click.stop="groupExpanded = !groupExpanded"
-        />
-        <MapCommonButton
-          v-for="themeId in themeModes"
-          :key="themeId"
-          :option="
-            mdiButtonState(MODE_ICONS[themeId], {
-              visible: true,
-              active: mode === themeId,
-              title: trans(getMapThemeLocaleKey(themeId)),
-            })
-          "
-          @click.stop="setMode(themeId)"
-        />
-      </MapControlGroupButton>
-    </template>
     <slot />
   </ModuleContainer>
 </template>

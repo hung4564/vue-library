@@ -17,7 +17,7 @@ import {
   useMapControl,
   useShow,
 } from '@hungpvq/vue-map-core';
-import { onMounted, Ref, ref, shallowRef } from 'vue';
+import { defineEmits, defineProps, onMounted, Ref, ref, shallowRef } from 'vue';
 
 const emit = defineEmits(['close']);
 const props = defineProps<{ item: IDataset }>();
@@ -30,7 +30,6 @@ const { panelPosition, moduleContainerProps } = useMapControl(mapId, {
   title: () => trans.value('map.style-control.title'),
   show,
   setShow: toggleShow,
-  initialPanelPosition: { location: 'right' },
   actions: [
     {
       type: 'mapStyleControl',
@@ -81,7 +80,7 @@ const updateValue = () => {
 };
 </script>
 <template>
-  <ModuleContainer v-bind="$attrs">
+  <ModuleContainer v-bind="moduleContainerProps">
     <template #draggable="p">
       <DraggableItemSideBar
         :containerId="p.containerId"

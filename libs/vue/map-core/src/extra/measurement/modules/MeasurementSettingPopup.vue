@@ -116,6 +116,7 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { computed, ref, watch } from 'vue';
 
+import { defineEmits, defineModel, defineProps, withDefaults } from 'vue';
 import { InputCheckbox, InputSelect } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
@@ -253,10 +254,6 @@ const { panelBind, moduleContainerProps } = useMapControl(mapId, {
   setShow: (value) => {
     c_show.value = value;
   },
-  getProps: () => ({
-    maxLength: props.maxLength,
-    measurementType: props.measurementType,
-  }),
   actions: [
     {
       type: 'mapMeasurementSetting',

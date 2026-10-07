@@ -38,7 +38,7 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
     title: 'Map Devtools',
     from: merged,
     order,
-    buttonSlot: 'custom',
+    host: { buttonSlot: 'custom' },
     show: isOpen,
     setShow: setOpen,
     defaultPanelSize: { width: 600, height: 400 },

@@ -2,42 +2,48 @@
 
 Framework-agnostic button strip for map chrome when controls resolve to `toolbar` or `menu` layout. Pure protocol lives in `@hungpvq/map-core/toolbar`; Vue/React host `ToolbarControl` and wire it through `useMapControl`.
 
-Related: [Stable API — control layout](./stable-api.md), [UniversalRegistry controls](./registry-controls.md), [map store `TOOLBAR`](./map-store.md).
+Related: [Stable API — control layout](./stable-api.md), [UniversalRegistry controls](./registry-controls.md), [Custom controls (`useMapControl`)](./module/core/custom-controls.md), [map store `TOOLBAR`](./map-store.md).
 
 ## Mental model
 
 ```
-Author options (single | module | module-expandable)
+Author options
+  host.button  →  corner / auto-button (ModuleContainer)
+  toolbar      →  strip (toolbar | menu layout)
         │
         ▼
-normalizeToolbarSpec(+ layout wrap)  ← only place that switches on kind
-        │
-        ▼
-createFromFlatButtons / createLiveToolbarStrategy
-        │
-        ▼
-MapToolbarStore (buttons + expandedModuleId)
+createHostStrategy (useMapControl)
+  standalone | button  →  createLiveToolbarStrategy(noop Toolbar)
+  toolbar | menu       →  createLiveToolbarStrategy(MapToolbarStore api)
         │
         ▼
 ToolbarControl: planToolbarLayout + planToolbarExpansion + shared click
 ```
 
-| Piece                           | Role                                                                      |
-| ------------------------------- | ------------------------------------------------------------------------- |
-| **Author options**              | Declarative buttons on a control (`useMapControl({ toolbar: … })`)        |
-| **`normalizeToolbarSpec`**      | Kind → flat list with ids, `group`, `role`, `expandable`                  |
-| **`withLayoutToolbarOptions`**  | Stamp control layout (`visible` / `order` / `position`) onto every button |
-| **`createLiveToolbarStrategy`** | Mount/sync/unmount; always re-reads latest options (Vue/React refs)       |
-| **`createToolbarModuleApi`**    | Register into the store only when layout is `toolbar` \| `menu`           |
-| **`ToolbarControl`**            | Renders store buttons; overflow; expandable secondary row                 |
+| Piece                            | Role                                                                      |
+| -------------------------------- | ------------------------------------------------------------------------- |
+| **`host.button`** / **`toolbar`** | Independent corner vs strip author options                               |
+| **`createHostStrategy`**         | Adapter entry: layout switch + expand ctx                                 |
+| **`createLiveToolbarStrategy`**  | Only engine for all kinds (pass noop `Toolbar` for host-only)             |
+| **`createToolbarModuleApi`**     | Register into the store only when layout is `toolbar` \| `menu`           |
+| **`ToolbarControl`**             | Renders store buttons; overflow; expandable secondary row                 |
 
-Standalone / custom `#btn` slots (Theme, Language, Measurement click-expand) stay on the control — they do **not** go through the strip. The strip only shows buttons registered while layout is toolbar/menu.
+Do not merge or fall back between `host.button` and `toolbar` (same object is fine for simple singles).
+
+```ts
+const chrome = {
+  kind: 'module-expandable',
+  moduleId: 'mapThemeControl',
+  expandableButton: ({ active }) => mdiButtonState(icon, { active, title }),
+  buttons: themeModeButtons,
+};
+host: { button: chrome }, // auto: launcher; options L/R by position
+toolbar: chrome,          // strip: launcher + secondary row
+```
 
 ## Kinds
 
 ### `single`
-
-One button. Id is the control/button id.
 
 ```ts
 {
@@ -49,8 +55,6 @@ One button. Id is the control/button id.
 ```
 
 ### `module`
-
-Several buttons sharing `moduleId` as `group`. All stay on the **primary** row (subject to overflow).
 
 ```ts
 {
@@ -69,13 +73,13 @@ Store ids: `` `${moduleId}:${buttonId}` ``.
 
 ### `module-expandable`
 
-Primary row shows a **launcher** from `expandableButton({ active })`. Options live on a **secondary** row while the module is open.
+Primary row shows a **launcher** from `expandableButton({ active })`. Options live on a **secondary** row (strip) or beside the launcher (host auto, L/R by corner).
 
 ```ts
 {
   kind: 'module-expandable',
   moduleId: 'mapThemeControl',
-  closeOnOutsideClick: true, // default; set false to keep secondary open on outside click
+  closeOnOutsideClick: true, // default
   expandableButton: ({ active }) =>
     mdiButtonState(icon, { title: 'Theme', active }),
   orientation: 'row',
@@ -89,45 +93,20 @@ Primary row shows a **launcher** from `expandableButton({ active })`. Options li
 | Behavior          | Detail                                                                               |
 | ----------------- | ------------------------------------------------------------------------------------ |
 | Launcher `active` | Synced from `expandedModuleId === moduleId`                                          |
-| Click launcher    | `toggleExpandedModule(moduleId)` via `handleToolbarButtonClick`                      |
-| Secondary row     | Option buttons of that module (+ close control in the host UI)                       |
-| Option click      | Same path as normal buttons: `btn.action(e)`                                         |
-| Close             | Secondary close, Escape, or outside pointerdown when `closeOnOutsideClick !== false` |
+| Click launcher    | `toggleExpandedModule(moduleId)` via `handleToolbarButtonClick` / host strategy      |
+| Strip secondary   | Option buttons of that module (+ close control in ToolbarControl)                    |
+| Host auto         | Options to the right on `*-left`, to the left on `*-right`                           |
+| Close             | Escape / outside when `closeOnOutsideClick !== false`                                |
 
 Stamps: launcher `role: 'launcher'`, `expandable: true`; options `role: 'option'`, `expandable: true`.
 
-## Shared helpers (extend here, not in hosts)
+## Shared helpers
 
 | Helper                                                                    | Use                                                 |
 | ------------------------------------------------------------------------- | --------------------------------------------------- |
-| `normalizeToolbarSpec`                                                    | Add a new kind or stamp — **only** switch on `kind` |
 | `mapToolbarOptions` / `withLayoutToolbarOptions`                          | Map UI state across all buttons                     |
-| `createFromFlatButtons`                                                   | Register/sync/unmount a flat list                   |
-| `createLiveToolbarStrategy(getOptions, toolbar, { getExpandedModuleId })` | Host binding                                        |
-| `planToolbarLayout`                                                       | Overflow / corner budgets                           |
-| `planToolbarExpansion`                                                    | Primary vs secondary for expandable groups          |
-| `handleToolbarButtonClick`                                                | Launcher toggle vs option `action`                  |
-| `shouldCloseExpandedOnOutsideClick`                                       | Respect `closeOnOutsideClick` on the launcher       |
+| `createHostStrategy` / `createLiveToolbarStrategy`                        | Adapter + shared engine                             |
+| `planToolbarLayout` / `planToolbarExpansion`                              | Overflow / primary vs secondary                     |
+| `handleToolbarButtonClick` / `shouldCloseExpandedOnOutsideClick`          | Launcher toggle vs option `action`                  |
 
-Vue and React `ToolbarControl` should stay thin: call these helpers, render `MapCommonButton`.
-
-## Host wiring
-
-```ts
-import { createLiveToolbarStrategy, withLayoutToolbarOptions } from '@hungpvq/map-core/toolbar';
-
-const opts = withLayoutToolbarOptions(authorToolbar, () => layout);
-const strategy = createLiveToolbarStrategy(() => opts, toolbarModuleApi, { getExpandedModuleId: () => storeApi.getExpandedModuleId() });
-strategy.mount();
-// on language / layout change:
-strategy.sync();
-```
-
-Mount `ToolbarControl` on the map when any control uses `controlLayout: 'toolbar'` or mobile `buttonInMobile: 'toolbar' | 'menu'`.
-
-## Extending later
-
-1. Prefer new **button metadata** (`role`, flags) + `planToolbarExpansion` / click helper updates over new host `if (kind)`.
-2. New author kind → one case in `normalizeToolbarSpec`, then reuse `createFromFlatButtons` / `createLiveToolbarStrategy`.
-3. Do **not** add parallel static `createToolbar*` wrappers — hosts bind via `createLiveToolbarStrategy` only.
-4. Keep adapters free of GIS/layout math — only refs, mount, and UI.
+Mount `ToolbarControl` when any control uses `controlLayout: 'toolbar'` or mobile `buttonInMobile: 'toolbar' | 'menu'`.

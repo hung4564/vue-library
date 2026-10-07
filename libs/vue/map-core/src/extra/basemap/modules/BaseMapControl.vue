@@ -164,6 +164,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiLayersOutline, mdiPlus } from '@mdi/js';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import MapCard from '../../../components/MapCard.vue';
 import MapControlButton from '../../../components/MapControlButton.vue';
 import MapIcon from '../../../components/MapIcon.vue';
@@ -291,29 +292,9 @@ function onToggleList() {
   show.value = !show.value;
   if (!show.value) showAddForm.value = false;
 }
-const { panelBind, moduleContainerProps, control } = useMapControl(mapId, {
-  id: 'mapBaseMapControl',
-  panelKind: 'popup',
-  title: () => props.title || trans.value('map.basemap.title'),
-  from: props,
-  order,
-  buttonSlot: 'custom',
-  show,
-  setShow,
-  getProps: () => ({
-    title: props.title,
-    defaultBaseMap: props.defaultBaseMap,
-    controlIcon: props.controlIcon,
-    showOpacity: props.showOpacity,
-    allowAddBasemap: props.allowAddBasemap,
-  }),
-  actions: [
-    {
-      type: 'mapBaseMapControl',
-      run: () => onToggleList(),
-    },
-  ],
-  getButtonState() {
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
     return mdiButtonState(path.layer, {
       visible: true,
       active: show.value,
@@ -324,6 +305,26 @@ const { panelBind, moduleContainerProps, control } = useMapControl(mapId, {
   onClick() {
     onToggleList();
   },
+};
+const { panelBind, moduleContainerProps, control } = useMapControl(mapId, {
+  id: 'mapBaseMapControl',
+  panelKind: 'popup',
+  title: () => props.title || trans.value('map.basemap.title'),
+  from: props,
+  order,
+  host: {
+    buttonSlot: 'custom',
+    button: singleButton,
+  },
+  toolbar: singleButton,
+  show,
+  setShow,
+  actions: [
+    {
+      type: 'mapBaseMapControl',
+      run: () => onToggleList(),
+    },
+  ],
 });
 onMounted(() => {
   init(props.baseMaps as BaseMapItem[], props.defaultBaseMap);

@@ -90,6 +90,17 @@ export function LayerControl(props: LayerControlProps) {
     [props.menuContext],
   );
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiLayers, {
+        active: show,
+        title: trans('map.layer-control.title'),
+        order,
+      }),
+    onClick: () => setShow(),
+  };
+
   const { moduleContainerProps, panelPosition, control } = useMapControl(
     mapId,
     {
@@ -101,22 +112,9 @@ export function LayerControl(props: LayerControlProps) {
       show,
       setShow,
       initialPanelPosition: { location: 'left' },
-      getProps: () => ({
-        disabledCreate: merged.disabledCreate,
-        disabledCreateGroup: merged.disabledCreateGroup,
-        disabledDeleteAll: merged.disabledDeleteAll,
-        disabledMove: merged.disabledMove,
-        globalVisibilityMode: merged.globalVisibilityMode,
-        createLayerTypes: props.createLayerTypes,
-      }),
       actions: [{ type: 'mapLayerControl', run: () => setShow() }],
-      getButtonState: () =>
-        mdiButtonState(mdiLayers, {
-          active: show,
-          title: trans('map.layer-control.title'),
-          order,
-        }),
-      onClick: () => setShow(),
+      host: { button: singleButton },
+      toolbar: singleButton,
     },
   );
 

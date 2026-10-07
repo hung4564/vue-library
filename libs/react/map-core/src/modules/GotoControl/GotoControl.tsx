@@ -60,6 +60,18 @@ export function GotoControl(props: GotoControlProps) {
     }
   }
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiMapMarkerOutline, {
+        visible: true,
+        active: show,
+        title: trans('map.goto-control.title'),
+        order,
+      }),
+    onClick: () => handleToggle(),
+  };
+
   const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
     id: 'mapGotoControl',
     panelKind: 'popup',
@@ -70,14 +82,8 @@ export function GotoControl(props: GotoControlProps) {
     setShow: toggleShow,
     defaultPanelSize: { width: 400, height: 300 },
     actions: [{ type: 'mapGotoControl', run: () => handleToggle() }],
-    getButtonState: () =>
-      mdiButtonState(mdiMapMarkerOutline, {
-        visible: true,
-        active: show,
-        title: trans('map.goto-control.title'),
-        order,
-      }),
-    onClick: () => handleToggle(),
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   useEffect(() => {

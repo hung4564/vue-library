@@ -21,7 +21,6 @@ export type BuildMapControlHandleInput = {
   title?: string;
   buttonPosition?: Position;
   defaultActionType?: string;
-  getProps?: () => Record<string, unknown>;
   actions?: readonly MapControlAction[];
   isOpen: () => boolean;
   setShow: (show: boolean) => void;
@@ -43,7 +42,6 @@ export function buildMapControlHandle(
     title,
     buttonPosition,
     defaultActionType,
-    getProps,
     isOpen,
     setShow,
     getPanelPosition,
@@ -75,7 +73,6 @@ export function buildMapControlHandle(
       buttonPosition,
       title,
       defaultActionType,
-      ...(getProps?.() ?? {}),
     },
     actions: actionList().map(({ type, title: t }) => ({ type, title: t })),
     isOpen,

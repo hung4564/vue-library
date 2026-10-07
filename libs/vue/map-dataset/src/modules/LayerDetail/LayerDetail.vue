@@ -26,6 +26,7 @@ import {
 } from '@hungpvq/vue-map-core';
 import { computed, ref, watch } from 'vue';
 
+import { defineEmits, defineProps, withDefaults } from 'vue';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
 import TableTdLayer from './table-td-layer.vue';
@@ -109,9 +110,6 @@ const { panelBind } = useMapControl(mapId, {
     closed = false;
     show.value = true;
   },
-  getProps: () => ({
-    ...(props.popupProps || {}),
-  }),
   actions: [
     {
       type: 'mapLayerDetail',

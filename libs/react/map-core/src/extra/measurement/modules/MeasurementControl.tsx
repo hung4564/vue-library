@@ -19,7 +19,6 @@ import {
   resolveMeasurementToolbarStatus,
 } from '@hungpvq/map-core/measurement';
 import {
-  type MapControlButtonUIState,
   mdiButtonState,
   mdiIcon,
   type ToolbarButtonConfig,
@@ -39,8 +38,6 @@ import {
 import type { MapMouseEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { MapCommonButton } from '../../../components/MapCommonButton';
-import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import {
@@ -298,6 +295,14 @@ export function MeasurementControl(props: MeasurementControlProps) {
     [session],
   );
 
+  const measurementButtons = useMemo(
+    () =>
+      [...buttonShow, ...buttonHandle, ...(props.actions || [])].map(
+        toToolbarButton,
+      ),
+    [buttonShow, buttonHandle, props.actions, toToolbarButton],
+  );
+
   const registerActions = useMemo(
     () =>
       [...buttonShow, ...buttonHandle, ...(props.actions || [])].map(
@@ -312,12 +317,20 @@ export function MeasurementControl(props: MeasurementControlProps) {
     [buttonShow, buttonHandle, props.actions, toToolbarButton],
   );
 
-  const { moduleContainerProps, state, control } = useMapControl(mapId, {
+  const { moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapMeasurementControl',
     panelKind: 'button',
     from: merged,
     order,
-    buttonSlot: 'custom',
+    host: {
+      button: {
+        kind: 'module',
+        moduleId: 'mapMeasurementControl',
+        order,
+        orientation: 'row',
+        buttons: measurementButtons,
+      },
+    },
     defaultActionType: 'distance',
     actions: registerActions,
     toolbar: {
@@ -332,9 +345,7 @@ export function MeasurementControl(props: MeasurementControlProps) {
       },
       order,
       orientation: 'row',
-      buttons: [...buttonShow, ...buttonHandle, ...(props.actions || [])].map(
-        toToolbarButton,
-      ),
+      buttons: measurementButtons,
     },
   });
   controlRef.current = control;
@@ -372,33 +383,8 @@ export function MeasurementControl(props: MeasurementControlProps) {
     session.destroy();
   }
 
-  const moduleState = state as
-    Record<string, MapControlButtonUIState | undefined> | undefined;
-
   return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        <MapControlGroupButton
-          row
-          className="map-measurement-control"
-        >
-          {moduleState &&
-            Object.entries(moduleState).map(([id, btn]) =>
-              btn && btn.visible !== false ? (
-                <MapCommonButton
-                  key={id}
-                  option={btn}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    control.onAction(id, e.nativeEvent);
-                  }}
-                />
-              ) : null,
-            )}
-        </MapControlGroupButton>
-      }
-    >
+    <ModuleContainer {...moduleContainerProps}>
       {ui.measurementType ? (
         <MeasurementSettingPopup
           mapId={mapId}

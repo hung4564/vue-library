@@ -132,21 +132,9 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
   }
 
   const error = ui.errorMessage;
-  const { moduleContainerProps, control } = useMapControl(mapId, {
-    id: 'mapGeoLocateControl',
-    panelKind: 'button',
-    from: mergedProps,
-    order,
-    getProps: () => ({ ...sessionOptions() }),
-    actions: [
-      {
-        type: 'mapGeoLocateControl',
-        run: () => {
-          onClick();
-        },
-      },
-    ],
-    getButtonState() {
+  const singleButton = {
+    kind: 'single' as const,
+    getState() {
       return mdiButtonState(error ? mdiCrosshairsOff : mdiCrosshairsGps, {
         visible: true,
         active: ui.active,
@@ -163,6 +151,23 @@ export function GeoLocateControl(props: GeoLocateControlProps) {
     onClick() {
       onClick();
     },
+  };
+
+  const { moduleContainerProps, control } = useMapControl(mapId, {
+    id: 'mapGeoLocateControl',
+    panelKind: 'button',
+    from: mergedProps,
+    order,
+    actions: [
+      {
+        type: 'mapGeoLocateControl',
+        run: () => {
+          onClick();
+        },
+      },
+    ],
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   useEffect(() => {

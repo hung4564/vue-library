@@ -34,19 +34,9 @@ export function AsideControl(props: WithMapPropType & { show?: boolean }) {
     });
   }, [registerLocale]);
 
-  const { moduleContainerProps, control } = useMapControl(mapId, {
-    id: 'asideControl',
-    panelKind: 'sidebar',
-    title: trans('map.aside-control.title'),
-    position: merged.position,
-    order,
-    controlLayout: merged.controlLayout,
-    controlVisible: merged.controlVisible,
-    buttonInMobile: merged.buttonInMobile,
-    show,
-    setShow: (value) => toggleShow(value),
-    actions: [{ type: 'asideControl', run: () => toggleShow() }],
-    getButtonState: () =>
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
       mdiButtonState(mdiMenu, {
         visible: true,
         active: show,
@@ -54,6 +44,19 @@ export function AsideControl(props: WithMapPropType & { show?: boolean }) {
         order,
       }),
     onClick: () => toggleShow(),
+  };
+
+  const { moduleContainerProps, control } = useMapControl(mapId, {
+    id: 'asideControl',
+    panelKind: 'sidebar',
+    title: trans('map.aside-control.title'),
+    from: merged,
+    order,
+    show,
+    setShow: (value) => toggleShow(value),
+    actions: [{ type: 'asideControl', run: () => toggleShow() }],
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   useEffect(() => {

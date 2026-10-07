@@ -9,8 +9,6 @@ import type {
   MapControlButtonState,
   MapControlButtonUIState,
   Toolbar,
-  ToolbarOptionsModule,
-  ToolbarOptionsModuleExpandable,
   ToolbarOptionsSingle,
 } from './types';
 
@@ -28,17 +26,40 @@ export function createSubscribable<T>() {
   return { subscribe, notify };
 }
 
-/** Shared mount/sync/unmount for a flat button list (all kinds). */
-export function createFromFlatButtons(options: {
-  toolbar: Toolbar;
-  getButtons: () => FlatToolbarButton[];
-}) {
-  const { subscribe, notify } =
-    createSubscribable<Record<string, MapControlButtonUIState>>();
+export type LiveToolbarStrategyContext = {
+  getExpandedModuleId?: () => string | null;
+  /** Required for `module-expandable` launcher clicks (host or strip). */
+  toggleExpandedModule?: (moduleId: string) => void;
+};
+
+/**
+ * One live strategy for all kinds (`single` | `module` | `module-expandable`).
+ * Always re-reads `getOptions` (Vue/React refs). Pass a no-op `Toolbar` for
+ * host-only chrome that must not write the strip store.
+ */
+export function createLiveToolbarStrategy(
+  getOptions: () => AnyToolbarOptions,
+  toolbar: Toolbar,
+  ctx: LiveToolbarStrategyContext = {},
+): AnyToolbarStrategy {
+  type NotifyState =
+    | MapControlButtonUIState
+    | Record<string, MapControlButtonUIState>;
+  const { subscribe, notify } = createSubscribable<NotifyState>();
   let mountedIds: string[] = [];
 
+  function isSingle() {
+    return (getOptions().kind ?? 'single') === 'single';
+  }
+
+  function getButtons(): FlatToolbarButton[] {
+    return normalizeToolbarSpec(getOptions(), {
+      isExpanded: (moduleId) => ctx.getExpandedModuleId?.() === moduleId,
+    });
+  }
+
   function toStoreState(btn: FlatToolbarButton): MapControlButtonState {
-    const state = btn.getState();
+    const state = btn.getState({ location: 'host' });
     return {
       ...state,
       id: btn.id,
@@ -50,28 +71,40 @@ export function createFromFlatButtons(options: {
     };
   }
 
+  function publish(states: Record<string, MapControlButtonUIState>) {
+    if (!isSingle()) {
+      notify(states);
+      return;
+    }
+    const opts = getOptions() as ToolbarOptionsSingle;
+    const id = opts.id;
+    notify(
+      (id != null ? states[id] : undefined) ??
+        opts.getState({ location: 'host' }),
+    );
+  }
+
   function sync() {
-    const buttons = options.getButtons();
+    const buttons = getButtons();
     const nextIds = buttons.map((b) => b.id);
     const nextSet = new Set(nextIds);
 
     for (const id of mountedIds) {
-      if (!nextSet.has(id)) options.toolbar.unregister(id);
+      if (!nextSet.has(id)) toolbar.unregister(id);
     }
 
     const states: Record<string, MapControlButtonUIState> = {};
     const prevSet = new Set(mountedIds);
     for (const btn of buttons) {
       const snap = toStoreState(btn);
-      states[flatToolbarShortKey(btn.id)] = btn.getState();
-      if (prevSet.has(btn.id)) {
-        options.toolbar.update(btn.id, snap);
-      } else {
-        options.toolbar.register(snap);
-      }
+      states[flatToolbarShortKey(btn.id)] = btn.getState({
+        location: 'toolbar',
+      });
+      if (prevSet.has(btn.id)) toolbar.update(btn.id, snap);
+      else toolbar.register(snap);
     }
     mountedIds = nextIds;
-    notify(states);
+    publish(states);
   }
 
   function mount() {
@@ -80,113 +113,39 @@ export function createFromFlatButtons(options: {
   }
 
   function unmount() {
-    for (const id of mountedIds) options.toolbar.unregister(id);
+    for (const id of mountedIds) toolbar.unregister(id);
     mountedIds = [];
   }
 
   async function onAction(...args: unknown[]) {
-    const id = args[0] as string;
-    const e = args[1] as MouseEvent;
-    const buttons = options.getButtons();
-    const hit = buttons.find(
-      (b) => b.id === id || flatToolbarShortKey(b.id) === id,
-    );
-    await hit?.onClick?.(e);
-    sync();
-  }
-
-  return { mount, sync, unmount, subscribe, onAction };
-}
-
-export type LiveToolbarStrategyContext = {
-  getExpandedModuleId?: () => string | null;
-};
-
-/**
- * Always reads latest options via `getOptions` (Vue/React refs).
- * Kind comes from options — no separate kind argument.
- */
-export function createLiveToolbarStrategy(
-  getOptions: () => AnyToolbarOptions,
-  toolbar: Toolbar,
-  ctx: LiveToolbarStrategyContext = {},
-): AnyToolbarStrategy {
-  const flatApi = createFromFlatButtons({
-    toolbar,
-    getButtons: () =>
-      normalizeToolbarSpec(getOptions(), {
-        isExpanded: (moduleId) => ctx.getExpandedModuleId?.() === moduleId,
-      }),
-  });
-
-  const singleSub = createSubscribable<MapControlButtonUIState>();
-  let unsubFlat: (() => void) | undefined;
-
-  function isSingle() {
-    return (getOptions().kind ?? 'single') === 'single';
-  }
-
-  function bridgeNotify(states: Record<string, MapControlButtonUIState>) {
     if (isSingle()) {
       const opts = getOptions() as ToolbarOptionsSingle;
-      singleSub.notify(states[opts.id] ?? opts.getState());
-    }
-  }
-
-  function mount() {
-    unsubFlat?.();
-    unsubFlat = flatApi.subscribe(bridgeNotify);
-    flatApi.mount();
-    if (isSingle()) {
-      const opts = getOptions() as ToolbarOptionsSingle;
-      singleSub.notify(opts.getState());
-    }
-  }
-
-  function sync() {
-    flatApi.sync();
-    if (isSingle()) {
-      const opts = getOptions() as ToolbarOptionsSingle;
-      singleSub.notify(opts.getState());
-    }
-  }
-
-  function unmount() {
-    flatApi.unmount();
-    unsubFlat?.();
-    unsubFlat = undefined;
-  }
-
-  async function onAction(...args: unknown[]) {
-    if (isSingle()) {
-      const opts = getOptions() as ToolbarOptionsSingle;
-      const e = args[0] as MouseEvent;
-      await opts.onClick?.(e);
+      await opts.onClick?.(args[0] as MouseEvent);
       sync();
       return;
     }
-    await flatApi.onAction(...args);
+
+    const id = args[0] as string;
+    const e = args[1] as MouseEvent | undefined;
+    const hit = getButtons().find(
+      (b) => b.id === id || flatToolbarShortKey(b.id) === id,
+    );
+    if (!hit) return;
+
+    const ui = hit.getState({ location: 'host' });
+    if (ui.expandable && (ui.role === 'launcher' || !ui.role)) {
+      const moduleId = ui.group || hit.id.replace(/:launcher$/, '');
+      e?.stopPropagation?.();
+      ctx.toggleExpandedModule?.(moduleId);
+      sync();
+      return;
+    }
+
+    await hit.onClick?.(e as MouseEvent);
+    sync();
   }
 
-  function subscribe(fn: (state: any) => void) {
-    if (isSingle()) return singleSub.subscribe(fn);
-    return flatApi.subscribe(fn);
-  }
-
-  const base = { mount, sync, unmount, onAction, subscribe };
-
-  return {
-    ...base,
-    get id() {
-      return (getOptions() as ToolbarOptionsSingle).id;
-    },
-    get moduleId() {
-      return (getOptions() as ToolbarOptionsModule).moduleId;
-    },
-    get expandableButton() {
-      return (getOptions() as ToolbarOptionsModuleExpandable).expandableButton;
-    },
-  } as AnyToolbarStrategy;
+  return { mount, sync, unmount, onAction, subscribe } as AnyToolbarStrategy;
 }
 
 function toolbarClusterKey(btn: { id: string; group?: string }) {
@@ -265,8 +224,23 @@ export function createToolbarStoreApi(store: MapToolbarStore) {
     notify();
   }
 
-  function getAll() {
-    return Array.from(store.buttons.values()).sort(compareToolbarButtons);
+  function getAll(props: { location?: 'toolbar' }) {
+    switch (props.location) {
+      case 'toolbar':
+        return Array.from(store.buttons.values())
+          .sort(compareToolbarButtons)
+          .map((btn) =>
+            btn.expandable && (btn.role === 'launcher' || !btn.role)
+              ? {
+                  ...btn,
+                  active: store.expandedModuleId === (btn.group || btn.id),
+                }
+              : { ...btn },
+          );
+
+      default:
+        return Array.from(store.buttons.values()).sort(compareToolbarButtons);
+    }
   }
 
   function get(id: string) {
@@ -357,3 +331,4 @@ export function createToolbarModuleApi(
   }
   return { register, unregister, update };
 }
+

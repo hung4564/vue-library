@@ -1,21 +1,5 @@
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapControlGroupButton
-        row
-        class="map-measurement-control"
-      >
-        <template v-for="(btn, id) in state">
-          <MapCommonButton
-            v-if="btn?.visible != false"
-            :key="id"
-            :option="btn"
-            @click.stop="control.onAction(id, $event)"
-          />
-        </template>
-      </MapControlGroupButton>
-    </template>
-
     <slot />
 
     <MeasurementSettingPopup
@@ -56,11 +40,7 @@ import {
   type MeasurementUiState,
   resolveMeasurementToolbarStatus,
 } from '@hungpvq/map-core/measurement';
-import {
-  type MapControlButtonUIState,
-  mdiButtonState,
-  type ToolbarButtonConfig,
-} from '@hungpvq/map-core/toolbar';
+import { mdiButtonState, type ToolbarButtonConfig } from '@hungpvq/map-core/toolbar';
 import {
   mdiAngleAcute,
   mdiClose,
@@ -76,8 +56,7 @@ import {
 import { MapMouseEvent } from 'maplibre-gl';
 import { computed, nextTick, reactive, watch } from 'vue';
 
-import MapCommonButton from '../../../components/MapCommonButton.vue';
-import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
+import { defineProps, withDefaults } from 'vue';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import {
@@ -295,16 +274,26 @@ function toToolbarButton(action: MeasureActionItem): ToolbarButtonConfig {
   };
 }
 
-const {
-  moduleContainerProps,
-  state: toolbarState,
-  control,
-} = useMapControl(mapId, {
+const measurementButtons = [
+  ...button_show,
+  ...button_handle,
+  ...(props.actions || []),
+].map(toToolbarButton);
+
+const { moduleContainerProps, control } = useMapControl(mapId, {
   id: 'mapMeasurementControl',
   panelKind: 'button',
   from: props,
   order,
-  buttonSlot: 'custom',
+  host: {
+    button: {
+      kind: 'module',
+      moduleId: 'mapMeasurementControl',
+      order: order.value,
+      orientation: 'row',
+      buttons: measurementButtons,
+    },
+  },
   defaultActionType: 'distance',
   actions: () =>
     [...button_show, ...button_handle, ...(props.actions || [])].map(
@@ -325,15 +314,9 @@ const {
       });
     },
     orientation: 'row',
-    buttons: [...button_show, ...button_handle, ...(props.actions || [])].map(
-      toToolbarButton,
-    ),
+    buttons: measurementButtons,
   },
 });
-const state = computed(
-  () =>
-    toolbarState.value as Record<string, MapControlButtonUIState> | undefined,
-);
 
 watch(
   [() => ui.measurementType, () => ui.coordinates, () => ui.setting.show],

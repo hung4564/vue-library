@@ -90,31 +90,35 @@ export function BaseMapControl({
     setShow((s) => !s);
   }, [setShow]);
 
+  const singleButton = useMemo(
+    () => ({
+      kind: 'single' as const,
+      getState: () =>
+        mdiButtonState(mdiLayersOutline, {
+          visible: true,
+          active: show,
+          order,
+          title: title || trans('map.basemap.title'),
+        }),
+      onClick: () => onToggleList(),
+    }),
+    [onToggleList, order, show, title, trans],
+  );
+
   const { panelBind, moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapBaseMapControl',
     panelKind: 'popup',
     title: title || trans('map.basemap.title'),
     from: props,
     order,
-    buttonSlot: 'custom',
+    host: {
+      buttonSlot: 'custom',
+      button: singleButton,
+    },
+    toolbar: singleButton,
     show,
     setShow,
-    getProps: () => ({
-      defaultBaseMap: props.defaultBaseMap,
-      showOpacity: props.showOpacity,
-      allowAddBasemap: props.allowAddBasemap,
-      controlIcon: props.controlIcon,
-      title: props.title,
-    }),
     actions: [{ type: 'mapBaseMapControl', run: () => onToggleList() }],
-    getButtonState: () =>
-      mdiButtonState(mdiLayersOutline, {
-        visible: true,
-        active: show,
-        order,
-        title: title || trans('map.basemap.title'),
-      }),
-    onClick: onToggleList,
   });
 
   const noneThumb = useMemo(

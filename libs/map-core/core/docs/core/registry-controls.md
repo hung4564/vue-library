@@ -182,34 +182,35 @@ The inspector uses `ModuleContainer` + `DraggableItemPopup` + `useMapControl`, s
 
 Canonical pattern — **`useMapControl` only** (register handle + layout store + toolbar + optional auto-button).
 
+Full copy-paste examples (`single` / `module` / `module-expandable` / custom `#btn` / popup): [Custom controls](./module/core/custom-controls.md).
+
 Toolbar kinds, expandable secondary row, and overflow helpers: [Toolbar](./toolbar.md).
 
 `setShow` **must** accept a boolean (`true` / `false`). `openControl` / `closeControl` call `setShow(true|false)`; do not pass a toggle-only function.
 
-Simple single-button controls omit `#btn` / `btn` — ModuleContainer auto-renders `MapCommonButton` from `getButtonState`. Custom UI passes `buttonSlot: 'custom'` and keeps `#btn`.
+Omit `#btn` / `btn` for auto host chrome — ModuleContainer renders `host.button` (`single` | `module` | `module-expandable`). Use `buttonSlot: 'custom'` only for non-standard chrome (BaseMap thumbnail, Draw toolbar, Devtools, …).
 
 ```ts
 const [show, setShow] = useShow(props.show);
-
 const { mapId, order } = useMap(props);
+const singleButton = {
+  kind: 'single' as const,
+  getState: () =>
+    mdiButtonState(mdiLayers, { title: 'Layers', order: order.value }),
+  onClick: () => setShow(!show.value),
+};
 const { moduleContainerProps, panelBind } = useMapControl(mapId, {
   id: 'mapLayerControl',
-  panelKind: 'sidebar', // or 'popup' | 'float' | 'button'
+  panelKind: 'sidebar',
   title: () => 'Layers',
-  from: props, // includes position, popupProps, buttonInMobile, …
+  from: props,
   order,
   show,
   setShow,
-  // Multi-action controls: declare default for runAction() without type
-  // defaultActionType: 'distance',
   actions: [{ type: 'mapLayerControl', run: () => setShow(true) }],
-  getButtonState: () => mdiButtonState(mdiLayers, { title: 'Layers', order: order.value }),
-  onClick: () => setShow(!show.value),
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
-
-// Spread `from: props` (+ `order` from useMap) onto useMapControl — chrome mount
-// defaults (incl. Map popupPositionDefaults + control popupProps for popup/float).
-// Dual popups: override with an explicit `:id` / `id=` **after** `{...panelBind}`.
 ```
 
 App usage (same for every demo / page):

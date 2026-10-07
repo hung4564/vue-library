@@ -17,9 +17,10 @@ import {
 import { MAP_STORE_KEY } from '../types/constants';
 
 export type ControlAutoButtonEntry = {
-  /** Opaque UI state for MapCommonButton (`MapControlButtonUIState`). */
+  /** Single UIState or Record for module / module-expandable. */
   getUiState: () => unknown;
-  onAction: (event?: unknown) => void;
+  /** Single: `(event)`; module / expandable: `(id, event)`. */
+  onAction: (...args: unknown[]) => void;
 };
 
 export type MapControlAutoButtonStore = {

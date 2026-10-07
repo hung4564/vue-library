@@ -4,18 +4,16 @@
  */
 export { TOOLBAR_CONTROL_LOCALE } from './locale';
 export { logger } from './logger';
+export {
+  flatToolbarShortKey,
+  mapToolbarOptions,
+  withLayoutToolbarOptions,
+} from './normalize';
 export type {
   FlatToolbarButton,
   NormalizeToolbarContext,
   ToolbarButtonLayoutFields,
 } from './normalize';
-export {
-  flatToolbarShortKey,
-  mapToolbarOptions,
-  normalizeToolbarSpec,
-  withLayoutToolbarOptions,
-} from './normalize';
-export type { ToolbarButtonGroup, ToolbarOverflowPrefer } from './overflow';
 export {
   cornerVerticalMenuBudgetsPx,
   elementOuterSize,
@@ -30,6 +28,14 @@ export {
   toolbarGroupHeightCost,
   toolbarOverflowPanelClassName,
 } from './overflow';
+export type { ToolbarButtonGroup, ToolbarOverflowPrefer } from './overflow';
+export {
+  handleToolbarButtonClick,
+  planToolbarExpansion,
+  planToolbarLayout,
+  shouldCloseExpandedOnOutsideClick,
+  TOOLBAR_EXPAND_OUTSIDE_IGNORE_SELECTOR,
+} from './plan';
 export type {
   PlanToolbarCorner,
   PlanToolbarExpansionResult,
@@ -37,28 +43,28 @@ export type {
   PlanToolbarLayoutResult,
 } from './plan';
 export {
-  handleToolbarButtonClick,
-  planToolbarExpansion,
-  planToolbarLayout,
-  shouldCloseExpandedOnOutsideClick,
-} from './plan';
-export {
   ensureMapToolbarApi,
   ensureMapToolbarStore,
 } from './register-domain-store';
-export type {
-  Listener,
-  LiveToolbarStrategyContext,
-  MapToolbarStore,
-} from './toolbar';
+export {
+  createHostStrategy,
+  resolveHostButtonOptions,
+  resolveToolbarSpecOptions,
+} from './host-strategy';
+export type { HostStrategyConfig } from './host-strategy';
 export {
   createDefaultToolbarStore,
-  createFromFlatButtons,
   createLiveToolbarStrategy,
   createSubscribable,
   createToolbarModuleApi,
   createToolbarStoreApi,
 } from './toolbar';
+export type {
+  Listener,
+  LiveToolbarStrategyContext,
+  MapToolbarStore,
+} from './toolbar';
+export { compassIcon, mdiButtonState, mdiIcon, textButtonState } from './types';
 export type {
   AnyToolbarOptions,
   AnyToolbarStrategy,
@@ -77,4 +83,3 @@ export type {
   ToolbarStrategy,
   WithToolbar,
 } from './types';
-export { compassIcon, mdiButtonState, mdiIcon, textButtonState } from './types';

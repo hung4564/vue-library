@@ -5,10 +5,7 @@ import {
   type PrintAdvancedUiState,
   type PrintOption,
 } from '@hungpvq/map-core/print';
-import {
-  type MapControlButtonUIState,
-  mdiIcon,
-} from '@hungpvq/map-core/toolbar';
+import { mdiIcon } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   mdiClose,
@@ -19,9 +16,7 @@ import {
 import { saveAs } from 'file-saver';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { MapCommonButton } from '../../../components/MapCommonButton';
 import { MapControlButton } from '../../../components/MapControlButton';
-import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
 import { InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
@@ -107,7 +102,7 @@ export function PrintAdvancedControl({
     initPrint(session.getStoreHandlers());
   }
 
-  const toolbarConfig = useMemo(
+  const printModule = useMemo(
     () => ({
       kind: 'module' as const,
       moduleId: 'mapPrintAdvancedControl',
@@ -181,75 +176,25 @@ export function PrintAdvancedControl({
     [session],
   );
 
-  const { moduleContainerProps, panelBind, state, control } = useMapControl(
-    mapId,
-    {
-      id: 'mapPrintAdvancedControl',
-      panelKind: 'button',
-      from: merged,
-      order,
-      buttonSlot: 'custom',
-      defaultActionType: 'mapPrintShow',
-      getProps: () => ({
-        disabledCrosshair,
-        disabledPrintableArea,
-      }),
-      actions: registerActions,
-      toolbar: toolbarConfig,
-    },
-  );
+  const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
+    id: 'mapPrintAdvancedControl',
+    panelKind: 'button',
+    from: merged,
+    order,
+    host: { button: printModule },
+    defaultActionType: 'mapPrintShow',
+    actions: registerActions,
+    toolbar: printModule,
+  });
   controlRef.current = control;
 
   useEffect(() => {
     control.sync();
   }, [print, order, control]);
 
-  const moduleState = state as
-    Record<string, MapControlButtonUIState | undefined> | undefined;
-
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      btn={
-        <MapControlGroupButton row>
-          {moduleState?.mapPrintShow ? (
-            <MapCommonButton
-              option={moduleState.mapPrintShow}
-              onClick={(e) => {
-                e.stopPropagation();
-                control.onAction('mapPrintShow', e.nativeEvent);
-              }}
-            />
-          ) : null}
-          {moduleState?.mapPrintSave ? (
-            <MapCommonButton
-              option={moduleState.mapPrintSave}
-              onClick={(e) => {
-                e.stopPropagation();
-                control.onAction('mapPrintSave', e.nativeEvent);
-              }}
-            />
-          ) : null}
-          {moduleState?.mapPrintClose ? (
-            <MapCommonButton
-              option={moduleState.mapPrintClose}
-              onClick={(e) => {
-                e.stopPropagation();
-                control.onAction('mapPrintClose', e.nativeEvent);
-              }}
-            />
-          ) : null}
-          {moduleState?.mapPrintSetting ? (
-            <MapCommonButton
-              option={moduleState.mapPrintSetting}
-              onClick={(e) => {
-                e.stopPropagation();
-                control.onAction('mapPrintSetting', e.nativeEvent);
-              }}
-            />
-          ) : null}
-        </MapControlGroupButton>
-      }
       draggable={(bind) =>
         print.setting_show ? (
           <DraggableItemPopup

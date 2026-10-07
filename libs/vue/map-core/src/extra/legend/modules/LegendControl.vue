@@ -9,6 +9,7 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import { InputCheckbox } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
@@ -85,6 +86,20 @@ watch(onlyRender, (newValue) => {
     remove();
   }
 });
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
+    return mdiButtonState(mdiMapLegend, {
+      visible: true,
+      active: show.value,
+      title: trans.value('map.legend-control.title'),
+      order: order.value,
+    });
+  },
+  onClick() {
+    onToggleShow();
+  },
+};
 const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   id: 'mapLegendControl',
   panelKind: 'popup',
@@ -100,17 +115,8 @@ const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
       run: () => onToggleShow(),
     },
   ],
-  getButtonState() {
-    return mdiButtonState(mdiMapLegend, {
-      visible: true,
-      active: show.value,
-      title: trans.value('map.legend-control.title'),
-      order: order.value,
-    });
-  },
-  onClick() {
-    onToggleShow();
-  },
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 watch(show, () => control.sync());
 </script>

@@ -111,13 +111,16 @@ export type WithToolbar = {
 export interface Subscribable<T> {
   subscribe(fn: (state: T) => void): () => void;
 }
+export type ToolbarButtonGetState = {
+  location: 'host' | 'toolbar';
+};
 
 /**
  * Configuration for a toolbar button
  */
 export type ToolbarButtonConfig = {
   id: string;
-  getState: () => MapControlButtonUIState;
+  getState: (props: ToolbarButtonGetState) => MapControlButtonUIState;
   order?: number;
   onClick?: (e: MouseEvent) => void;
 };
@@ -127,7 +130,9 @@ export type ToolbarButtonConfig = {
  */
 export type ToolbarOptionsSingle = {
   kind?: 'single';
-} & ToolbarButtonConfig;
+  /** Control / button id used for store register (defaults in normalize). */
+  id?: string;
+} & Omit<ToolbarButtonConfig, 'id'>;
 
 /**
  * Options for a toolbar module (group of buttons)
@@ -174,9 +179,7 @@ export type ToolbarStrategy<TState> = Subscribable<TState> & {
 /**
  * Strategy for a single control button
  */
-export type ControlStrategy = ToolbarStrategy<MapControlButtonUIState> & {
-  id: string;
-};
+export type ControlStrategy = ToolbarStrategy<MapControlButtonUIState>;
 
 /**
  * Union type for all toolbar strategies

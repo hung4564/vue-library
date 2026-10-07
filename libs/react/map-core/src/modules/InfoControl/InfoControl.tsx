@@ -121,6 +121,18 @@ export function InfoControl(props: InfoControlProps) {
     }
   }, [callMap]);
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiInformationOutline, {
+        visible: true,
+        active: show,
+        title: trans('map.info-control.title'),
+        order,
+      }),
+    onClick: () => handleToggle(),
+  };
+
   const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
     id: 'mapInfoControl',
     panelKind: 'popup',
@@ -130,18 +142,9 @@ export function InfoControl(props: InfoControlProps) {
     show,
     setShow,
     defaultPanelSize: { width: 360, height: 380 },
-    getProps: () => ({
-      fileName: mergedProps.fileName,
-    }),
     actions: [{ type: 'mapInfoControl', run: () => handleToggle() }],
-    getButtonState: () =>
-      mdiButtonState(mdiInformationOutline, {
-        visible: true,
-        active: show,
-        title: trans('map.info-control.title'),
-        order,
-      }),
-    onClick: () => handleToggle(),
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   useEffect(() => {

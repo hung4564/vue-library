@@ -94,6 +94,17 @@ export function CreateControl(props: CreateControlProps) {
   const merged = { ...defaultMapProps, ...props };
   const { mapId, order } = useMap(merged);
   const { trans } = useLang(mapId);
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiPlus, {
+        active: props.show,
+        title: trans('map.layer-control.create.title'),
+        order,
+      }),
+    onClick: () => props.onShowChange(!props.show),
+  };
+
   const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
     id: 'mapCreateControl',
     panelKind: 'popup',
@@ -102,22 +113,14 @@ export function CreateControl(props: CreateControlProps) {
     order,
     show: props.show,
     setShow: props.onShowChange,
-    getProps: () => ({
-      createLayerTypes: props.createLayerTypes,
-    }),
     actions: [
       {
         type: 'mapCreateControl',
         run: () => props.onShowChange(!props.show),
       },
     ],
-    getButtonState: () =>
-      mdiButtonState(mdiPlus, {
-        active: props.show,
-        title: trans('map.layer-control.create.title'),
-        order,
-      }),
-    onClick: () => props.onShowChange(!props.show),
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   useEffect(() => {

@@ -10,6 +10,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { ref, watch } from 'vue';
 
+import { defineEmits, defineProps, withDefaults } from 'vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -135,21 +136,9 @@ function onClick() {
   });
 }
 
-const { moduleContainerProps, control } = useMapControl(mapId, {
-  id: 'mapGeoLocateControl',
-  panelKind: 'button',
-  from: props,
-  order,
-  getProps: () => ({ ...sessionOptions() }),
-  actions: [
-    {
-      type: 'mapGeoLocateControl',
-      run: () => {
-        onClick();
-      },
-    },
-  ],
-  getButtonState() {
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
     const error = ui.value.errorMessage;
     const background = ui.value.background;
     return mdiButtonState(error ? mdiCrosshairsOff : mdiCrosshairsGps, {
@@ -168,6 +157,22 @@ const { moduleContainerProps, control } = useMapControl(mapId, {
   onClick() {
     onClick();
   },
+};
+const { moduleContainerProps, control } = useMapControl(mapId, {
+  id: 'mapGeoLocateControl',
+  panelKind: 'button',
+  from: props,
+  order,
+  actions: [
+    {
+      type: 'mapGeoLocateControl',
+      run: () => {
+        onClick();
+      },
+    },
+  ],
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 
 watch(ui, () => control?.sync(), { deep: true });

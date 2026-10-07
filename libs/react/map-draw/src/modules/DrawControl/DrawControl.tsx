@@ -200,7 +200,9 @@ export function DrawControl(props: DrawControlProps) {
       panelKind: 'button',
       from: merged,
       order,
-      buttonSlot: 'custom',
+      host: {
+        buttonSlot: 'custom',
+      },
       toolbar: {
         kind: 'module',
         moduleId: 'mapDrawControl',

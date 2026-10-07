@@ -14,10 +14,11 @@
           v-if="hasSlotBtn"
           name="btn"
         />
-        <MapCommonButton
-          v-else-if="autoButtonState"
-          :option="autoButtonState"
-          @click.stop="onAutoButtonClick"
+        <MapAutoHostButtons
+          v-else-if="autoButtonEntry && autoButtonState != null"
+          :state="autoButtonState"
+          :position="position"
+          :on-action="onAutoAction"
         />
       </div>
       <slot name="btnOutside" />
@@ -50,10 +51,10 @@ import {
   moduleDraggableHostSelector,
   subscribeControlAutoButton,
 } from '@hungpvq/map-core';
-import type { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 import { computed, inject, onUnmounted, ref, useSlots } from 'vue';
 
-import MapCommonButton from '../../components/MapCommonButton.vue';
+import { defineProps } from 'vue';
+import MapAutoHostButtons from '../../components/MapAutoHostButtons.vue';
 
 const slots = useSlots();
 const props = defineProps({
@@ -113,11 +114,11 @@ const autoButtonState = computed(() => {
   autoBtnTick.value;
   const entry = autoButtonEntry.value;
   if (!entry) return undefined;
-  return entry.getUiState() as MapControlButtonUIState | undefined;
+  return entry.getUiState();
 });
 
 const hasAutoBtn = computed(
-  () => !!autoButtonEntry.value && !!autoButtonState.value,
+  () => !!autoButtonEntry.value && autoButtonState.value != null,
 );
 const hasBtnContent = computed(() => hasSlotBtn.value || hasAutoBtn.value);
 const hasCornerChrome = computed(
@@ -147,8 +148,8 @@ const stopAutoBtn = subscribeControlAutoButton((mid, controlId) => {
 });
 onUnmounted(() => stopAutoBtn());
 
-function onAutoButtonClick(event?: unknown) {
-  autoButtonEntry.value?.onAction(event);
+function onAutoAction(...args: unknown[]) {
+  autoButtonEntry.value?.onAction(...args);
 }
 
 const draggableTo = computed(() => moduleDraggableHostSelector(c_mapId.value));
@@ -162,7 +163,10 @@ const btnTo = computed(() =>
 const bindDrag = computed(() =>
   buildModuleBindPosition({
     position: props.position as
-      'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
+      | 'top-left'
+      | 'top-right'
+      | 'bottom-left'
+      | 'bottom-right',
     btnWidth: props.btnWidth,
     containerId: c_containerId.value,
   }),

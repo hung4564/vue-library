@@ -45,6 +45,20 @@ export function PrintControl({
     [callMap, fileName],
   );
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiPrinterOutline, {
+        visible: true,
+        title: trans('map.print.title'),
+        order,
+        loading: loadingRef.current,
+      }),
+    onClick: () => {
+      onPrint();
+    },
+  };
+
   const { moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapPrintControl',
     panelKind: 'button',
@@ -58,16 +72,8 @@ export function PrintControl({
         },
       },
     ],
-    getButtonState: () =>
-      mdiButtonState(mdiPrinterOutline, {
-        visible: true,
-        title: trans('map.print.title'),
-        order,
-        loading: loadingRef.current,
-      }),
-    onClick: () => {
-      onPrint();
-    },
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
   const controlRef = useRef(control);
   controlRef.current = control;

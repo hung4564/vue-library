@@ -1,7 +1,9 @@
+import { getUUIDv4 } from '@hungpvq/shared';
 import type {
   AnyToolbarOptions,
   MapControlButtonUIState,
   ToolbarButtonConfig,
+  ToolbarButtonGetState,
   ToolbarOptionsModule,
   ToolbarOptionsModuleExpandable,
   ToolbarOptionsSingle,
@@ -10,7 +12,7 @@ import type {
 /** Flat button ready for register/sync (kind already resolved). */
 export type FlatToolbarButton = {
   id: string;
-  getState: () => MapControlButtonUIState;
+  getState: (props: ToolbarButtonGetState) => MapControlButtonUIState;
   onClick?: (e: MouseEvent) => void;
 };
 
@@ -36,13 +38,14 @@ function mapModuleButtons(
     ToolbarOptionsModule,
     'moduleId' | 'order' | 'orientation' | 'buttons'
   >,
+  propsGetState: ToolbarButtonGetState,
   extra?: Partial<MapControlButtonUIState>,
 ): FlatToolbarButton[] {
   const stamp = moduleStamp(opts.moduleId, opts.order, opts.orientation);
   return opts.buttons.map((btn) => ({
     id: `${opts.moduleId}:${btn.id}`,
     getState: () => ({
-      ...btn.getState(),
+      ...btn.getState(propsGetState),
       ...stamp,
       ...extra,
     }),
@@ -60,7 +63,9 @@ export function normalizeToolbarSpec(
   const kind = opts.kind ?? 'single';
 
   if (kind === 'module') {
-    return mapModuleButtons(opts as ToolbarOptionsModule);
+    return mapModuleButtons(opts as ToolbarOptionsModule, {
+      location: 'toolbar',
+    });
   }
 
   if (kind === 'module-expandable') {
@@ -77,17 +82,21 @@ export function normalizeToolbarSpec(
         closeOnOutsideClick: mod.closeOnOutsideClick !== false,
       }),
     };
-    const options = mapModuleButtons(mod, {
-      expandable: true,
-      role: 'option',
-    });
+    const options = mapModuleButtons(
+      mod,
+      { location: 'toolbar' },
+      {
+        expandable: true,
+        role: 'option',
+      },
+    );
     return [launcher, ...options];
   }
 
   const single = opts as ToolbarOptionsSingle;
   return [
     {
-      id: single.id,
+      id: single.id ?? getUUIDv4(),
       getState: single.getState,
       onClick: single.onClick,
     },
@@ -112,7 +121,7 @@ export function mapToolbarOptions(
     const buttons = opts.buttons.map(
       (btn: ToolbarButtonConfig): ToolbarButtonConfig => ({
         ...btn,
-        getState: () => mapState(btn.getState()),
+        getState: () => mapState(btn.getState({ location: 'toolbar' })),
       }),
     );
     if (opts.kind === 'module-expandable') {
@@ -127,7 +136,7 @@ export function mapToolbarOptions(
   }
   return {
     ...opts,
-    getState: () => mapState(opts.getState()),
+    getState: () => mapState(opts.getState({ location: 'toolbar' })),
   };
 }
 
@@ -146,7 +155,9 @@ function applyLayoutToButtonState(
   return {
     ...author,
     visible: lay.visible && author.visible !== false,
-    order: lay.order,
+    get order() {
+      return lay.order;
+    },
     position: lay.position,
   };
 }

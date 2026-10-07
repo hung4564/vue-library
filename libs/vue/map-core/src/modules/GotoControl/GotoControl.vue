@@ -11,6 +11,7 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
 import { ref, watch } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
@@ -48,6 +49,20 @@ async function onPasteCoordinates() {
     // Clipboard permission denied — ignore.
   }
 }
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
+    return mdiButtonState(mdiMapMarkerOutline, {
+      visible: true,
+      active: show.value,
+      title: trans.value('map.goto-control.title'),
+      order: order.value,
+    });
+  },
+  onClick() {
+    onToggleShow();
+  },
+};
 const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   id: 'mapGotoControl',
   panelKind: 'popup',
@@ -63,17 +78,8 @@ const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
       run: () => onToggleShow(),
     },
   ],
-  getButtonState() {
-    return mdiButtonState(mdiMapMarkerOutline, {
-      visible: true,
-      active: show.value,
-      title: trans.value('map.goto-control.title'),
-      order: order.value,
-    });
-  },
-  onClick() {
-    onToggleShow();
-  },
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 watch(show, () => control?.sync());
 </script>

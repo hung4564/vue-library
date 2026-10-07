@@ -281,6 +281,18 @@ export function RegistryControl(props: RegistryControlProps) {
     setShow(!show);
   }, [setShow, show]);
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiConsole, {
+        visible: true,
+        active: show,
+        title: trans('map.registry-control.title'),
+        order,
+      }),
+    onClick: () => handleToggle(),
+  };
+
   const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
     id: CONTROL_ID,
     panelKind: 'popup',
@@ -291,14 +303,8 @@ export function RegistryControl(props: RegistryControlProps) {
     setShow,
     defaultPanelSize: { width: 360, height: 420 },
     actions: [{ type: CONTROL_ID, run: () => handleToggle() }],
-    getButtonState: () =>
-      mdiButtonState(mdiConsole, {
-        visible: true,
-        active: show,
-        title: trans('map.registry-control.title'),
-        order,
-      }),
-    onClick: () => handleToggle(),
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   useEffect(() => {

@@ -42,6 +42,18 @@ export function GlobeControl(props: WithMapPropType) {
     });
   }
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiWeb, {
+        visible: true,
+        active: isGlobeProjection(currentProjection),
+        title: trans('map.global-control.title'),
+        order,
+      }),
+    onClick: () => toggle(),
+  };
+
   const { moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapGlobeControl',
     panelKind: 'button',
@@ -55,14 +67,8 @@ export function GlobeControl(props: WithMapPropType) {
         },
       },
     ],
-    getButtonState: () =>
-      mdiButtonState(mdiWeb, {
-        visible: true,
-        active: isGlobeProjection(currentProjection),
-        title: trans('map.global-control.title'),
-        order,
-      }),
-    onClick: () => toggle(),
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   useEffect(() => {

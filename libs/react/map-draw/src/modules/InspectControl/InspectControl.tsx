@@ -156,6 +156,17 @@ export function InspectControl(props: InspectControlProps) {
     controller.toggle();
   }, [controller]);
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(!active ? INSPECT_ICONS.map : INSPECT_ICONS.inspect, {
+        visible: true,
+        title: trans('map.inspect-control.button'),
+        order,
+      }),
+    onClick: () => toggle(),
+  };
+
   const { moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapInspectControl',
     panelKind: 'button',
@@ -163,13 +174,8 @@ export function InspectControl(props: InspectControlProps) {
     from: merged,
     order,
     actions: [{ type: 'mapInspectControl', run: () => toggle() }],
-    getButtonState: () =>
-      mdiButtonState(!active ? INSPECT_ICONS.map : INSPECT_ICONS.inspect, {
-        visible: true,
-        title: trans('map.inspect-control.button'),
-        order,
-      }),
-    onClick: () => toggle(),
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   controlSyncRef.current = () => control.sync();

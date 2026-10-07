@@ -7,15 +7,11 @@ import {
   zoomIn,
   zoomOut,
 } from '@hungpvq/map-core';
-import {
-  type MapControlButtonUIState,
-  mdiButtonState,
-} from '@hungpvq/map-core/toolbar';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiMinus, mdiPlus } from '@mdi/js';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
-import MapCommonButton from '../../components/MapCommonButton.vue';
-import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
+import { defineProps, withDefaults } from 'vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -70,91 +66,64 @@ function onResetBearing() {
   });
 }
 
-const {
-  moduleContainerProps,
-  state: toolbarState,
-  control,
-} = useMapControl(mapId, {
+const navigationButtons = [
+  {
+    id: 'mapCompass',
+    getState: () => ({
+      visible: props.showCompass,
+      title: trans.value('map.action.navigation-control-reset-bearing'),
+      icon: {
+        type: 'compass' as const,
+        transform: transform.value,
+      },
+    }),
+    onClick: () => onResetBearing(),
+  },
+  {
+    id: 'mapZoomIn',
+    getState: () =>
+      mdiButtonState(mdiPlus, {
+        visible: props.showZoom,
+        title: trans.value('map.action.navigation-control-zoom-in'),
+      }),
+    onClick: (e: MouseEvent) => onZoomIn(e),
+  },
+  {
+    id: 'mapZoomOut',
+    getState: () =>
+      mdiButtonState(mdiMinus, {
+        visible: props.showZoom,
+        title: trans.value('map.action.navigation-control-zoom-out'),
+      }),
+    onClick: (e: MouseEvent) => onZoomOut(e),
+  },
+];
+
+const navigationModule = {
+  kind: 'module' as const,
+  moduleId: 'mapNavigationControl',
+  order: order.value,
+  buttons: navigationButtons,
+};
+
+const { moduleContainerProps, control } = useMapControl(mapId, {
   id: 'mapNavigationControl',
   panelKind: 'button',
   from: props,
   order,
-  buttonSlot: 'custom',
+  host: { button: navigationModule },
   defaultActionType: 'mapZoomIn',
-  getProps: () => ({
-    showCompass: props.showCompass,
-    showZoom: props.showZoom,
-  }),
   actions: [
     { type: 'mapCompass', run: () => onResetBearing() },
     { type: 'mapZoomIn', run: (e) => onZoomIn(e as MouseEvent) },
     { type: 'mapZoomOut', run: (e) => onZoomOut(e as MouseEvent) },
   ],
-  toolbar: {
-    kind: 'module',
-    moduleId: 'mapNavigationControl',
-    order: order.value,
-    buttons: [
-      {
-        id: 'mapCompass',
-        getState: () => ({
-          visible: props.showCompass,
-          title: trans.value('map.action.navigation-control-reset-bearing'),
-          icon: {
-            type: 'compass',
-            transform: transform.value,
-          },
-        }),
-        onClick: () => onResetBearing(),
-      },
-      {
-        id: 'mapZoomIn',
-        getState: () =>
-          mdiButtonState(mdiPlus, {
-            visible: props.showZoom,
-            title: trans.value('map.action.navigation-control-zoom-in'),
-          }),
-        onClick: (e) => onZoomIn(e),
-      },
-      {
-        id: 'mapZoomOut',
-        getState: () =>
-          mdiButtonState(mdiMinus, {
-            visible: props.showZoom,
-            title: trans.value('map.action.navigation-control-zoom-out'),
-          }),
-        onClick: (e) => onZoomOut(e),
-      },
-    ],
-  },
+  toolbar: navigationModule,
 });
-const state = computed(
-  () =>
-    toolbarState.value as Record<string, MapControlButtonUIState> | undefined,
-);
 </script>
 
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapControlGroupButton>
-        <MapCommonButton
-          v-if="state && state.mapCompass"
-          :option="state.mapCompass"
-          @click.stop="control.onAction('mapCompass', $event)"
-        />
-        <MapCommonButton
-          v-if="state && state.mapZoomIn"
-          :option="state.mapZoomIn"
-          @click.stop="control.onAction('mapZoomIn', $event)"
-        />
-        <MapCommonButton
-          v-if="state && state.mapZoomOut"
-          :option="state.mapZoomOut"
-          @click.stop="control.onAction('mapZoomOut', $event)"
-        />
-      </MapControlGroupButton>
-    </template>
     <slot />
   </ModuleContainer>
 </template>

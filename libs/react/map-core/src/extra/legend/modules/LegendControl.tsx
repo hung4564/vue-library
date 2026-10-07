@@ -102,6 +102,18 @@ export function LegendControl(props: WithMapPropType) {
     }
   }, [onlyRender]);
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiMapLegend, {
+        visible: true,
+        active: show,
+        title: trans('map.legend-control.title'),
+        order,
+      }),
+    onClick: () => setShow(!show),
+  };
+
   const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
     id: 'mapLegendControl',
     panelKind: 'popup',
@@ -112,14 +124,8 @@ export function LegendControl(props: WithMapPropType) {
     setShow,
     defaultPanelSize: { width: 400, height: 400 },
     actions: [{ type: 'mapLegendControl', run: () => setShow(!show) }],
-    getButtonState: () =>
-      mdiButtonState(mdiMapLegend, {
-        visible: true,
-        active: show,
-        title: trans('map.legend-control.title'),
-        order,
-      }),
-    onClick: () => setShow(!show),
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   useEffect(() => {

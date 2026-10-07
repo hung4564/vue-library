@@ -9,6 +9,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiWeb } from '@mdi/js';
 import { ref } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -38,6 +39,20 @@ function onDestroy(_map: MapSimple) {
   detachProjection?.();
   detachProjection = undefined;
 }
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
+    return mdiButtonState(mdiWeb, {
+      visible: true,
+      active: isGlobeProjection(currentProjection.value),
+      title: trans.value('map.global-control.title'),
+      order: order.value,
+    });
+  },
+  onClick() {
+    toggle();
+  },
+};
 const { moduleContainerProps } = useMapControl(mapId, {
   id: 'mapGlobeControl',
   panelKind: 'button',
@@ -51,17 +66,8 @@ const { moduleContainerProps } = useMapControl(mapId, {
       },
     },
   ],
-  getButtonState() {
-    return mdiButtonState(mdiWeb, {
-      visible: true,
-      active: isGlobeProjection(currentProjection.value),
-      title: trans.value('map.global-control.title'),
-      order: order.value,
-    });
-  },
-  onClick() {
-    toggle();
-  },
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 </script>
 <template>

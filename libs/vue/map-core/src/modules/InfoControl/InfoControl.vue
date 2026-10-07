@@ -28,6 +28,7 @@ import {
 } from '@mdi/js';
 import { computed, onUnmounted, ref, watch } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import MapCopyButton from '../../components/MapCopyButton.vue';
 import { useLang } from '../../extra/lang/hook';
@@ -112,25 +113,9 @@ const rows = computed(() => [
   },
 ]);
 
-const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
-  id: 'mapInfoControl',
-  panelKind: 'popup',
-  title: () => trans.value('map.info-control.title'),
-  from: props,
-  order,
-  show,
-  setShow,
-  defaultPanelSize: { width: 360, height: 380 },
-  getProps: () => ({
-    fileName: props.fileName,
-  }),
-  actions: [
-    {
-      type: 'mapInfoControl',
-      run: () => onToggleShow(),
-    },
-  ],
-  getButtonState() {
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
     return mdiButtonState(mdiInformationOutline, {
       visible: true,
       active: show.value,
@@ -141,6 +126,24 @@ const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   onClick() {
     onToggleShow();
   },
+};
+const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
+  id: 'mapInfoControl',
+  panelKind: 'popup',
+  title: () => trans.value('map.info-control.title'),
+  from: props,
+  order,
+  show,
+  setShow,
+  defaultPanelSize: { width: 360, height: 380 },
+  actions: [
+    {
+      type: 'mapInfoControl',
+      run: () => onToggleShow(),
+    },
+  ],
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 
 watch(show, (visible) => {

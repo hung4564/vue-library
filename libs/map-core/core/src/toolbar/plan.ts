@@ -191,8 +191,16 @@ export function handleToolbarButtonClick(
 }
 
 /**
+ * Elements that count as “inside” for expandable outside-click collapse.
+ * Includes strip chrome and host auto `module-expandable` (`.map-host-expandable`).
+ */
+export const TOOLBAR_EXPAND_OUTSIDE_IGNORE_SELECTOR =
+  '.map-toolbar-control, .map-toolbar-overflow, .map-toolbar-secondary-row, .map-host-expandable';
+
+/**
  * Whether pointerdown outside the toolbar should collapse the open module.
  * Reads `closeOnOutsideClick` stamped on the launcher (default true).
+ * When the launcher is not in the strip store (host-only expand), defaults to true.
  */
 export function shouldCloseExpandedOnOutsideClick(
   buttons: MapControlButtonState[],

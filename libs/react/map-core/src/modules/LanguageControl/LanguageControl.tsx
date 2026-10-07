@@ -10,15 +10,9 @@ import {
   resolveInitialMapLanguage,
   type WithMapPropType,
 } from '@hungpvq/map-core';
-import {
-  ensureMapToolbarApi,
-  type MapControlButtonUIState,
-  textButtonState,
-} from '@hungpvq/map-core/toolbar';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { textButtonState } from '@hungpvq/map-core/toolbar';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { MapCommonButton } from '../../components/MapCommonButton';
-import { MapControlGroupButton } from '../../components/MapControlGroupButton';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -61,7 +55,6 @@ export function LanguageControl({
     whenLocaleIdle,
   } = useLang(mapId);
   const applySeq = useRef(0);
-  const [groupExpanded, setGroupExpanded] = useState(false);
 
   const languageList = useMemo(
     () =>
@@ -136,10 +129,8 @@ export function LanguageControl({
       }
       if (seq !== applySeq.current) return;
       setLanguage(code);
-      setGroupExpanded(false);
-      if (mapId) ensureMapToolbarApi(mapId).setExpandedModule(null);
     },
-    [language, loadLocale, localeLoader, mapId, reloadOnSelect, setLanguage],
+    [language, loadLocale, localeLoader, reloadOnSelect, setLanguage],
   );
 
   const toggleLanguage = useCallback(() => {
@@ -147,44 +138,9 @@ export function LanguageControl({
     if (next) void applyLanguage(next);
   }, [applyLanguage, language, languageList]);
 
-  const {
-    moduleContainerProps,
-    state: moduleState,
-    control,
-  } = useMapControl(mapId, {
-    id: 'mapLanguageControl',
-    panelKind: 'button',
-    from: mergedProps,
-    order,
-    buttonSlot: 'custom',
-    getProps: () => ({
-      languages: languageList,
-      defaultLanguage,
-      fallbackLanguage,
-    }),
-    actions: [
-      {
-        type: 'mapLanguageControl',
-        run: () => toggleLanguage(),
-      },
-      ...MAP_BUILTIN_LANGUAGES.map((code) => ({
-        type: `mapLanguageControl:${code}`,
-        run: () => void applyLanguage(code),
-      })),
-    ],
-    toolbar: {
-      kind: 'module-expandable',
-      moduleId: 'mapLanguageControl',
-      orientation: 'row',
-      order,
-      expandableButton: ({ active }) =>
-        textButtonState(mapLanguageCodeLabel(language), {
-          visible: true,
-          active,
-          order,
-          title: `${trans('map.language-control.title')}: ${titleFor(language)}`,
-        }),
-      buttons: MAP_BUILTIN_LANGUAGES.map((code) => ({
+  const languageButtons = useMemo(
+    () =>
+      [...MAP_BUILTIN_LANGUAGES].map((code) => ({
         id: code,
         getState: () =>
           textButtonState(mapLanguageCodeLabel(code), {
@@ -194,50 +150,47 @@ export function LanguageControl({
           }),
         onClick: () => void applyLanguage(code),
       })),
-    },
-  });
+    [applyLanguage, language, languageList, titleFor],
+  );
 
-  const launcherState = (
-    moduleState as Record<string, MapControlButtonUIState> | undefined
-  )?.launcher;
+  const expandableChrome = useMemo(
+    () => ({
+      kind: 'module-expandable' as const,
+      moduleId: 'mapLanguageControl',
+      orientation: 'row' as const,
+      order,
+      expandableButton: ({ active }: { active: boolean }) =>
+        textButtonState(mapLanguageCodeLabel(language), {
+          active,
+          title: `${trans('map.language-control.title')}: ${titleFor(language)}`,
+        }),
+      buttons: languageButtons,
+    }),
+    [order, language, languageButtons, titleFor, trans],
+  );
+
+  const { moduleContainerProps, control } = useMapControl(mapId, {
+    id: 'mapLanguageControl',
+    panelKind: 'button',
+    from: mergedProps,
+    order,
+    host: { button: expandableChrome },
+    actions: [
+      {
+        type: 'mapLanguageControl',
+        run: () => toggleLanguage(),
+      },
+      ...languageList.map((code) => ({
+        type: `mapLanguageControl:${code}`,
+        run: () => void applyLanguage(code as MapLanguageCode),
+      })),
+    ],
+    toolbar: expandableChrome,
+  });
 
   useEffect(() => {
     control.sync();
   }, [language, titleFor, languageList, control]);
 
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        <MapControlGroupButton
-          row
-          className={`button-group-click-expand${groupExpanded ? ' is-expanded' : ''}`}
-        >
-          {launcherState ? (
-            <MapCommonButton
-              option={launcherState}
-              onClick={(e) => {
-                e.stopPropagation();
-                setGroupExpanded((v) => !v);
-              }}
-            />
-          ) : null}
-          {languageList.map((code) => (
-            <MapCommonButton
-              key={code}
-              option={textButtonState(mapLanguageCodeLabel(code), {
-                visible: true,
-                active: language === code,
-                title: titleFor(code),
-              })}
-              onClick={(e) => {
-                e.stopPropagation();
-                void applyLanguage(code);
-              }}
-            />
-          ))}
-        </MapControlGroupButton>
-      }
-    />
-  );
+  return <ModuleContainer {...moduleContainerProps} />;
 }

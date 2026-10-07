@@ -25,6 +25,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
 import { computed, ref, watch } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
@@ -79,22 +80,9 @@ const hasSelectedHistory = computed(() =>
 );
 const hasAnyHistory = computed(() => anyWorkerHasHistory(workers.value));
 
-const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
-  id: 'mapWorkerControl',
-  panelKind: 'sidebar',
-  title: () => trans.value('map.worker-control.title'),
-  from: props,
-  order,
-  show,
-  setShow: toggleShow,
-  initialPanelPosition: { location: 'left' },
-  actions: [
-    {
-      type: 'mapWorkerControl',
-      run: () => toggleShow(),
-    },
-  ],
-  getButtonState() {
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
     return mdiButtonState(mdiCogs, {
       title: trans.value('map.worker-control.title'),
       order: order.value,
@@ -104,6 +92,23 @@ const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
   onClick() {
     toggleShow();
   },
+};
+const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
+  id: 'mapWorkerControl',
+  panelKind: 'sidebar',
+  title: () => trans.value('map.worker-control.title'),
+  from: props,
+  order,
+  show,
+  setShow: toggleShow,
+  actions: [
+    {
+      type: 'mapWorkerControl',
+      run: () => toggleShow(),
+    },
+  ],
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 
 watch([show, busy], () => {

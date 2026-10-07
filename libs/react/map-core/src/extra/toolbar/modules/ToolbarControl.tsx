@@ -14,6 +14,7 @@ import {
   planToolbarExpansion,
   planToolbarLayout,
   shouldCloseExpandedOnOutsideClick,
+  TOOLBAR_EXPAND_OUTSIDE_IGNORE_SELECTOR,
   toolbarAvailableWidth,
   toolbarOverflowPanelClassName,
 } from '@hungpvq/map-core/toolbar';
@@ -134,15 +135,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
     const syncButtons = () => {
       const expanded = storeApi.getExpandedModuleId();
       setExpandedModuleId(expanded);
-      setButtons(
-        storeApi
-          .getAll()
-          .map((btn) =>
-            btn.expandable && (btn.role === 'launcher' || !btn.role)
-              ? { ...btn, active: expanded === (btn.group || btn.id) }
-              : { ...btn },
-          ),
-      );
+      setButtons(storeApi.getAll({ location: 'toolbar' }));
     };
     const unsub = storeApi.subscribe(syncButtons);
     syncButtons();
@@ -168,17 +161,12 @@ export function ToolbarControl(props: ToolbarControlProps) {
       const t = e.target;
       const inside =
         t instanceof Element &&
-        t.closest(
-          '.map-toolbar-control, .map-toolbar-overflow, .map-toolbar-secondary-row',
-        );
+        t.closest(TOOLBAR_EXPAND_OUTSIDE_IGNORE_SELECTOR);
       if (!inside) {
         setMoreOpen(false);
         setMoreOpenCorner(null);
         const expanded = storeApi.getExpandedModuleId();
-        if (
-          expanded &&
-          shouldCloseExpandedOnOutsideClick(storeApi.getAll(), expanded)
-        ) {
+        if (expanded && shouldCloseExpandedOnOutsideClick(buttons, expanded)) {
           storeApi.setExpandedModule(null);
         }
       }

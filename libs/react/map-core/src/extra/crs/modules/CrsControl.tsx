@@ -52,6 +52,19 @@ export function CrsControl(props: CrsControlProps) {
     toggleShow(!show);
   }, [show, toggleShow]);
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState() {
+      return mdiButtonState(mdiInboxOutline, {
+        visible: true,
+        active: show,
+        title: trans('map.crs-control.title'),
+        order,
+      });
+    },
+    onClick: handleToggle,
+  };
+
   const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
     id: 'mapCrsControl',
     panelKind: 'popup',
@@ -62,15 +75,8 @@ export function CrsControl(props: CrsControlProps) {
     setShow: toggleShow,
     defaultPanelSize: { width: 400, height: 480 },
     actions: [{ type: 'mapCrsControl', run: () => handleToggle() }],
-    getButtonState() {
-      return mdiButtonState(mdiInboxOutline, {
-        visible: true,
-        active: show,
-        title: trans('map.crs-control.title'),
-        order,
-      });
-    },
-    onClick: handleToggle,
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   useEffect(() => {

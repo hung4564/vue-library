@@ -72,6 +72,18 @@ export function SettingControl(props: SettingControlProps) {
     });
   }
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiCog, {
+        visible: true,
+        active: show,
+        title: trans('map.setting-control.title'),
+        order,
+      }),
+    onClick: () => handleToggle(),
+  };
+
   const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
     id: 'mapSettingControl',
     panelKind: 'popup',
@@ -82,14 +94,8 @@ export function SettingControl(props: SettingControlProps) {
     setShow: toggleShow,
     defaultPanelSize: { width: 400, height: 400 },
     actions: [{ type: 'mapSettingControl', run: () => handleToggle() }],
-    getButtonState: () =>
-      mdiButtonState(mdiCog, {
-        visible: true,
-        active: show,
-        title: trans('map.setting-control.title'),
-        order,
-      }),
-    onClick: () => handleToggle(),
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   useEffect(() => {

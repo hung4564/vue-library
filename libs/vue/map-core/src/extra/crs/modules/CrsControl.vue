@@ -12,6 +12,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
 import { computed, ref, watch } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import { Collapse, InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow, type WithShowProps } from '../../../hooks/useShow';
@@ -91,6 +92,20 @@ const toggleDisplay = (epsg: string, checked: boolean) => {
   setDisplayEpsgs(displayEpsgs.value.filter((code) => code !== epsg));
 };
 
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
+    return mdiButtonState(mdiInboxOutline, {
+      visible: true,
+      active: show.value,
+      title: trans.value('map.crs-control.title'),
+      order: order.value,
+    });
+  },
+  onClick() {
+    onToggleShow();
+  },
+};
 const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   id: 'mapCrsControl',
   panelKind: 'popup',
@@ -106,17 +121,8 @@ const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
       run: () => onToggleShow(),
     },
   ],
-  getButtonState() {
-    return mdiButtonState(mdiInboxOutline, {
-      visible: true,
-      active: show.value,
-      title: trans.value('map.crs-control.title'),
-      order: order.value,
-    });
-  },
-  onClick() {
-    onToggleShow();
-  },
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 watch(show, () => control.sync());
 </script>

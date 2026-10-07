@@ -30,12 +30,12 @@
 <script lang="ts" setup>
 import { logHelper, type WithMapPropType } from '@hungpvq/map-core';
 import type { BaseMapItem } from '@hungpvq/map-core/basemap';
-import { INIT_BASEMAPS } from '@hungpvq/map-core/basemap';
-import { logger } from '@hungpvq/map-core/basemap';
+import { INIT_BASEMAPS, logger } from '@hungpvq/map-core/basemap';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiLayersOutline } from '@mdi/js';
 import { onBeforeUnmount, onMounted, watch } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
 import { useMapControl } from '../../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
@@ -83,35 +83,40 @@ function onClick(baseMap: BaseMapItem) {
     .debug('onClick', baseMap);
   setCurrent(baseMap);
 }
+const baseMapTagModule = {
+  kind: 'module' as const,
+  moduleId: 'mapBaseMapTagControl',
+  order: order.value,
+  orientation: 'row' as const,
+  buttons: (props.baseMaps ?? []).map((baseMap) => ({
+    id: String(baseMap.id),
+    getState: () => {
+      const live =
+        c_baseMaps.value.find((item) => item.id === baseMap.id) ?? baseMap;
+      return mdiButtonState(mdiLayersOutline, {
+        visible: true,
+        active: current_baseMaps.value?.id === live.id,
+        title: live.title,
+      });
+    },
+    onClick: () => {
+      const live =
+        c_baseMaps.value.find((item) => item.id === baseMap.id) ?? baseMap;
+      onClick(live);
+    },
+  })),
+};
+
 const { moduleContainerProps, control } = useMapControl(mapId, {
   id: 'mapBaseMapTagControl',
   panelKind: 'button',
   from: props,
   order,
-  buttonSlot: 'custom',
-  toolbar: {
-    kind: 'module',
-    moduleId: 'mapBaseMapTagControl',
-    order: order.value,
-    orientation: 'row',
-    buttons: (props.baseMaps ?? []).map((baseMap) => ({
-      id: String(baseMap.id),
-      getState: () => {
-        const live =
-          c_baseMaps.value.find((item) => item.id === baseMap.id) ?? baseMap;
-        return mdiButtonState(mdiLayersOutline, {
-          visible: true,
-          active: current_baseMaps.value?.id === live.id,
-          title: live.title,
-        });
-      },
-      onClick: () => {
-        const live =
-          c_baseMaps.value.find((item) => item.id === baseMap.id) ?? baseMap;
-        onClick(live);
-      },
-    })),
+  host: {
+    buttonSlot: 'custom',
+    button: baseMapTagModule,
   },
+  toolbar: baseMapTagModule,
 });
 watch([current_baseMaps, c_baseMaps], () => control.sync());
 onMounted(() => {

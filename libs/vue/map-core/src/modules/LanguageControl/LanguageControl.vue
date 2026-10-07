@@ -11,14 +11,10 @@ import {
   resolveInitialMapLanguage,
   type WithMapPropType,
 } from '@hungpvq/map-core';
-import {
-  type MapControlButtonUIState,
-  textButtonState,
-} from '@hungpvq/map-core/toolbar';
-import { computed, onMounted, ref, watch } from 'vue';
+import { textButtonState } from '@hungpvq/map-core/toolbar';
+import { computed, onMounted, watch } from 'vue';
 
-import MapCommonButton from '../../components/MapCommonButton.vue';
-import MapControlGroupButton from '../../components/MapControlGroupButton.vue';
+import { defineProps, withDefaults } from 'vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -58,8 +54,6 @@ const {
   loadLocale,
   whenLocaleIdle,
 } = useLang(mapId.value);
-
-const groupExpanded = ref(false);
 
 const languageList = computed(() =>
   (props.languages?.length ? props.languages : [...MAP_BUILTIN_LANGUAGES]).map(
@@ -104,7 +98,6 @@ async function applyLanguage(code: MapLanguageCode) {
   }
   if (seq !== applySeq) return;
   setLanguage(code);
-  groupExpanded.value = false;
 }
 
 function toggleLanguage() {
@@ -125,21 +118,36 @@ watch(
   { immediate: true },
 );
 
-const {
-  moduleContainerProps,
-  state: moduleState,
-  control,
-} = useMapControl(mapId, {
+const languageButtons = [...MAP_BUILTIN_LANGUAGES].map((code) => ({
+  id: code,
+  getState: () =>
+    textButtonState(mapLanguageCodeLabel(code), {
+      visible: languageList.value.includes(code),
+      active: language.value === code,
+      title: titleFor(code),
+    }),
+  onClick: () => void applyLanguage(code),
+}));
+
+const expandableChrome = computed(() => ({
+  kind: 'module-expandable' as const,
+  moduleId: 'mapLanguageControl',
+  orientation: 'row' as const,
+  order: order.value,
+  expandableButton: ({ active }: { active: boolean }) =>
+    textButtonState(mapLanguageCodeLabel(language.value), {
+      active,
+      title: `${trans.value('map.language-control.title')}: ${titleFor(language.value)}`,
+    }),
+  buttons: languageButtons,
+}));
+
+const { moduleContainerProps, control } = useMapControl(mapId, {
   id: 'mapLanguageControl',
   panelKind: 'button',
   from: props,
   order,
-  buttonSlot: 'custom',
-  getProps: () => ({
-    languages: languageList.value,
-    defaultLanguage: props.defaultLanguage,
-    fallbackLanguage: props.fallbackLanguage,
-  }),
+  host: { button: expandableChrome },
   actions: () => [
     {
       type: 'mapLanguageControl',
@@ -150,34 +158,7 @@ const {
       run: () => void applyLanguage(code),
     })),
   ],
-  toolbar: {
-    kind: 'module-expandable',
-    moduleId: 'mapLanguageControl',
-    expandableButton: ({ active }) => {
-      return textButtonState(mapLanguageCodeLabel(language.value), {
-        active,
-        title: `${trans.value('map.language-control.title')}: ${titleFor(language.value)}`,
-      });
-    },
-    orientation: 'row',
-    order: order.value,
-    buttons: [...MAP_BUILTIN_LANGUAGES].map((code) => ({
-      id: code,
-      getState: () =>
-        textButtonState(mapLanguageCodeLabel(code), {
-          visible: languageList.value.includes(code),
-          active: language.value === code,
-          title: titleFor(code),
-        }),
-      onClick: () => void applyLanguage(code),
-    })),
-  },
-});
-
-const launcherState = computed((): MapControlButtonUIState | undefined => {
-  const s = moduleState.value as
-    Record<string, MapControlButtonUIState> | undefined;
-  return s?.launcher;
+  toolbar: expandableChrome,
 });
 
 watch(language, () => control.sync());
@@ -204,31 +185,6 @@ onMounted(() => {
 
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapControlGroupButton
-        row
-        class="button-group-click-expand"
-        :class="{ 'is-expanded': groupExpanded }"
-      >
-        <MapCommonButton
-          v-if="launcherState"
-          :option="launcherState"
-          @click.stop="groupExpanded = !groupExpanded"
-        />
-        <MapCommonButton
-          v-for="code in languageList"
-          :key="code"
-          :option="
-            textButtonState(mapLanguageCodeLabel(code), {
-              visible: true,
-              active: language === code,
-              title: titleFor(code),
-            })
-          "
-          @click.stop="applyLanguage(code)"
-        />
-      </MapControlGroupButton>
-    </template>
     <slot />
   </ModuleContainer>
 </template>

@@ -10,10 +10,10 @@ import { type MapSimple } from '@hungpvq/map-core';
 import { EventClick, EventMouseMove } from '@hungpvq/map-core/event';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
+  renderPopup as _renderPopup,
   brightColor,
   generateInspectStyle,
   InspectController,
-  renderPopup as _renderPopup,
 } from '@hungpvq/map-draw';
 import {
   defaultMapProps,
@@ -26,6 +26,7 @@ import {
 import { mdiMap, mdiMapSearch } from '@mdi/js';
 import { ref } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import { useEnsureDrawBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import type { InspectControlProps } from './InspectControl.props';
 
@@ -115,6 +116,19 @@ function toggleInspect() {
   controller.toggle();
 }
 
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
+    return mdiButtonState(!showInspect.value ? path.map : path.inspect, {
+      visible: true,
+      title: trans.value('map.inspect-control.button'),
+      order: order.value,
+    });
+  },
+  onClick() {
+    toggleInspect();
+  },
+};
 const { moduleContainerProps, control } = useMapControl(mapId, {
   id: 'mapInspectControl',
   panelKind: 'button',
@@ -128,16 +142,8 @@ const { moduleContainerProps, control } = useMapControl(mapId, {
       },
     },
   ],
-  getButtonState() {
-    return mdiButtonState(!showInspect.value ? path.map : path.inspect, {
-      visible: true,
-      title: trans.value('map.inspect-control.button'),
-      order: order.value,
-    });
-  },
-  onClick() {
-    toggleInspect();
-  },
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 </script>
 <template>

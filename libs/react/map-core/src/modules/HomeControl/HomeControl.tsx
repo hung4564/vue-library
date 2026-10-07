@@ -47,6 +47,17 @@ export function HomeControl(props: HomeControlProps) {
     });
   }
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiHome, {
+        visible: true,
+        title: trans('map.home.title'),
+        order,
+      }),
+    onClick: () => onGoHome(),
+  };
+
   const { moduleContainerProps } = useMapControl(mapId, {
     id: 'mapHomeControl',
     panelKind: 'button',
@@ -60,13 +71,8 @@ export function HomeControl(props: HomeControlProps) {
         },
       },
     ],
-    getButtonState: () =>
-      mdiButtonState(mdiHome, {
-        visible: true,
-        title: trans('map.home.title'),
-        order,
-      }),
-    onClick: () => onGoHome(),
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   return <ModuleContainer {...moduleContainerProps} />;

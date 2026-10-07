@@ -18,6 +18,7 @@ import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
 import { computed, onMounted, onUnmounted, shallowRef, watch } from 'vue';
 
+import { defineProps, defineSlots, withDefaults } from 'vue';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow, type WithShowProps } from '../../../hooks/useShow';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
@@ -55,22 +56,9 @@ defineSlots<{
   default(): any;
 }>();
 const groupedViews = computed(() => groupEventsByMapType(events.value));
-const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
-  id: 'mapEventManagementControl',
-  panelKind: 'sidebar',
-  title: () => trans.value('map.event-control.title'),
-  from: props,
-  order,
-  show,
-  setShow: toggleShow,
-  initialPanelPosition: { location: 'left' },
-  actions: [
-    {
-      type: 'mapEventManagementControl',
-      run: () => toggleShow(),
-    },
-  ],
-  getButtonState() {
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
     return mdiButtonState(path.icon, {
       active: show.value,
       title: trans.value('map.event-control.title'),
@@ -80,6 +68,23 @@ const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
   onClick() {
     toggleShow();
   },
+};
+const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
+  id: 'mapEventManagementControl',
+  panelKind: 'sidebar',
+  title: () => trans.value('map.event-control.title'),
+  from: props,
+  order,
+  show,
+  setShow: toggleShow,
+  actions: [
+    {
+      type: 'mapEventManagementControl',
+      run: () => toggleShow(),
+    },
+  ],
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 watch(show, () => control.sync());
 </script>

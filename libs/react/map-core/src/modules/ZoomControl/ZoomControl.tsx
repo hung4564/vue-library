@@ -1,20 +1,14 @@
-import type { MapSimple } from '@hungpvq/map-core';
-import type { WithMapPropType } from '@hungpvq/map-core';
+import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import {
   attachRotateListener,
   resetBearing,
   zoomIn,
   zoomOut,
 } from '@hungpvq/map-core';
-import {
-  type MapControlButtonUIState,
-  mdiButtonState,
-} from '@hungpvq/map-core/toolbar';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import React, { useCallback, useState } from 'react';
 
-import { MapCommonButton } from '../../components/MapCommonButton';
-import { MapControlGroupButton } from '../../components/MapControlGroupButton';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -46,7 +40,7 @@ export function ZoomControl({
     detachRotateRef.current = null;
   }, []);
 
-  const { callMap, mapId, order } = useMap(mergedProps, onInit, onDestroy);
+  const { mapId, order, callMap } = useMap(mergedProps, onInit, onDestroy);
   const { trans } = useLang(mapId);
 
   const onZoomIn = useCallback(
@@ -73,100 +67,62 @@ export function ZoomControl({
     });
   }, [callMap]);
 
-  const { moduleContainerProps, state, control } = useMapControl(mapId, {
+  const navigationButtons = [
+    {
+      id: 'mapCompass',
+      getState: () => ({
+        visible: showCompass,
+        title: trans('map.action.navigation-control-reset-bearing'),
+        icon: {
+          type: 'compass' as const,
+          transform,
+        },
+      }),
+      onClick: () => onResetBearing(),
+    },
+    {
+      id: 'mapZoomIn',
+      getState: () =>
+        mdiButtonState(mdiPlus, {
+          visible: showZoom,
+          title: trans('map.action.navigation-control-zoom-in'),
+        }),
+      onClick: (e?: MouseEvent) => onZoomIn(e),
+    },
+    {
+      id: 'mapZoomOut',
+      getState: () =>
+        mdiButtonState(mdiMinus, {
+          visible: showZoom,
+          title: trans('map.action.navigation-control-zoom-out'),
+        }),
+      onClick: (e?: MouseEvent) => onZoomOut(e),
+    },
+  ];
+
+  const navigationModule = {
+    kind: 'module' as const,
+    moduleId: 'mapNavigationControl',
+    order,
+    buttons: navigationButtons,
+  };
+
+  const { moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapNavigationControl',
     panelKind: 'button',
     from: mergedProps,
     order,
-    buttonSlot: 'custom',
+    host: { button: navigationModule },
     defaultActionType: 'mapZoomIn',
-    getProps: () => ({
-      showCompass,
-      showZoom,
-    }),
     actions: [
       { type: 'mapCompass', run: () => onResetBearing() },
       { type: 'mapZoomIn', run: (e?: unknown) => onZoomIn(e) },
       { type: 'mapZoomOut', run: (e?: unknown) => onZoomOut(e) },
     ],
-    toolbar: {
-      kind: 'module',
-      moduleId: 'mapNavigationControl',
-      order,
-      buttons: [
-        {
-          id: 'mapCompass',
-          getState: () => ({
-            visible: showCompass,
-            title: trans('map.action.navigation-control-reset-bearing'),
-            icon: {
-              type: 'compass' as const,
-              transform,
-            },
-          }),
-          onClick: () => onResetBearing(),
-        },
-        {
-          id: 'mapZoomIn',
-          getState: () =>
-            mdiButtonState(mdiPlus, {
-              visible: showZoom,
-              title: trans('map.action.navigation-control-zoom-in'),
-            }),
-          onClick: (e?: MouseEvent) => onZoomIn(e),
-        },
-        {
-          id: 'mapZoomOut',
-          getState: () =>
-            mdiButtonState(mdiMinus, {
-              visible: showZoom,
-              title: trans('map.action.navigation-control-zoom-out'),
-            }),
-          onClick: (e?: MouseEvent) => onZoomOut(e),
-        },
-      ],
-    },
+    toolbar: navigationModule,
   });
   const controlRef = React.useRef(control);
   controlRef.current = control;
 
-  const moduleState = state as
-    Record<string, MapControlButtonUIState | undefined> | undefined;
-
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        <MapControlGroupButton>
-          {moduleState?.mapCompass ? (
-            <MapCommonButton
-              option={moduleState.mapCompass}
-              onClick={(e) => {
-                e.stopPropagation();
-                control.onAction('mapCompass', e.nativeEvent);
-              }}
-            />
-          ) : null}
-          {moduleState?.mapZoomIn ? (
-            <MapCommonButton
-              option={moduleState.mapZoomIn}
-              onClick={(e) => {
-                e.stopPropagation();
-                control.onAction('mapZoomIn', e.nativeEvent);
-              }}
-            />
-          ) : null}
-          {moduleState?.mapZoomOut ? (
-            <MapCommonButton
-              option={moduleState.mapZoomOut}
-              onClick={(e) => {
-                e.stopPropagation();
-                control.onAction('mapZoomOut', e.nativeEvent);
-              }}
-            />
-          ) : null}
-        </MapControlGroupButton>
-      }
-    />
-  );
+  return <ModuleContainer {...moduleContainerProps} />;
 }

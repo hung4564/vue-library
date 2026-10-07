@@ -40,6 +40,7 @@ import {
 import { mdiHandPointingUp } from '@mdi/js';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { useMapDataset } from '../../store/dataset-api';
 import IdentifyResultControl from './IdentifyResultControl.vue';
@@ -199,6 +200,22 @@ UniversalRegistry.registerMenuHandlerForMap(
 
 watch(views, () => syncResultPanel(), { deep: true });
 
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
+    return mdiButtonState(path.icon, {
+      visible: hasViews.value,
+      active: show.value,
+      loading: loading.value,
+      title: trans.value('map.identify.title'),
+      order: order.value,
+    });
+  },
+  onClick() {
+    session.toggleShowAndApply();
+    syncFromModel();
+  },
+};
 const { moduleContainerProps, control } = useMapControl(mapId, {
   id: IDENTIFY_CONTROL.id,
   panelKind: 'button',
@@ -211,9 +228,6 @@ const { moduleContainerProps, control } = useMapControl(mapId, {
     syncFromModel();
     updateResultPanel({ show: value });
   },
-  getProps: () => ({
-    immediately: props.immediately,
-  }),
   actions: [
     {
       type: IDENTIFY_CONTROL.id,
@@ -272,19 +286,8 @@ const { moduleContainerProps, control } = useMapControl(mapId, {
       },
     },
   ],
-  getButtonState() {
-    return mdiButtonState(path.icon, {
-      visible: hasViews.value,
-      active: show.value,
-      loading: loading.value,
-      title: trans.value('map.identify.title'),
-      order: order.value,
-    });
-  },
-  onClick() {
-    session.toggleShowAndApply();
-    syncFromModel();
-  },
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 controlSyncRef = () => control.sync();
 watch([show, loading], () => control.sync());

@@ -19,6 +19,7 @@ import { DraggableItemPopup, useDragStore } from '@hungpvq/vue-draggable';
 import { mdiConsole } from '@mdi/js';
 import { computed, nextTick, onUnmounted, reactive, ref, watch } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import type { MapTabItem } from '../../components/map-tabs';
 import MapControlButton from '../../components/MapControlButton.vue';
 import MapTabs from '../../components/MapTabs.vue';
@@ -186,6 +187,20 @@ const buttonInMobileItems = computed(() => [
   { value: 'menu', text: 'menu' },
 ]);
 
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
+    return mdiButtonState(mdiConsole, {
+      visible: true,
+      active: show.value,
+      title: trans.value('map.registry-control.title'),
+      order: order.value,
+    });
+  },
+  onClick() {
+    onToggleShow();
+  },
+};
 const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   id: CONTROL_ID,
   panelKind: 'popup',
@@ -201,17 +216,8 @@ const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
       run: () => onToggleShow(),
     },
   ],
-  getButtonState() {
-    return mdiButtonState(mdiConsole, {
-      visible: true,
-      active: show.value,
-      title: trans.value('map.registry-control.title'),
-      order: order.value,
-    });
-  },
-  onClick() {
-    onToggleShow();
-  },
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 
 watch(show, (visible) => {

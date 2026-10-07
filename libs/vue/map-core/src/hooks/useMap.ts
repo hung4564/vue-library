@@ -1,7 +1,8 @@
-import type { MapFCOnUseMap, MapSimple } from '@hungpvq/map-core';
 import type {
   ButtonInMobile,
   ControlLayout,
+  MapFCOnUseMap,
+  MapSimple,
   Position,
   ResolvedControlLayout,
   WithMapPropType,
@@ -18,6 +19,7 @@ import {
   type MaybeRefOrGetter,
   onMounted,
   onUnmounted,
+  PropType,
   ref,
   shallowRef,
   toValue,
@@ -134,49 +136,6 @@ export const useMap = (
   };
 };
 
-export const withMapProps = {
-  mapId: { type: String, default: '' },
-  dragId: { type: String, default: '' },
-  btnWidth: { type: Number, default: 40 },
-  position: {
-    type: String,
-    default: 'bottom-right',
-    validator(value: string) {
-      return validPositions.indexOf(value as Position) !== -1;
-    },
-  },
-  controlVisible: {
-    type: Boolean,
-    default: true,
-  },
-  controlOrder: {
-    type: [Number, String],
-    default: 0,
-  },
-  controlLayout: {
-    type: String,
-    default: 'standalone',
-    validator(value: string) {
-      return ['standalone', 'toolbar', 'button'].indexOf(value) !== -1;
-    },
-  },
-  buttonInMobile: {
-    type: String,
-    default: undefined,
-    validator(value: string | undefined) {
-      if (value == null || value === '') return true;
-      return ['button', 'toolbar', 'menu'].indexOf(value) !== -1;
-    },
-  },
-};
-
-const validPositions: Position[] = [
-  'top-left',
-  'top-right',
-  'bottom-left',
-  'bottom-right',
-];
-
 /** Scalar defaults only — object props (`popupProps`, `controlLayout`) must use
  * factories in `withDefaults`, so they stay out of this object’s type. */
 export const defaultMapProps = {
@@ -186,3 +145,57 @@ export const defaultMapProps = {
   position: 'bottom-right' as Position,
   controlVisible: true,
 } satisfies Partial<WithMapPropType>;
+export const withMapProps = (defaultProps: Partial<WithMapPropType>) => ({
+  mapId: {
+    type: String,
+    default: defaultProps.mapId ?? defaultMapProps?.mapId,
+  },
+
+  dragId: {
+    type: String,
+    default: defaultProps.dragId ?? defaultMapProps?.dragId,
+  },
+
+  btnWidth: {
+    type: Number,
+    default: defaultProps.btnWidth ?? defaultMapProps?.btnWidth,
+  },
+
+  position: {
+    type: String as PropType<Position>,
+    default: defaultProps.position ?? defaultMapProps?.position,
+    validator(value: Position) {
+      return ['top-left', 'top-right', 'bottom-left', 'bottom-right'].includes(
+        value,
+      );
+    },
+  },
+
+  controlVisible: {
+    type: Boolean,
+    default: defaultProps.controlVisible ?? defaultMapProps?.controlVisible,
+  },
+
+  controlOrder: {
+    type: [Number, String],
+    default: defaultProps.controlOrder,
+  },
+
+  controlLayout: {
+    type: String as PropType<'standalone' | 'toolbar' | 'button'>,
+    default: defaultProps.controlLayout,
+    validator(value: string) {
+      return ['standalone', 'toolbar', 'button'].includes(value);
+    },
+  },
+
+  buttonInMobile: {
+    type: String as PropType<'button' | 'toolbar' | 'menu' | undefined>,
+    default: defaultProps.buttonInMobile,
+    validator(value: string | undefined) {
+      if (value == null || value === '') return true;
+
+      return ['button', 'toolbar', 'menu'].includes(value);
+    },
+  },
+});

@@ -6,6 +6,7 @@ import { mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { ref } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import { useLang } from '../../../extra/lang/hook';
 import { useMapControl } from '../../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
@@ -42,6 +43,20 @@ function onPrint() {
     }
   });
 }
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
+    return mdiButtonState(path.print, {
+      visible: true,
+      title: trans.value('map.print.title'),
+      order: order.value,
+      loading: print.value.loading,
+    });
+  },
+  onClick() {
+    onPrint();
+  },
+};
 const { moduleContainerProps, control } = useMapControl(mapId, {
   id: 'mapPrintControl',
   panelKind: 'button',
@@ -55,17 +70,8 @@ const { moduleContainerProps, control } = useMapControl(mapId, {
       },
     },
   ],
-  getButtonState() {
-    return mdiButtonState(path.print, {
-      visible: true,
-      title: trans.value('map.print.title'),
-      order: order.value,
-      loading: print.value.loading,
-    });
-  },
-  onClick() {
-    onPrint();
-  },
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 </script>
 <template>

@@ -5,10 +5,7 @@ import {
   type PrintAdvancedUiState,
   type PrintOption,
 } from '@hungpvq/map-core/print';
-import {
-  type MapControlButtonUIState,
-  mdiButtonState,
-} from '@hungpvq/map-core/toolbar';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   mdiClose,
@@ -17,11 +14,10 @@ import {
   mdiPrinterEye,
 } from '@mdi/js';
 import { saveAs } from 'file-saver';
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { onBeforeUnmount, ref, watch } from 'vue';
 
-import MapCommonButton from '../../../components/MapCommonButton.vue';
+import { defineProps, withDefaults } from 'vue';
 import MapControlButton from '../../../components/MapControlButton.vue';
-import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
 import { useLang } from '../../../extra/lang/hook';
 import { useMapControl } from '../../../extra/registry/useMapControl';
 import { InputSelect, InputText } from '../../../field';
@@ -109,22 +105,64 @@ function onPaperChange(
   session.applyPaper(String(raw ?? '') as NonNullable<PrintOption['paper']>);
 }
 
-const {
-  moduleContainerProps,
-  panelBind,
-  state: toolbarState,
-  control,
-} = useMapControl(mapId, {
+const printButtons = [
+  {
+    id: 'mapPrintShow',
+    getState: () =>
+      mdiButtonState(path.print, {
+        visible: !print.value.show,
+        title: trans.value('map.print.title'),
+      }),
+    onClick: () => session.show(print.value.setting),
+  },
+  {
+    id: 'mapPrintSave',
+    getState: () =>
+      mdiButtonState(path.save, {
+        visible: print.value.show,
+        title: trans.value('map.print.actions.save'),
+        loading: print.value.loading,
+      }),
+    onClick: () => session.save(),
+  },
+  {
+    id: 'mapPrintClose',
+    getState: () =>
+      mdiButtonState(path.close, {
+        visible: print.value.show,
+        title: trans.value('map.print.actions.clear'),
+        loading: print.value.loading,
+      }),
+    onClick: () => session.close(),
+  },
+  {
+    id: 'mapPrintSetting',
+    getState: () =>
+      mdiButtonState(path.setting, {
+        visible: true,
+        active: print.value.setting_show,
+        title: trans.value('map.print.actions.setting'),
+        loading: print.value.loading,
+      }),
+    onClick: () => session.toggleSetting(),
+  },
+];
+
+const printModule = {
+  moduleId: 'mapPrintAdvancedControl',
+  order: order.value,
+  kind: 'module' as const,
+  orientation: 'row' as const,
+  buttons: printButtons,
+};
+
+const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
   id: 'mapPrintAdvancedControl',
   panelKind: 'button',
   from: props,
   order,
-  buttonSlot: 'custom',
+  host: { button: printModule },
   defaultActionType: 'mapPrintShow',
-  getProps: () => ({
-    disabledCrosshair: props.disabledCrosshair,
-    disabledPrintableArea: props.disabledPrintableArea,
-  }),
   actions: [
     {
       type: 'mapPrintShow',
@@ -143,59 +181,8 @@ const {
       run: () => session.toggleSetting(),
     },
   ],
-  toolbar: {
-    moduleId: 'mapPrintAdvancedControl',
-    order: order.value,
-    kind: 'module',
-    orientation: 'row',
-    buttons: [
-      {
-        id: 'mapPrintShow',
-        getState: () =>
-          mdiButtonState(path.print, {
-            visible: !print.value.show,
-            title: trans.value('map.print.title'),
-          }),
-        onClick: () => session.show(print.value.setting),
-      },
-      {
-        id: 'mapPrintSave',
-        getState: () =>
-          mdiButtonState(path.save, {
-            visible: print.value.show,
-            title: trans.value('map.print.actions.save'),
-            loading: print.value.loading,
-          }),
-        onClick: () => session.save(),
-      },
-      {
-        id: 'mapPrintClose',
-        getState: () =>
-          mdiButtonState(path.close, {
-            visible: print.value.show,
-            title: trans.value('map.print.actions.clear'),
-            loading: print.value.loading,
-          }),
-        onClick: () => session.close(),
-      },
-      {
-        id: 'mapPrintSetting',
-        getState: () =>
-          mdiButtonState(path.setting, {
-            visible: true,
-            active: print.value.setting_show,
-            title: trans.value('map.print.actions.setting'),
-            loading: print.value.loading,
-          }),
-        onClick: () => session.toggleSetting(),
-      },
-    ],
-  },
+  toolbar: printModule,
 });
-const state = computed(
-  () =>
-    toolbarState.value as Record<string, MapControlButtonUIState> | undefined,
-);
 syncToolbar.run = () => control.sync();
 
 watch(
@@ -205,31 +192,6 @@ watch(
 </script>
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapControlGroupButton row>
-        <MapCommonButton
-          v-if="state && state.mapPrintShow"
-          :option="state.mapPrintShow"
-          @click="control.onAction('mapPrintShow', $event)"
-        />
-        <MapCommonButton
-          v-if="state && state.mapPrintSave"
-          :option="state.mapPrintSave"
-          @click="control.onAction('mapPrintSave', $event)"
-        />
-        <MapCommonButton
-          v-if="state && state.mapPrintClose"
-          :option="state.mapPrintClose"
-          @click="control.onAction('mapPrintClose', $event)"
-        />
-        <MapCommonButton
-          v-if="state && state.mapPrintSetting"
-          :option="state.mapPrintSetting"
-          @click="control.onAction('mapPrintSetting', $event)"
-        />
-      </MapControlGroupButton>
-    </template>
-
     <template #draggable="bind">
       <DraggableItemPopup
         v-if="print.setting_show"

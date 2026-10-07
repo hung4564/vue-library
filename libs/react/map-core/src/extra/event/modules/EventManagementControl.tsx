@@ -46,6 +46,17 @@ export function EventManagementControl(props: EventManagementControlProps) {
 
   const groupedViews = useMemo(() => groupEventsByMapType(events), [events]);
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiCalendarSearch, {
+        active: show,
+        title: trans('map.event-control.title'),
+        order,
+      }),
+    onClick: () => toggleShow(),
+  };
+
   const { moduleContainerProps, panelPosition, control } = useMapControl(
     mapId,
     {
@@ -58,13 +69,8 @@ export function EventManagementControl(props: EventManagementControlProps) {
       setShow: toggleShow,
       initialPanelPosition: { location: 'left' },
       actions: [{ type: 'mapEventManagementControl', run: () => toggleShow() }],
-      getButtonState: () =>
-        mdiButtonState(mdiCalendarSearch, {
-          active: show,
-          title: trans('map.event-control.title'),
-          order,
-        }),
-      onClick: () => toggleShow(),
+      host: { button: singleButton },
+      toolbar: singleButton,
     },
   );
 

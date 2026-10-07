@@ -10,6 +10,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -55,20 +56,9 @@ onUnmounted(() => {
   stopFullscreen = undefined;
 });
 
-const { moduleContainerProps, control } = useMapControl(mapId, {
-  id: 'mapFullscreenControl',
-  panelKind: 'button',
-  from: props,
-  order,
-  actions: [
-    {
-      type: 'mapFullscreenControl',
-      run: () => {
-        void toggle();
-      },
-    },
-  ],
-  getButtonState() {
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
     const active = isFullscreen.value;
     return mdiButtonState(active ? path.exitFullscreen : path.fullscreen, {
       visible: true,
@@ -82,6 +72,22 @@ const { moduleContainerProps, control } = useMapControl(mapId, {
   async onClick() {
     await toggle();
   },
+};
+const { moduleContainerProps, control } = useMapControl(mapId, {
+  id: 'mapFullscreenControl',
+  panelKind: 'button',
+  from: props,
+  order,
+  actions: [
+    {
+      type: 'mapFullscreenControl',
+      run: () => {
+        void toggle();
+      },
+    },
+  ],
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 watch(isFullscreen, () => control?.sync());
 </script>

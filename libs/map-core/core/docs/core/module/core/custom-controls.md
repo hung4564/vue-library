@@ -1,482 +1,459 @@
-# Creating Custom Controls with ModuleContainer
+# Custom controls with `useMapControl`
 
-The `ModuleContainer` provides a standardized way to create custom map controls with consistent positioning, styling, and behavior.
+Canonical pattern for app / library authors: **`useMap` + `useMapControl` + `ModuleContainer`**.
 
-## Basic Custom Control
+Related: [UniversalRegistry controls](../../registry-controls.md), [Toolbar kinds](../../toolbar.md).
+
+## Checklist
+
+1. Stable **control id** (`myFooControl`) — used by registry + layout store.
+2. `from: props` (+ `order` from `useMap`) so position / `buttonInMobile` / popup defaults apply.
+3. Declare **`host.button`** and **`toolbar`** independently (same object is fine for simple chrome).
+4. Prefer **auto** host chrome (omit `#btn` / `btn`). Use `host.buttonSlot: 'custom'` only for non-standard UI.
+5. `setShow` must accept `true` / `false` (not toggle-only) when you have a panel.
+
+| Chrome kind | Host (corner) | Strip (`toolbar` / `menu`) |
+| --- | --- | --- |
+| `single` | One auto button | Same button on strip |
+| `module` | All buttons in a group | Same group on strip |
+| `module-expandable` | Launcher; options L/R by corner | Launcher + secondary row |
+| `buttonSlot: 'custom'` | Your `#btn` / `btn` | Still use `toolbar` if needed |
+
+Imports (Vue): `@hungpvq/vue-map-core` + `@hungpvq/map-core/toolbar`.  
+Imports (React): `@hungpvq/react-map-core` + `@hungpvq/map-core/toolbar`.
+
+---
+
+## 1. `single` — action button (auto)
+
+Like Home: one click, no panel.
 
 ### Vue
 
 ```vue
 <script setup lang="ts">
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { ModuleContainer, MapControlButton, defaultMapProps } from '@hungpvq/vue-map-core';
-import { useMap } from '@hungpvq/vue-map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import {
+  ModuleContainer,
+  defaultMapProps,
+  useMap,
+  useMapControl,
+} from '@hungpvq/vue-map-core';
+import { mdiStar } from '@mdi/js';
 
-const props = withDefaults(
-  defineProps<
-    WithMapPropType & {
-      title: string;
-    }
-  >(),
-  {
-    ...defaultMapProps,
-    title: 'Custom Control',
-  },
-);
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
+});
+const { mapId, order, callMap } = useMap(props);
 
-const { moduleContainerProps } = useMap(props);
-
-function handleClick() {
-  console.info('Custom control clicked!');
+function onPing() {
+  callMap((map) => {
+    map.flyTo({ center: map.getCenter(), zoom: map.getZoom() + 1 });
+  });
 }
-</script>
 
-<template>
-  <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapControlButton @click="handleClick">
-        <span class="text-lg">🎯</span>
-      </MapControlButton>
-    </template>
-
-    <div class="p-4 bg-white rounded shadow">
-      <h3 class="font-bold mb-2">{{ title }}</h3>
-      <p class="text-sm text-gray-600">Custom control content</p>
-    </div>
-  </ModuleContainer>
-</template>
-```
-
-### React
-
-```tsx
-import { ModuleContainer, MapControlButton, defaultMapProps, useMap } from '@hungpvq/react-map-core';
-import type { WithMapPropType } from '@hungpvq/map-core';
-
-type Props = WithMapPropType & {
-  title?: string;
+const chrome = {
+  kind: 'single' as const,
+  getState: () =>
+    mdiButtonState(mdiStar, { title: 'Ping', order: order.value }),
+  onClick: () => onPing(),
 };
 
-function CustomControl(props: Props) {
-  const merged = { ...defaultMapProps, title: 'Custom Control', ...props };
-  const { moduleContainerProps } = useMap(merged);
-
-  function handleClick() {
-    console.info('Custom control clicked!');
-  }
-
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        <MapControlButton onClick={handleClick}>
-          <span className="text-lg">🎯</span>
-        </MapControlButton>
-      }
-    >
-      <div className="p-4 bg-white rounded shadow">
-        <h3 className="font-bold mb-2">{merged.title}</h3>
-        <p className="text-sm text-gray-600">Custom control content</p>
-      </div>
-    </ModuleContainer>
-  );
-}
-```
-
-## Custom Control with State
-
-### Vue
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue';
-import type { WithMapPropType } from '@hungpvq/map-core';
-import { ModuleContainer, MapControlButton, defaultMapProps } from '@hungpvq/vue-map-core';
-import { useMap } from '@hungpvq/vue-map-core';
-
-const props = withDefaults(defineProps<WithMapPropType>(), {
-  ...defaultMapProps,
+const { moduleContainerProps } = useMapControl(mapId, {
+  id: 'myPingControl',
+  panelKind: 'button',
+  from: props,
+  order,
+  host: { button: chrome },
+  toolbar: chrome,
+  actions: [{ type: 'myPingControl', run: () => onPing() }],
 });
-
-const { moduleContainerProps } = useMap(props);
-const isActive = ref(false);
-
-function toggleControl() {
-  isActive.value = !isActive.value;
-}
 </script>
 
 <template>
-  <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapControlButton
-        @click="toggleControl"
-        :class="{ 'bg-blue-500 text-white': isActive }"
-      >
-        <span class="text-lg">⚙️</span>
-      </MapControlButton>
-    </template>
-
-    <div
-      v-if="isActive"
-      class="p-4 bg-white rounded shadow"
-    >
-      <h3 class="font-bold mb-2">Settings</h3>
-      <div class="space-y-2">
-        <label class="flex items-center">
-          <input
-            type="checkbox"
-            class="mr-2"
-          />
-          Show labels
-        </label>
-        <label class="flex items-center">
-          <input
-            type="checkbox"
-            class="mr-2"
-          />
-          Show grid
-        </label>
-      </div>
-    </div>
-  </ModuleContainer>
+  <ModuleContainer v-bind="moduleContainerProps" />
 </template>
 ```
 
 ### React
 
 ```tsx
-import { useState } from 'react';
-import { ModuleContainer, MapControlButton, defaultMapProps, useMap } from '@hungpvq/react-map-core';
 import type { WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import {
+  ModuleContainer,
+  defaultMapProps,
+  useMap,
+  useMapControl,
+} from '@hungpvq/react-map-core';
+import { mdiStar } from '@mdi/js';
 
-function SettingsControl(props: WithMapPropType) {
+export function PingControl(props: WithMapPropType) {
   const merged = { ...defaultMapProps, ...props };
-  const { moduleContainerProps } = useMap(merged);
-  const [isActive, setIsActive] = useState(false);
+  const { mapId, order, callMap } = useMap(merged);
 
-  function toggleControl() {
-    setIsActive((prev) => !prev);
+  function onPing() {
+    callMap((map) => {
+      map.flyTo({ center: map.getCenter(), zoom: map.getZoom() + 1 });
+    });
   }
 
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        <MapControlButton
-          onClick={toggleControl}
-          className={isActive ? 'bg-blue-500 text-white' : undefined}
-        >
-          <span className="text-lg">⚙️</span>
-        </MapControlButton>
-      }
-    >
-      {isActive && (
-        <div className="p-4 bg-white rounded shadow">
-          <h3 className="font-bold mb-2">Settings</h3>
-          <div className="space-y-2">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                className="mr-2"
-              />
-              Show labels
-            </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                className="mr-2"
-              />
-              Show grid
-            </label>
-          </div>
-        </div>
-      )}
-    </ModuleContainer>
-  );
+  const chrome = {
+    kind: 'single' as const,
+    getState: () => mdiButtonState(mdiStar, { title: 'Ping', order }),
+    onClick: () => onPing(),
+  };
+
+  const { moduleContainerProps } = useMapControl(mapId, {
+    id: 'myPingControl',
+    panelKind: 'button',
+    from: merged,
+    order,
+    host: { button: chrome },
+    toolbar: chrome,
+    actions: [{ type: 'myPingControl', run: () => onPing() }],
+  });
+
+  return <ModuleContainer {...moduleContainerProps} />;
 }
 ```
 
-## Custom Control with Map Integration
+---
+
+## 2. `single` + popup panel
+
+Like Info: button toggles a draggable popup. Use `useShow` + `panelBind` + `#draggable`.
 
 ### Vue
 
 ```vue
 <script setup lang="ts">
-import { ref } from 'vue';
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { ModuleContainer, MapControlButton, defaultMapProps } from '@hungpvq/vue-map-core';
-import { useMap } from '@hungpvq/vue-map-core';
-
-const props = withDefaults(defineProps<WithMapPropType>(), {
-  ...defaultMapProps,
-});
-
-const { moduleContainerProps, callMap } = useMap(props);
-const isVisible = ref(false);
-
-function toggleLayer() {
-  const map = callMap((map) => {
-    if (!map) return;
-
-    const layerId = 'custom-layer';
-    if (map.getLayoutProperty(layerId, 'visibility') === 'none') {
-      map.setLayoutProperty(layerId, 'visibility', 'visible');
-    } else {
-      map.setLayoutProperty(layerId, 'visibility', 'none');
-    }
-  });
-}
-
-function addCustomMarker() {
-  callMap((map) => {
-    if (!map) return;
-
-    map.addSource('custom-marker', {
-      type: 'geojson',
-      data: {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: map.getCenter().toArray(),
-        },
-        properties: { name: 'Custom Marker' },
-      },
-    });
-
-    map.addLayer({
-      id: 'custom-marker-layer',
-      type: 'circle',
-      source: 'custom-marker',
-      paint: {
-        'circle-radius': 8,
-        'circle-color': '#ff0000',
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#ffffff',
-      },
-    });
-  });
-}
-</script>
-
-<template>
-  <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapControlButton @click="isVisible = !isVisible">
-        <span class="text-lg">📍</span>
-      </MapControlButton>
-    </template>
-
-    <div
-      v-if="isVisible"
-      class="p-4 bg-white rounded shadow min-w-48"
-    >
-      <h3 class="font-bold mb-3">Layer Control</h3>
-      <div class="space-y-3">
-        <button
-          @click="toggleLayer"
-          class="w-full px-3 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Toggle Custom Layer
-        </button>
-
-        <button
-          @click="addCustomMarker"
-          class="w-full px-3 py-2 text-sm bg-green-500 text-white rounded hover:bg-green-600"
-        >
-          Add Marker
-        </button>
-      </div>
-    </div>
-  </ModuleContainer>
-</template>
-```
-
-### React
-
-```tsx
-import { useState } from 'react';
-import { ModuleContainer, MapControlButton, defaultMapProps, useMap } from '@hungpvq/react-map-core';
-import type { WithMapPropType } from '@hungpvq/map-core';
-
-function LayerControl(props: WithMapPropType) {
-  const merged = { ...defaultMapProps, ...props };
-  const { moduleContainerProps, callMap } = useMap(merged);
-  const [isVisible, setIsVisible] = useState(false);
-
-  function toggleLayer() {
-    callMap((map) => {
-      if (!map) return;
-
-      const layerId = 'custom-layer';
-      if (map.getLayoutProperty(layerId, 'visibility') === 'none') {
-        map.setLayoutProperty(layerId, 'visibility', 'visible');
-      } else {
-        map.setLayoutProperty(layerId, 'visibility', 'none');
-      }
-    });
-  }
-
-  function addCustomMarker() {
-    callMap((map) => {
-      if (!map) return;
-
-      map.addSource('custom-marker', {
-        type: 'geojson',
-        data: {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: map.getCenter().toArray(),
-          },
-          properties: { name: 'Custom Marker' },
-        },
-      });
-
-      map.addLayer({
-        id: 'custom-marker-layer',
-        type: 'circle',
-        source: 'custom-marker',
-        paint: {
-          'circle-radius': 8,
-          'circle-color': '#ff0000',
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#ffffff',
-        },
-      });
-    });
-  }
-
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        <MapControlButton onClick={() => setIsVisible((v) => !v)}>
-          <span className="text-lg">📍</span>
-        </MapControlButton>
-      }
-    >
-      {isVisible && (
-        <div className="p-4 bg-white rounded shadow min-w-48">
-          <h3 className="font-bold mb-3">Layer Control</h3>
-          <div className="space-y-3">
-            <button
-              onClick={toggleLayer}
-              className="w-full px-3 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Toggle Custom Layer
-            </button>
-            <button
-              onClick={addCustomMarker}
-              className="w-full px-3 py-2 text-sm bg-green-500 text-white rounded hover:bg-green-600"
-            >
-              Add Marker
-            </button>
-          </div>
-        </div>
-      )}
-    </ModuleContainer>
-  );
-}
-```
-
-## Best Practices
-
-1. **Always use `WithMapPropType` and `defaultMapProps`** to inherit standard positioning and behavior
-2. **Use `useMap()` hook** to get map instance and container props
-3. **Provide meaningful titles** for accessibility
-4. **Handle map loading states** - check if map exists before calling methods
-5. **Use consistent styling** with the existing control system
-6. **Implement proper cleanup** for event listeners and map modifications
-
-## Example: Draggable Popup with ModuleContainer
-
-This example demonstrates how to use a draggable popup inside a custom map control using `ModuleContainer`. The control button toggles the popup, and the popup itself is fully draggable and customizable.
-
-### Vue
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue';
-import type { WithMapPropType } from '@hungpvq/map-core';
-import { ModuleContainer, MapControlButton, defaultMapProps } from '@hungpvq/vue-map-core';
-import { useMap } from '@hungpvq/vue-map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
+import {
+  ModuleContainer,
+  defaultMapProps,
+  useMap,
+  useMapControl,
+  useShow,
+} from '@hungpvq/vue-map-core';
+import { mdiCog } from '@mdi/js';
+import { watch } from 'vue';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,
 });
-const { moduleContainerProps } = useMap(props);
-const showPopup = ref(false);
+const { mapId, order } = useMap(props);
+const [show, setShow] = useShow(props.show);
 
-function onToggleShow() {
-  showPopup.value = !showPopup.value;
-}
+const chrome = {
+  kind: 'single' as const,
+  getState: () =>
+    mdiButtonState(mdiCog, {
+      title: 'Notes',
+      active: show.value,
+      order: order.value,
+    }),
+  onClick: () => setShow(!show.value),
+};
+
+const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
+  id: 'myNotesControl',
+  panelKind: 'popup',
+  title: () => 'Notes',
+  from: props,
+  order,
+  show,
+  setShow,
+  defaultPanelSize: { width: 320, height: 240 },
+  host: { button: chrome },
+  toolbar: chrome,
+  actions: [{ type: 'myNotesControl', run: () => setShow(true) }],
+});
+
+watch(show, () => control.sync());
 </script>
 
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
-    <template #btn>
-      <MapControlButton @click="onToggleShow">
-        <span class="text-lg">⚙️</span>
-      </MapControlButton>
-    </template>
-    <template #draggable="draggableProps">
+    <template #draggable="bind">
       <DraggableItemPopup
-        v-if="showPopup"
-        v-bind="draggableProps"
-        v-model:show="showPopup"
-        :title="'Draggable Popup'"
-        :width="400"
-        :height="300"
+        v-if="show"
+        v-bind="{ ...bind, ...panelBind }"
+        v-model:show="show"
+        title="Notes"
       >
-        <div style="padding: 16px;">This is a draggable popup inside a custom map control.</div>
+        <div class="p-3">Your panel content</div>
       </DraggableItemPopup>
     </template>
   </ModuleContainer>
 </template>
 ```
 
-### React
+React: same options; use `draggable={(bind) => show ? <DraggableItemPopup … /> : null}` and `useEffect(() => control.sync(), [show, control])`.
 
-```tsx
-import { useState } from 'react';
-import { ModuleContainer, MapControlButton, defaultMapProps, useMap } from '@hungpvq/react-map-core';
+---
+
+## 3. `module` — several corner buttons
+
+Like Zoom: a fixed group. Auto-render shows every visible button.
+
+### Vue
+
+```vue
+<script setup lang="ts">
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { DraggableItemPopup } from '@hungpvq/react-draggable';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import {
+  ModuleContainer,
+  defaultMapProps,
+  useMap,
+  useMapControl,
+} from '@hungpvq/vue-map-core';
+import { mdiMinus, mdiPlus } from '@mdi/js';
 
-function DraggablePopupControl(props: WithMapPropType) {
-  const merged = { ...defaultMapProps, ...props };
-  const { moduleContainerProps } = useMap(merged);
-  const [showPopup, setShowPopup] = useState(false);
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
+});
+const { mapId, order, callMap } = useMap(props);
 
-  function onToggleShow() {
-    setShowPopup((v) => !v);
-  }
+const chrome = {
+  kind: 'module' as const,
+  moduleId: 'myZoomLite',
+  order: order.value,
+  buttons: [
+    {
+      id: 'in',
+      getState: () => mdiButtonState(mdiPlus, { title: 'In' }),
+      onClick: () => callMap((m) => m.zoomIn()),
+    },
+    {
+      id: 'out',
+      getState: () => mdiButtonState(mdiMinus, { title: 'Out' }),
+      onClick: () => callMap((m) => m.zoomOut()),
+    },
+  ],
+};
 
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      btn={
-        <MapControlButton onClick={onToggleShow}>
-          <span className="text-lg">⚙️</span>
-        </MapControlButton>
-      }
-      draggable={(draggableProps) =>
-        showPopup ? (
-          <DraggableItemPopup
-            show={showPopup}
-            onUpdateShow={setShowPopup}
-            title="Draggable Popup"
-            width={400}
-            height={300}
-            {...draggableProps}
-          >
-            <div style={{ padding: 16 }}>This is a draggable popup inside a custom map control.</div>
-          </DraggableItemPopup>
-        ) : null
-      }
-    />
-  );
-}
+const { moduleContainerProps } = useMapControl(mapId, {
+  id: 'myZoomLiteControl',
+  panelKind: 'button',
+  from: props,
+  order,
+  host: { button: chrome },
+  toolbar: chrome,
+  defaultActionType: 'in',
+  actions: [
+    { type: 'in', run: () => callMap((m) => m.zoomIn()) },
+    { type: 'out', run: () => callMap((m) => m.zoomOut()) },
+  ],
+});
+</script>
+
+<template>
+  <ModuleContainer v-bind="moduleContainerProps" />
+</template>
 ```
+
+---
+
+## 4. `module-expandable` — launcher + options
+
+Like Theme / Language: one launcher; options open beside it on the corner (`*-left` → right, `*-right` → left) and on the strip secondary row.
+
+Use the **same** options object for `host.button` and `toolbar` (auto host — no `#btn`).
+
+### Vue
+
+```vue
+<script setup lang="ts">
+import type { WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import {
+  ModuleContainer,
+  defaultMapProps,
+  useMap,
+  useMapControl,
+} from '@hungpvq/vue-map-core';
+import { mdiPalette, mdiWeatherNight, mdiWeatherSunny } from '@mdi/js';
+import { computed, ref, watch } from 'vue';
+
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
+});
+const { mapId, order } = useMap(props);
+const mode = ref<'light' | 'dark'>('light');
+
+const modeButtons = [
+  {
+    id: 'light',
+    getState: () =>
+      mdiButtonState(mdiWeatherSunny, {
+        title: 'Light',
+        active: mode.value === 'light',
+      }),
+    onClick: () => {
+      mode.value = 'light';
+    },
+  },
+  {
+    id: 'dark',
+    getState: () =>
+      mdiButtonState(mdiWeatherNight, {
+        title: 'Dark',
+        active: mode.value === 'dark',
+      }),
+    onClick: () => {
+      mode.value = 'dark';
+    },
+  },
+];
+
+const chrome = computed(() => ({
+  kind: 'module-expandable' as const,
+  moduleId: 'myThemeLite',
+  orientation: 'row' as const,
+  order: order.value,
+  expandableButton: ({ active }: { active: boolean }) =>
+    mdiButtonState(mdiPalette, { title: 'Theme', active }),
+  buttons: modeButtons,
+}));
+
+const { moduleContainerProps, control } = useMapControl(mapId, {
+  id: 'myThemeLiteControl',
+  panelKind: 'button',
+  from: props,
+  order,
+  host: { button: chrome },
+  toolbar: chrome,
+  actions: () => [
+    {
+      type: 'myThemeLiteControl',
+      run: () => {
+        mode.value = mode.value === 'light' ? 'dark' : 'light';
+      },
+    },
+    {
+      type: 'myThemeLiteControl:light',
+      run: () => {
+        mode.value = 'light';
+      },
+    },
+    {
+      type: 'myThemeLiteControl:dark',
+      run: () => {
+        mode.value = 'dark';
+      },
+    },
+  ],
+});
+
+watch(mode, () => control.sync());
+</script>
+
+<template>
+  <ModuleContainer v-bind="moduleContainerProps" />
+</template>
+```
+
+Mount a `ToolbarControl` on the map when any control uses `controlLayout: 'toolbar'` or mobile `buttonInMobile: 'toolbar' | 'menu'`.
+
+---
+
+## 5. Dual chrome (host ≠ strip)
+
+Host can show a full `module` while the strip uses `module-expandable` (or the reverse). **No merge / fallback** — declare both.
+
+```ts
+const buttons = [/* … */];
+
+host: {
+  button: {
+    kind: 'module',
+    moduleId: 'myTools',
+    orientation: 'row',
+    buttons,
+  },
+},
+toolbar: {
+  kind: 'module-expandable',
+  moduleId: 'myTools',
+  expandableButton: ({ active }) =>
+    mdiButtonState(mdiTools, { title: 'Tools', active }),
+  orientation: 'row',
+  buttons,
+},
+```
+
+---
+
+## 6. `buttonSlot: 'custom'` — non-standard `#btn`
+
+Only when auto chrome is not enough (thumbnail card, custom Draw toolbar, …). You still pass `host.button` / `toolbar` if the strip or strategy state is needed; for a fully custom corner with no strip chrome, `host: { buttonSlot: 'custom' }` alone is enough.
+
+### Vue
+
+```vue
+<script setup lang="ts">
+import type { WithMapPropType } from '@hungpvq/map-core';
+import {
+  ModuleContainer,
+  MapControlButton,
+  defaultMapProps,
+  useMap,
+  useMapControl,
+} from '@hungpvq/vue-map-core';
+
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
+});
+const { mapId, order } = useMap(props);
+
+const { moduleContainerProps } = useMapControl(mapId, {
+  id: 'myBadgeControl',
+  panelKind: 'button',
+  from: props,
+  order,
+  host: { buttonSlot: 'custom' },
+});
+
+function onClick() {
+  /* … */
+}
+</script>
+
+<template>
+  <ModuleContainer v-bind="moduleContainerProps">
+    <template #btn>
+      <MapControlButton @click="onClick">
+        <span class="text-xs font-bold">OK</span>
+      </MapControlButton>
+    </template>
+  </ModuleContainer>
+</template>
+```
+
+---
+
+## App-side registry
+
+```ts
+import { UniversalRegistry } from '@hungpvq/map-core';
+
+UniversalRegistry.openControl(mapId, 'myNotesControl');
+UniversalRegistry.closeControl(mapId, 'myNotesControl');
+UniversalRegistry.setControlLayout(mapId, 'myPingControl', {
+  controlLayout: 'toolbar',
+});
+UniversalRegistry.runControlAction(mapId, 'myPingControl');
+UniversalRegistry.runControlAction(mapId, 'myThemeLiteControl', 'dark');
+```
+
+## Tips
+
+- After local UI state changes that affect the button, call `control.sync()`.
+- Prefer `mdiButtonState` / `textButtonState` from `@hungpvq/map-core/toolbar`.
+- Do not set both `:width` on the popup and `defaultPanelSize` — use `defaultPanelSize` (or `panelBind`) only.
+- Dual popups: put an explicit `id` **after** `{...panelBind}`.

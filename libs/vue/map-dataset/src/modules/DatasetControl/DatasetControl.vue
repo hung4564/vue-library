@@ -30,6 +30,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import { shallowRef, watch } from 'vue';
 
+import { defineProps, defineSlots, withDefaults } from 'vue';
 import { useMapDataset } from '../../store/dataset-api';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
@@ -74,22 +75,9 @@ defineSlots<{
   item(props: { item: IDataset }): any;
   default(): any;
 }>();
-const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
-  id: 'mapDatasetControl',
-  panelKind: 'sidebar',
-  title: () => trans.value('map.dataset-control.title'),
-  from: props,
-  order,
-  show,
-  setShow,
-  initialPanelPosition: { location: 'left' },
-  actions: [
-    {
-      type: 'mapDatasetControl',
-      run: () => setShow(),
-    },
-  ],
-  getButtonState() {
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
     return mdiButtonState(path.icon, {
       active: show.value,
       title: trans.value('map.dataset-control.title'),
@@ -99,6 +87,23 @@ const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
   onClick() {
     setShow();
   },
+};
+const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
+  id: 'mapDatasetControl',
+  panelKind: 'sidebar',
+  title: () => trans.value('map.dataset-control.title'),
+  from: props,
+  order,
+  show,
+  setShow,
+  actions: [
+    {
+      type: 'mapDatasetControl',
+      run: () => setShow(),
+    },
+  ],
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 watch(show, () => control.sync());
 </script>

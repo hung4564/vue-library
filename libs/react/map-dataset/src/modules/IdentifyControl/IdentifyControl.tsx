@@ -260,6 +260,19 @@ export function IdentifyControl(
     syncFromModel();
   }
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiHandPointingUp, {
+        visible: viewsRef.current.length > 0,
+        active: showRef.current,
+        loading: loadingRef.current,
+        title: trans('map.identify.title'),
+        order,
+      }),
+    onClick: () => handleToggle(),
+  };
+
   const { moduleContainerProps, control } = useMapControl(mapId, {
     id: IDENTIFY_CONTROL.id,
     panelKind: 'button',
@@ -272,9 +285,6 @@ export function IdentifyControl(
       syncFromModel();
       updateResultPanel(mapId, { show: value });
     },
-    getProps: () => ({
-      immediately: props.immediately,
-    }),
     actions: [
       { type: IDENTIFY_CONTROL.id, run: () => handleToggle() },
       {
@@ -327,15 +337,8 @@ export function IdentifyControl(
         },
       },
     ],
-    getButtonState: () =>
-      mdiButtonState(mdiHandPointingUp, {
-        visible: viewsRef.current.length > 0,
-        active: showRef.current,
-        loading: loadingRef.current,
-        title: trans('map.identify.title'),
-        order,
-      }),
-    onClick: () => handleToggle(),
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
   controlSyncRef.current = () => control.sync();
 

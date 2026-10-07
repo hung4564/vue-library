@@ -30,7 +30,7 @@
     </template>
   </ModuleContainer>
 </template>
-<script>
+<script lang="ts">
 import { getDemoAsideNavItems } from '@hungpvq/demo-map-datasets';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { VList, VListItem } from '@hungpvq/ui-core';
@@ -56,7 +56,7 @@ export default {
     RouterLink,
   },
   props: {
-    ...withMapProps,
+    ...withMapProps({ position: 'top-left' }),
     ...makeShowProps({ show: false }),
   },
   setup(props) {
@@ -77,25 +77,9 @@ export default {
         },
       },
     });
-
-    const { moduleContainerProps, control } = useMapControl(mapId, {
-      id: 'asideControl',
-      panelKind: 'sidebar',
-      title: () => trans.value('map.aside-control.title'),
-      position: () => props.position,
-      order,
-      controlLayout: () => props.controlLayout,
-      controlVisible: () => props.controlVisible,
-      buttonInMobile: () => props.buttonInMobile,
-      show,
-      setShow: (value) => toggleShow(value),
-      actions: [
-        {
-          type: 'asideControl',
-          run: () => toggleShow(),
-        },
-      ],
-      getButtonState() {
+    const singleButton = {
+      kind: 'single',
+      getState() {
         return mdiButtonState(path.icon, {
           visible: true,
           active: show.value,
@@ -106,6 +90,23 @@ export default {
       onClick() {
         toggleShow();
       },
+    };
+    const { moduleContainerProps, control } = useMapControl(mapId, {
+      id: 'asideControl',
+      panelKind: 'sidebar',
+      title: () => trans.value('map.aside-control.title'),
+      from: props,
+      order,
+      show,
+      setShow: (value) => toggleShow(value),
+      actions: [
+        {
+          type: 'asideControl',
+          run: () => toggleShow(),
+        },
+      ],
+      host: { button: singleButton },
+      toolbar: singleButton,
     });
 
     return {

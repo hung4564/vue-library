@@ -118,10 +118,6 @@ export function MeasurementSettingPopup({
     show,
     setShow: (v) => onUpdateShow?.(v),
     defaultPanelSize: { width: 350, height: 300 },
-    getProps: () => ({
-      maxLength,
-      measurementType,
-    }),
     actions: [
       {
         type: 'mapMeasurementSetting',

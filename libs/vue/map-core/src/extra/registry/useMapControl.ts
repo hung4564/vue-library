@@ -2,7 +2,6 @@ import {
   boundsFromPanelPosition,
   buildMapControlHandle,
   buildPopupPropsForPosition,
-  type ButtonInMobile,
   type ControlLayout,
   ensureControlLayout,
   getControlLayout,
@@ -21,11 +20,11 @@ import {
   notifyControlAutoButton,
   panelEdgesForCorner,
   panelPositionFromBounds,
+  setControlLayout as patchControlLayout,
   type Position,
   registerControlAutoButton,
   removeControlLayout,
   resolveEffectivePanelPosition,
-  setControlLayout as patchControlLayout,
   subscribeControlLayout,
   unregisterControlAutoButton,
   type WithMapPropType,
@@ -33,12 +32,10 @@ import {
 import {
   type AnyToolbarOptions,
   type ControlStrategy,
-  createLiveToolbarStrategy,
-  ensureMapToolbarApi,
-  type MapControlButtonState,
+  createHostStrategy,
   type MapControlButtonUIState,
-  type Toolbar,
-  type ToolbarOptionsSingle,
+  resolveHostButtonOptions,
+  resolveToolbarSpecOptions,
   withLayoutToolbarOptions,
 } from '@hungpvq/map-core/toolbar';
 import { useDragLayout, useDragStore } from '@hungpvq/vue-draggable';
@@ -60,7 +57,6 @@ import {
 
 import { useResolvedControlLayout } from '../../hooks/useMap';
 import { useLang } from '../lang/hook';
-import { useMapToolbarModule } from '../toolbar/store';
 import { UniversalRegistry } from './plugin';
 
 export type UseMapControlOptions = {
@@ -89,21 +85,9 @@ export type UseMapControlOptions = {
     | undefined
   >;
   /** Mount default — runtime layout store overrides. */
-  position?: MaybeRefOrGetter<Position | undefined>;
   order?: MaybeRefOrGetter<number | undefined>;
-  controlLayout?: MaybeRefOrGetter<ControlLayout | undefined>;
-  controlVisible?: MaybeRefOrGetter<boolean | undefined>;
-  /** Per-control override; `undefined` inherits Map.buttonInMobile. */
-  buttonInMobile?: MaybeRefOrGetter<ButtonInMobile | undefined>;
-  getProps?: () => Record<string, unknown>;
   show?: Ref<boolean>;
   setShow?: (value: boolean) => void;
-  /**
-   * Explicit panel seed.
-   * - popup/float: edges (+ optional width/height) merged mid-layer before `from.popupProps`
-   * - sidebar: `{ location }` only — no corner table
-   */
-  initialPanelPosition?: MapControlPanelPosition;
   /**
    * Default popup/float size seeded into panel position and exposed via `panelBind`.
    * Do not also set `:width` / `:height` on the popup — use this only.
@@ -111,49 +95,21 @@ export type UseMapControlOptions = {
   defaultPanelSize?: { width?: number; height?: number };
   actions?: MaybeRefOrGetter<MapControlAction[]>;
   defaultActionType?: MaybeRefOrGetter<string | undefined>;
-  /** Simple single-button controls (`mdiButtonState` / UI snapshot). */
-  getButtonState?: () => MapControlButtonUIState;
-  onClick?: (event?: unknown) => void;
-  /** Multi-button / module toolbar (overrides getButtonState). */
+  /** Corner chrome. Independent of `toolbar`. */
+  host?: {
+    button?: MaybeRefOrGetter<
+      AnyToolbarOptions | MapControlButtonUIState | undefined
+    >;
+    onClick?: (event?: unknown) => void;
+    /**
+     * `auto` (default for single/module/module-expandable) — ModuleContainer.
+     * `custom` — keep `#btn`.
+     */
+    buttonSlot?: 'auto' | 'custom';
+  };
+  /** Strip chrome (`toolbar` | `menu`). Independent of `host.button`. */
   toolbar?: MaybeRefOrGetter<AnyToolbarOptions | undefined>;
-  /**
-   * `auto` — ModuleContainer renders MapCommonButton when no `#btn`.
-   * `custom` — author keeps `#btn` / `btn` override.
-   * Default: `auto` when getButtonState or single toolbar is set.
-   */
-  buttonSlot?: 'auto' | 'custom';
 };
-
-function withPosition(
-  toolbar: Toolbar,
-  getPosition: () => Position | undefined,
-): Toolbar {
-  return {
-    register(state: MapControlButtonState) {
-      const position = getPosition();
-      toolbar.register(position ? { ...state, position } : state);
-    },
-    update(id, patch) {
-      const position = getPosition();
-      toolbar.update(id, position ? { ...patch, position } : patch);
-    },
-    unregister(id) {
-      toolbar.unregister(id);
-    },
-  };
-}
-
-function stubToolbarOptions(id: string): ToolbarOptionsSingle {
-  return {
-    kind: 'single',
-    id,
-    getState: () =>
-      ({
-        id,
-        visible: false,
-      }) as MapControlButtonUIState,
-  };
-}
 
 function readDragBoundsPanelPosition(
   mapId: string,
@@ -289,11 +245,29 @@ export function useMapControl(
     MaybeRefOrGetter<MapPopupPositionDefaults> | MapPopupPositionDefaults
   >('$map.popupPositionDefaults', {});
 
+  const layout = computed((): MapControlLayoutState => {
+    layoutTick.value;
+    const mid = toValue(mapId);
+    if (!mid) {
+      return {
+        visible: true,
+        position: 'bottom-right',
+        order: 0,
+        controlLayout: 'standalone',
+        buttonInMobile: toValue(options.from)?.buttonInMobile,
+      };
+    }
+    return currentLayout(mid);
+  });
+  const resolvedLayout = useResolvedControlLayout(
+    () => layout.value.controlLayout,
+    () => layout.value.buttonInMobile,
+  );
+
   const panelPosition = reactive<MapControlPanelPosition>(
     seedPopupPanelPosition(options.panelKind, {
-      position: toValue(options.position),
+      position: toValue(options.from)?.position,
       from: toValue(options.from),
-      initialPanelPosition: options.initialPanelPosition,
       defaultPanelSize: options.defaultPanelSize,
       cornerDefaults: toValue(mapPopupDefaults) ?? {},
     }),
@@ -309,18 +283,11 @@ export function useMapControl(
         ? +src.controlOrder
         : 0;
     return {
-      visible: toValue(options.controlVisible) ?? src?.controlVisible ?? true,
-      position: (toValue(options.position) ||
-        src?.position ||
-        'bottom-right') as Position,
+      visible: src?.controlVisible ?? true,
+      position: (src?.position || 'bottom-right') as Position,
       order: orderExplicit ?? orderFrom,
-      controlLayout: (toValue(options.controlLayout) ||
-        src?.controlLayout ||
-        'standalone') as ControlLayout,
-      buttonInMobile:
-        options.buttonInMobile !== undefined
-          ? toValue(options.buttonInMobile)
-          : src?.buttonInMobile,
+      controlLayout: (src?.controlLayout || 'standalone') as ControlLayout,
+      buttonInMobile: src?.buttonInMobile,
     };
   }
 
@@ -336,24 +303,6 @@ export function useMapControl(
     );
   }
 
-  const layout = computed((): MapControlLayoutState => {
-    layoutTick.value;
-    const mid = toValue(mapId);
-    if (!mid) {
-      return {
-        visible: true,
-        position: 'bottom-right',
-        order: 0,
-        controlLayout: 'standalone',
-        buttonInMobile:
-          toValue(options.buttonInMobile) !== undefined
-            ? toValue(options.buttonInMobile)
-            : toValue(options.from)?.buttonInMobile,
-      };
-    }
-    return currentLayout(mid);
-  });
-
   const stopLayoutSub = subscribeControlLayout((mid, controlId) => {
     if (
       mid === toValue(mapId) &&
@@ -362,11 +311,6 @@ export function useMapControl(
       layoutTick.value++;
     }
   });
-
-  const resolvedLayout = useResolvedControlLayout(
-    () => layout.value.controlLayout,
-    () => layout.value.buttonInMobile,
-  );
 
   function setShow(value: boolean) {
     if (options.setShow) {
@@ -384,14 +328,6 @@ export function useMapControl(
       title: toValue(options.title),
       buttonPosition: layout.value.position,
       defaultActionType: toValue(options.defaultActionType),
-      getProps: () => ({
-        position: layout.value.position,
-        controlLayout: layout.value.controlLayout,
-        controlVisible: layout.value.visible,
-        controlOrder: layout.value.order,
-        buttonInMobile: layout.value.buttonInMobile,
-        ...(options.getProps?.() ?? {}),
-      }),
       actions: toValue(options.actions) ?? [],
       isOpen: () => !!options.show?.value,
       setShow,
@@ -542,73 +478,83 @@ export function useMapControl(
     },
   );
 
-  const toolbarActive = computed(
-    () => !!(toValue(options.toolbar) || options.getButtonState),
+  const hostActive = computed(() => !!options.host?.button);
+  const toolbarActive = computed(() => !!toValue(options.toolbar));
+  const chromeActive = computed(
+    () => hostActive.value || toolbarActive.value,
   );
 
-  const toolbarOpts = computed((): AnyToolbarOptions => {
-    let base: AnyToolbarOptions;
-    const explicit = toValue(options.toolbar);
-    if (explicit) {
-      base = explicit;
-    } else if (options.getButtonState) {
-      base = {
-        kind: 'single',
-        id: options.id,
-        getState: options.getButtonState,
-        onClick: options.onClick,
-      } satisfies ToolbarOptionsSingle;
-    } else {
-      base = stubToolbarOptions(options.id);
-    }
-    return withLayoutToolbarOptions(base, () => layout.value);
+  const hostOpts = computed((): AnyToolbarOptions | undefined => {
+    const base = resolveHostButtonOptions({
+      controlId: options.id,
+      hostButton: toValue(options.host?.button),
+      onClick: options.host?.onClick as ((e: MouseEvent) => void) | undefined,
+    });
+    return base
+      ? withLayoutToolbarOptions(base, () => layout.value)
+      : undefined;
+  });
+
+  const toolbarOpts = computed((): AnyToolbarOptions | undefined => {
+    const base = resolveToolbarSpecOptions({
+      controlId: options.id,
+      toolbar: toValue(options.toolbar),
+    });
+    return base
+      ? withLayoutToolbarOptions(base, () => layout.value)
+      : undefined;
+  });
+
+  const isStripLayout = computed(() => {
+    const l = resolvedLayout.value;
+    return l === 'toolbar' || l === 'menu';
   });
 
   const buttonSlotMode = computed<'auto' | 'custom' | 'none'>(() => {
-    if (!toolbarActive.value) return 'none';
-    if (options.buttonSlot === 'custom') return 'custom';
-    if (options.buttonSlot === 'auto') return 'auto';
-    if ((toolbarOpts.value.kind ?? 'single') === 'single') return 'auto';
+    if (!hostActive.value || isStripLayout.value) return 'none';
+    if (options.host?.buttonSlot === 'custom') return 'custom';
+    if (options.host?.buttonSlot === 'auto') return 'auto';
+    const kind = hostOpts.value?.kind ?? 'single';
+    if (
+      kind === 'single' ||
+      kind === 'module' ||
+      kind === 'module-expandable'
+    ) {
+      return 'auto';
+    }
     return 'none';
   });
 
-  const layoutForToolbar = useResolvedControlLayout(
-    () => layout.value.controlLayout,
-    () => layout.value.buttonInMobile,
-  );
-
-  // useMapToolbarModule needs a stable mapId string — watch remounts via layout
   const mapIdRef = computed(() => toValue(mapId) || '');
-  const toolbarBase = useMapToolbarModule(
-    mapIdRef.value || '__pending__',
-    () => layoutForToolbar.value,
-  );
 
   watch(mapIdRef, () => {
-    // store module is keyed by mapId; remount strategy when map changes
     remountStrategy();
   });
 
-  const toolbar = withPosition(toolbarBase, () => layout.value.position);
-
-  const optionsRef = shallowRef<AnyToolbarOptions>(toolbarOpts.value);
+  const hostOptsRef = shallowRef(hostOpts.value);
+  const toolbarOptsRef = shallowRef(toolbarOpts.value);
+  const controlStrategy = createHostStrategy({
+    getMapId: () => mapIdRef.value,
+    getHostOptions: () => hostOptsRef.value,
+    getToolbarOptions: () => toolbarOptsRef.value,
+    getControlLayout: () => resolvedLayout.value,
+    getPosition: () => layout.value.position,
+  });
   watch(
-    toolbarOpts,
+    hostOpts,
     (next) => {
-      optionsRef.value = next;
+      hostOptsRef.value = next;
+      if (chromeActive.value) controlStrategy.sync();
     },
     { deep: true },
   );
-
-  const controlStrategy = createLiveToolbarStrategy(
-    () => optionsRef.value,
-    toolbar,
-    {
-      getExpandedModuleId: () =>
-        mapIdRef.value
-          ? ensureMapToolbarApi(mapIdRef.value).getExpandedModuleId()
-          : null,
+  watch(
+    toolbarOpts,
+    (next) => {
+      toolbarOptsRef.value = next;
+      if (chromeActive.value) controlStrategy.sync();
     },
+    { deep: true },
   );
 
   type StateType =
@@ -623,7 +569,7 @@ export function useMapControl(
     unsubscribeState?.();
     unsubscribeState = undefined;
     controlStrategy.unmount();
-    if (!toolbarActive.value || !mapIdRef.value) {
+    if (!chromeActive.value || !mapIdRef.value) {
       state.value = undefined;
       return;
     }
@@ -637,7 +583,7 @@ export function useMapControl(
     remountStrategy();
   });
 
-  watch(layoutForToolbar, () => {
+  watch(resolvedLayout, () => {
     remountStrategy();
   });
 
@@ -647,10 +593,10 @@ export function useMapControl(
       layout.value.order,
       layout.value.visible,
       layout.value.buttonInMobile,
-      toolbarActive.value,
+      chromeActive.value,
     ],
     () => {
-      if (toolbarActive.value) {
+      if (chromeActive.value) {
         remountStrategy();
         controlStrategy.sync();
       }
@@ -659,7 +605,7 @@ export function useMapControl(
 
   const { language } = useLang(toValue(mapId) || 'default');
   watch(language, () => {
-    if (toolbarActive.value) controlStrategy.sync();
+    if (chromeActive.value) controlStrategy.sync();
   });
 
   function syncAutoButton(mid: string) {
@@ -667,10 +613,15 @@ export function useMapControl(
       unregisterControlAutoButton(mid, options.id);
       return;
     }
+    const kind = hostOpts.value?.kind ?? 'single';
     registerControlAutoButton(mid, options.id, {
       getUiState: () => state.value,
-      onAction: (event?: unknown) => {
-        (controlStrategy as ControlStrategy).onAction?.(event);
+      onAction: (...args: unknown[]) => {
+        if (kind === 'single') {
+          (controlStrategy as ControlStrategy).onAction?.(args[0]);
+          return;
+        }
+        (controlStrategy as ControlStrategy).onAction?.(...args);
       },
     });
   }

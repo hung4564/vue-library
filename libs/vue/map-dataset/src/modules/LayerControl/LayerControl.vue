@@ -36,6 +36,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiLayers, mdiPlus } from '@mdi/js';
 import { computed, onUnmounted, watch } from 'vue';
 
+import { defineProps, defineSlots, withDefaults } from 'vue';
 import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { provideMenuConditionContext } from '../../extra/menu/condition-context';
 import DatasetMenus from '../../extra/menu/dataset-menus.vue';
@@ -92,30 +93,9 @@ const [showCreate, toggleShowCreate] = useShow();
 function openAddLayer() {
   toggleShowCreate();
 }
-const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
-  id: 'mapLayerControl',
-  panelKind: 'sidebar',
-  title: () => trans.value('map.layer-control.title'),
-  from: props,
-  order,
-  show,
-  setShow,
-  initialPanelPosition: { location: 'left' },
-  getProps: () => ({
-    disabledCreate: props.disabledCreate,
-    disabledCreateGroup: props.disabledCreateGroup,
-    disabledDeleteAll: props.disabledDeleteAll,
-    disabledMove: props.disabledMove,
-    globalVisibilityMode: props.globalVisibilityMode,
-    createLayerTypes: props.createLayerTypes,
-  }),
-  actions: [
-    {
-      type: 'mapLayerControl',
-      run: () => setShow(),
-    },
-  ],
-  getButtonState() {
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
     return mdiButtonState(path.icon, {
       active: show.value,
       title: trans.value('map.layer-control.title'),
@@ -125,6 +105,23 @@ const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
   onClick() {
     setShow();
   },
+};
+const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
+  id: 'mapLayerControl',
+  panelKind: 'sidebar',
+  title: () => trans.value('map.layer-control.title'),
+  from: props,
+  order,
+  show,
+  setShow,
+  actions: [
+    {
+      type: 'mapLayerControl',
+      run: () => setShow(),
+    },
+  ],
+  host: { button: singleButton },
+  toolbar: singleButton,
 });
 watch(show, () => control.sync());
 

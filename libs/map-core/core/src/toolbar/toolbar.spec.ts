@@ -1,14 +1,32 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { deleteMapDomainStore } from '../store/map-domain-store';
+import { MAP_STORE_KEY } from '../types/constants';
 import {
   createDefaultToolbarStore,
-  createFromFlatButtons,
+  createHostStrategy,
   createLiveToolbarStrategy,
   createSubscribable,
   createToolbarModuleApi,
   createToolbarStoreApi,
-  normalizeToolbarSpec,
+  ensureMapToolbarStore,
+  resolveHostButtonOptions,
+  resolveToolbarSpecOptions,
+  type ToolbarOptionsSingle,
 } from './index';
+import { normalizeToolbarSpec } from './normalize';
+
+const noopToolbar = {
+  register() {
+    /* host-only tests */
+  },
+  update() {
+    /* host-only tests */
+  },
+  unregister() {
+    /* host-only tests */
+  },
+};
 
 describe('toolbar', () => {
   it('createSubscribable notifies subscribers and unsubscribes', () => {
@@ -43,26 +61,6 @@ describe('toolbar', () => {
 
     strategy.unmount();
     expect(toolbar.get('home')).toBeUndefined();
-  });
-
-  it('createFromFlatButtons remounts when button ids change', () => {
-    const store = createDefaultToolbarStore();
-    const toolbar = createToolbarStoreApi(store);
-    let ids = ['a'];
-    const flat = createFromFlatButtons({
-      toolbar,
-      getButtons: () =>
-        ids.map((id) => ({
-          id,
-          getState: () => ({ title: id }),
-        })),
-    });
-    flat.mount();
-    expect(toolbar.get('a')).toBeDefined();
-    ids = ['b'];
-    flat.sync();
-    expect(toolbar.get('a')).toBeUndefined();
-    expect(toolbar.get('b')?.title).toBe('b');
   });
 
   it('createLiveToolbarStrategy module registers grouped buttons', () => {
@@ -135,7 +133,7 @@ describe('toolbar', () => {
       toolbar,
     );
     strategy.mount();
-    expect(toolbar.getAll().map((b) => b.id)).toEqual([
+    expect(toolbar.getAll({ location: 'toolbar' }).map((b) => b.id)).toEqual([
       'zoom:compass',
       'zoom:in',
       'zoom:out',
@@ -174,7 +172,7 @@ describe('toolbar', () => {
     info.mount();
     zoom.mount();
     home.mount();
-    expect(toolbar.getAll().map((b) => b.id)).toEqual([
+    expect(toolbar.getAll({ location: 'toolbar' }).map((b) => b.id)).toEqual([
       'home',
       'zoom:in',
       'info',
@@ -202,7 +200,7 @@ describe('toolbar', () => {
       toolbar,
     );
     strategy.mount();
-    expect(toolbar.getAll().map((b) => b.id)).toEqual([
+    expect(toolbar.getAll({ location: 'toolbar' }).map((b) => b.id)).toEqual([
       'print:show',
       'print:save',
       'print:close',
@@ -220,8 +218,9 @@ describe('toolbar', () => {
       }),
       toolbar,
     );
-    expect(strategy).toHaveProperty('mount');
-    expect(strategy).toHaveProperty('id', 'btn');
+    strategy.mount();
+    expect(toolbar.get('btn')?.title).toBe('X');
+    strategy.unmount();
   });
 
   it('createLiveToolbarStrategy reads latest options', () => {
@@ -319,6 +318,209 @@ describe('toolbar', () => {
       title: 'Home',
     });
     expect(store.buttons.has('home')).toBe(true);
+  });
+
+  it('resolveHostButtonOptions / resolveToolbarSpecOptions stay independent', () => {
+    const host = resolveHostButtonOptions({
+      controlId: 'mapHomeControl',
+      hostButton: {
+        kind: 'single',
+        getState: () => ({ title: 'Home' }),
+      },
+    });
+    expect(host).toMatchObject({ kind: 'single', id: 'mapHomeControl' });
+
+    const compact = resolveHostButtonOptions({
+      controlId: 'mapHomeControl',
+      hostButton: { title: 'Home', visible: true },
+      onClick: vi.fn(),
+    });
+    const compactSingle = compact as ToolbarOptionsSingle;
+    expect(compactSingle.id).toBe('mapHomeControl');
+    expect(compactSingle.getState({ location: 'host' }).title).toBe('Home');
+
+    const strip = resolveToolbarSpecOptions({
+      controlId: 'mapThemeControl',
+      toolbar: {
+        kind: 'module-expandable',
+        moduleId: 'mapThemeControl',
+        expandableButton: () => ({ title: 'Theme' }),
+        buttons: [{ id: 'dark', getState: () => ({ title: 'Dark' }) }],
+      },
+    });
+    expect(strip?.kind).toBe('module-expandable');
+    expect(resolveToolbarSpecOptions({ controlId: 'x' })).toBeUndefined();
+  });
+
+  it('createLiveToolbarStrategy with noop toolbar does not register into a store', () => {
+    const store = createDefaultToolbarStore();
+    const toolbar = createToolbarStoreApi(store);
+    const strategy = createLiveToolbarStrategy(
+      () => ({
+        kind: 'module',
+        moduleId: 'theme',
+        buttons: [
+          { id: 'light', getState: () => ({ title: 'Light' }) },
+          { id: 'dark', getState: () => ({ title: 'Dark' }) },
+        ],
+      }),
+      noopToolbar,
+    );
+    const seen: unknown[] = [];
+    strategy.subscribe((s) => seen.push(s));
+    strategy.mount();
+    expect(store.buttons.size).toBe(0);
+    expect(toolbar.getAll({ location: 'toolbar' })).toEqual([]);
+    expect(seen.length).toBeGreaterThan(0);
+    strategy.unmount();
+  });
+
+  it('createLiveToolbarStrategy module-expandable toggles via context', async () => {
+    let expanded: string | null = null;
+    const onDark = vi.fn();
+    const strategy = createLiveToolbarStrategy(
+      () => ({
+        kind: 'module-expandable' as const,
+        moduleId: 'theme',
+        expandableButton: ({ active }: { active: boolean }) => ({
+          title: 'Theme',
+          active,
+        }),
+        buttons: [
+          { id: 'dark', getState: () => ({ title: 'Dark' }), onClick: onDark },
+        ],
+      }),
+      noopToolbar,
+      {
+        getExpandedModuleId: () => expanded,
+        toggleExpandedModule: (id) => {
+          expanded = expanded === id ? null : id;
+        },
+      },
+    );
+    let latest: Record<
+      string,
+      { active?: boolean; role?: string; title?: string }
+    > = {};
+    strategy.subscribe((s) => {
+      latest = s as typeof latest;
+    });
+    strategy.mount();
+    expect(latest.launcher?.role).toBe('launcher');
+    expect(latest.launcher?.active).toBe(false);
+    expect(latest.dark?.role).toBe('option');
+
+    await strategy.onAction('launcher', {
+      stopPropagation: vi.fn(),
+    } as unknown as MouseEvent);
+    expect(expanded).toBe('theme');
+    strategy.sync();
+    expect(latest.launcher?.active).toBe(true);
+
+    await strategy.onAction('dark', {} as MouseEvent);
+    expect(onDark).toHaveBeenCalled();
+
+    strategy.unmount();
+  });
+
+  it('createHostStrategy mounts host on standalone and strip on toolbar', async () => {
+    const mapId = 'host-strategy-map';
+    try {
+      let layout: 'standalone' | 'toolbar' | 'menu' = 'standalone';
+      const onHostClick = vi.fn();
+      const onStripClick = vi.fn();
+      const strategy = createHostStrategy({
+        getMapId: () => mapId,
+        getHostOptions: () => ({
+          kind: 'module',
+          moduleId: 'theme',
+          buttons: [
+            {
+              id: 'light',
+              getState: () => ({ title: 'Light' }),
+              onClick: onHostClick,
+            },
+            {
+              id: 'dark',
+              getState: () => ({ title: 'Dark' }),
+              onClick: onHostClick,
+            },
+          ],
+        }),
+        getToolbarOptions: () => ({
+          kind: 'module-expandable',
+          moduleId: 'theme',
+          expandableButton: ({ active }) => ({ title: 'Theme', active }),
+          buttons: [
+            {
+              id: 'dark',
+              getState: () => ({ title: 'Dark' }),
+              onClick: onStripClick,
+            },
+          ],
+        }),
+        getControlLayout: () => layout,
+        getPosition: () => 'top-left',
+      });
+
+      const seen: unknown[] = [];
+      strategy.subscribe((s) => seen.push(s));
+      strategy.mount();
+
+      const store = ensureMapToolbarStore(mapId);
+      expect(store.buttons.size).toBe(0);
+      expect(seen.length).toBeGreaterThan(0);
+
+      await strategy.onAction('light', {} as MouseEvent);
+      expect(onHostClick).toHaveBeenCalled();
+
+      layout = 'toolbar';
+      strategy.mount();
+      expect(store.buttons.get('theme:launcher')?.role).toBe('launcher');
+      expect(store.buttons.get('theme:dark')?.role).toBe('option');
+      expect(store.buttons.get('theme:launcher')?.position).toBe('top-left');
+
+      layout = 'standalone';
+      strategy.mount();
+      expect(store.buttons.has('theme:launcher')).toBe(false);
+
+      strategy.unmount();
+    } finally {
+      deleteMapDomainStore(mapId, MAP_STORE_KEY.TOOLBAR);
+    }
+  });
+
+  it('createHostStrategy unmounts the map that was bound at mount', () => {
+    let mapId = 'host-strategy-a';
+    const strategy = createHostStrategy({
+      getMapId: () => mapId,
+      getHostOptions: () => undefined,
+      getToolbarOptions: () => ({
+        kind: 'single',
+        id: 'home',
+        getState: () => ({ title: 'Home' }),
+      }),
+      getControlLayout: () => 'toolbar',
+    });
+    try {
+      strategy.mount();
+      expect(ensureMapToolbarStore('host-strategy-a').buttons.has('home')).toBe(
+        true,
+      );
+      mapId = 'host-strategy-b';
+      strategy.unmount();
+      expect(ensureMapToolbarStore('host-strategy-a').buttons.has('home')).toBe(
+        false,
+      );
+      strategy.mount();
+      expect(ensureMapToolbarStore('host-strategy-b').buttons.has('home')).toBe(
+        true,
+      );
+    } finally {
+      strategy.unmount();
+      deleteMapDomainStore('host-strategy-a', MAP_STORE_KEY.TOOLBAR);
+      deleteMapDomainStore('host-strategy-b', MAP_STORE_KEY.TOOLBAR);
+    }
   });
 
   it('normalizeToolbarSpec is the author-kind entry used by flat APIs', () => {

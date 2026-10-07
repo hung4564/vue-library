@@ -54,6 +54,22 @@ export function FullScreenControl(props: FullScreenControlProps) {
     setIsFullscreen(isDocumentFullscreen());
   }
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(isFullscreen ? mdiFullscreenExit : mdiFullscreen, {
+        visible: true,
+        active: isFullscreen,
+        order,
+        title: isFullscreen
+          ? trans('map.action.fullscreen-control-exit')
+          : trans('map.action.fullscreen-control-enter'),
+      }),
+    onClick: () => {
+      void toggleFullscreen();
+    },
+  };
+
   const { moduleContainerProps, control } = useMapControl(mapId, {
     id: 'mapFullscreenControl',
     panelKind: 'button',
@@ -67,18 +83,8 @@ export function FullScreenControl(props: FullScreenControlProps) {
         },
       },
     ],
-    getButtonState: () =>
-      mdiButtonState(isFullscreen ? mdiFullscreenExit : mdiFullscreen, {
-        visible: true,
-        active: isFullscreen,
-        order,
-        title: isFullscreen
-          ? trans('map.action.fullscreen-control-exit')
-          : trans('map.action.fullscreen-control-enter'),
-      }),
-    onClick: () => {
-      void toggleFullscreen();
-    },
+    host: { button: singleButton },
+    toolbar: singleButton,
   });
 
   useEffect(() => {

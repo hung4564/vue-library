@@ -5,7 +5,8 @@ import {
   logger,
 } from '@hungpvq/map-core/basemap';
 import { mdiLayersOutline } from '@mdi/js';
-import React, { useCallback, useEffect } from 'react';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { MapControlGroupButton } from '../../../components/MapControlGroupButton';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
@@ -65,28 +66,22 @@ export function BaseMapTagControl({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- mount/unmount with map only
   }, [mapInstance]);
 
-  const { moduleContainerProps, control } = useMapControl(mapId, {
-    id: 'mapBaseMapTagControl',
-    panelKind: 'button',
-    from: props,
-    order,
-    buttonSlot: 'custom',
-    toolbar: {
-      kind: 'module',
+  const baseMapTagModule = useMemo(
+    () => ({
+      kind: 'module' as const,
       moduleId: 'mapBaseMapTagControl',
       order,
-      orientation: 'row',
+      orientation: 'row' as const,
       buttons: (baseMaps as BaseMapItem[]).map((baseMap) => ({
         id: String(baseMap.id),
         getState: () => {
           const live =
             c_baseMaps.find((item) => item.id === baseMap.id) ?? baseMap;
-          return {
+          return mdiButtonState(mdiLayersOutline, {
             visible: true,
             active: current_baseMaps?.id === live.id,
             title: live.title,
-            icon: { type: 'mdi' as const, path: mdiLayersOutline },
-          };
+          });
         },
         onClick: () => {
           const live =
@@ -94,7 +89,20 @@ export function BaseMapTagControl({
           onClick(live);
         },
       })),
+    }),
+    [baseMaps, c_baseMaps, current_baseMaps, onClick, order],
+  );
+
+  const { moduleContainerProps, control } = useMapControl(mapId, {
+    id: 'mapBaseMapTagControl',
+    panelKind: 'button',
+    from: props,
+    order,
+    host: {
+      buttonSlot: 'custom',
+      button: baseMapTagModule,
     },
+    toolbar: baseMapTagModule,
   });
 
   useEffect(() => {

@@ -68,7 +68,7 @@ Rules:
 4. Add or extend **behavioral** session tests (not only export/id catalog); update the dual checklist comment in `libs/map-core/core/src/dual/behavioral-parity.spec.ts`.
 5. Lock new public exports in the package `public-api.spec.ts` (+ Stable/Experimental docs as needed).
 
-Existing pure owners to copy: `GeoLocateSession`, `createCopyFeedback`, theme/fullscreen helpers, `createIdentifyControlModel`, `createIdentifySession`, `createMeasurementSession`, `createDrawSession`, `createMeasurementMapView` / `createMeasurementMapViewLayers`, `createPrintAdvancedSession`, `createLiveToolbarStrategy`, `normalizeDisplayEpsgs`, `InspectController`, `draw-control-helpers`, root `controls/*` (home, globe, navigation, goto, setting, mouse-coordinates, info).
+Existing pure owners to copy: `GeoLocateSession`, `createCopyFeedback`, theme/fullscreen helpers, `createIdentifyControlModel`, `createIdentifySession`, `createMeasurementSession`, `createDrawSession`, `createMeasurementMapView` / `createMeasurementMapViewLayers`, `createPrintAdvancedSession`, `createHostStrategy` / `createLiveToolbarStrategy`, `normalizeDisplayEpsgs`, `InspectController`, `draw-control-helpers`, root `controls/*` (home, globe, navigation, goto, setting, mouse-coordinates, info).
 
 ## Draw checklist
 

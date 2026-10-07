@@ -18,6 +18,7 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiTools } from '@mdi/js';
 import { watch } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import { setDevtoolOpen, toggleDevtoolOpen, useDevtoolState } from '../store';
 import DevtoolsPanelBody from './DevtoolsPanelBody.vue';
 
@@ -49,7 +50,9 @@ const { panelBind, moduleContainerProps } = useMapControl(mapId, {
   title: () => 'Map Devtools',
   from: props,
   order,
-  buttonSlot: 'custom',
+  host: {
+    buttonSlot: 'custom',
+  },
   show,
   defaultPanelSize: { width: 600, height: 400 },
   setShow: (value) => {

@@ -77,6 +77,17 @@ export function WorkerControl(props: WorkerControlProps) {
     [filtered, selectedId],
   );
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiCogs, {
+        title: trans('map.worker-control.title'),
+        order,
+        active: show || busy,
+      }),
+    onClick: () => toggleShow(),
+  };
+
   const { moduleContainerProps, panelPosition, control } = useMapControl(
     mapId,
     {
@@ -89,13 +100,8 @@ export function WorkerControl(props: WorkerControlProps) {
       setShow: toggleShow,
       initialPanelPosition: { location: 'left' },
       actions: [{ type: 'mapWorkerControl', run: () => toggleShow() }],
-      getButtonState: () =>
-        mdiButtonState(mdiCogs, {
-          title: trans('map.worker-control.title'),
-          order,
-          active: show || busy,
-        }),
-      onClick: () => toggleShow(),
+      host: { button: singleButton },
+      toolbar: singleButton,
     },
   );
 

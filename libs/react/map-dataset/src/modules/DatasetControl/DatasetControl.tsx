@@ -47,6 +47,17 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
     });
   }, [datasetVersion, mapId, getDatasets]);
 
+  const singleButton = {
+    kind: 'single' as const,
+    getState: () =>
+      mdiButtonState(mdiDatabaseOutline, {
+        active: show,
+        title: trans('map.dataset-control.title'),
+        order,
+      }),
+    onClick: () => setShow(),
+  };
+
   const { moduleContainerProps, panelPosition, control } = useMapControl(
     mapId,
     {
@@ -59,13 +70,8 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
       setShow,
       initialPanelPosition: { location: 'left' },
       actions: [{ type: 'mapDatasetControl', run: () => setShow() }],
-      getButtonState: () =>
-        mdiButtonState(mdiDatabaseOutline, {
-          active: show,
-          title: trans('map.dataset-control.title'),
-          order,
-        }),
-      onClick: () => setShow(),
+      host: { button: singleButton },
+      toolbar: singleButton,
     },
   );
 
