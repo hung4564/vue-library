@@ -14,12 +14,15 @@ import {
   mdiPrinterEye,
 } from '@mdi/js';
 import { saveAs } from 'file-saver';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { MapControlButton } from '../../../components/MapControlButton';
 import { InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
-import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
+import {
+  ModuleContainer,
+  ModuleContainerProps,
+} from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang/hook';
 import { useMapControl } from '../../registry/useMapControl';
 import { useMapPrint } from '../store';
@@ -192,112 +195,117 @@ export function PrintAdvancedControl({
     control.sync();
   }, [print, order, control]);
 
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) =>
+      print.setting_show ? (
+        <DraggableItemPopup
+          show={print.setting_show}
+          onUpdateShow={(v) => session.setSettingShow(!!v)}
+          title={trans('map.print.setting.title')}
+          height={340}
+          {...bind}
+          {...panelBind}
+        >
+          <div className="map-print-advanced-setting">
+            <div>
+              <InputSelect
+                label={trans('map.print.field.paper')}
+                value={print.setting.paper || 'custom'}
+                items={PAPER_ITEMS.map((item) => ({
+                  ...item,
+                  text:
+                    item.value === 'custom'
+                      ? trans('map.print.paper.custom')
+                      : item.value === 'a4'
+                        ? trans('map.print.paper.a4')
+                        : trans('map.print.paper.letter'),
+                }))}
+                onChange={(value) => {
+                  session.applyPaper(
+                    String(value) as NonNullable<PrintOption['paper']>,
+                  );
+                }}
+              />
+            </div>
+            <div>
+              <InputText
+                label={trans('map.print.field.ratio')}
+                value={String(print.setting.ratio)}
+                onChange={(value) =>
+                  session.updateSetting({
+                    ...print.setting,
+                    paper: 'custom',
+                    ratio: Number(value) || 1,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <InputSelect
+                label={trans('map.print.field.orientation')}
+                value={print.setting.orientation}
+                items={ORIENTATION_ITEMS}
+                onChange={(value) =>
+                  session.updateSetting({
+                    ...print.setting,
+                    orientation: value as PrintOption['orientation'],
+                  })
+                }
+              />
+            </div>
+            <div>
+              <InputText
+                label={trans('map.print.field.dpi')}
+                value={String(print.setting.dpi ?? 96)}
+                onChange={(value) =>
+                  session.updateSetting({
+                    ...print.setting,
+                    dpi: Number(value) || 96,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <InputText
+                label={trans('map.print.field.watermark')}
+                value={print.setting.watermark || ''}
+                onChange={(value) =>
+                  session.updateSetting({
+                    ...print.setting,
+                    watermark: value,
+                  })
+                }
+              />
+              {print.setting.watermark ? (
+                <div
+                  className="map-print-watermark-preview"
+                  aria-hidden="true"
+                >
+                  {print.setting.watermark}
+                </div>
+              ) : null}
+            </div>
+            <div className="map-print-advanced-setting__grow" />
+            {print.show ? (
+              <MapControlButton
+                variant="filled"
+                className="map-print-advanced-setting__apply"
+                onClick={() => void session.save()}
+              >
+                {trans('map.print.btn.apply')}
+              </MapControlButton>
+            ) : null}
+          </div>
+        </DraggableItemPopup>
+      ) : null,
+    [panelBind, print.setting, print.setting_show, print.show, session, trans],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={(bind) =>
-        print.setting_show ? (
-          <DraggableItemPopup
-            show={print.setting_show}
-            onUpdateShow={(v) => session.setSettingShow(!!v)}
-            title={trans('map.print.setting.title')}
-            height={340}
-            {...bind}
-            {...panelBind}
-          >
-            <div className="map-print-advanced-setting">
-              <div>
-                <InputSelect
-                  label={trans('map.print.field.paper')}
-                  value={print.setting.paper || 'custom'}
-                  items={PAPER_ITEMS.map((item) => ({
-                    ...item,
-                    text:
-                      item.value === 'custom'
-                        ? trans('map.print.paper.custom')
-                        : item.value === 'a4'
-                          ? trans('map.print.paper.a4')
-                          : trans('map.print.paper.letter'),
-                  }))}
-                  onChange={(value) => {
-                    session.applyPaper(
-                      String(value) as NonNullable<PrintOption['paper']>,
-                    );
-                  }}
-                />
-              </div>
-              <div>
-                <InputText
-                  label={trans('map.print.field.ratio')}
-                  value={String(print.setting.ratio)}
-                  onChange={(value) =>
-                    session.updateSetting({
-                      ...print.setting,
-                      paper: 'custom',
-                      ratio: Number(value) || 1,
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <InputSelect
-                  label={trans('map.print.field.orientation')}
-                  value={print.setting.orientation}
-                  items={ORIENTATION_ITEMS}
-                  onChange={(value) =>
-                    session.updateSetting({
-                      ...print.setting,
-                      orientation: value as PrintOption['orientation'],
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <InputText
-                  label={trans('map.print.field.dpi')}
-                  value={String(print.setting.dpi ?? 96)}
-                  onChange={(value) =>
-                    session.updateSetting({
-                      ...print.setting,
-                      dpi: Number(value) || 96,
-                    })
-                  }
-                />
-              </div>
-              <div>
-                <InputText
-                  label={trans('map.print.field.watermark')}
-                  value={print.setting.watermark || ''}
-                  onChange={(value) =>
-                    session.updateSetting({
-                      ...print.setting,
-                      watermark: value,
-                    })
-                  }
-                />
-                {print.setting.watermark ? (
-                  <div
-                    className="map-print-watermark-preview"
-                    aria-hidden="true"
-                  >
-                    {print.setting.watermark}
-                  </div>
-                ) : null}
-              </div>
-              <div className="map-print-advanced-setting__grow" />
-              {print.show ? (
-                <MapControlButton
-                  variant="filled"
-                  className="map-print-advanced-setting__apply"
-                  onClick={() => void session.save()}
-                >
-                  {trans('map.print.btn.apply')}
-                </MapControlButton>
-              ) : null}
-            </div>
-          </DraggableItemPopup>
-        ) : null
-      }
+      draggable={renderDraggable}
     />
   );
 }

@@ -55,6 +55,7 @@ const props = withDefaults(
 );
 const { moduleContainerProps, mapId } = useMap({
   ...props,
+  controlId: 'mapToolbarControl',
   controlLayout: 'button',
 });
 const { trans } = useLang(mapId.value);

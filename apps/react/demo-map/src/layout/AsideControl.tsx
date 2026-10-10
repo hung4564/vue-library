@@ -7,13 +7,14 @@ import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
   ModuleContainer,
+  ModuleContainerProps,
   useLang,
   useMap,
   useMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
 import { mdiMenu } from '@mdi/js';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Link } from 'react-router';
 
 const NAV_ITEMS = getDemoAsideNavItems('react');
@@ -63,38 +64,44 @@ export function AsideControl(props: WithMapPropType & { show?: boolean }) {
     control.sync();
   }, [show, control]);
 
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) => (
+      <DraggableItemSideBar
+        show={show}
+        onUpdateShow={(v) => toggleShow(!!v)}
+        title={trans('map.aside-control.title')}
+        titleNode={
+          <span className="aside-control__title">
+            {trans('map.aside-control.title')}
+          </span>
+        }
+        containerId={bind.containerId}
+      >
+        <ul className="v-list">
+          {navItems.map((item) => (
+            <li
+              key={item.to}
+              className="v-list-item"
+            >
+              <Link
+                to={item.to}
+                onClick={() => toggleShow(false)}
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </DraggableItemSideBar>
+    ),
+    [navItems, show, toggleShow, trans],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={(bind) => (
-        <DraggableItemSideBar
-          show={show}
-          onUpdateShow={(v) => toggleShow(!!v)}
-          title={trans('map.aside-control.title')}
-          titleNode={
-            <span className="aside-control__title">
-              {trans('map.aside-control.title')}
-            </span>
-          }
-          containerId={bind.containerId}
-        >
-          <ul className="v-list">
-            {navItems.map((item) => (
-              <li
-                key={item.to}
-                className="v-list-item"
-              >
-                <Link
-                  to={item.to}
-                  onClick={() => toggleShow(false)}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </DraggableItemSideBar>
-      )}
+      draggable={renderDraggable}
     />
   );
 }

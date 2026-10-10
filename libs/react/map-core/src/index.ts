@@ -9,10 +9,10 @@ export {
   MapControlButtonGroupContext,
 } from './components/MapControlButton';
 export { MapControlGroupButton } from './components/MapControlGroupButton';
-export type { MapCopyButtonProps } from './components/MapCopyButton';
 export { MapCopyButton } from './components/MapCopyButton';
-export type { MapTabItem, MapTabsProps } from './components/MapTabs';
+export type { MapCopyButtonProps } from './components/MapCopyButton';
 export { MapTabs } from './components/MapTabs';
+export type { MapTabItem, MapTabsProps } from './components/MapTabs';
 export {
   MapContext,
   MapContextProvider,
@@ -69,8 +69,8 @@ export { useBreakpoints } from './hooks/useBreakpoints';
 export { defaultMapProps, useMap } from './hooks/useMap';
 export { useMapInstance } from './hooks/useMapInstance';
 export { useMapState } from './hooks/useMapState';
-export type { WithShowProps } from './hooks/useShow';
 export { useShow } from './hooks/useShow';
+export type { WithShowProps } from './hooks/useShow';
 export { FullScreenControl } from './modules/FullScreenControl/FullScreenControl';
 export { GeoLocateControl } from './modules/GeoLocateControl/GeoLocateControl';
 export { GlobeControl } from './modules/GlobeControl/GlobeControl';
@@ -80,7 +80,10 @@ export { InfoControl } from './modules/InfoControl/InfoControl';
 export { LanguageControl } from './modules/LanguageControl/LanguageControl';
 export { Map } from './modules/Map';
 export { MapContextMenuControl } from './modules/MapContextMenuControl/MapContextMenuControl';
-export { ModuleContainer } from './modules/ModuleContainer/ModuleContainer';
+export {
+  ModuleContainer,
+  type ModuleContainerProps,
+} from './modules/ModuleContainer/ModuleContainer';
 export { MouseCoordinatesControl } from './modules/MouseCoordinatesControl/MouseCoordinatesControl';
 export { RegistryControl } from './modules/RegistryControl/RegistryControl';
 export { SettingControl } from './modules/SettingControl/SettingControl';

@@ -10,6 +10,7 @@ import {
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import {
   ModuleContainer,
+  ModuleContainerProps,
   RegistryItem,
   useLang,
   useMap,
@@ -17,7 +18,7 @@ import {
   useShow,
 } from '@hungpvq/react-map-core';
 import { copyByJson } from '@hungpvq/shared';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export function StyleControl({
   item,
@@ -79,39 +80,54 @@ export function StyleControl({
     onClose?.();
   }
 
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) =>
+      component.componentKey ? (
+        <DraggableItemSideBar
+          containerId={bind.containerId}
+          location={panelPosition.location || 'right'}
+          show={show}
+          onUpdateShow={(v) => {
+            toggleShow(!!v);
+            if (!v) handleClose();
+          }}
+          onClose={handleClose}
+          title={trans('map.style-control.title')}
+          titleNode={
+            <span className="layer-control__title">
+              {trans('map.style-control.title')}
+            </span>
+          }
+        >
+          <div className="style-control">
+            <RegistryItem
+              componentKey={component.componentKey}
+              mapId={mapId}
+              value={layer}
+              trans={trans}
+              onUpdateStyle={onUpdateStyle}
+            />
+          </div>
+        </DraggableItemSideBar>
+      ) : null,
+    [
+      component.componentKey,
+      handleClose,
+      layer,
+      mapId,
+      onUpdateStyle,
+      panelPosition.location,
+      show,
+      toggleShow,
+      trans,
+    ],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={(bind) =>
-        component.componentKey ? (
-          <DraggableItemSideBar
-            containerId={bind.containerId}
-            location={panelPosition.location || 'right'}
-            show={show}
-            onUpdateShow={(v) => {
-              toggleShow(!!v);
-              if (!v) handleClose();
-            }}
-            onClose={handleClose}
-            title={trans('map.style-control.title')}
-            titleNode={
-              <span className="layer-control__title">
-                {trans('map.style-control.title')}
-              </span>
-            }
-          >
-            <div className="style-control">
-              <RegistryItem
-                componentKey={component.componentKey}
-                mapId={mapId}
-                value={layer}
-                trans={trans}
-                onUpdateStyle={onUpdateStyle}
-              />
-            </div>
-          </DraggableItemSideBar>
-        ) : null
-      }
+      draggable={renderDraggable}
     />
   );
 }

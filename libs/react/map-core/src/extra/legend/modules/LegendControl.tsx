@@ -13,7 +13,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { InputCheckbox } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
-import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
+import {
+  ModuleContainer,
+  ModuleContainerProps,
+} from '../../../modules/ModuleContainer/ModuleContainer';
 import { useEventListener } from '../../event/hook/useEvent';
 import { useLang } from '../../lang/hook';
 import { useMapControl } from '../../registry/useMapControl';
@@ -131,42 +134,46 @@ export function LegendControl(props: WithMapPropType) {
   useEffect(() => {
     control.sync();
   }, [show, control]);
-
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) =>
+      show ? (
+        <DraggableItemPopup
+          show={show}
+          onUpdateShow={(v) => setShow(!!v)}
+          title={trans('map.legend-control.title')}
+          {...bind}
+          {...panelBind}
+        >
+          <div className="map-legend-control">
+            <div className="map-legend-control__list">
+              {legends.map((item, i) => (
+                <div
+                  key={i}
+                  className="map-legend-control__item"
+                >
+                  <div className="map-legend-control__icon">{item.icon}</div>
+                  <span>{item.name}</span>
+                </div>
+              ))}
+            </div>
+            <div className="map-legend-control__action">
+              <InputCheckbox
+                label={trans('map.legend-control.onlyRendered')}
+                checked={onlyRender}
+                onChange={(v) => setOnlyRender(!!v)}
+              />
+            </div>
+          </div>
+        </DraggableItemPopup>
+      ) : null,
+    [legends, onlyRender, panelBind, setShow, show, trans],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={(bind) =>
-        show ? (
-          <DraggableItemPopup
-            show={show}
-            onUpdateShow={(v) => setShow(!!v)}
-            title={trans('map.legend-control.title')}
-            {...bind}
-            {...panelBind}
-          >
-            <div className="map-legend-control">
-              <div className="map-legend-control__list">
-                {legends.map((item, i) => (
-                  <div
-                    key={i}
-                    className="map-legend-control__item"
-                  >
-                    <div className="map-legend-control__icon">{item.icon}</div>
-                    <span>{item.name}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="map-legend-control__action">
-                <InputCheckbox
-                  label={trans('map.legend-control.onlyRendered')}
-                  checked={onlyRender}
-                  onChange={(v) => setOnlyRender(!!v)}
-                />
-              </div>
-            </div>
-          </DraggableItemPopup>
-        ) : null
-      }
+      draggable={renderDraggable}
     />
   );
 }

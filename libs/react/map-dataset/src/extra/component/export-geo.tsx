@@ -17,12 +17,13 @@ import {
 import { DraggableModal } from '@hungpvq/react-draggable';
 import {
   ModuleContainer,
+  ModuleContainerProps,
   RegistryItem,
   useMap,
   useShow,
 } from '@hungpvq/react-map-core';
 import type { ComponentType } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ExportGeoForm } from './export-geo-form';
 
@@ -222,44 +223,70 @@ export function ExportGeo(props: ExportGeoProps) {
     }
   }
 
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    ({ containerId }) => (
+      <DraggableModal
+        show={show}
+        title={title}
+        containerId={containerId}
+        width={420}
+        height={showScope ? 460 : 420}
+        resizable={false}
+        onUpdateShow={toggleShow}
+        onClose={handleClose}
+      >
+        <RegistryItem
+          componentKey={formSlot.componentKey}
+          defaultComponent={formSlot.defaultComponent}
+          mapId={props.mapId}
+          format={format}
+          formatItems={formatItems}
+          scope={scope}
+          scopeItems={scopeItems}
+          showScope={showScope}
+          filename={filename}
+          target={target}
+          sourceHint={sourceHint}
+          error={error}
+          busy={busy}
+          loadingComponent={loadingComponent}
+          onFormatChange={(v: string) => setFormat(v as GeoExportFormat)}
+          onScopeChange={(v: string) => setScope(v as GeoExportScope)}
+          onFilenameChange={setFilename}
+          onTargetChange={setTarget}
+          onCancel={handleClose}
+          onDownload={() => void onDownload()}
+        />
+      </DraggableModal>
+    ),
+    [
+      busy,
+      error,
+      filename,
+      formSlot.componentKey,
+      formSlot.defaultComponent,
+      format,
+      formatItems,
+      handleClose,
+      loadingComponent,
+      onDownload,
+      props.mapId,
+      scope,
+      scopeItems,
+      show,
+      showScope,
+      sourceHint,
+      target,
+      title,
+      toggleShow,
+    ],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={({ containerId }) => (
-        <DraggableModal
-          show={show}
-          title={title}
-          containerId={containerId}
-          width={420}
-          height={showScope ? 460 : 420}
-          resizable={false}
-          onUpdateShow={toggleShow}
-          onClose={handleClose}
-        >
-          <RegistryItem
-            componentKey={formSlot.componentKey}
-            defaultComponent={formSlot.defaultComponent}
-            mapId={props.mapId}
-            format={format}
-            formatItems={formatItems}
-            scope={scope}
-            scopeItems={scopeItems}
-            showScope={showScope}
-            filename={filename}
-            target={target}
-            sourceHint={sourceHint}
-            error={error}
-            busy={busy}
-            loadingComponent={loadingComponent}
-            onFormatChange={(v: string) => setFormat(v as GeoExportFormat)}
-            onScopeChange={(v: string) => setScope(v as GeoExportScope)}
-            onFilenameChange={setFilename}
-            onTargetChange={setTarget}
-            onCancel={handleClose}
-            onDownload={() => void onDownload()}
-          />
-        </DraggableModal>
-      )}
+      draggable={renderDraggable}
     />
   );
 }

@@ -17,7 +17,7 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCogs, mdiEraser, mdiNotificationClearAll } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { MapControlButton } from '../../components/MapControlButton';
 import { useLang } from '../../extra/lang/hook';
@@ -26,7 +26,10 @@ import { useWorkerMonitor } from '../../extra/worker/useWorkerMonitor';
 import { BaseCollapse } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow } from '../../hooks/useShow';
-import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+import {
+  ModuleContainer,
+  ModuleContainerProps,
+} from '../ModuleContainer/ModuleContainer';
 import { WorkerLogList } from './WorkerLogList';
 
 export interface WorkerControlProps extends WithMapPropType {
@@ -114,14 +117,23 @@ export function WorkerControl(props: WorkerControlProps) {
   const hasSelectedHistory = Boolean(selected && workerHasHistory(selected));
   const hasAnyHistory = anyWorkerHasHistory(workers);
 
-  const statusLabel = (status: WorkerRuntimeStatus) =>
-    trans(`map.worker-control.status.${status}`);
-  const engineLabel = (engine: WorkerTaskSnapshot['engine']) =>
-    trans(`map.worker-control.engine.${engine}`);
-  const elapsed = (task: WorkerTaskSnapshot) => {
-    const ms = task.durationMs ?? Math.max(0, now - task.startedAt);
-    return formatWorkerDuration(ms);
-  };
+  const statusLabel = useCallback(
+    (status: WorkerRuntimeStatus) =>
+      trans(`map.worker-control.status.${status}`),
+    [trans],
+  );
+  const engineLabel = useCallback(
+    (engine: WorkerTaskSnapshot['engine']) =>
+      trans(`map.worker-control.engine.${engine}`),
+    [trans],
+  );
+  const elapsed = useCallback(
+    (task: WorkerTaskSnapshot) => {
+      const ms = task.durationMs ?? Math.max(0, now - task.startedAt);
+      return formatWorkerDuration(ms);
+    },
+    [now],
+  );
   const summary = workers.length
     ? busyCount
       ? `${trans('map.worker-control.count', { n: String(workers.length) })} · ${trans(
@@ -131,145 +143,168 @@ export function WorkerControl(props: WorkerControlProps) {
       : trans('map.worker-control.count', { n: String(workers.length) })
     : '';
 
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      draggable={(bind) => (
-        <DraggableItemSideBar
-          show={show}
-          onUpdateShow={(value) => toggleShow(!!value)}
-          title={trans('map.worker-control.title')}
-          containerId={bind.containerId}
-          location={panelPosition.location || 'right'}
-        >
-          <div className="map-worker-control">
-            <div className="map-worker-control__toolbar">
-              {workers.length ? (
-                <span className="map-worker-control__summary">{summary}</span>
-              ) : (
-                <span />
-              )}
-              <div className="map-worker-control__toolbar-actions">
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) => (
+      <DraggableItemSideBar
+        show={show}
+        onUpdateShow={(value) => toggleShow(!!value)}
+        title={trans('map.worker-control.title')}
+        containerId={bind.containerId}
+        location={panelPosition.location || 'right'}
+      >
+        <div className="map-worker-control">
+          <div className="map-worker-control__toolbar">
+            {workers.length ? (
+              <span className="map-worker-control__summary">{summary}</span>
+            ) : (
+              <span />
+            )}
+            <div className="map-worker-control__toolbar-actions">
+              <MapControlButton
+                variant="plain"
+                title={trans('map.worker-control.action.clear')}
+                disabled={!hasSelectedHistory}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (selected) clearHistory(selected.id);
+                }}
+              >
+                <Icon
+                  path={mdiEraser}
+                  size="16px"
+                />
+              </MapControlButton>
+              {manyWorkers ? (
                 <MapControlButton
                   variant="plain"
-                  title={trans('map.worker-control.action.clear')}
-                  disabled={!hasSelectedHistory}
+                  title={trans('map.worker-control.action.clearAll')}
+                  disabled={!hasAnyHistory}
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (selected) clearHistory(selected.id);
+                    clearHistory();
                   }}
                 >
                   <Icon
-                    path={mdiEraser}
+                    path={mdiNotificationClearAll}
                     size="16px"
                   />
                 </MapControlButton>
-                {manyWorkers ? (
-                  <MapControlButton
-                    variant="plain"
-                    title={trans('map.worker-control.action.clearAll')}
-                    disabled={!hasAnyHistory}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      clearHistory();
-                    }}
-                  >
-                    <Icon
-                      path={mdiNotificationClearAll}
-                      size="16px"
-                    />
-                  </MapControlButton>
-                ) : null}
-              </div>
+              ) : null}
             </div>
-            {!workers.length ? (
-              <>
-                <p className="map-worker-control__empty">
-                  {trans('map.worker-control.empty')}
-                </p>
-                <p className="map-worker-control__hint">
-                  {trans('map.worker-control.hint')}
-                </p>
-              </>
-            ) : null}
-            {manyWorkers ? (
-              <>
-                <input
-                  type="search"
-                  className="map-worker-control__search"
-                  value={query}
-                  aria-label={trans('map.worker-control.search')}
-                  placeholder={trans('map.worker-control.searchPlaceholder')}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-                {filtered.length === 0 ? (
-                  <p className="map-worker-control__empty">
-                    {trans('map.worker-control.emptyMatch')}
-                  </p>
-                ) : (
-                  <ul className="map-worker-control__list">
-                    {filtered.map((worker) => {
-                      const pending = worker.pending.length
-                        ? trans('map.worker-control.pending', {
-                            n: String(worker.pending.length),
-                          })
-                        : '';
-                      const meta = [
-                        worker.name !== worker.id ? worker.id : '',
-                        pending,
-                      ]
-                        .filter(Boolean)
-                        .join(' · ');
-                      return (
-                        <li
-                          key={worker.id}
-                          className={`map-worker-control__item${
-                            selected?.id === worker.id ? ' is-selected' : ''
-                          }`}
-                        >
-                          <button
-                            type="button"
-                            className="map-worker-control__pick"
-                            onClick={() => setSelectedId(worker.id)}
-                          >
-                            <span className="map-worker-control__pick-main">
-                              <span className="map-worker-control__pick-name">
-                                {worker.name}
-                              </span>
-                              {meta ? (
-                                <span className="map-worker-control__pick-meta">
-                                  {meta}
-                                </span>
-                              ) : null}
-                            </span>
-                            <span
-                              className="map-worker-control__status"
-                              data-status={worker.status}
-                            >
-                              {statusLabel(worker.status)}
-                            </span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </>
-            ) : null}
-            {selected ? (
-              <div className="map-worker-control__detail">
-                <WorkerCard
-                  worker={selected}
-                  statusLabel={statusLabel(selected.status)}
-                  engineLabel={engineLabel}
-                  elapsed={elapsed}
-                  trans={trans}
-                />
-              </div>
-            ) : null}
           </div>
-        </DraggableItemSideBar>
-      )}
+          {!workers.length ? (
+            <>
+              <p className="map-worker-control__empty">
+                {trans('map.worker-control.empty')}
+              </p>
+              <p className="map-worker-control__hint">
+                {trans('map.worker-control.hint')}
+              </p>
+            </>
+          ) : null}
+          {manyWorkers ? (
+            <>
+              <input
+                type="search"
+                className="map-worker-control__search"
+                value={query}
+                aria-label={trans('map.worker-control.search')}
+                placeholder={trans('map.worker-control.searchPlaceholder')}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+              {filtered.length === 0 ? (
+                <p className="map-worker-control__empty">
+                  {trans('map.worker-control.emptyMatch')}
+                </p>
+              ) : (
+                <ul className="map-worker-control__list">
+                  {filtered.map((worker) => {
+                    const pending = worker.pending.length
+                      ? trans('map.worker-control.pending', {
+                          n: String(worker.pending.length),
+                        })
+                      : '';
+                    const meta = [
+                      worker.name !== worker.id ? worker.id : '',
+                      pending,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ');
+                    return (
+                      <li
+                        key={worker.id}
+                        className={`map-worker-control__item${
+                          selected?.id === worker.id ? ' is-selected' : ''
+                        }`}
+                      >
+                        <button
+                          type="button"
+                          className="map-worker-control__pick"
+                          onClick={() => setSelectedId(worker.id)}
+                        >
+                          <span className="map-worker-control__pick-main">
+                            <span className="map-worker-control__pick-name">
+                              {worker.name}
+                            </span>
+                            {meta ? (
+                              <span className="map-worker-control__pick-meta">
+                                {meta}
+                              </span>
+                            ) : null}
+                          </span>
+                          <span
+                            className="map-worker-control__status"
+                            data-status={worker.status}
+                          >
+                            {statusLabel(worker.status)}
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </>
+          ) : null}
+          {selected ? (
+            <div className="map-worker-control__detail">
+              <WorkerCard
+                worker={selected}
+                statusLabel={statusLabel(selected.status)}
+                engineLabel={engineLabel}
+                elapsed={elapsed}
+                trans={trans}
+              />
+            </div>
+          ) : null}
+        </div>
+      </DraggableItemSideBar>
+    ),
+    [
+      clearHistory,
+      elapsed,
+      engineLabel,
+      filtered,
+      hasAnyHistory,
+      hasSelectedHistory,
+      manyWorkers,
+      panelPosition.location,
+      query,
+      selected,
+      show,
+      statusLabel,
+      summary,
+      toggleShow,
+      trans,
+      workers.length,
+    ],
+  );
+  return (
+    <ModuleContainer
+      {...moduleContainerProps}
+      draggable={renderDraggable}
     />
   );
 }

@@ -43,8 +43,7 @@ export function createLiveToolbarStrategy(
   ctx: LiveToolbarStrategyContext = {},
 ): AnyToolbarStrategy {
   type NotifyState =
-    | MapControlButtonUIState
-    | Record<string, MapControlButtonUIState>;
+    MapControlButtonUIState | Record<string, MapControlButtonUIState>;
   const { subscribe, notify } = createSubscribable<NotifyState>();
   let mountedIds: string[] = [];
 
@@ -331,4 +330,3 @@ export function createToolbarModuleApi(
   }
   return { register, unregister, update };
 }
-

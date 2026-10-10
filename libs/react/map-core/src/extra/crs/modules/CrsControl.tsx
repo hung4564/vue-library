@@ -14,7 +14,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BaseCollapse, InputSelect, InputText } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
-import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
+import {
+  ModuleContainer,
+  ModuleContainerProps,
+} from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang/hook';
 import { useMapControl } from '../../registry/useMapControl';
 import { useMapCrsDisplayEpsgs, useMapCrsItems } from '../useMapCrsItems';
@@ -119,156 +122,175 @@ export function CrsControl(props: CrsControlProps) {
     setItems([...crsItems, { name: '', unit: 'degree', epsg: '' }]);
   }, [crsItems, setItems]);
 
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) =>
+      show ? (
+        <DraggableItemPopup
+          show={show}
+          onUpdateShow={(v) => toggleShow(!!v)}
+          title={trans('map.crs-control.title')}
+          {...bind}
+          {...panelBind}
+        >
+          <div className="crs-container">
+            <div className="crs-catalog">
+              <input
+                type="search"
+                className="crs-catalog__filter"
+                value={filterQuery}
+                placeholder={trans('map.crs-control.filter')}
+                onChange={(e) => setFilterQuery(e.target.value)}
+              />
+              <ul className="crs-catalog__list">
+                {filteredCatalog.map((item) => (
+                  <li
+                    key={item.epsg}
+                    className="crs-catalog__item"
+                  >
+                    <label
+                      className="crs-item-header__display"
+                      title={trans('map.crs-display.show')}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={displayEpsgs.includes(item.epsg)}
+                        disabled={item.epsg === '4326'}
+                        onChange={(e) =>
+                          toggleDisplay(item.epsg, e.target.checked)
+                        }
+                      />
+                    </label>
+                    <span className="crs-catalog__label">
+                      {formatCrsLabel(item)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {customItems.length ? (
+              <div className="crs-custom">
+                <div className="crs-custom__title">
+                  {trans('map.crs-control.custom')}
+                </div>
+                <div className="crs-custom__list">
+                  {customItems.map((crsItem, index) => {
+                    const storeIndex = crsItems.indexOf(crsItem);
+                    return (
+                      <BaseCollapse
+                        key={crsItem.epsg || `custom-${index}`}
+                        selected={false}
+                        header={
+                          <div className="crs-item-header">
+                            <div className="crs-item-header__title">
+                              {crsItem.name || crsItem.epsg || 'New CRS'}
+                            </div>
+                            <div className="crs-item-header__action">
+                              <button
+                                type="button"
+                                className="clickable"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onRemove(crsItem);
+                                }}
+                              >
+                                <Icon
+                                  path={mdiDelete}
+                                  size="16px"
+                                />
+                              </button>
+                            </div>
+                          </div>
+                        }
+                      >
+                        <div className="crs-item">
+                          <div>
+                            <InputText
+                              value={crsItem.name}
+                              label={trans('map.crs-control.field.name')}
+                              onChange={(v) =>
+                                updateCrsItem(storeIndex, { name: v })
+                              }
+                            />
+                          </div>
+                          <div>
+                            <InputText
+                              value={crsItem.epsg}
+                              label={trans('map.crs-control.field.epsg')}
+                              onChange={(v) =>
+                                updateCrsItem(storeIndex, { epsg: v })
+                              }
+                            />
+                          </div>
+                          <div>
+                            <InputText
+                              value={crsItem.proj4js || ''}
+                              label={trans('map.crs-control.field.proj4js')}
+                              onChange={(v) =>
+                                updateCrsItem(storeIndex, { proj4js: v })
+                              }
+                            />
+                          </div>
+                          <div>
+                            <InputSelect
+                              value={crsItem.unit}
+                              label={trans('map.crs-control.field.unit')}
+                              items={[...UNIT_ITEMS]}
+                              onChange={(v) =>
+                                updateCrsItem(storeIndex, {
+                                  unit: v as CrsItem['unit'],
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
+                      </BaseCollapse>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
+
+            <div className="crs-item__add">
+              <button
+                type="button"
+                className="crs-item__add-btn clickable"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAdd();
+                }}
+              >
+                <Icon
+                  path={mdiPlus}
+                  size="16px"
+                />
+              </button>
+            </div>
+          </div>
+        </DraggableItemPopup>
+      ) : null,
+    [
+      crsItems,
+      customItems,
+      displayEpsgs,
+      filterQuery,
+      filteredCatalog,
+      onAdd,
+      onRemove,
+      panelBind,
+      show,
+      toggleDisplay,
+      toggleShow,
+      trans,
+      updateCrsItem,
+    ],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={(bind) =>
-        show ? (
-          <DraggableItemPopup
-            show={show}
-            onUpdateShow={(v) => toggleShow(!!v)}
-            title={trans('map.crs-control.title')}
-            {...bind}
-            {...panelBind}
-          >
-            <div className="crs-container">
-              <div className="crs-catalog">
-                <input
-                  type="search"
-                  className="crs-catalog__filter"
-                  value={filterQuery}
-                  placeholder={trans('map.crs-control.filter')}
-                  onChange={(e) => setFilterQuery(e.target.value)}
-                />
-                <ul className="crs-catalog__list">
-                  {filteredCatalog.map((item) => (
-                    <li
-                      key={item.epsg}
-                      className="crs-catalog__item"
-                    >
-                      <label
-                        className="crs-item-header__display"
-                        title={trans('map.crs-display.show')}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={displayEpsgs.includes(item.epsg)}
-                          disabled={item.epsg === '4326'}
-                          onChange={(e) =>
-                            toggleDisplay(item.epsg, e.target.checked)
-                          }
-                        />
-                      </label>
-                      <span className="crs-catalog__label">
-                        {formatCrsLabel(item)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {customItems.length ? (
-                <div className="crs-custom">
-                  <div className="crs-custom__title">
-                    {trans('map.crs-control.custom')}
-                  </div>
-                  <div className="crs-custom__list">
-                    {customItems.map((crsItem, index) => {
-                      const storeIndex = crsItems.indexOf(crsItem);
-                      return (
-                        <BaseCollapse
-                          key={crsItem.epsg || `custom-${index}`}
-                          selected={false}
-                          header={
-                            <div className="crs-item-header">
-                              <div className="crs-item-header__title">
-                                {crsItem.name || crsItem.epsg || 'New CRS'}
-                              </div>
-                              <div className="crs-item-header__action">
-                                <button
-                                  type="button"
-                                  className="clickable"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onRemove(crsItem);
-                                  }}
-                                >
-                                  <Icon
-                                    path={mdiDelete}
-                                    size="16px"
-                                  />
-                                </button>
-                              </div>
-                            </div>
-                          }
-                        >
-                          <div className="crs-item">
-                            <div>
-                              <InputText
-                                value={crsItem.name}
-                                label={trans('map.crs-control.field.name')}
-                                onChange={(v) =>
-                                  updateCrsItem(storeIndex, { name: v })
-                                }
-                              />
-                            </div>
-                            <div>
-                              <InputText
-                                value={crsItem.epsg}
-                                label={trans('map.crs-control.field.epsg')}
-                                onChange={(v) =>
-                                  updateCrsItem(storeIndex, { epsg: v })
-                                }
-                              />
-                            </div>
-                            <div>
-                              <InputText
-                                value={crsItem.proj4js || ''}
-                                label={trans('map.crs-control.field.proj4js')}
-                                onChange={(v) =>
-                                  updateCrsItem(storeIndex, { proj4js: v })
-                                }
-                              />
-                            </div>
-                            <div>
-                              <InputSelect
-                                value={crsItem.unit}
-                                label={trans('map.crs-control.field.unit')}
-                                items={[...UNIT_ITEMS]}
-                                onChange={(v) =>
-                                  updateCrsItem(storeIndex, {
-                                    unit: v as CrsItem['unit'],
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                        </BaseCollapse>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="crs-item__add">
-                <button
-                  type="button"
-                  className="crs-item__add-btn clickable"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAdd();
-                  }}
-                >
-                  <Icon
-                    path={mdiPlus}
-                    size="16px"
-                  />
-                </button>
-              </div>
-            </div>
-          </DraggableItemPopup>
-        ) : null
-      }
+      draggable={renderDraggable}
     />
   );
 }

@@ -8,7 +8,7 @@ import {
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiCog } from '@mdi/js';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { MapControlButton } from '../../components/MapControlButton';
 import { useLang } from '../../extra/lang/hook';
@@ -16,7 +16,10 @@ import { useMapControl } from '../../extra/registry/useMapControl';
 import { InputText } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow } from '../../hooks/useShow';
-import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+import {
+  ModuleContainer,
+  ModuleContainerProps,
+} from '../ModuleContainer/ModuleContainer';
 
 export interface SettingControlProps extends WithMapPropType {
   show?: boolean;
@@ -61,7 +64,7 @@ export function SettingControl(props: SettingControlProps) {
     }
   }
 
-  function onSetSetting() {
+  const onSetSetting = useCallback(() => {
     callMap((map) => {
       applyMapStyleSettings(map, {
         zoom: setting.zoom,
@@ -70,7 +73,7 @@ export function SettingControl(props: SettingControlProps) {
         glyphs: setting.glyphs,
       });
     });
-  }
+  }, [callMap, setting.center, setting.glyphs, setting.sprite, setting.zoom]);
 
   const singleButton = {
     kind: 'single' as const,
@@ -101,92 +104,106 @@ export function SettingControl(props: SettingControlProps) {
   useEffect(() => {
     control.sync();
   }, [show, control]);
-
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      draggable={(bind) =>
-        show ? (
-          <DraggableItemPopup
-            show={show}
-            onUpdateShow={(v) => toggleShow(!!v)}
-            title={trans('map.setting-control.title')}
-            {...bind}
-            {...panelBind}
-          >
-            <div className="map-setting-control">
-              <div className="map-setting-control__fields">
-                <div>
-                  <label className="map-setting-control__center-label">
-                    {trans('map.setting-control.field.center')}
-                  </label>
-                  <div className="map-setting-control__center">
-                    <InputText
-                      type="number"
-                      step="0.0000001"
-                      value={String(setting.center[0])}
-                      onChange={(v) =>
-                        setSetting((prev) => ({
-                          ...prev,
-                          center: [Number(v), prev.center[1]],
-                        }))
-                      }
-                    />
-                    <InputText
-                      type="number"
-                      step="0.0000001"
-                      value={String(setting.center[1])}
-                      onChange={(v) =>
-                        setSetting((prev) => ({
-                          ...prev,
-                          center: [prev.center[0], Number(v)],
-                        }))
-                      }
-                    />
-                  </div>
-                </div>
-                <div>
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) =>
+      show ? (
+        <DraggableItemPopup
+          show={show}
+          onUpdateShow={(v) => toggleShow(!!v)}
+          title={trans('map.setting-control.title')}
+          {...bind}
+          {...panelBind}
+        >
+          <div className="map-setting-control">
+            <div className="map-setting-control__fields">
+              <div>
+                <label className="map-setting-control__center-label">
+                  {trans('map.setting-control.field.center')}
+                </label>
+                <div className="map-setting-control__center">
                   <InputText
-                    label={trans('map.setting-control.field.zoom')}
-                    value={setting.zoom != null ? String(setting.zoom) : ''}
+                    type="number"
+                    step="0.0000001"
+                    value={String(setting.center[0])}
                     onChange={(v) =>
                       setSetting((prev) => ({
                         ...prev,
-                        zoom: v === '' ? undefined : Number(v),
+                        center: [Number(v), prev.center[1]],
+                      }))
+                    }
+                  />
+                  <InputText
+                    type="number"
+                    step="0.0000001"
+                    value={String(setting.center[1])}
+                    onChange={(v) =>
+                      setSetting((prev) => ({
+                        ...prev,
+                        center: [prev.center[0], Number(v)],
                       }))
                     }
                   />
                 </div>
-                <div>
-                  <InputText
-                    label={trans('map.setting-control.field.sprite')}
-                    value={setting.sprite ?? ''}
-                    onChange={(v) =>
-                      setSetting((prev) => ({ ...prev, sprite: v }))
-                    }
-                  />
-                </div>
-                <div>
-                  <InputText
-                    label={trans('map.setting-control.field.glyphs')}
-                    value={setting.glyphs ?? ''}
-                    onChange={(v) =>
-                      setSetting((prev) => ({ ...prev, glyphs: v }))
-                    }
-                  />
-                </div>
               </div>
-              <MapControlButton
-                className="map-setting-control__apply"
-                onClick={onSetSetting}
-                variant="filled"
-              >
-                {trans('map.setting-control.btn.apply')}
-              </MapControlButton>
+              <div>
+                <InputText
+                  label={trans('map.setting-control.field.zoom')}
+                  value={setting.zoom != null ? String(setting.zoom) : ''}
+                  onChange={(v) =>
+                    setSetting((prev) => ({
+                      ...prev,
+                      zoom: v === '' ? undefined : Number(v),
+                    }))
+                  }
+                />
+              </div>
+              <div>
+                <InputText
+                  label={trans('map.setting-control.field.sprite')}
+                  value={setting.sprite ?? ''}
+                  onChange={(v) =>
+                    setSetting((prev) => ({ ...prev, sprite: v }))
+                  }
+                />
+              </div>
+              <div>
+                <InputText
+                  label={trans('map.setting-control.field.glyphs')}
+                  value={setting.glyphs ?? ''}
+                  onChange={(v) =>
+                    setSetting((prev) => ({ ...prev, glyphs: v }))
+                  }
+                />
+              </div>
             </div>
-          </DraggableItemPopup>
-        ) : null
-      }
+            <MapControlButton
+              className="map-setting-control__apply"
+              onClick={onSetSetting}
+              variant="filled"
+            >
+              {trans('map.setting-control.btn.apply')}
+            </MapControlButton>
+          </div>
+        </DraggableItemPopup>
+      ) : null,
+    [
+      onSetSetting,
+      panelBind,
+      setting.center,
+      setting.glyphs,
+      setting.sprite,
+      setting.zoom,
+      show,
+      toggleShow,
+      trans,
+    ],
+  );
+  return (
+    <ModuleContainer
+      {...moduleContainerProps}
+      draggable={renderDraggable}
     />
   );
 }

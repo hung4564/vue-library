@@ -2,6 +2,12 @@
  * Public entry for `@hungpvq/map-core/toolbar`.
  * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
  */
+export {
+  createHostStrategy,
+  resolveHostButtonOptions,
+  resolveToolbarSpecOptions,
+} from './host-strategy';
+export type { HostStrategyConfig } from './host-strategy';
 export { TOOLBAR_CONTROL_LOCALE } from './locale';
 export { logger } from './logger';
 export {
@@ -47,17 +53,10 @@ export {
   ensureMapToolbarStore,
 } from './register-domain-store';
 export {
-  createHostStrategy,
-  resolveHostButtonOptions,
-  resolveToolbarSpecOptions,
-} from './host-strategy';
-export type { HostStrategyConfig } from './host-strategy';
-export {
   createDefaultToolbarStore,
   createLiveToolbarStrategy,
   createSubscribable,
   createToolbarModuleApi,
-  createToolbarStoreApi,
 } from './toolbar';
 export type {
   Listener,

@@ -3,10 +3,11 @@ import {
   defaultMapProps,
   MapControlButton,
   ModuleContainer,
+  ModuleContainerProps,
   useMap,
   useShow,
 } from '@hungpvq/react-map-core';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 type DatasetSourceViewerProps = {
   title?: string;
@@ -32,12 +33,12 @@ export function DatasetSourceViewer(props: DatasetSourceViewerProps) {
       : (props.definition ?? '');
   const popupTitle = props.title || props.listName || 'Dataset source';
 
-  function handleClose() {
+  const handleClose = useCallback(() => {
     toggleShow(false);
     props.onClose?.();
-  }
+  }, [props, toggleShow]);
 
-  async function copyCode() {
+  const copyCode = useCallback(async () => {
     try {
       await navigator.clipboard?.writeText(code);
       setCopied(true);
@@ -45,71 +46,71 @@ export function DatasetSourceViewer(props: DatasetSourceViewerProps) {
     } catch {
       /* ignore */
     }
-  }
+  }, [code]);
 
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      draggable={(bind) => (
-        <DraggableItemPopup
-          show={show}
-          width={720}
-          height={520}
-          title={popupTitle}
-          onClose={handleClose}
-          onUpdateShow={(v) => {
-            if (!v) handleClose();
-          }}
-          {...bind}
-        >
-          <div className="demo-source-viewer">
-            <div className="demo-source-viewer__toolbar">
-              {hasExampleData ? (
-                <div
-                  className="demo-source-viewer__tabs"
-                  role="tablist"
-                >
-                  <button
-                    type="button"
-                    role="tab"
-                    className={`demo-source-viewer__tab${
-                      activeTab === 'definition' ? ' is-active' : ''
-                    }`}
-                    aria-selected={activeTab === 'definition'}
-                    onClick={() => setTab('definition')}
-                  >
-                    Definition
-                  </button>
-                  <button
-                    type="button"
-                    role="tab"
-                    className={`demo-source-viewer__tab${
-                      activeTab === 'example' ? ' is-active' : ''
-                    }`}
-                    aria-selected={activeTab === 'example'}
-                    onClick={() => setTab('example')}
-                  >
-                    Example data
-                  </button>
-                </div>
-              ) : (
-                <span className="demo-source-viewer__label">Definition</span>
-              )}
-              <MapControlButton
-                variant="outlined"
-                onClick={() => void copyCode()}
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) => (
+      <DraggableItemPopup
+        show={show}
+        width={720}
+        height={520}
+        title={popupTitle}
+        onClose={handleClose}
+        onUpdateShow={(v) => {
+          if (!v) handleClose();
+        }}
+        {...bind}
+      >
+        <div className="demo-source-viewer">
+          <div className="demo-source-viewer__toolbar">
+            {hasExampleData ? (
+              <div
+                className="demo-source-viewer__tabs"
+                role="tablist"
               >
-                {copied ? 'Copied' : 'Copy'}
-              </MapControlButton>
-            </div>
-            <pre
-              className="demo-source-viewer__code"
-              tabIndex={0}
+                <button
+                  type="button"
+                  role="tab"
+                  className={`demo-source-viewer__tab${
+                    activeTab === 'definition' ? ' is-active' : ''
+                  }`}
+                  aria-selected={activeTab === 'definition'}
+                  onClick={() => setTab('definition')}
+                >
+                  Definition
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  className={`demo-source-viewer__tab${
+                    activeTab === 'example' ? ' is-active' : ''
+                  }`}
+                  aria-selected={activeTab === 'example'}
+                  onClick={() => setTab('example')}
+                >
+                  Example data
+                </button>
+              </div>
+            ) : (
+              <span className="demo-source-viewer__label">Definition</span>
+            )}
+            <MapControlButton
+              variant="outlined"
+              onClick={() => void copyCode()}
             >
-              {code}
-            </pre>
+              {copied ? 'Copied' : 'Copy'}
+            </MapControlButton>
           </div>
-          <style>{`
+          <pre
+            className="demo-source-viewer__code"
+            tabIndex={0}
+          >
+            {code}
+          </pre>
+        </div>
+        <style>{`
             .demo-source-viewer {
               display: flex;
               flex-direction: column;
@@ -158,8 +159,23 @@ export function DatasetSourceViewer(props: DatasetSourceViewerProps) {
               background: #f7f8fa;
             }
           `}</style>
-        </DraggableItemPopup>
-      )}
+      </DraggableItemPopup>
+    ),
+    [
+      activeTab,
+      code,
+      copied,
+      copyCode,
+      handleClose,
+      hasExampleData,
+      popupTitle,
+      show,
+    ],
+  );
+  return (
+    <ModuleContainer
+      {...moduleContainerProps}
+      draggable={renderDraggable}
     />
   );
 }

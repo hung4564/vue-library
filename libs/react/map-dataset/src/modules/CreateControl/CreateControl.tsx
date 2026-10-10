@@ -16,6 +16,7 @@ import {
   defaultMapProps,
   MapControlButton,
   ModuleContainer,
+  ModuleContainerProps,
   useLang,
   useMap,
   useMapControl,
@@ -24,6 +25,7 @@ import { InputSelect, InputText } from '@hungpvq/react-map-core/fields';
 import { mdiPlus } from '@mdi/js';
 import {
   type ComponentType,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -278,116 +280,136 @@ export function CreateControl(props: CreateControlProps) {
   const onConfigChange = (patch: Record<string, unknown>) =>
     setForm({ ...form, config: { ...form.config, ...patch } });
 
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) =>
+      props.show ? (
+        <DraggableItemPopup
+          {...bind}
+          {...panelBind}
+          show={props.show}
+          onUpdateShow={(v) => {
+            if (!v) reset();
+            props.onShowChange(!!v);
+          }}
+          title={trans('map.layer-control.create.title')}
+          width={400}
+          height={420}
+        >
+          <div className="create-control-container">
+            <div className="form-container create-control-form map-row">
+              <div className="map-col-12">
+                <InputSelect
+                  label={trans('map.layer-control.field.layer-type')}
+                  value={form.type}
+                  items={itemsType}
+                  onChange={(v) => onChangeType(String(v))}
+                />
+              </div>
+
+              <div className="map-col-12">
+                <InputText
+                  label={trans('map.layer-control.field.layer-name')}
+                  value={String(form.config.name ?? '')}
+                  onChange={(v) =>
+                    setForm({
+                      ...form,
+                      config: { ...form.config, name: v },
+                    })
+                  }
+                />
+              </div>
+
+              <div className="map-col-12">
+                <div className="create-control-section-label">
+                  {trans('map.layer-control.create.data-source')}
+                </div>
+              </div>
+
+              <DataSource
+                key={`${configKey}-data`}
+                mapId={mapId}
+                config={form.config}
+                trans={trans}
+                onChange={onConfigChange}
+              />
+
+              {Settings ? (
+                <>
+                  <div className="map-col-12">
+                    <div className="create-control-section-label">
+                      {trans('map.layer-control.create.layer-setting')}
+                    </div>
+                  </div>
+
+                  <Settings
+                    key={`${configKey}-settings`}
+                    mapId={mapId}
+                    config={form.config}
+                    trans={trans}
+                    onChange={onConfigChange}
+                  />
+                </>
+              ) : null}
+            </div>
+
+            <div className="create-control-actions">
+              {validationErrors.length ? (
+                <div className="create-control-validation">
+                  {validationErrors.map((key) => (
+                    <div
+                      key={key}
+                      className="create-control-validation__item"
+                    >
+                      {trans(`map.layer-control.create.${key}`)}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+              {createError ? (
+                <div className="create-control-sample-error">{createError}</div>
+              ) : null}
+              {creating ? (
+                <div className="create-control-actions__status">
+                  {trans('map.layer-control.create.creating')}
+                </div>
+              ) : null}
+              <MapControlButton
+                variant="filled"
+                className="btn-container"
+                disabled={creating}
+                onClick={() => void onAddLayer()}
+              >
+                {trans('map.layer-control.create-btn')}
+              </MapControlButton>
+            </div>
+          </div>
+        </DraggableItemPopup>
+      ) : null,
+    [
+      DataSource,
+      Settings,
+      configKey,
+      createError,
+      creating,
+      form,
+      itemsType,
+      mapId,
+      onAddLayer,
+      onChangeType,
+      onConfigChange,
+      panelBind,
+      props,
+      reset,
+      trans,
+      validationErrors,
+    ],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={(bind) =>
-        props.show ? (
-          <DraggableItemPopup
-            {...bind}
-            {...panelBind}
-            show={props.show}
-            onUpdateShow={(v) => {
-              if (!v) reset();
-              props.onShowChange(!!v);
-            }}
-            title={trans('map.layer-control.create.title')}
-            width={400}
-            height={420}
-          >
-            <div className="create-control-container">
-              <div className="form-container create-control-form map-row">
-                <div className="map-col-12">
-                  <InputSelect
-                    label={trans('map.layer-control.field.layer-type')}
-                    value={form.type}
-                    items={itemsType}
-                    onChange={(v) => onChangeType(String(v))}
-                  />
-                </div>
-
-                <div className="map-col-12">
-                  <InputText
-                    label={trans('map.layer-control.field.layer-name')}
-                    value={String(form.config.name ?? '')}
-                    onChange={(v) =>
-                      setForm({
-                        ...form,
-                        config: { ...form.config, name: v },
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="map-col-12">
-                  <div className="create-control-section-label">
-                    {trans('map.layer-control.create.data-source')}
-                  </div>
-                </div>
-
-                <DataSource
-                  key={`${configKey}-data`}
-                  mapId={mapId}
-                  config={form.config}
-                  trans={trans}
-                  onChange={onConfigChange}
-                />
-
-                {Settings ? (
-                  <>
-                    <div className="map-col-12">
-                      <div className="create-control-section-label">
-                        {trans('map.layer-control.create.layer-setting')}
-                      </div>
-                    </div>
-
-                    <Settings
-                      key={`${configKey}-settings`}
-                      mapId={mapId}
-                      config={form.config}
-                      trans={trans}
-                      onChange={onConfigChange}
-                    />
-                  </>
-                ) : null}
-              </div>
-
-              <div className="create-control-actions">
-                {validationErrors.length ? (
-                  <div className="create-control-validation">
-                    {validationErrors.map((key) => (
-                      <div
-                        key={key}
-                        className="create-control-validation__item"
-                      >
-                        {trans(`map.layer-control.create.${key}`)}
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-                {createError ? (
-                  <div className="create-control-sample-error">
-                    {createError}
-                  </div>
-                ) : null}
-                {creating ? (
-                  <div className="create-control-actions__status">
-                    {trans('map.layer-control.create.creating')}
-                  </div>
-                ) : null}
-                <MapControlButton
-                  variant="filled"
-                  className="btn-container"
-                  disabled={creating}
-                  onClick={() => void onAddLayer()}
-                >
-                  {trans('map.layer-control.create-btn')}
-                </MapControlButton>
-              </div>
-            </div>
-          </DraggableItemPopup>
-        ) : null
-      }
+      draggable={renderDraggable}
     />
   );
 }

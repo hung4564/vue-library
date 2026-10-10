@@ -22,7 +22,6 @@ export interface DraggableItemBottomProps {
   disabledHeader?: boolean;
   disabledClose?: boolean;
   disabledOrder?: boolean;
-  highlightMs?: number;
   onUpdateShow?: (value: boolean) => void;
   onClose?: () => void;
   onUpdateExpand?: (value: boolean) => void;

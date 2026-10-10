@@ -1,37 +1,45 @@
 import { getUUIDv4 } from '@hungpvq/shared';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useBottomItem } from '../store';
+
+type BottomItemOptions = {
+  title?: string;
+  type: 'item-bottom';
+  componentCard?: unknown;
+  componentCardHeader?: unknown;
+};
+
+const DEFAULT_OPTION: BottomItemOptions = {
+  type: 'item-bottom',
+};
 
 export function useInitBottom(
   containerId: string,
   show: boolean,
   setShow: (value: boolean) => void,
-  optionDefault: {
-    title?: string;
-    type: 'item-bottom';
-    componentCard?: unknown;
-    componentCardHeader?: unknown;
-  } = { type: 'item-bottom' },
+  optionDefault: BottomItemOptions = DEFAULT_OPTION,
   stableId?: string,
 ) {
   const [itemId] = useState(() => stableId || `draggable-item-${getUUIDv4()}`);
+
   const [zIndex, setZIndexState] = useState(0);
-
-  function setZIndex(value: number) {
-    setZIndexState(value);
-  }
-
-  const store = useBottomItem(containerId);
-  const storeRef = useRef(store);
-  storeRef.current = store;
+  const [initDone, setInitDone] = useState(false);
+  const storeRef = useRef(useBottomItem(containerId));
   const setShowRef = useRef(setShow);
+
   setShowRef.current = setShow;
+
+  const setZIndex = useCallback((value: number) => {
+    setZIndexState(value);
+  }, []);
 
   useEffect(() => {
     const currentStore = storeRef.current;
     currentStore.registerBottom(itemId);
+
     const prev = currentStore.getStoreContainer(containerId).actions[itemId];
+
     currentStore.registerAction(itemId, {
       title: optionDefault.title,
       type: optionDefault.type,
@@ -43,6 +51,8 @@ export function useInitBottom(
       componentCard: optionDefault.componentCard,
       componentCardHeader: optionDefault.componentCardHeader,
     });
+
+    setInitDone(true);
     return () => {
       currentStore.unRegisterBottom(itemId);
     };
@@ -53,21 +63,26 @@ export function useInitBottom(
     optionDefault.type,
     optionDefault.componentCard,
     optionDefault.componentCardHeader,
+    setZIndex,
   ]);
 
   useEffect(() => {
+    if (!initDone) {
+      return;
+    }
     if (show) {
       storeRef.current.registerBottomShow(itemId, true);
       return;
     }
+
     try {
       if (storeRef.current.getShow() === itemId) {
         storeRef.current.registerBottomShow(itemId, false);
       }
     } catch {
-      // container may already be gone during unmount
+      // Container có thể đã bị xóa trong lúc unmount.
     }
-  }, [show, itemId]);
+  }, [show, itemId, initDone]);
 
   return { itemId, zIndex };
 }

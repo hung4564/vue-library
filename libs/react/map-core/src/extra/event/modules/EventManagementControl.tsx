@@ -9,11 +9,14 @@ import {
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/react-draggable';
 import { mdiCalendarSearch } from '@mdi/js';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
-import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
+import {
+  ModuleContainer,
+  ModuleContainerProps,
+} from '../../../modules/ModuleContainer/ModuleContainer';
 import { useMapMittStore } from '../../../store/mitt-store';
 import { useLang } from '../../lang/hook';
 import { useMapControl } from '../../registry/useMapControl';
@@ -78,70 +81,74 @@ export function EventManagementControl(props: EventManagementControlProps) {
     control.sync();
   }, [show, control]);
 
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) => (
+      <DraggableItemSideBar
+        show={show}
+        onUpdateShow={(v) => toggleShow(!!v)}
+        title={trans('map.event-control.title')}
+        containerId={bind.containerId}
+        location={panelPosition.location || 'left'}
+      >
+        <div className="map-event-control">
+          {Object.entries(groupedViews).map(([type, group]) => (
+            <div
+              key={type}
+              className="map-event-control__group"
+            >
+              <h2 className="map-event-control__group-title">{type}</h2>
+              <ul className="map-event-control__list">
+                {group.map((event) => {
+                  const active = isEventActive(current, event);
+                  return (
+                    <li
+                      key={event.id}
+                      className={`map-event-control__item${active ? ' is-active' : ''}`}
+                    >
+                      <div>
+                        <strong>{trans('map.event-control.field.id')}:</strong>{' '}
+                        {event.id}
+                      </div>
+                      <div>
+                        <strong>
+                          {trans('map.event-control.field.name')}:
+                        </strong>{' '}
+                        {event.name || 'N/A'}
+                      </div>
+                      <div>
+                        <strong>
+                          {trans('map.event-control.field.from')}:
+                        </strong>{' '}
+                        {event.from || 'N/A'}
+                      </div>
+                      <div className="map-event-control__status">
+                        {active ? (
+                          <span className="map-event-control__status-icon is-active">
+                            ✔ Đang kích hoạt
+                          </span>
+                        ) : (
+                          <span className="map-event-control__status-icon is-inactive">
+                            ✖ Không kích hoạt
+                          </span>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </DraggableItemSideBar>
+    ),
+    [current, groupedViews, panelPosition.location, show, toggleShow, trans],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={(bind) => (
-        <DraggableItemSideBar
-          show={show}
-          onUpdateShow={(v) => toggleShow(!!v)}
-          title={trans('map.event-control.title')}
-          containerId={bind.containerId}
-          location={panelPosition.location || 'left'}
-        >
-          <div className="map-event-control">
-            {Object.entries(groupedViews).map(([type, group]) => (
-              <div
-                key={type}
-                className="map-event-control__group"
-              >
-                <h2 className="map-event-control__group-title">{type}</h2>
-                <ul className="map-event-control__list">
-                  {group.map((event) => {
-                    const active = isEventActive(current, event);
-                    return (
-                      <li
-                        key={event.id}
-                        className={`map-event-control__item${active ? ' is-active' : ''}`}
-                      >
-                        <div>
-                          <strong>
-                            {trans('map.event-control.field.id')}:
-                          </strong>{' '}
-                          {event.id}
-                        </div>
-                        <div>
-                          <strong>
-                            {trans('map.event-control.field.name')}:
-                          </strong>{' '}
-                          {event.name || 'N/A'}
-                        </div>
-                        <div>
-                          <strong>
-                            {trans('map.event-control.field.from')}:
-                          </strong>{' '}
-                          {event.from || 'N/A'}
-                        </div>
-                        <div className="map-event-control__status">
-                          {active ? (
-                            <span className="map-event-control__status-icon is-active">
-                              ✔ Đang kích hoạt
-                            </span>
-                          ) : (
-                            <span className="map-event-control__status-icon is-inactive">
-                              ✖ Không kích hoạt
-                            </span>
-                          )}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </DraggableItemSideBar>
-      )}
+      draggable={renderDraggable}
     />
   );
 }

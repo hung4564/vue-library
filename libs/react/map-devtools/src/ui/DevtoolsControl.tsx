@@ -5,12 +5,14 @@ import {
   defaultMapProps,
   MapControlButton,
   ModuleContainer,
+  ModuleContainerProps,
   useMap,
   useMapControl,
 } from '@hungpvq/react-map-core';
 import { mdiTools } from '@mdi/js';
 import { Icon } from '@mdi/react';
 
+import { useCallback } from 'react';
 import { setDevtoolOpen, toggleDevtoolOpen } from '../store';
 import { useDevtoolState } from '../useDevtoolState';
 import { DevtoolsPanelBody } from './DevtoolsPanelBody';
@@ -52,6 +54,29 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
     ],
   });
 
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) => (
+      <DraggableItemPopup
+        show={isOpen}
+        title="Map Devtools"
+        onClose={() => setOpen(false)}
+        onUpdateShow={setOpen}
+        {...bind}
+        {...panelBind}
+      >
+        <div className="devtools-popup-body">
+          <DevtoolsPanelBody
+            activeTab={activeTab}
+            logCount={logs.length}
+            errorCount={errors.length}
+          />
+        </div>
+      </DraggableItemPopup>
+    ),
+    [],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
@@ -73,24 +98,7 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
           />
         </MapControlButton>
       }
-      draggable={(bind) => (
-        <DraggableItemPopup
-          show={isOpen}
-          title="Map Devtools"
-          onClose={() => setOpen(false)}
-          onUpdateShow={setOpen}
-          {...bind}
-          {...panelBind}
-        >
-          <div className="devtools-popup-body">
-            <DevtoolsPanelBody
-              activeTab={activeTab}
-              logCount={logs.length}
-              errorCount={errors.length}
-            />
-          </div>
-        </DraggableItemPopup>
-      )}
+      draggable={renderDraggable}
     />
   );
 }

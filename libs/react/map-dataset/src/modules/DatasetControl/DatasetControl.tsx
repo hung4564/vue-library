@@ -13,6 +13,7 @@ import {
   defaultMapProps,
   MapControlButton,
   ModuleContainer,
+  ModuleContainerProps,
   useLang,
   useMap,
   useMapControl,
@@ -20,7 +21,7 @@ import {
 } from '@hungpvq/react-map-core';
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useMapDataset } from '../../store/dataset-api';
 
@@ -79,70 +80,87 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
     control.sync();
   }, [show, control]);
 
-  function onShowDetail(view: IDataset) {
-    handleMenuActionClick(
-      createMenuClickBuilder()
-        .addTupleStatic(LIST_VIEW_MENU_ID.addComponent, {
-          value: createMenuClickAddComponentBuilder()
-            .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.datasetDetail)
-            .setAttr({ dataset: view })
-            .setCheck('detail-dataset')
-            .build(),
-        })
-        .build(),
-      { layer: view, mapId, value: view },
-    );
-  }
+  const onShowDetail = useCallback(
+    (view: IDataset) => {
+      handleMenuActionClick(
+        createMenuClickBuilder()
+          .addTupleStatic(LIST_VIEW_MENU_ID.addComponent, {
+            value: createMenuClickAddComponentBuilder()
+              .setComponentKey(LIST_VIEW_MENU_COMPONENT_KEY.datasetDetail)
+              .setAttr({ dataset: view })
+              .setCheck('detail-dataset')
+              .build(),
+          })
+          .build(),
+        { layer: view, mapId, value: view },
+      );
+    },
+    [mapId],
+  );
 
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) => (
+      <DraggableItemSideBar
+        show={show}
+        onUpdateShow={(v) => setShow(!!v)}
+        title={trans('map.dataset-control.title')}
+        containerId={bind.containerId}
+        location={panelPosition.location || 'left'}
+      >
+        <div className="dataset-control">
+          {views.map((view) => (
+            <div
+              key={view.id}
+              className="dataset-item"
+            >
+              <span className="dataset-item__title">{view.getName()}</span>
+              <div className="dataset-item__title-action">
+                <MapControlButton
+                  variant="plain"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onShowDetail(view);
+                  }}
+                >
+                  <Icon
+                    path={mdiInformation}
+                    size={ICON_SIZE}
+                  />
+                </MapControlButton>
+                <MapControlButton
+                  variant="plain"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeDataset(view);
+                  }}
+                >
+                  <Icon
+                    path={mdiDelete}
+                    size={ICON_SIZE}
+                  />
+                </MapControlButton>
+              </div>
+            </div>
+          ))}
+        </div>
+      </DraggableItemSideBar>
+    ),
+    [
+      onShowDetail,
+      panelPosition.location,
+      removeDataset,
+      setShow,
+      show,
+      trans,
+      views,
+    ],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={(bind) => (
-        <DraggableItemSideBar
-          show={show}
-          onUpdateShow={(v) => setShow(!!v)}
-          title={trans('map.dataset-control.title')}
-          containerId={bind.containerId}
-          location={panelPosition.location || 'left'}
-        >
-          <div className="dataset-control">
-            {views.map((view) => (
-              <div
-                key={view.id}
-                className="dataset-item"
-              >
-                <span className="dataset-item__title">{view.getName()}</span>
-                <div className="dataset-item__title-action">
-                  <MapControlButton
-                    variant="plain"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onShowDetail(view);
-                    }}
-                  >
-                    <Icon
-                      path={mdiInformation}
-                      size={ICON_SIZE}
-                    />
-                  </MapControlButton>
-                  <MapControlButton
-                    variant="plain"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeDataset(view);
-                    }}
-                  >
-                    <Icon
-                      path={mdiDelete}
-                      size={ICON_SIZE}
-                    />
-                  </MapControlButton>
-                </div>
-              </div>
-            ))}
-          </div>
-        </DraggableItemSideBar>
-      )}
+      draggable={renderDraggable}
     />
   );
 }

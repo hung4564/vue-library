@@ -8,7 +8,7 @@ import {
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import { mdiMapMarkerOutline } from '@mdi/js';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { MapControlButton } from '../../components/MapControlButton';
 import { useLang } from '../../extra/lang/hook';
@@ -16,7 +16,10 @@ import { useMapControl } from '../../extra/registry/useMapControl';
 import { InputText } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow } from '../../hooks/useShow';
-import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+import {
+  ModuleContainer,
+  ModuleContainerProps,
+} from '../ModuleContainer/ModuleContainer';
 
 export interface GotoControlProps extends WithMapPropType {
   show?: boolean;
@@ -90,84 +93,97 @@ export function GotoControl(props: GotoControlProps) {
     control.sync();
   }, [show, control]);
 
-  return (
-    <ModuleContainer
-      {...moduleContainerProps}
-      draggable={(bind) =>
-        show ? (
-          <DraggableItemPopup
-            show={show}
-            onUpdateShow={(v) => toggleShow(!!v)}
-            title={trans('map.goto-control.title')}
-            {...bind}
-            {...panelBind}
-          >
-            <div className="map-goto-control">
-              <div className="map-goto-control__fields">
-                <div>
-                  <label className="map-goto-control__center-label">
-                    {trans('map.goto-control.field.center')}
-                  </label>
-                  <div className="map-goto-control__center">
-                    <InputText
-                      type="number"
-                      step="0.0000001"
-                      value={String(setting.center[0])}
-                      onChange={(v) =>
-                        setSetting((prev) => ({
-                          ...prev,
-                          center: [Number(v), prev.center[1]],
-                        }))
-                      }
-                    />
-                    <InputText
-                      type="number"
-                      step="0.0000001"
-                      value={String(setting.center[1])}
-                      onChange={(v) =>
-                        setSetting((prev) => ({
-                          ...prev,
-                          center: [prev.center[0], Number(v)],
-                        }))
-                      }
-                    />
-                  </div>
-                </div>
-                <div>
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) =>
+      show ? (
+        <DraggableItemPopup
+          show={show}
+          onUpdateShow={(v) => toggleShow(!!v)}
+          title={trans('map.goto-control.title')}
+          {...bind}
+          {...panelBind}
+        >
+          <div className="map-goto-control">
+            <div className="map-goto-control__fields">
+              <div>
+                <label className="map-goto-control__center-label">
+                  {trans('map.goto-control.field.center')}
+                </label>
+                <div className="map-goto-control__center">
                   <InputText
-                    label={trans('map.goto-control.field.zoom')}
                     type="number"
-                    min={0}
-                    max={24}
-                    value={setting.zoom != null ? String(setting.zoom) : ''}
+                    step="0.0000001"
+                    value={String(setting.center[0])}
                     onChange={(v) =>
                       setSetting((prev) => ({
                         ...prev,
-                        zoom: v === '' ? undefined : Number(v),
+                        center: [Number(v), prev.center[1]],
+                      }))
+                    }
+                  />
+                  <InputText
+                    type="number"
+                    step="0.0000001"
+                    value={String(setting.center[1])}
+                    onChange={(v) =>
+                      setSetting((prev) => ({
+                        ...prev,
+                        center: [prev.center[0], Number(v)],
                       }))
                     }
                   />
                 </div>
               </div>
-              <div className="map-goto-control__actions">
-                <MapControlButton
-                  onClick={() => void onPasteCoordinates()}
-                  variant="outlined"
-                >
-                  {trans('map.goto-control.btn.paste')}
-                </MapControlButton>
-                <MapControlButton
-                  className="map-goto-control__btn"
-                  onClick={onSetSetting}
-                  variant="filled"
-                >
-                  {trans('map.goto-control.btn.apply')}
-                </MapControlButton>
+              <div>
+                <InputText
+                  label={trans('map.goto-control.field.zoom')}
+                  type="number"
+                  min={0}
+                  max={24}
+                  value={setting.zoom != null ? String(setting.zoom) : ''}
+                  onChange={(v) =>
+                    setSetting((prev) => ({
+                      ...prev,
+                      zoom: v === '' ? undefined : Number(v),
+                    }))
+                  }
+                />
               </div>
             </div>
-          </DraggableItemPopup>
-        ) : null
-      }
+            <div className="map-goto-control__actions">
+              <MapControlButton
+                onClick={() => void onPasteCoordinates()}
+                variant="outlined"
+              >
+                {trans('map.goto-control.btn.paste')}
+              </MapControlButton>
+              <MapControlButton
+                className="map-goto-control__btn"
+                onClick={onSetSetting}
+                variant="filled"
+              >
+                {trans('map.goto-control.btn.apply')}
+              </MapControlButton>
+            </div>
+          </div>
+        </DraggableItemPopup>
+      ) : null,
+    [
+      onSetSetting,
+      panelBind,
+      setting.center,
+      setting.zoom,
+      show,
+      toggleShow,
+      trans,
+    ],
+  );
+  return (
+    <ModuleContainer
+      {...moduleContainerProps}
+      draggable={renderDraggable}
     />
   );
 }

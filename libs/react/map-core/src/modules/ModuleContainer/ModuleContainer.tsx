@@ -9,7 +9,14 @@ import {
   queryModuleHostElement,
   subscribeControlAutoButton,
 } from '@hungpvq/map-core';
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, {
+  ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 
 import { MapAutoHostButtons } from '../../components/MapAutoHostButtons';
@@ -31,7 +38,7 @@ export interface ModuleContainerProps {
    * `.btn-module-container` (absolute panels pin to the map corner).
    */
   btnOutside?: React.ReactNode;
-  draggable?: (bindDrag: BindPosition) => React.ReactNode;
+  draggable?: (bindDrag: BindPosition) => ReactNode;
   children?: React.ReactNode;
 }
 

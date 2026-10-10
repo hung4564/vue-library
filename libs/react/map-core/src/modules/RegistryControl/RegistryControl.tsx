@@ -25,7 +25,10 @@ import { useMapControl } from '../../extra/registry/useMapControl';
 import { InputCheckbox, InputSelect, InputText } from '../../field';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow } from '../../hooks/useShow';
-import { ModuleContainer } from '../ModuleContainer/ModuleContainer';
+import {
+  ModuleContainer,
+  ModuleContainerProps,
+} from '../ModuleContainer/ModuleContainer';
 
 export interface RegistryControlProps extends WithMapPropType {
   show?: boolean;
@@ -319,14 +322,17 @@ export function RegistryControl(props: RegistryControlProps) {
     }
   }, [showDetail, selectedId]);
 
-  function select(id: string) {
-    setSelectedId(id);
-    setActionType('');
-    setShowDetail(true);
-    refresh();
-  }
+  const select = useCallback(
+    (id: string) => {
+      setSelectedId(id);
+      setActionType('');
+      setShowDetail(true);
+      refresh();
+    },
+    [refresh],
+  );
 
-  function applyLayout() {
+  const applyLayout = useCallback(() => {
     if (!selectedId) return;
     UniversalRegistry.setControlLayout(mapId, selectedId, {
       visible: layoutDraft.visible,
@@ -338,9 +344,18 @@ export function RegistryControl(props: RegistryControlProps) {
         : undefined,
     });
     refresh();
-  }
+  }, [
+    layoutDraft.buttonInMobile,
+    layoutDraft.controlLayout,
+    layoutDraft.order,
+    layoutDraft.position,
+    layoutDraft.visible,
+    mapId,
+    refresh,
+    selectedId,
+  ]);
 
-  function applyPanel() {
+  const applyPanel = useCallback(() => {
     if (!selectedId || !selected) return;
     const kind = selected.panelKind;
     const pos: MapControlPanelPosition = {};
@@ -382,9 +397,19 @@ export function RegistryControl(props: RegistryControlProps) {
       setPanelDraft(snapshot);
       applyingPanelRef.current = false;
     });
-  }
+  }, [
+    mapId,
+    panelDraft,
+    panelEdgeFields.bottom,
+    panelEdgeFields.left,
+    panelEdgeFields.right,
+    panelEdgeFields.top,
+    refresh,
+    selected,
+    selectedId,
+  ]);
 
-  function run() {
+  const run = useCallback(() => {
     if (!selectedId) return;
     UniversalRegistry.runControlAction(
       mapId,
@@ -392,365 +417,405 @@ export function RegistryControl(props: RegistryControlProps) {
       actionType || undefined,
     );
     refresh();
-  }
+  }, [actionType, mapId, refresh, selectedId]);
 
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) => (
+      <>
+        {show ? (
+          <DraggableItemPopup
+            show={show}
+            onUpdateShow={(value) => setShow(!!value)}
+            title={trans('map.registry-control.title')}
+            {...bind}
+            {...panelBind}
+            id={`${CONTROL_ID}-list`}
+          >
+            <div
+              className="map-registry-control map-registry-control--list"
+              aria-label={trans('map.registry-control.title')}
+            >
+              <header className="map-registry-control__header">
+                <p className="map-registry-control__hint">
+                  {trans('map.registry-control.hint')}
+                </p>
+                <MapControlButton
+                  className="map-registry-control__btn"
+                  variant="outlined"
+                  size="small"
+                  onClick={refresh}
+                >
+                  {trans('map.registry-control.refresh')}
+                </MapControlButton>
+              </header>
+
+              <input
+                type="search"
+                className="map-registry-control__search"
+                value={query}
+                aria-label={trans('map.registry-control.search')}
+                placeholder={trans('map.registry-control.searchPlaceholder')}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+
+              {filtered.length === 0 ? (
+                <p className="map-registry-control__empty">
+                  {trans('map.registry-control.empty')}
+                </p>
+              ) : (
+                <ul className="map-registry-control__list">
+                  {filtered.map((ctrl) => (
+                    <li
+                      key={ctrl.id}
+                      className={`map-registry-control__item${
+                        selectedId === ctrl.id ? ' is-selected' : ''
+                      }`}
+                    >
+                      <div
+                        className="map-registry-control__select clickable"
+                        onClick={() => select(ctrl.id)}
+                      >
+                        <strong>{ctrl.id}</strong>
+                        <span>{ctrl.panelKind}</span>
+                        {ctrl.title ? <span>{ctrl.title}</span> : null}
+                        {ctrl.panelKind !== 'button' ? (
+                          <span>
+                            {ctrl.isOpen()
+                              ? trans('map.registry-control.openState')
+                              : trans('map.registry-control.closedState')}
+                          </span>
+                        ) : null}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </DraggableItemPopup>
+        ) : null}
+
+        {showDetail && selected ? (
+          <DraggableItemPopup
+            id={`${CONTROL_ID}-detail`}
+            show={showDetail}
+            onUpdateShow={(value) => setShowDetail(!!value)}
+            title={detailTitle}
+            height={560}
+            width={400}
+            top={bind.top != null ? bind.top + 28 : undefined}
+            bottom={bind.bottom != null ? bind.bottom + 28 : undefined}
+            left={bind.left != null ? bind.left + 28 : undefined}
+            right={bind.right != null ? bind.right + 380 : undefined}
+            containerId={bind.containerId}
+          >
+            <div
+              className="map-registry-control map-registry-control--detail"
+              aria-label={detailTitle}
+            >
+              <MapTabs
+                items={detailTabItems}
+                value={detailTab}
+                onChange={setDetailTab}
+                panes={{
+                  props: (
+                    <div className="map-registry-control__layout map-registry-control__props-pane">
+                      <pre className="map-registry-control__props">
+                        {propsJson}
+                      </pre>
+                      <div className="map-registry-control__run">
+                        <InputSelect
+                          label={trans('map.registry-control.actionType')}
+                          value={actionType}
+                          items={actionTypeItems}
+                          onChange={(value) => setActionType(String(value))}
+                        />
+                        <MapControlButton
+                          className="map-registry-control__btn"
+                          variant="outlined"
+                          size="small"
+                          onClick={run}
+                        >
+                          {trans('map.registry-control.runAction')}
+                        </MapControlButton>
+                      </div>
+                    </div>
+                  ),
+                  layout: (
+                    <div className="map-registry-control__layout">
+                      <div className="map-registry-control__layout-fields">
+                        <div className="map-registry-control__layout-span">
+                          <InputCheckbox
+                            checked={layoutDraft.visible}
+                            label={trans('map.registry-control.layoutVisible')}
+                            onChange={(visible) =>
+                              setLayoutDraft((prev) => ({
+                                ...prev,
+                                visible,
+                              }))
+                            }
+                          />
+                        </div>
+                        <div className="map-registry-control__layout-span">
+                          <InputSelect
+                            label={trans('map.registry-control.layoutPosition')}
+                            value={layoutDraft.position}
+                            items={POSITION_ITEMS}
+                            onChange={(value) =>
+                              setLayoutDraft((prev) => ({
+                                ...prev,
+                                position: String(value) as Position,
+                              }))
+                            }
+                          />
+                        </div>
+                        <InputText
+                          type="number"
+                          label={trans('map.registry-control.layoutOrder')}
+                          value={String(layoutDraft.order)}
+                          onChange={(value) =>
+                            setLayoutDraft((prev) => ({
+                              ...prev,
+                              order: Number(value) || 0,
+                            }))
+                          }
+                        />
+                        <InputSelect
+                          label={trans(
+                            'map.registry-control.layoutControlLayout',
+                          )}
+                          value={layoutDraft.controlLayout}
+                          items={CONTROL_LAYOUT_ITEMS}
+                          onChange={(value) =>
+                            setLayoutDraft((prev) => ({
+                              ...prev,
+                              controlLayout: String(value) as ControlLayout,
+                            }))
+                          }
+                        />
+                        <div className="map-registry-control__layout-span">
+                          <InputSelect
+                            label={trans(
+                              'map.registry-control.layoutButtonInMobile',
+                            )}
+                            value={layoutDraft.buttonInMobile}
+                            items={buttonInMobileItems}
+                            onChange={(value) =>
+                              setLayoutDraft((prev) => ({
+                                ...prev,
+                                buttonInMobile: String(value) as
+                                  '' | ButtonInMobile,
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="map-registry-control__layout-footer">
+                        <MapControlButton
+                          className="map-registry-control__btn"
+                          variant="outlined"
+                          size="small"
+                          onClick={applyLayout}
+                        >
+                          {trans('map.registry-control.layoutApply')}
+                        </MapControlButton>
+                      </div>
+                    </div>
+                  ),
+                  panel: showPanelSection ? (
+                    <div className="map-registry-control__layout">
+                      {selected?.panelKind === 'sidebar' ? (
+                        <div className="map-registry-control__layout-fields">
+                          <div className="map-registry-control__layout-span">
+                            <InputSelect
+                              label={trans(
+                                'map.registry-control.panelLocation',
+                              )}
+                              value={panelDraft.location}
+                              items={LOCATION_ITEMS}
+                              onChange={(value) =>
+                                setPanelDraft((prev) => ({
+                                  ...prev,
+                                  location: String(
+                                    value,
+                                  ) as PanelOffsetDraft['location'],
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="map-registry-control__layout-span">
+                            <InputCheckbox
+                              label={trans(
+                                'map.registry-control.panelShowState',
+                              )}
+                              checked={panelDraft.open}
+                              onChange={(checked) =>
+                                setPanelDraft((prev) => ({
+                                  ...prev,
+                                  open: checked,
+                                }))
+                              }
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="map-registry-control__layout-fields">
+                          {panelEdgeFields.top ? (
+                            <InputText
+                              type="number"
+                              label={trans('map.registry-control.panelTop')}
+                              value={panelDraft.top}
+                              onChange={(value) =>
+                                setPanelDraft((prev) => ({
+                                  ...prev,
+                                  top: value,
+                                }))
+                              }
+                            />
+                          ) : null}
+                          {panelEdgeFields.right ? (
+                            <InputText
+                              type="number"
+                              label={trans('map.registry-control.panelRight')}
+                              value={panelDraft.right}
+                              onChange={(value) =>
+                                setPanelDraft((prev) => ({
+                                  ...prev,
+                                  right: value,
+                                }))
+                              }
+                            />
+                          ) : null}
+                          {panelEdgeFields.bottom ? (
+                            <InputText
+                              type="number"
+                              label={trans('map.registry-control.panelBottom')}
+                              value={panelDraft.bottom}
+                              onChange={(value) =>
+                                setPanelDraft((prev) => ({
+                                  ...prev,
+                                  bottom: value,
+                                }))
+                              }
+                            />
+                          ) : null}
+                          {panelEdgeFields.left ? (
+                            <InputText
+                              type="number"
+                              label={trans('map.registry-control.panelLeft')}
+                              value={panelDraft.left}
+                              onChange={(value) =>
+                                setPanelDraft((prev) => ({
+                                  ...prev,
+                                  left: value,
+                                }))
+                              }
+                            />
+                          ) : null}
+                          <InputText
+                            type="number"
+                            label={trans('map.registry-control.panelWidth')}
+                            value={panelDraft.width}
+                            onChange={(value) =>
+                              setPanelDraft((prev) => ({
+                                ...prev,
+                                width: value,
+                              }))
+                            }
+                          />
+                          <InputText
+                            type="number"
+                            label={trans('map.registry-control.panelHeight')}
+                            value={panelDraft.height}
+                            onChange={(value) =>
+                              setPanelDraft((prev) => ({
+                                ...prev,
+                                height: value,
+                              }))
+                            }
+                          />
+                          <div className="map-registry-control__layout-span">
+                            <InputCheckbox
+                              label={trans(
+                                'map.registry-control.panelShowState',
+                              )}
+                              checked={panelDraft.open}
+                              onChange={(checked) =>
+                                setPanelDraft((prev) => ({
+                                  ...prev,
+                                  open: checked,
+                                }))
+                              }
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <div className="map-registry-control__layout-footer">
+                        <MapControlButton
+                          className="map-registry-control__btn"
+                          variant="outlined"
+                          size="small"
+                          onClick={applyPanel}
+                        >
+                          {trans('map.registry-control.panelApply')}
+                        </MapControlButton>
+                      </div>
+                    </div>
+                  ) : null,
+                }}
+              />
+            </div>
+          </DraggableItemPopup>
+        ) : null}
+      </>
+    ),
+    [
+      actionType,
+      actionTypeItems,
+      applyLayout,
+      applyPanel,
+      buttonInMobileItems,
+      detailTab,
+      detailTabItems,
+      detailTitle,
+      filtered,
+      layoutDraft.buttonInMobile,
+      layoutDraft.controlLayout,
+      layoutDraft.order,
+      layoutDraft.position,
+      layoutDraft.visible,
+      panelBind,
+      panelDraft.bottom,
+      panelDraft.height,
+      panelDraft.left,
+      panelDraft.location,
+      panelDraft.open,
+      panelDraft.right,
+      panelDraft.top,
+      panelDraft.width,
+      panelEdgeFields.bottom,
+      panelEdgeFields.left,
+      panelEdgeFields.right,
+      panelEdgeFields.top,
+      propsJson,
+      query,
+      refresh,
+      run,
+      select,
+      selected,
+      selectedId,
+      setShow,
+      show,
+      showDetail,
+      showPanelSection,
+      trans,
+    ],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={(bind) => (
-        <>
-          {show ? (
-            <DraggableItemPopup
-              show={show}
-              onUpdateShow={(value) => setShow(!!value)}
-              title={trans('map.registry-control.title')}
-              {...bind}
-              {...panelBind}
-              id={`${CONTROL_ID}-list`}
-            >
-              <div
-                className="map-registry-control map-registry-control--list"
-                aria-label={trans('map.registry-control.title')}
-              >
-                <header className="map-registry-control__header">
-                  <p className="map-registry-control__hint">
-                    {trans('map.registry-control.hint')}
-                  </p>
-                  <MapControlButton
-                    className="map-registry-control__btn"
-                    variant="outlined"
-                    size="small"
-                    onClick={refresh}
-                  >
-                    {trans('map.registry-control.refresh')}
-                  </MapControlButton>
-                </header>
-
-                <input
-                  type="search"
-                  className="map-registry-control__search"
-                  value={query}
-                  aria-label={trans('map.registry-control.search')}
-                  placeholder={trans('map.registry-control.searchPlaceholder')}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-
-                {filtered.length === 0 ? (
-                  <p className="map-registry-control__empty">
-                    {trans('map.registry-control.empty')}
-                  </p>
-                ) : (
-                  <ul className="map-registry-control__list">
-                    {filtered.map((ctrl) => (
-                      <li
-                        key={ctrl.id}
-                        className={`map-registry-control__item${
-                          selectedId === ctrl.id ? ' is-selected' : ''
-                        }`}
-                      >
-                        <div
-                          className="map-registry-control__select clickable"
-                          onClick={() => select(ctrl.id)}
-                        >
-                          <strong>{ctrl.id}</strong>
-                          <span>{ctrl.panelKind}</span>
-                          {ctrl.title ? <span>{ctrl.title}</span> : null}
-                          {ctrl.panelKind !== 'button' ? (
-                            <span>
-                              {ctrl.isOpen()
-                                ? trans('map.registry-control.openState')
-                                : trans('map.registry-control.closedState')}
-                            </span>
-                          ) : null}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </DraggableItemPopup>
-          ) : null}
-
-          {showDetail && selected ? (
-            <DraggableItemPopup
-              id={`${CONTROL_ID}-detail`}
-              show={showDetail}
-              onUpdateShow={(value) => setShowDetail(!!value)}
-              title={detailTitle}
-              height={560}
-              width={400}
-              top={bind.top != null ? bind.top + 28 : undefined}
-              bottom={bind.bottom != null ? bind.bottom + 28 : undefined}
-              left={bind.left != null ? bind.left + 28 : undefined}
-              right={bind.right != null ? bind.right + 380 : undefined}
-              containerId={bind.containerId}
-            >
-              <div
-                className="map-registry-control map-registry-control--detail"
-                aria-label={detailTitle}
-              >
-                <MapTabs
-                  items={detailTabItems}
-                  value={detailTab}
-                  onChange={setDetailTab}
-                  panes={{
-                    props: (
-                      <div className="map-registry-control__layout map-registry-control__props-pane">
-                        <pre className="map-registry-control__props">
-                          {propsJson}
-                        </pre>
-                        <div className="map-registry-control__run">
-                          <InputSelect
-                            label={trans('map.registry-control.actionType')}
-                            value={actionType}
-                            items={actionTypeItems}
-                            onChange={(value) => setActionType(String(value))}
-                          />
-                          <MapControlButton
-                            className="map-registry-control__btn"
-                            variant="outlined"
-                            size="small"
-                            onClick={run}
-                          >
-                            {trans('map.registry-control.runAction')}
-                          </MapControlButton>
-                        </div>
-                      </div>
-                    ),
-                    layout: (
-                      <div className="map-registry-control__layout">
-                        <div className="map-registry-control__layout-fields">
-                          <div className="map-registry-control__layout-span">
-                            <InputCheckbox
-                              checked={layoutDraft.visible}
-                              label={trans(
-                                'map.registry-control.layoutVisible',
-                              )}
-                              onChange={(visible) =>
-                                setLayoutDraft((prev) => ({
-                                  ...prev,
-                                  visible,
-                                }))
-                              }
-                            />
-                          </div>
-                          <div className="map-registry-control__layout-span">
-                            <InputSelect
-                              label={trans(
-                                'map.registry-control.layoutPosition',
-                              )}
-                              value={layoutDraft.position}
-                              items={POSITION_ITEMS}
-                              onChange={(value) =>
-                                setLayoutDraft((prev) => ({
-                                  ...prev,
-                                  position: String(value) as Position,
-                                }))
-                              }
-                            />
-                          </div>
-                          <InputText
-                            type="number"
-                            label={trans('map.registry-control.layoutOrder')}
-                            value={String(layoutDraft.order)}
-                            onChange={(value) =>
-                              setLayoutDraft((prev) => ({
-                                ...prev,
-                                order: Number(value) || 0,
-                              }))
-                            }
-                          />
-                          <InputSelect
-                            label={trans(
-                              'map.registry-control.layoutControlLayout',
-                            )}
-                            value={layoutDraft.controlLayout}
-                            items={CONTROL_LAYOUT_ITEMS}
-                            onChange={(value) =>
-                              setLayoutDraft((prev) => ({
-                                ...prev,
-                                controlLayout: String(value) as ControlLayout,
-                              }))
-                            }
-                          />
-                          <div className="map-registry-control__layout-span">
-                            <InputSelect
-                              label={trans(
-                                'map.registry-control.layoutButtonInMobile',
-                              )}
-                              value={layoutDraft.buttonInMobile}
-                              items={buttonInMobileItems}
-                              onChange={(value) =>
-                                setLayoutDraft((prev) => ({
-                                  ...prev,
-                                  buttonInMobile: String(value) as
-                                    '' | ButtonInMobile,
-                                }))
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="map-registry-control__layout-footer">
-                          <MapControlButton
-                            className="map-registry-control__btn"
-                            variant="outlined"
-                            size="small"
-                            onClick={applyLayout}
-                          >
-                            {trans('map.registry-control.layoutApply')}
-                          </MapControlButton>
-                        </div>
-                      </div>
-                    ),
-                    panel: showPanelSection ? (
-                      <div className="map-registry-control__layout">
-                        {selected?.panelKind === 'sidebar' ? (
-                          <div className="map-registry-control__layout-fields">
-                            <div className="map-registry-control__layout-span">
-                              <InputSelect
-                                label={trans(
-                                  'map.registry-control.panelLocation',
-                                )}
-                                value={panelDraft.location}
-                                items={LOCATION_ITEMS}
-                                onChange={(value) =>
-                                  setPanelDraft((prev) => ({
-                                    ...prev,
-                                    location: String(
-                                      value,
-                                    ) as PanelOffsetDraft['location'],
-                                  }))
-                                }
-                              />
-                            </div>
-                            <div className="map-registry-control__layout-span">
-                              <InputCheckbox
-                                label={trans(
-                                  'map.registry-control.panelShowState',
-                                )}
-                                checked={panelDraft.open}
-                                onChange={(checked) =>
-                                  setPanelDraft((prev) => ({
-                                    ...prev,
-                                    open: checked,
-                                  }))
-                                }
-                              />
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="map-registry-control__layout-fields">
-                            {panelEdgeFields.top ? (
-                              <InputText
-                                type="number"
-                                label={trans('map.registry-control.panelTop')}
-                                value={panelDraft.top}
-                                onChange={(value) =>
-                                  setPanelDraft((prev) => ({
-                                    ...prev,
-                                    top: value,
-                                  }))
-                                }
-                              />
-                            ) : null}
-                            {panelEdgeFields.right ? (
-                              <InputText
-                                type="number"
-                                label={trans('map.registry-control.panelRight')}
-                                value={panelDraft.right}
-                                onChange={(value) =>
-                                  setPanelDraft((prev) => ({
-                                    ...prev,
-                                    right: value,
-                                  }))
-                                }
-                              />
-                            ) : null}
-                            {panelEdgeFields.bottom ? (
-                              <InputText
-                                type="number"
-                                label={trans(
-                                  'map.registry-control.panelBottom',
-                                )}
-                                value={panelDraft.bottom}
-                                onChange={(value) =>
-                                  setPanelDraft((prev) => ({
-                                    ...prev,
-                                    bottom: value,
-                                  }))
-                                }
-                              />
-                            ) : null}
-                            {panelEdgeFields.left ? (
-                              <InputText
-                                type="number"
-                                label={trans('map.registry-control.panelLeft')}
-                                value={panelDraft.left}
-                                onChange={(value) =>
-                                  setPanelDraft((prev) => ({
-                                    ...prev,
-                                    left: value,
-                                  }))
-                                }
-                              />
-                            ) : null}
-                            <InputText
-                              type="number"
-                              label={trans('map.registry-control.panelWidth')}
-                              value={panelDraft.width}
-                              onChange={(value) =>
-                                setPanelDraft((prev) => ({
-                                  ...prev,
-                                  width: value,
-                                }))
-                              }
-                            />
-                            <InputText
-                              type="number"
-                              label={trans('map.registry-control.panelHeight')}
-                              value={panelDraft.height}
-                              onChange={(value) =>
-                                setPanelDraft((prev) => ({
-                                  ...prev,
-                                  height: value,
-                                }))
-                              }
-                            />
-                            <div className="map-registry-control__layout-span">
-                              <InputCheckbox
-                                label={trans(
-                                  'map.registry-control.panelShowState',
-                                )}
-                                checked={panelDraft.open}
-                                onChange={(checked) =>
-                                  setPanelDraft((prev) => ({
-                                    ...prev,
-                                    open: checked,
-                                  }))
-                                }
-                              />
-                            </div>
-                          </div>
-                        )}
-                        <div className="map-registry-control__layout-footer">
-                          <MapControlButton
-                            className="map-registry-control__btn"
-                            variant="outlined"
-                            size="small"
-                            onClick={applyPanel}
-                          >
-                            {trans('map.registry-control.panelApply')}
-                          </MapControlButton>
-                        </div>
-                      </div>
-                    ) : null,
-                  }}
-                />
-              </div>
-            </DraggableItemPopup>
-          ) : null}
-        </>
-      )}
+      draggable={renderDraggable}
     />
   );
 }

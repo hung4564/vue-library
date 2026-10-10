@@ -12,6 +12,7 @@ import { ContextMenu, type ContextMenuRef } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
   ModuleContainer,
+  ModuleContainerProps,
   useMap,
   useMapControl,
 } from '@hungpvq/react-map-core';
@@ -324,6 +325,22 @@ export function DrawControl(props: DrawControlProps) {
     [callMap],
   );
 
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bindDrag) => (
+      <DrawDraftList
+        show={showList}
+        setShow={setShowList}
+        draftItems={draftItems}
+        mapId={mapId}
+        onFlyTo={onFlyTo}
+        onDiscardItem={(item) => onDiscard(item)}
+        bindDrag={bindDrag}
+      />
+    ),
+    [draftItems, mapId, onDiscard, onFlyTo, setShowList, showList],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
@@ -344,17 +361,7 @@ export function DrawControl(props: DrawControlProps) {
           onShowList={onShowListDraftItem}
         />
       }
-      draggable={(bindDrag) => (
-        <DrawDraftList
-          show={showList}
-          setShow={setShowList}
-          draftItems={draftItems}
-          mapId={mapId}
-          onFlyTo={onFlyTo}
-          onDiscardItem={(item) => onDiscard(item)}
-          bindDrag={bindDrag}
-        />
-      )}
+      draggable={renderDraggable}
     >
       <ContextMenu ref={contextMenuRef}>
         <ul className="context-menu">

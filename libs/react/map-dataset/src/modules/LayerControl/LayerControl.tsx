@@ -18,6 +18,7 @@ import {
   defaultMapProps,
   MapControlButton,
   ModuleContainer,
+  ModuleContainerProps,
   UniversalRegistry,
   useLang,
   useMap,
@@ -26,7 +27,7 @@ import {
 } from '@hungpvq/react-map-core';
 import { mdiLayers, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { type ReactNode, useEffect, useMemo, useRef } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
@@ -66,7 +67,6 @@ function renderSlot(slot: LayerControlSlot | undefined, mapId: string) {
   if (slot == null) return null;
   return typeof slot === 'function' ? slot({ mapId }) : slot;
 }
-
 export function LayerControl(props: LayerControlProps) {
   const merged = { ...defaultMapProps, ...defaultLayerControlProps, ...props };
   const { mapId, order } = useMap(merged);
@@ -140,71 +140,92 @@ export function LayerControl(props: LayerControlProps) {
 
   const titleSlot = renderSlot(props.titleList, mapId);
   const endSlot = renderSlot(props.endList, mapId);
-
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) => (
+      <DraggableItemSideBar
+        show={show}
+        onUpdateShow={(v) => setShow(!!v)}
+        title={trans('map.layer-control.title')}
+        titleNode={
+          <span className="layer-control__title">
+            {trans('map.layer-control.title')}
+          </span>
+        }
+        afterTitle={
+          titleMenuState.data ? (
+            <MenuConditionProvider value={layerMenuContext}>
+              <DatasetMenus
+                menus={titleMenuState.menus}
+                data={titleMenuState.data}
+                mapId={mapId}
+                locations={['title']}
+                menuContext={layerMenuContext}
+              />
+            </MenuConditionProvider>
+          ) : undefined
+        }
+        containerId={bind.containerId}
+        location={panelPosition.location || 'left'}
+      >
+        <div className="layer-control">
+          <MenuConditionProvider value={layerMenuContext}>
+            <LayerList
+              mapId={mapId}
+              disabledCreate={merged.disabledCreate}
+              disabledCreateGroup={merged.disabledCreateGroup}
+              disabledDeleteAll={merged.disabledDeleteAll}
+              disabledMove={merged.disabledMove}
+              globalVisibilityMode={merged.globalVisibilityMode}
+              onCreate={() => toggleShowCreate(true)}
+              title={
+                titleSlot !== null && titleSlot !== undefined ? (
+                  titleSlot
+                ) : !merged.disabledCreate ? (
+                  <MapControlButton
+                    variant="plain"
+                    data-testid="map-layer-create"
+                    onClick={() => toggleShowCreate(true)}
+                  >
+                    <Icon
+                      path={mdiPlus}
+                      size="14px"
+                    />
+                  </MapControlButton>
+                ) : null
+              }
+            />
+            <div className="base-map-card-container">{endSlot}</div>
+          </MenuConditionProvider>
+        </div>
+      </DraggableItemSideBar>
+    ),
+    [
+      show,
+      trans,
+      titleMenuState.data,
+      titleMenuState.menus,
+      layerMenuContext,
+      mapId,
+      panelPosition.location,
+      merged.disabledCreate,
+      merged.disabledCreateGroup,
+      merged.disabledDeleteAll,
+      merged.disabledMove,
+      merged.globalVisibilityMode,
+      titleSlot,
+      endSlot,
+      setShow,
+      toggleShowCreate,
+    ],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={(bind) => (
-        <DraggableItemSideBar
-          show={show}
-          onUpdateShow={(v) => setShow(!!v)}
-          title={trans('map.layer-control.title')}
-          titleNode={
-            <span className="layer-control__title">
-              {trans('map.layer-control.title')}
-            </span>
-          }
-          afterTitle={
-            titleMenuState.data ? (
-              <MenuConditionProvider value={layerMenuContext}>
-                <DatasetMenus
-                  menus={titleMenuState.menus}
-                  data={titleMenuState.data}
-                  mapId={mapId}
-                  locations={['title']}
-                  menuContext={layerMenuContext}
-                />
-              </MenuConditionProvider>
-            ) : undefined
-          }
-          containerId={bind.containerId}
-          location={panelPosition.location || 'left'}
-        >
-          <div className="layer-control">
-            <MenuConditionProvider value={layerMenuContext}>
-              <LayerList
-                mapId={mapId}
-                disabledCreate={merged.disabledCreate}
-                disabledCreateGroup={merged.disabledCreateGroup}
-                disabledDeleteAll={merged.disabledDeleteAll}
-                disabledMove={merged.disabledMove}
-                globalVisibilityMode={merged.globalVisibilityMode}
-                onCreate={() => toggleShowCreate(true)}
-                title={
-                  titleSlot !== null && titleSlot !== undefined ? (
-                    titleSlot
-                  ) : !merged.disabledCreate ? (
-                    <MapControlButton
-                      variant="plain"
-                      data-testid="map-layer-create"
-                      onClick={() => toggleShowCreate(true)}
-                    >
-                      <Icon
-                        path={mdiPlus}
-                        size="14px"
-                      />
-                    </MapControlButton>
-                  ) : null
-                }
-              />
-              <div className="base-map-card-container">{endSlot}</div>
-            </MenuConditionProvider>
-          </div>
-        </DraggableItemSideBar>
-      )}
+      draggable={renderDraggable}
     >
       <CreateControl
-        mapId={mapId}
         show={showCreate}
         onShowChange={toggleShowCreate}
         createLayerTypes={props.createLayerTypes}

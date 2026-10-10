@@ -3,9 +3,11 @@ import {
   type Position,
   type WithMapPropType,
 } from '@hungpvq/map-core';
-import type { MapControlButtonState } from '@hungpvq/map-core/toolbar';
+import type {
+  MapControlButtonState,
+  MapControlIcon,
+} from '@hungpvq/map-core/toolbar';
 import {
-  createToolbarStoreApi,
   groupToolbarButtons,
   handleToolbarButtonClick,
   mdiButtonState,
@@ -20,6 +22,7 @@ import {
 } from '@hungpvq/map-core/toolbar';
 import { mdiClose, mdiDotsHorizontal } from '@mdi/js';
 import {
+  ReactNode,
   useCallback,
   useContext,
   useEffect,
@@ -34,7 +37,7 @@ import { MapContext } from '../../../context/MapContext';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { ModuleContainer } from '../../../modules/ModuleContainer/ModuleContainer';
 import { useLang } from '../../lang/hook';
-import { useMapToolbarStore } from '../store';
+import { useMapToolbar } from '../store';
 
 const CORNER_POSITIONS: Position[] = [
   'top-left',
@@ -43,11 +46,76 @@ const CORNER_POSITIONS: Position[] = [
   'bottom-right',
 ];
 
-export type ToolbarControlProps = Omit<
-  WithMapPropType,
-  'controlLayout' | 'controlVisible'
-> & {
+function isSameReserved(
+  a: Partial<Record<Position, { width: number; height: number }>>,
+  b: Partial<Record<Position, { width: number; height: number }>>,
+): boolean {
+  for (const position of CORNER_POSITIONS) {
+    const itemA = a[position];
+    const itemB = b[position];
+    if (!itemA && !itemB) continue;
+    if (!itemA || !itemB) return false;
+    if (itemA.width !== itemB.width || itemA.height !== itemB.height) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function isSameUsed(
+  a: Partial<Record<Position, number>>,
+  b: Partial<Record<Position, number>>,
+): boolean {
+  for (const position of CORNER_POSITIONS) {
+    if (a[position] !== b[position]) return false;
+  }
+  return true;
+}
+
+function isSameIcon(a?: MapControlIcon, b?: MapControlIcon): boolean {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
+  if (a.type !== b.type) return false;
+  if (a.type === 'mdi' && b.type === 'mdi') return a.path === b.path;
+  if (a.type === 'compass' && b.type === 'compass') return a.transform === b.transform;
+  return true;
+}
+
+function isSameButton(a: MapControlButtonState, b: MapControlButtonState): boolean {
+  return (
+    a.id === b.id &&
+    a.visible === b.visible &&
+    a.loading === b.loading &&
+    a.title === b.title &&
+    a.text === b.text &&
+    a.active === b.active &&
+    a.disabled === b.disabled &&
+    a.group === b.group &&
+    a.order === b.order &&
+    a.position === b.position &&
+    a.orientation === b.orientation &&
+    a.expandable === b.expandable &&
+    a.role === b.role &&
+    a.closeOnOutsideClick === b.closeOnOutsideClick &&
+    isSameIcon(a.icon, b.icon)
+  );
+}
+
+function isSameButtons(
+  a: MapControlButtonState[],
+  b: MapControlButtonState[],
+): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (!isSameButton(a[i], b[i])) return false;
+  }
+  return true;
+}
+
+export type ToolbarControlProps = Omit<WithMapPropType, 'controlLayout'> & {
   maxVisible?: number;
+  children?: ReactNode;
 };
 
 export function ToolbarControl(props: ToolbarControlProps) {
@@ -83,11 +151,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
     Partial<Record<Position, number>>
   >({});
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const toolbarStore = useMapToolbarStore(mapId);
-  const storeApi = useMemo(
-    () => createToolbarStoreApi(toolbarStore),
-    [toolbarStore],
-  );
+  const storeApi = useMapToolbar(mapId);
 
   const findMapContainer = useCallback(() => {
     const fromRef = rootRef.current?.closest('.map-container');
@@ -101,20 +165,29 @@ export function ToolbarControl(props: ToolbarControlProps) {
   const syncHost = useCallback(() => {
     const el = findMapContainer();
     if (el) {
-      setHostHeight(el.clientHeight);
-      setAvailableWidth(toolbarAvailableWidth(el.clientWidth));
+      const nextHostHeight = el.clientHeight;
+      const nextAvailableWidth = toolbarAvailableWidth(el.clientWidth);
+      setHostHeight((prev) => (prev === nextHostHeight ? prev : nextHostHeight));
+      setAvailableWidth((prev) =>
+        prev === nextAvailableWidth ? prev : nextAvailableWidth,
+      );
     } else {
-      setHostHeight(0);
-      setAvailableWidth(
-        toolbarAvailableWidth(
-          typeof window === 'undefined' ? 0 : window.innerWidth,
-        ),
+      const nextAvailableWidth = toolbarAvailableWidth(
+        typeof window === 'undefined' ? 0 : window.innerWidth,
+      );
+      setHostHeight((prev) => (prev === 0 ? prev : 0));
+      setAvailableWidth((prev) =>
+        prev === nextAvailableWidth ? prev : nextAvailableWidth,
       );
     }
 
     if (!menuMode) {
-      setReservedByCorner({});
-      setMenuUsedByCorner({});
+      setReservedByCorner((prev) =>
+        Object.keys(prev).length === 0 ? prev : {},
+      );
+      setMenuUsedByCorner((prev) =>
+        Object.keys(prev).length === 0 ? prev : {},
+      );
       return;
     }
     const nextReserved: Partial<
@@ -127,15 +200,20 @@ export function ToolbarControl(props: ToolbarControlProps) {
       const used = measureCornerMenuUsedPx(host);
       if (used != null) nextUsed[position] = used;
     }
-    setReservedByCorner(nextReserved);
-    setMenuUsedByCorner(nextUsed);
+    setReservedByCorner((prev) =>
+      isSameReserved(prev, nextReserved) ? prev : nextReserved,
+    );
+    setMenuUsedByCorner((prev) =>
+      isSameUsed(prev, nextUsed) ? prev : nextUsed,
+    );
   }, [findMapContainer, mapId, menuMode]);
 
   useEffect(() => {
     const syncButtons = () => {
       const expanded = storeApi.getExpandedModuleId();
-      setExpandedModuleId(expanded);
-      setButtons(storeApi.getAll({ location: 'toolbar' }));
+      setExpandedModuleId((prev) => (prev === expanded ? prev : expanded));
+      const nextButtons = storeApi.getAll({ location: 'toolbar' });
+      setButtons((prev) => (isSameButtons(prev, nextButtons) ? prev : nextButtons));
     };
     const unsub = storeApi.subscribe(syncButtons);
     syncButtons();
@@ -166,7 +244,11 @@ export function ToolbarControl(props: ToolbarControlProps) {
         setMoreOpen(false);
         setMoreOpenCorner(null);
         const expanded = storeApi.getExpandedModuleId();
-        if (expanded && shouldCloseExpandedOnOutsideClick(buttons, expanded)) {
+        const currentButtons = storeApi.getAll({ location: 'toolbar' });
+        if (
+          expanded &&
+          shouldCloseExpandedOnOutsideClick(currentButtons, expanded)
+        ) {
           storeApi.setExpandedModule(null);
         }
       }
@@ -186,7 +268,7 @@ export function ToolbarControl(props: ToolbarControlProps) {
       document.removeEventListener('pointerdown', onDoc);
       document.removeEventListener('keydown', onKey);
     };
-  }, [menuMode, mapId, buttons.length, findMapContainer, syncHost, storeApi]);
+  }, [menuMode, mapId, findMapContainer, syncHost, storeApi]);
 
   const expansion = useMemo(
     () => planToolbarExpansion(groupToolbarButtons(buttons), expandedModuleId),
@@ -249,8 +331,8 @@ export function ToolbarControl(props: ToolbarControlProps) {
   );
 
   useEffect(() => {
-    if (!toolbarSplit.overflow.length) setMoreOpen(false);
-  }, [toolbarSplit.overflow.length]);
+    if (!toolbarSplit.overflow.length && moreOpen) setMoreOpen(false);
+  }, [toolbarSplit.overflow.length, moreOpen]);
 
   const secondaryRow = (buttonsForRow: MapControlButtonState[]) =>
     buttonsForRow.length ? (
@@ -390,12 +472,17 @@ export function ToolbarControl(props: ToolbarControlProps) {
             }
           />
         ) : null}
+        {props.children}
       </div>
     );
   }
 
   if (!groups.length && !secondaryButtons.length) {
-    return <ModuleContainer {...moduleContainerProps} />;
+    return (
+      <ModuleContainer {...moduleContainerProps}>
+        {props.children}
+      </ModuleContainer>
+    );
   }
 
   return (
@@ -462,6 +549,8 @@ export function ToolbarControl(props: ToolbarControlProps) {
           {secondaryRow(secondaryButtons)}
         </div>
       }
-    />
+    >
+      {props.children}
+    </ModuleContainer>
   );
 }

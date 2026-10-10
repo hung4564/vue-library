@@ -4,10 +4,12 @@ import { traverseTree } from '@hungpvq/map-dataset';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   ModuleContainer,
+  ModuleContainerProps,
   useMap,
   useMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
+import { useCallback } from 'react';
 
 export function DatasetDetail({
   dataset,
@@ -47,37 +49,43 @@ export function DatasetDetail({
     items.push({ node, level, path });
   });
 
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) => (
+      <DraggableItemPopup
+        show={show}
+        title={dataset.getName()}
+        onUpdateShow={(v) => {
+          toggleShow(!!v);
+          if (!v) onClose?.();
+        }}
+        width={400}
+        height={400}
+        {...bind}
+        {...panelBind}
+      >
+        <ul className="dataset-list">
+          {items.map((item, index) => (
+            <li
+              key={index}
+              className="dataset-list-item"
+              style={{ paddingLeft: `${item.level * 0.5}rem` }}
+            >
+              <span>{item.path.join('.')}</span>
+              <span>({item.node.type})</span>
+              <span>{item.node.getName()}</span>
+            </li>
+          ))}
+        </ul>
+      </DraggableItemPopup>
+    ),
+    [dataset, items, onClose, panelBind, show, toggleShow],
+  );
   return (
     <ModuleContainer
       {...moduleContainerProps}
-      draggable={(bind) => (
-        <DraggableItemPopup
-          show={show}
-          title={dataset.getName()}
-          onUpdateShow={(v) => {
-            toggleShow(!!v);
-            if (!v) onClose?.();
-          }}
-          width={400}
-          height={400}
-          {...bind}
-          {...panelBind}
-        >
-          <ul className="dataset-list">
-            {items.map((item, index) => (
-              <li
-                key={index}
-                className="dataset-list-item"
-                style={{ paddingLeft: `${item.level * 0.5}rem` }}
-              >
-                <span>{item.path.join('.')}</span>
-                <span>({item.node.type})</span>
-                <span>{item.node.getName()}</span>
-              </li>
-            ))}
-          </ul>
-        </DraggableItemPopup>
-      )}
+      draggable={renderDraggable}
     />
   );
 }
