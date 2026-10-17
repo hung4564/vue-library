@@ -1,3 +1,4 @@
+import { getMapCoreMetaStoreEvent } from '../store';
 import {
   type FlatToolbarButton,
   flatToolbarShortKey,
@@ -170,7 +171,6 @@ export type Listener = () => void;
 
 export type MapToolbarStore = {
   buttons: Map<string, import('./types').MapControlButtonState>;
-  listeners: Set<Listener>;
   /** Expandable module currently open on the secondary toolbar row. */
   expandedModuleId: string | null;
 };
@@ -178,21 +178,20 @@ export type MapToolbarStore = {
 export function createDefaultToolbarStore(): MapToolbarStore {
   return {
     buttons: new Map(),
-    listeners: new Set<Listener>(),
     expandedModuleId: null,
   };
 }
 
 export function createToolbarStoreApi(store: MapToolbarStore) {
   function subscribe(fn: Listener) {
-    store.listeners.add(fn);
+    getMapCoreMetaStoreEvent().on('toolbar:update', fn);
     return () => {
-      store.listeners.delete(fn);
+      getMapCoreMetaStoreEvent().off('toolbar:update', fn);
     };
   }
 
   function notify() {
-    store.listeners.forEach((fn) => fn());
+    getMapCoreMetaStoreEvent().emit('toolbar:update');
   }
 
   function register(state: import('./types').MapControlButtonState) {
@@ -297,7 +296,7 @@ export function createToolbarModuleApi(
   }
 
   function notify() {
-    store.listeners.forEach((fn) => fn());
+    getMapCoreMetaStoreEvent().emit('toolbar:update');
   }
 
   function register(state: import('./types').MapControlButtonState) {

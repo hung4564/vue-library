@@ -48,7 +48,7 @@ export const REGISTRY_GLOBAL_STORE_KEY = 'map:registry:global';
 
 type RegistryBag = Record<string, unknown>;
 
-const logger = loggerFactory.createLogger().setNamespace('map:registry', 2);
+const logger = loggerFactory.createLogger().setNamespace('map:registry');
 
 function warnOverwrite(mapId: string, key: string) {
   logHelper(logger, mapId, 'registry')

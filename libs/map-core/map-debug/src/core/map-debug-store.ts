@@ -1,5 +1,7 @@
 import type { DataStoreLogAdapter, LogDataStore } from '@hungpvq/shared-log';
 import { getOrCreateStore } from '@hungpvq/shared-store';
+import mitt, { type Emitter } from 'mitt';
+import { DevtoolState } from './store-core';
 
 /** Process-wide debug bag (shared across duplicate package copies). */
 export const MAP_DEBUG_STORE_KEY = 'map:debug';
@@ -42,9 +44,21 @@ export type MapDebugStore = {
   logAdapter?: DataStoreLogAdapter;
   /** Unsubscribe from logDataStore → Devtools UI mirror. */
   logStoreUnsub?: () => void;
+  installed: boolean;
+  state: DevtoolState;
+  __cleanup__: Array<() => void>;
 };
 
 /** Canonical pin for map debug state (`map:debug`). */
 export function getMapDebugStore(): MapDebugStore {
-  return getOrCreateStore<MapDebugStore>(MAP_DEBUG_STORE_KEY, () => ({}));
+  return getOrCreateStore<MapDebugStore>(MAP_DEBUG_STORE_KEY, () => ({
+    installed: false,
+    state: {
+      isOpen: false,
+      activeTab: 'store',
+      errors: [],
+      logs: [],
+    },
+    __cleanup__: [],
+  }));
 }

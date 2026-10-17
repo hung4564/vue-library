@@ -8,15 +8,14 @@ import '@hungpvq/react-map-draw/style.css';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { installMapApp } from '@hungpvq/react-map-dataset';
-import { installDevtools } from '@hungpvq/react-map-devtools';
-import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { HashRouter, Route, Routes } from 'react-router';
 
+import { installDevtools } from '@hungpvq/map-debug';
+import { installDatasetDebug } from '@hungpvq/map-debug/dataset';
 import App from './app/app';
 import { AllMapView } from './views/all-map-view';
 import { BasemapPage } from './views/basemap';
-import { BasemapErrorPage } from './views/basemap-error';
 import { CrsPage } from './views/crs';
 import { DatasetAttributeTablePage } from './views/dataset-attribute-table';
 import { DatasetDataManagementPage } from './views/dataset-data-management';
@@ -49,7 +48,7 @@ import { WorkerSamplePage } from './views/worker-sample';
 // Theme stays in App as bootstrapMapTheme('auto'); dataset registry via installMapApp
 installMapApp({ theme: false });
 installDevtools();
-
+installDatasetDebug();
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
@@ -97,10 +96,6 @@ root.render(
         <Route
           path="basemap"
           element={<BasemapPage />}
-        />
-        <Route
-          path="basemap-error"
-          element={<BasemapErrorPage />}
         />
         <Route
           path="multi-map"

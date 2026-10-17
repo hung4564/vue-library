@@ -5,44 +5,39 @@ import {
 } from '@hungpvq/react-map-core';
 import { useMemo } from 'react';
 
-import type { DevtoolTab } from '../store';
-import { setDevtoolActiveTab } from '../store';
+import { setDevtoolActiveTab } from '@hungpvq/map-debug';
+import { useDevtoolState, type DevtoolTab } from '../store';
 import { DatasetMenuViewer } from './DatasetMenuViewer';
-import { DevtoolsMapFilter } from './DevtoolsMapFilter';
 import { ErrorViewer } from './ErrorViewer';
 import { LogViewer } from './LogViewer';
 import { StoreViewer } from './StoreViewer';
 
 export function DevtoolsPanelBody({
-  activeTab,
-  logCount,
-  errorCount,
   showClose,
-  showMapFilter = true,
   onClose,
 }: {
-  activeTab: DevtoolTab;
-  logCount: number;
-  errorCount: number;
   showClose?: boolean;
   /** When false, hide the map filter strip in the panel header. */
-  showMapFilter?: boolean;
   onClose?: () => void;
 }) {
-  const tabItems = useMemo(
-    (): MapTabItem[] => [
-      { id: 'store', label: 'Store' },
-      { id: 'dataset', label: 'Dataset' },
-      { id: 'logs', label: `Logs (${logCount})` },
-      { id: 'errors', label: `Errors (${errorCount})` },
-    ],
-    [logCount, errorCount],
-  );
+  const { activeTab, logs, errors, installedDataset } = useDevtoolState();
+  const logCount: number = logs.length;
+  const errorCount: number = errors.length;
+  const tabItems = useMemo((): MapTabItem[] => {
+    const tabs: MapTabItem[] = [
+      { id: 'store', label: 'Store', order: 1 },
+      { id: 'logs', label: `Logs (${logCount})`, order: 99 },
+      { id: 'errors', label: `Errors (${errorCount})`, order: 99 },
+    ];
+    if (installedDataset) {
+      tabs.push({ id: 'dataset', label: 'Dataset', order: 2 });
+    }
+    return tabs.sort((a, b) => (a.order || 0) - (b.order || 0));
+  }, [logCount, errorCount, installedDataset]);
 
   return (
     <>
       <div className="devtools-header">
-        {showMapFilter ? <DevtoolsMapFilter /> : null}
         <MapTabs
           className="devtools-tabs-host"
           items={tabItems}

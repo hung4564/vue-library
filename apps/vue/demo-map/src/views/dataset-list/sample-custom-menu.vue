@@ -55,11 +55,11 @@ import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { loggerFactory } from '@hungpvq/shared-log';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronRight, mdiClose, mdiInformation, mdiStar } from '@mdi/js';
-import { ref } from 'vue';
+import { defineEmits, defineOptions, defineProps, ref } from 'vue';
 
 defineOptions({ name: 'SampleLayerMenu' });
 
-const logger = loggerFactory.createLogger().setNamespace('demo:list-menu', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:list-menu');
 
 const props = defineProps<{
   item: MenuAction<IListViewUI>;

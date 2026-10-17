@@ -12,12 +12,12 @@ Related: [UniversalRegistry controls](../../registry-controls.md), [Toolbar kind
 4. Prefer **auto** host chrome (omit `#btn` / `btn`). Use `host.buttonSlot: 'custom'` only for non-standard UI.
 5. `setShow` must accept `true` / `false` (not toggle-only) when you have a panel.
 
-| Chrome kind | Host (corner) | Strip (`toolbar` / `menu`) |
-| --- | --- | --- |
-| `single` | One auto button | Same button on strip |
-| `module` | All buttons in a group | Same group on strip |
-| `module-expandable` | Launcher; options L/R by corner | Launcher + secondary row |
-| `buttonSlot: 'custom'` | Your `#btn` / `btn` | Still use `toolbar` if needed |
+| Chrome kind            | Host (corner)                   | Strip (`toolbar` / `menu`)    |
+| ---------------------- | ------------------------------- | ----------------------------- |
+| `single`               | One auto button                 | Same button on strip          |
+| `module`               | All buttons in a group          | Same group on strip           |
+| `module-expandable`    | Launcher; options L/R by corner | Launcher + secondary row      |
+| `buttonSlot: 'custom'` | Your `#btn` / `btn`             | Still use `toolbar` if needed |
 
 Imports (Vue): `@hungpvq/vue-map-core` + `@hungpvq/map-core/toolbar`.  
 Imports (React): `@hungpvq/react-map-core` + `@hungpvq/map-core/toolbar`.
@@ -34,12 +34,7 @@ Like Home: one click, no panel.
 <script setup lang="ts">
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-import {
-  ModuleContainer,
-  defaultMapProps,
-  useMap,
-  useMapControl,
-} from '@hungpvq/vue-map-core';
+import { ModuleContainer, defaultMapProps, useMap, useMapControl } from '@hungpvq/vue-map-core';
 import { mdiStar } from '@mdi/js';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
@@ -55,8 +50,7 @@ function onPing() {
 
 const chrome = {
   kind: 'single' as const,
-  getState: () =>
-    mdiButtonState(mdiStar, { title: 'Ping', order: order.value }),
+  getState: () => mdiButtonState(mdiStar, { title: 'Ping', order: order.value }),
   onClick: () => onPing(),
 };
 
@@ -81,12 +75,7 @@ const { moduleContainerProps } = useMapControl(mapId, {
 ```tsx
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-import {
-  ModuleContainer,
-  defaultMapProps,
-  useMap,
-  useMapControl,
-} from '@hungpvq/react-map-core';
+import { ModuleContainer, defaultMapProps, useMap, useMapControl } from '@hungpvq/react-map-core';
 import { mdiStar } from '@mdi/js';
 
 export function PingControl(props: WithMapPropType) {
@@ -132,13 +121,7 @@ Like Info: button toggles a draggable popup. Use `useShow` + `panelBind` + `#dra
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
-import {
-  ModuleContainer,
-  defaultMapProps,
-  useMap,
-  useMapControl,
-  useShow,
-} from '@hungpvq/vue-map-core';
+import { ModuleContainer, defaultMapProps, useMap, useMapControl, useShow } from '@hungpvq/vue-map-core';
 import { mdiCog } from '@mdi/js';
 import { watch } from 'vue';
 
@@ -206,12 +189,7 @@ Like Zoom: a fixed group. Auto-render shows every visible button.
 <script setup lang="ts">
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-import {
-  ModuleContainer,
-  defaultMapProps,
-  useMap,
-  useMapControl,
-} from '@hungpvq/vue-map-core';
+import { ModuleContainer, defaultMapProps, useMap, useMapControl } from '@hungpvq/vue-map-core';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
@@ -271,12 +249,7 @@ Use the **same** options object for `host.button` and `toolbar` (auto host — n
 <script setup lang="ts">
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-import {
-  ModuleContainer,
-  defaultMapProps,
-  useMap,
-  useMapControl,
-} from '@hungpvq/vue-map-core';
+import { ModuleContainer, defaultMapProps, useMap, useMapControl } from '@hungpvq/vue-map-core';
 import { mdiPalette, mdiWeatherNight, mdiWeatherSunny } from '@mdi/js';
 import { computed, ref, watch } from 'vue';
 
@@ -316,8 +289,7 @@ const chrome = computed(() => ({
   moduleId: 'myThemeLite',
   orientation: 'row' as const,
   order: order.value,
-  expandableButton: ({ active }: { active: boolean }) =>
-    mdiButtonState(mdiPalette, { title: 'Theme', active }),
+  expandableButton: ({ active }: { active: boolean }) => mdiButtonState(mdiPalette, { title: 'Theme', active }),
   buttons: modeButtons,
 }));
 
@@ -398,13 +370,7 @@ Only when auto chrome is not enough (thumbnail card, custom Draw toolbar, …). 
 ```vue
 <script setup lang="ts">
 import type { WithMapPropType } from '@hungpvq/map-core';
-import {
-  ModuleContainer,
-  MapControlButton,
-  defaultMapProps,
-  useMap,
-  useMapControl,
-} from '@hungpvq/vue-map-core';
+import { ModuleContainer, MapControlButton, defaultMapProps, useMap, useMapControl } from '@hungpvq/vue-map-core';
 
 const props = withDefaults(defineProps<WithMapPropType>(), {
   ...defaultMapProps,

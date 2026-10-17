@@ -117,10 +117,12 @@ import {
   createActionFeedback,
 } from '@hungpvq/map-core';
 import {
+  clearDevtoolLogs,
   getDevtoolLogDataStore,
+  LEVEL_FILTERS,
+  type LevelFilter,
   refreshDevtoolLogsFromStore,
-} from '@hungpvq/map-core/devtools';
-import { LEVEL_FILTERS, type LevelFilter } from '@hungpvq/map-debug';
+} from '@hungpvq/map-debug';
 import {
   logMapId,
   type LogRecord,
@@ -135,12 +137,12 @@ import {
 } from '@hungpvq/vue-map-core/fields';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 
-import { clearDevtoolLogs, useDevtoolState } from '../store';
+import { useDevtoolState } from '../store';
 import LogDetailPanel from './LogDetailPanel.vue';
 import LogRenderNode from './LogRenderNode.vue';
 import LogRequestFlowModal from './LogRequestFlowModal.vue';
 
-const { logs, filterMapId } = useDevtoolState();
+const { logs } = useDevtoolState();
 const logListRef = ref<HTMLElement | null>(null);
 const autoScroll = ref(true);
 const actionId = ref('');
@@ -175,7 +177,6 @@ const refreshLabel = computed(() => {
 const filterQuery = computed(() => ({
   level: level.value,
   namespace: namespace.value,
-  mapId: filterMapId.value,
   actionId: actionId.value,
 }));
 
@@ -184,7 +185,6 @@ let loadGen = 0;
 async function reloadView() {
   const gen = ++loadGen;
   const query = filterQuery.value;
-  const mapId = query.mapId ?? 'all';
   const [listedRows, allRows] = await Promise.all([
     resolveMaybePromise(liveStore.list(query)),
     resolveMaybePromise(liveStore.getAll()),
@@ -195,7 +195,6 @@ async function reloadView() {
   allLogs.value = allRows;
   const set = new Set<string>();
   for (const log of allRows) {
-    if (mapId !== 'all' && logMapId(log) !== mapId) continue;
     const key = rootNamespace(log);
     if (key) set.add(key);
   }
@@ -257,7 +256,7 @@ watch(
   },
 );
 
-watch([actionId, level, namespace, filterMapId], () => {
+watch([actionId, level, namespace], () => {
   void scrollLogsToTop();
 });
 </script>

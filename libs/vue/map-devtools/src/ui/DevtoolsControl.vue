@@ -3,7 +3,11 @@ export default { name: 'devtools-control' };
 </script>
 <script setup lang="ts">
 import type { WithMapPropType } from '@hungpvq/map-core';
-import { DEVTOOLS_CONTROL } from '@hungpvq/map-core';
+import {
+  DEVTOOLS_CONTROL,
+  setDevtoolOpen,
+  toggleDevtoolOpen,
+} from '@hungpvq/map-debug';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
@@ -19,7 +23,7 @@ import { mdiTools } from '@mdi/js';
 import { watch } from 'vue';
 
 import { defineProps, withDefaults } from 'vue';
-import { setDevtoolOpen, toggleDevtoolOpen, useDevtoolState } from '../store';
+import { useDevtoolState } from '../store';
 import DevtoolsPanelBody from './DevtoolsPanelBody.vue';
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
@@ -90,8 +94,6 @@ function onClose() {
   <ModuleContainer v-bind="moduleContainerProps">
     <template #btn>
       <MapControlButton
-        variant="icon"
-        size="medium"
         :active="isOpen"
         title="Map Devtools"
         aria-label="Map Devtools"

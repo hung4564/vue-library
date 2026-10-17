@@ -11,7 +11,7 @@ import {
 } from '@hungpvq/map-debug';
 import type { LogDataStore, LogRecord } from '@hungpvq/shared-log';
 import { resolveMaybePromise } from '@hungpvq/shared-log';
-import { DraggableModal } from '@hungpvq/vue-draggable';
+import { DraggableItemModal } from '@hungpvq/vue-draggable';
 import {
   MapControlButton,
   ModuleContainer,
@@ -107,7 +107,7 @@ function onStepClick(logId: string) {
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #draggable="{ containerId }">
-      <DraggableModal
+      <DraggableItemModal
         :show="show"
         :title="title"
         :container-id="containerId"
@@ -184,7 +184,7 @@ function onStepClick(logId: string) {
             <LogDetailPanel :log="selectedLog" />
           </div>
         </div>
-      </DraggableModal>
+      </DraggableItemModal>
     </template>
   </ModuleContainer>
 </template>

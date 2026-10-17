@@ -15,7 +15,6 @@ import { describe, expect, it } from 'vitest';
 
 import * as basemapApi from './basemap';
 import * as crsApi from './crs';
-import * as devtoolsApi from './devtools';
 import * as eventApi from './event';
 import * as imageApi from './image';
 import * as api from './index';
@@ -265,37 +264,6 @@ export const MAP_CORE_STABLE_RUNTIME_EXPORTS = [
 export const MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'DEVTOOLS_CONTROL',
   'GeoLocateSession',
-] as const;
-
-/** Experimental `@hungpvq/map-core/devtools` runtime exports. */
-export const MAP_CORE_DEVTOOLS_EXPERIMENTAL_RUNTIME_EXPORTS = [
-  'clearDevtoolErrors',
-  'clearDevtoolErrorsForMapId',
-  'clearDevtoolLogs',
-  'clearDevtoolLogsForMapId',
-  'configureDevtoolLogStore',
-  'createDevtoolLogAdapter',
-  'DEVTOOLS_CONTROL',
-  'formatDevtoolsLogEntryForCopy',
-  'getDevtoolLogDataStore',
-  'getDevtoolState',
-  'getMapDebugStore',
-  'initDevtoolStoreCore',
-  'installDevtoolErrorListener',
-  'installDevtoolsCore',
-  'installDevtoolsErrorsShortcut',
-  'isMapDevtoolsInstalled',
-  'MAP_DEBUG_STORE_KEY',
-  'openMapDevtoolsErrors',
-  'OPEN_DEVTOOLS_ERRORS_EVENT',
-  'refreshDevtoolLogsFromStore',
-  'replaceDevtoolErrors',
-  'replaceDevtoolLogs',
-  'setDevtoolActiveTab',
-  'setDevtoolFilterMapId',
-  'setDevtoolOpen',
-  'subscribeDevtoolState',
-  'toggleDevtoolOpen',
 ] as const;
 
 /** Stable runtime exports per domain subpath entry. */
@@ -608,11 +576,5 @@ describe('public API surface', () => {
       for (const name of names) if (rootKeys.has(name)) overlap.push(name);
     }
     expect(overlap).toEqual([]);
-  });
-
-  it('devtools subpath runtime exports match the Experimental allowlist', () => {
-    const keys = Object.keys(devtoolsApi).sort();
-    const expected = [...MAP_CORE_DEVTOOLS_EXPERIMENTAL_RUNTIME_EXPORTS].sort();
-    expect(keys).toEqual(expected);
   });
 });

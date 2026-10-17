@@ -17,9 +17,7 @@ export type DatasetStoreLike = {
   datasetIds: { value: string[] };
 };
 
-const datasetLogger = loggerFactory
-  .createLogger()
-  .setNamespace('map:dataset', 2);
+const datasetLogger = loggerFactory.createLogger().setNamespace('map:dataset');
 
 function datasetCtx(mapId: string, layer: IDataset, span: string, fn: string) {
   return {

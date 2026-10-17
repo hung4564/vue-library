@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { formatDevtoolsLogEntryForCopy } from '@hungpvq/map-core/devtools';
-import { formatLogTime, shortActionId, textMessage } from '@hungpvq/map-debug';
+import {
+  formatDevtoolsLogEntryForCopy,
+  formatLogTime,
+  shortActionId,
+  textMessage,
+} from '@hungpvq/map-debug';
 import { logActionId, type LogRecord } from '@hungpvq/shared-log';
 import { MapControlButton, MapCopyButton } from '@hungpvq/vue-map-core';
-import { computed } from 'vue';
+import { computed, defineEmits, defineProps } from 'vue';
 
 const props = defineProps<{
   log: LogRecord;

@@ -1,10 +1,10 @@
-import type { DemoHelpSection } from './datasets/menu/help';
 import { DATA_MANAGEMENT_DEMO_HELP } from './datasets/data-management/help';
 import { GEO_EXPORT_DEMO_HELP } from './datasets/geo-export/help';
 import { HIGHLIGHT_DEMO_HELP } from './datasets/highlight/help';
-import { IDENTIFY_DEMO_HELP } from './datasets/identify/help';
 import { IDENTIFY_PRESENT_DEMO_HELP } from './datasets/identify-present/help';
+import { IDENTIFY_DEMO_HELP } from './datasets/identify/help';
 import { LIST_DEMO_HELP } from './datasets/list/help';
+import type { DemoHelpSection } from './datasets/menu/help';
 import { MENU_DEMO_HELP } from './datasets/menu/help';
 
 export type DemoFramework = 'vue' | 'react';
@@ -319,40 +319,6 @@ const DEMO_PAGE_GUIDES: Record<string, BilingualDemoPageGuide> = {
       ],
     ]),
   ),
-
-  '/basemap-error': guideI18n(
-    guide(
-      'Forces a bad MapLibre style URL so errors go through errorHandler → MapErrorToast.',
-      [
-        [
-          'toast',
-          'Toast',
-          'Watch the bottom-center MapErrorToast after load (invalid style / tiles).',
-        ],
-        [
-          'handler',
-          'errorHandler',
-          'Map shell already calls errorHandler.handle on map errors; open Devtools Errors tab if installed.',
-        ],
-      ],
-    ),
-    guide(
-      'Ép URL style MapLibre sai để lỗi đi qua errorHandler → MapErrorToast.',
-      [
-        [
-          'toast',
-          'Toast',
-          'Xem MapErrorToast giữa đáy sau khi tải (style / tile lỗi).',
-        ],
-        [
-          'handler',
-          'errorHandler',
-          'Shell Map đã gọi errorHandler.handle khi lỗi; mở tab Errors trong Devtools nếu có.',
-        ],
-      ],
-    ),
-  ),
-
   '/multi-map': guideI18n(
     guide('Two Map instances with different mapIds on one page.', [
       [

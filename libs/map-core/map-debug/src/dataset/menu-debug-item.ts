@@ -1,8 +1,3 @@
-import {
-  isMapDevtoolsInstalled,
-  setDevtoolActiveTab,
-  setDevtoolOpen,
-} from '@hungpvq/map-core/devtools';
 import type {
   MenuAction,
   MenuActionLocation,
@@ -14,13 +9,12 @@ import {
   MENU_CONTROL_ID,
   registerGlobalDatasetMenus,
 } from '@hungpvq/map-dataset/menu';
+
 import { loggerFactory } from '@hungpvq/shared-log';
 
-import {
-  getDatasetDebugApi,
-  installDatasetDebug,
-  setDatasetDebugMenuHooks,
-} from './bridge';
+import { isMapDevtoolsInstalled } from '../core/install';
+import { setDevtoolActiveTab, setDevtoolOpen } from '../core/store-core';
+import { getDatasetDebugApi, initDatasetDebug } from './bridge';
 import type { DatasetMenuTarget } from './types';
 
 const logger = loggerFactory.createLogger().setNamespace('map-debug:menu');
@@ -64,8 +58,8 @@ export function openDatasetDevtools(): void {
 export function captureDatasetFromMenu(
   props: MenuItemProps,
   options?: CaptureDatasetFromMenuOptions,
-): ReturnType<typeof installDatasetDebug> {
-  const api = getDatasetDebugApi() ?? installDatasetDebug();
+): ReturnType<typeof initDatasetDebug> {
+  const api = getDatasetDebugApi() ?? initDatasetDebug();
   const target = options?.target ?? 'layer';
   const contextControl = props.context?.['control'];
   const control =
@@ -159,13 +153,8 @@ export function createMenuItemDebugDataset(
     })
     .build();
 }
-
-let unregisterGlobalMenus: (() => void) | undefined;
-
-/** Register layer + item debug menus on every dataset (idempotent). */
-export function installDatasetDebugMenus(): void {
-  unregisterGlobalMenus?.();
-  unregisterGlobalMenus = registerGlobalDatasetMenus([
+export function installDatasetDebugMenus(): () => void {
+  return registerGlobalDatasetMenus([
     {
       for: 'layer',
       key: MENU_ITEM_DEBUG_DATASET_ID,
@@ -178,13 +167,3 @@ export function installDatasetDebugMenus(): void {
     },
   ]);
 }
-
-export function uninstallDatasetDebugMenus(): void {
-  unregisterGlobalMenus?.();
-  unregisterGlobalMenus = undefined;
-}
-
-setDatasetDebugMenuHooks({
-  onInstall: installDatasetDebugMenus,
-  onUninstall: uninstallDatasetDebugMenus,
-});

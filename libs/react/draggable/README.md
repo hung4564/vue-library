@@ -20,7 +20,7 @@ import '@hungpvq/react-draggable/style.css';
 
 ```tsx
 import '@hungpvq/react-draggable/style.css';
-import { DraggableContainer, DraggableItemFloat, DraggableModal } from '@hungpvq/react-draggable';
+import { DraggableContainer, DraggableItemFloat, DraggableItemModal } from '@hungpvq/react-draggable';
 
 function App() {
   return (
@@ -31,14 +31,14 @@ function App() {
       >
         <p>Content here</p>
       </DraggableItemFloat>
-      <DraggableModal
+      <DraggableItemModal
         title="Dialog"
         show
         width={480}
         height={280}
       >
         <p>Modal body</p>
-      </DraggableModal>
+      </DraggableItemModal>
     </DraggableContainer>
   );
 }
@@ -48,12 +48,12 @@ Prefer controlled `show` + `onUpdateShow` so store-driven open/close stays in sy
 
 ## Stable shells
 
-| Component                                  | Role                                                 |
-| ------------------------------------------ | ---------------------------------------------------- |
-| `DraggableContainer`                       | Root; optional `variant="plain"`, `mobileBreakpoint` |
-| `DraggableItemFloat` / `Popup` / `Modal`   | Free panels                                          |
-| `DraggableItemSideBar` / `DraggableDrawer` | Edge panels                                          |
-| `DraggableItemBottom`                      | Exclusive bottom sheet                               |
+| Component                                      | Role                                                 |
+| ---------------------------------------------- | ---------------------------------------------------- |
+| `DraggableContainer`                           | Root; optional `variant="plain"`, `mobileBreakpoint` |
+| `DraggableItemFloat` / `Popup` / `Modal`       | Free panels                                          |
+| `DraggableItemSideBar` / `DraggableItemDrawer` | Edge panels                                          |
+| `DraggableItemBottom`                          | Exclusive bottom sheet                               |
 
 Store / commands: `useDragStore`, `useDragCommands`, `useDragLayout` (re-exported after React `configureDragStore`). Types/factories: import from `@hungpvq/draggable`.
 

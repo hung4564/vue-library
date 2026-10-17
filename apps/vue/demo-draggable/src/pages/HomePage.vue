@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   DraggableContainer,
-  DraggableDrawer,
+  DraggableItemDrawer,
   DraggableItemBottom,
   DraggableItemFloat,
   DraggableItemPopup,
@@ -114,7 +114,7 @@ const demos = [
       </div>
     </DraggableItemBottom>
 
-    <DraggableDrawer
+    <DraggableItemDrawer
       show
       title="Drawer 1"
       location="right"
@@ -125,9 +125,9 @@ const demos = [
       <div class="panel">
         Resize me ({{ drawerSize }}px). Switch to Drawer 2 via menu.
       </div>
-    </DraggableDrawer>
+    </DraggableItemDrawer>
 
-    <DraggableDrawer
+    <DraggableItemDrawer
       :show="false"
       title="Drawer 2"
       location="right"
@@ -136,6 +136,6 @@ const demos = [
       :max-size="480"
     >
       <div class="panel">Second drawer on the same edge.</div>
-    </DraggableDrawer>
+    </DraggableItemDrawer>
   </DraggableContainer>
 </template>

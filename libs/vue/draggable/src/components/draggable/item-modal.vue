@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'DraggableModal',
+  name: 'DraggableItemModal',
 };
 </script>
 <script setup lang="ts">
@@ -21,6 +21,7 @@ import {
 } from 'vue';
 import VueDraggableResizable from 'vue-draggable-resizable';
 
+import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import {
   useComponent,
   useContainerOrder,
@@ -35,6 +36,7 @@ import {
 } from '../../hook';
 import { useDragLayout } from '../../store';
 import DragButton from '../parts/DragButton.vue';
+useLiveHookDebug('DraggableItemModal');
 
 const MODAL_Z_INDEX = 10000;
 

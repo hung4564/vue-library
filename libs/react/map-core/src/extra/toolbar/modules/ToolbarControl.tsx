@@ -77,11 +77,15 @@ function isSameIcon(a?: MapControlIcon, b?: MapControlIcon): boolean {
   if (!a || !b) return false;
   if (a.type !== b.type) return false;
   if (a.type === 'mdi' && b.type === 'mdi') return a.path === b.path;
-  if (a.type === 'compass' && b.type === 'compass') return a.transform === b.transform;
+  if (a.type === 'compass' && b.type === 'compass')
+    return a.transform === b.transform;
   return true;
 }
 
-function isSameButton(a: MapControlButtonState, b: MapControlButtonState): boolean {
+function isSameButton(
+  a: MapControlButtonState,
+  b: MapControlButtonState,
+): boolean {
   return (
     a.id === b.id &&
     a.visible === b.visible &&
@@ -167,7 +171,9 @@ export function ToolbarControl(props: ToolbarControlProps) {
     if (el) {
       const nextHostHeight = el.clientHeight;
       const nextAvailableWidth = toolbarAvailableWidth(el.clientWidth);
-      setHostHeight((prev) => (prev === nextHostHeight ? prev : nextHostHeight));
+      setHostHeight((prev) =>
+        prev === nextHostHeight ? prev : nextHostHeight,
+      );
       setAvailableWidth((prev) =>
         prev === nextAvailableWidth ? prev : nextAvailableWidth,
       );
@@ -213,7 +219,9 @@ export function ToolbarControl(props: ToolbarControlProps) {
       const expanded = storeApi.getExpandedModuleId();
       setExpandedModuleId((prev) => (prev === expanded ? prev : expanded));
       const nextButtons = storeApi.getAll({ location: 'toolbar' });
-      setButtons((prev) => (isSameButtons(prev, nextButtons) ? prev : nextButtons));
+      setButtons((prev) =>
+        isSameButtons(prev, nextButtons) ? prev : nextButtons,
+      );
     };
     const unsub = storeApi.subscribe(syncButtons);
     syncButtons();

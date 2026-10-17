@@ -1,11 +1,6 @@
-import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
-import {
-  createMenuBuilder,
-  createMenuItemIdentifyForList,
-  LIST_VIEW_MENU_ID,
-} from '@hungpvq/map-dataset/menu';
+import { runMapControlAction } from '@hungpvq/map-core';
 import { findPartByType, type IDataset } from '@hungpvq/map-dataset';
-import type { WithMenuHelper } from '@hungpvq/map-dataset/menu';
+import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
 import {
   closeIdentifyExclusiveUi,
   createDefaultIdentifyResolver,
@@ -17,15 +12,20 @@ import {
   type IdentifyHitAction,
   type IIdentifyView,
 } from '@hungpvq/map-dataset/identify';
-import { runMapControlAction } from '@hungpvq/map-core';
-import { mdiSwapHorizontal } from '@mdi/js';
+import type { WithMenuHelper } from '@hungpvq/map-dataset/menu';
+import {
+  createMenuBuilder,
+  createMenuItemIdentifyForList,
+  LIST_VIEW_MENU_ID,
+} from '@hungpvq/map-dataset/menu';
 import { loggerFactory } from '@hungpvq/shared-log';
+import { mdiSwapHorizontal } from '@mdi/js';
 import type { Feature, FeatureCollection, Polygon } from 'geojson';
 import { polygonFromBounds } from '../identify/factory';
 
 const logger = loggerFactory
   .createLogger()
-  .setNamespace('demo:identify-present', 2);
+  .setNamespace('demo:identify-present');
 
 type PresentOptions = {
   detail: boolean;

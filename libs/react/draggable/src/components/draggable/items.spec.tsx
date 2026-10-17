@@ -8,9 +8,9 @@ import {
   useDragStore as getDragStore,
 } from '../../store';
 import { DraggableItemBottom } from './item-bottom';
-import { DraggableDrawer } from './item-drawer';
+import { DraggableItemDrawer } from './item-drawer';
 import { DraggableItemFloat } from './item-float';
-import { DraggableModal } from './item-modal';
+import { DraggableItemModal } from './item-modal';
 import { DraggableItemPopup } from './item-popup';
 import { DraggableItemSideBar } from './item-sidebar';
 
@@ -167,8 +167,8 @@ describe('Stable item shells register into store', () => {
     unmount();
   });
 
-  it('DraggableModal → modal group', async () => {
-    const { unmount } = await renderItem(DraggableModal, {
+  it('DraggableItemModal → modal group', async () => {
+    const { unmount } = await renderItem(DraggableItemModal, {
       width: 320,
       height: 200,
     });
@@ -183,7 +183,7 @@ describe('Stable item shells register into store', () => {
     unmount();
   });
 
-  it('DraggableModal sets inert on root siblings while open', async () => {
+  it('DraggableItemModal sets inert on root siblings while open', async () => {
     getDragContainer(CID).initContainer();
     getDragContainer(CID).setParentProps({
       width: 800,
@@ -203,7 +203,7 @@ describe('Stable item shells register into store', () => {
 
     const { rerender, unmount } = render(
       <ContainerProvider containerId={CID}>
-        <DraggableModal
+        <DraggableItemModal
           show
           title="M"
           containerId={CID}
@@ -223,7 +223,7 @@ describe('Stable item shells register into store', () => {
 
     rerender(
       <ContainerProvider containerId={CID}>
-        <DraggableModal
+        <DraggableItemModal
           show={false}
           title="M"
           containerId={CID}
@@ -255,10 +255,10 @@ describe('Stable item shells register into store', () => {
     unmount();
   });
 
-  it('DraggableDrawer → drawer right', async () => {
+  it('DraggableItemDrawer → drawer right', async () => {
     const drawerId = 'items-react-drawer';
     const { unmount } = await renderItem(
-      DraggableDrawer,
+      DraggableItemDrawer,
       { location: 'right', size: 280 },
       drawerId,
     );
@@ -309,7 +309,7 @@ describe('Stable item shells register into store', () => {
     document.body.appendChild(host);
     const { unmount } = render(
       <ContainerProvider containerId={drawerId}>
-        <DraggableDrawer
+        <DraggableItemDrawer
           id="sw-a"
           show
           location="right"
@@ -317,7 +317,7 @@ describe('Stable item shells register into store', () => {
           containerId={drawerId}
           size={280}
         />
-        <DraggableDrawer
+        <DraggableItemDrawer
           id="sw-b"
           show={false}
           location="right"

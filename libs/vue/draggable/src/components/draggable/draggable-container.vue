@@ -10,10 +10,12 @@ import {
   watch,
 } from 'vue';
 
+import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import { useDragContainer, useDragStore } from '../../store';
 import BottomContainer from './bottom/bottom-container.vue';
 import SidebarContainer from './sidebar/sidebar-container.vue';
 
+useLiveHookDebug('ModuleContainer');
 /** Local debounce (avoids lodash CJS default-export issues in Vite consumers). */
 function debounce<TArgs extends unknown[]>(
   fn: (...args: TArgs) => void,

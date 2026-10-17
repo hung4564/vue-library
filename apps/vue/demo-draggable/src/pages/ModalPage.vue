@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {
   DraggableContainer,
+  DraggableItemModal,
   DraggableItemSideBar,
-  DraggableModal,
   ManagementControl,
 } from '@hungpvq/vue-draggable';
 import { ref } from 'vue';
@@ -47,7 +47,7 @@ const showThird = ref(false);
       </div>
     </DraggableItemSideBar>
 
-    <DraggableModal
+    <DraggableItemModal
       v-model:show="showOuter"
       title="Outer modal"
       :width="440"
@@ -66,9 +66,9 @@ const showThird = ref(false);
           </button>
         </div>
       </div>
-    </DraggableModal>
+    </DraggableItemModal>
 
-    <DraggableModal
+    <DraggableItemModal
       v-model:show="showInner"
       title="Nested modal"
       :width="340"
@@ -90,9 +90,9 @@ const showThird = ref(false);
           Close nested
         </button>
       </div>
-    </DraggableModal>
+    </DraggableItemModal>
 
-    <DraggableModal
+    <DraggableItemModal
       v-model:show="showThird"
       title="Sibling modal"
       :width="320"
@@ -104,6 +104,6 @@ const showThird = ref(false);
       <div class="panel">
         <p>Opened from the control panel (sibling, not nested).</p>
       </div>
-    </DraggableModal>
+    </DraggableItemModal>
   </DraggableContainer>
 </template>

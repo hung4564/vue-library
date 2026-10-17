@@ -188,7 +188,7 @@ export function createIdentifySession(
       { mapId: options.mapId, span: 'identify.query', fn: 'runQuery' },
       async () =>
         runWithFunctionLog(
-          loggerFactory.createLogger().setNamespace('map:identify', 2),
+          loggerFactory.createLogger().setNamespace('map:identify'),
           {
             fn: 'runQuery',
             span: 'identify.query',

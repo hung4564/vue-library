@@ -6,7 +6,6 @@ import {
   createMultiMapboxLayerComponent,
   createRootDataset,
 } from '@hungpvq/map-dataset';
-import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
 import { createDatasetPartIdentifyComponentBuilder } from '@hungpvq/map-dataset/identify';
@@ -44,12 +43,13 @@ import {
   demoPoint,
   demoPolygon,
 } from '../../fixtures/geojson';
+import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
 import {
   DEMO_CUSTOM_MENU_HANDLER_KEY,
   DEMO_LAYER_TOGGLE_SHOW_KEY,
 } from '../../registry/menu-handlers';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:menu', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:menu');
 
 function createCustomMenuItem(
   icon: string,

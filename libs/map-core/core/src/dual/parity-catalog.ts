@@ -169,7 +169,6 @@ export const MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL = [
   'InputTextarea',
   'MapButton',
   'MapCard',
-  'MapErrorToast',
   'MapIcon',
   'MapImage',
 ] as const;

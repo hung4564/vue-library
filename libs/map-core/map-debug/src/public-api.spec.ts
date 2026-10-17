@@ -13,7 +13,6 @@ export const MAP_DEBUG_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'collectErrorMapIds',
   'displayValue',
   'errorMapId',
-  'filterErrorsByMapId',
   'formatDevtoolErrorForCopy',
   'formatErrorTime',
   'formatFlowDelta',

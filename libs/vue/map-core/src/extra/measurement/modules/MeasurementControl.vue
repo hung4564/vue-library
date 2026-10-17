@@ -40,7 +40,10 @@ import {
   type MeasurementUiState,
   resolveMeasurementToolbarStatus,
 } from '@hungpvq/map-core/measurement';
-import { mdiButtonState, type ToolbarButtonConfig } from '@hungpvq/map-core/toolbar';
+import {
+  mdiButtonState,
+  type ToolbarButtonConfig,
+} from '@hungpvq/map-core/toolbar';
 import {
   mdiAngleAcute,
   mdiClose,

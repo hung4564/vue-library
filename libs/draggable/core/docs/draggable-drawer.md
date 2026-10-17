@@ -2,11 +2,11 @@
 category: Component
 ---
 
-# DraggableDrawer
+# DraggableItemDrawer
 
 ## Overview
 
-`DraggableDrawer` is a **layout layer** docked to an edge (`left`, `right`, `top`, `bottom`). Unlike sidebar/popup overlays, it occupies grid space around the center container and shrinks the center area instead of stacking on top of it.
+`DraggableItemDrawer` is a **layout layer** docked to an edge (`left`, `right`, `top`, `bottom`). Unlike sidebar/popup overlays, it occupies grid space around the center container and shrinks the center area instead of stacking on top of it.
 
 ```
 ┌────────── top ──────────┐
@@ -63,13 +63,13 @@ Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ ext
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { DraggableContainer, DraggableDrawer } from '@hungpvq/vue-draggable';
+import { DraggableContainer, DraggableItemDrawer } from '@hungpvq/vue-draggable';
 const size = ref(360);
 </script>
 
 <template>
   <DraggableContainer>
-    <DraggableDrawer
+    <DraggableItemDrawer
       title="Filters"
       show
       location="right"
@@ -78,14 +78,14 @@ const size = ref(360);
       :max-size="640"
     >
       <div style="padding: 12px">Drawer content (size: {{ size }}px)</div>
-    </DraggableDrawer>
-    <DraggableDrawer
+    </DraggableItemDrawer>
+    <DraggableItemDrawer
       title="Layers"
       location="right"
       :show="false"
     >
       <div style="padding: 12px">Switch via the header menu</div>
-    </DraggableDrawer>
+    </DraggableItemDrawer>
   </DraggableContainer>
 </template>
 ```
@@ -94,13 +94,13 @@ const size = ref(360);
 
 ```tsx
 import { useState } from 'react';
-import { DraggableContainer, DraggableDrawer } from '@hungpvq/react-draggable';
+import { DraggableContainer, DraggableItemDrawer } from '@hungpvq/react-draggable';
 
 export function Example() {
   const [size, setSize] = useState(360);
   return (
     <DraggableContainer>
-      <DraggableDrawer
+      <DraggableItemDrawer
         title="Filters"
         show
         location="right"
@@ -110,14 +110,14 @@ export function Example() {
         maxSize={640}
       >
         <div style={{ padding: 12 }}>Drawer content (size: {size}px)</div>
-      </DraggableDrawer>
-      <DraggableDrawer
+      </DraggableItemDrawer>
+      <DraggableItemDrawer
         title="Layers"
         location="right"
         show={false}
       >
         <div style={{ padding: 12 }}>Switch via the header menu</div>
-      </DraggableDrawer>
+      </DraggableItemDrawer>
     </DraggableContainer>
   );
 }

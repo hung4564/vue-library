@@ -5,6 +5,7 @@ import { MapControlButton } from './MapControlButton';
 export type MapTabItem = {
   id: string;
   label: string;
+  order?: number;
 };
 
 export type MapTabsProps = {

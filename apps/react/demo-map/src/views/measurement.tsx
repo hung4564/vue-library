@@ -13,7 +13,7 @@ import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:measurement', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:measurement');
 
 const actions: MeasureActionItem[] = [
   {

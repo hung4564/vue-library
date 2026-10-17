@@ -674,7 +674,7 @@ const items = createAddToGroupSubmenu(
 
 ### `createMenuItemExportGeo`
 
-Export GeoJSON / KML / CSV / Shapefile from the ⋮ menu. Opens the `ExportGeo` **DraggableModal** shell via `addComponent` (same pattern as Attribute table). Full guide: [Export](./export.md).
+Export GeoJSON / KML / CSV / Shapefile from the ⋮ menu. Opens the `ExportGeo` **DraggableItemModal** shell via `addComponent` (same pattern as Attribute table). Full guide: [Export](./export.md).
 
 |                   |                                                                                                             |
 | ----------------- | ----------------------------------------------------------------------------------------------------------- |

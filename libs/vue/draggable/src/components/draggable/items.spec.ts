@@ -4,9 +4,9 @@ import { defineComponent, h, nextTick, ref } from 'vue';
 
 import { useDragContainer, useDragStore } from '../../store';
 import DraggableItemBottom from './item-bottom.vue';
-import DraggableDrawer from './item-drawer.vue';
+import DraggableItemDrawer from './item-drawer.vue';
 import DraggableItemFloat from './item-float.vue';
-import DraggableModal from './item-modal.vue';
+import DraggableItemModal from './item-modal.vue';
 import DraggableItemPopup from './item-popup.vue';
 import DraggableItemSideBar from './item-sidebar.vue';
 
@@ -156,8 +156,8 @@ describe('Stable item shells register into store', () => {
     wrapper.unmount();
   });
 
-  it('DraggableModal → modal group', async () => {
-    const wrapper = await mountItem(DraggableModal, {
+  it('DraggableItemModal → modal group', async () => {
+    const wrapper = await mountItem(DraggableItemModal, {
       width: 320,
       height: 200,
     });
@@ -167,7 +167,7 @@ describe('Stable item shells register into store', () => {
     wrapper.unmount();
   });
 
-  it('DraggableModal sets inert on root siblings while open', async () => {
+  it('DraggableItemModal sets inert on root siblings while open', async () => {
     useDragContainer(CID).initContainer();
     useDragContainer(CID).setParentProps({
       width: 800,
@@ -187,7 +187,7 @@ describe('Stable item shells register into store', () => {
     Object.defineProperty(layer, 'clientWidth', { value: 800 });
     Object.defineProperty(layer, 'clientHeight', { value: 600 });
 
-    const wrapper = mount(DraggableModal, {
+    const wrapper = mount(DraggableItemModal, {
       props: {
         show: true,
         title: 'M',
@@ -219,7 +219,7 @@ describe('Stable item shells register into store', () => {
     shell.remove();
   });
 
-  it('DraggableModal releases inert when unmounted after close() race', async () => {
+  it('DraggableItemModal releases inert when unmounted after close() race', async () => {
     useDragContainer(CID).initContainer();
     useDragContainer(CID).setParentProps({
       width: 800,
@@ -239,7 +239,7 @@ describe('Stable item shells register into store', () => {
     Object.defineProperty(layer, 'clientWidth', { value: 800 });
     Object.defineProperty(layer, 'clientHeight', { value: 600 });
 
-    const wrapper = mount(DraggableModal, {
+    const wrapper = mount(DraggableItemModal, {
       props: {
         show: true,
         title: 'M',
@@ -278,10 +278,10 @@ describe('Stable item shells register into store', () => {
     wrapper.unmount();
   });
 
-  it('DraggableDrawer → drawer right', async () => {
+  it('DraggableItemDrawer → drawer right', async () => {
     const drawerId = 'items-vue-drawer';
     const wrapper = await mountItem(
-      DraggableDrawer,
+      DraggableItemDrawer,
       { location: 'right', size: 280 },
       drawerId,
     );
@@ -319,13 +319,13 @@ describe('Stable item shells register into store', () => {
     });
     const wrapper = mount(
       defineComponent({
-        components: { DraggableDrawer },
+        components: { DraggableItemDrawer },
         setup() {
           return { cid: drawerId };
         },
         template: `
-          <DraggableDrawer id="sw-a" show location="right" title="A" :containerId="cid" :size="280" />
-          <DraggableDrawer id="sw-b" :show="false" location="right" title="B" :containerId="cid" :size="280" />
+          <DraggableItemDrawer id="sw-a" show location="right" title="A" :containerId="cid" :size="280" />
+          <DraggableItemDrawer id="sw-b" :show="false" location="right" title="B" :containerId="cid" :size="280" />
         `,
       }),
       {

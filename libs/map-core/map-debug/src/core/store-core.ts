@@ -3,13 +3,16 @@ import {
   IndexedDBLogDataStore,
   type LogDataStore,
   loggerFactory,
-  logMapId,
   type LogRecord,
   MemoryLogDataStore,
   resolveMaybePromise,
 } from '@hungpvq/shared-log';
 
-import { errorHandler } from '../services/error-handler.service';
+import {
+  debounce,
+  errorHandler,
+  getMapCoreMetaStoreEvent,
+} from '@hungpvq/map-core';
 import {
   getMapDebugStore,
   type MapDebugLogStoreOptions,
@@ -28,9 +31,8 @@ export interface DevtoolErrorRecord {
 
 export type DevtoolState = {
   isOpen: boolean;
+  installedDataset?: boolean;
   activeTab: DevtoolTab;
-  /** Global map filter for all viewers (`'all'` = no filter). */
-  filterMapId: string;
   errors: DevtoolErrorRecord[];
   logs: LogRecord[];
 };
@@ -48,22 +50,22 @@ export type DevtoolLogStoreOptions = MapDebugLogStoreOptions;
 export type DevtoolLogStoreConfig =
   DevtoolLogStoreKind | LogDataStore | DevtoolLogStoreOptions;
 
-let state: DevtoolState = {
-  isOpen: false,
-  activeTab: 'store',
-  filterMapId: 'all',
-  errors: [],
-  logs: [],
+export type DevtoolsInstallOptions = {
+  /**
+   * Log store for Devtools Logs.
+   * Default: `'indexeddb'` (uncapped).
+   * Pass `'memory'`, `{ kind: 'memory', limit }`, a custom {@link import('@hungpvq/shared-log').LogDataStore},
+   * or call `configureDevtoolLogStore` first.
+   */
+  logStore?: DevtoolLogStoreConfig;
 };
 
-const listeners = new Set<() => void>();
-
-function notify() {
-  listeners.forEach((listener) => listener());
-}
+const notify = debounce(() => {
+  getMapCoreMetaStoreEvent().emit('debug:update');
+}, 100);
 
 function patchState(patch: Partial<DevtoolState>) {
-  state = { ...state, ...patch };
+  getMapDebugStore().state = { ...getMapDebugStore().state, ...patch };
   notify();
 }
 
@@ -156,20 +158,23 @@ export function getDevtoolLogDataStore(): LogDataStore {
 }
 
 export function subscribeDevtoolState(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
+  const events = getMapCoreMetaStoreEvent();
+  events.on('debug:update', listener);
+  return () => {
+    events.off('debug:update', listener);
+  };
 }
 
 export function getDevtoolState(): DevtoolState {
-  return state;
+  return getMapDebugStore().state;
 }
 
 export function toggleDevtoolOpen() {
-  patchState({ isOpen: !state.isOpen });
+  patchState({ isOpen: !getDevtoolState().isOpen });
 }
 
 export function setDevtoolOpen(open: boolean) {
-  if (state.isOpen === open) return;
+  if (getDevtoolState().isOpen === open) return;
   patchState({ isOpen: open });
 }
 
@@ -177,52 +182,13 @@ export function setDevtoolActiveTab(activeTab: DevtoolTab) {
   patchState({ activeTab });
 }
 
-/** Global mapId filter shared by Store / Logs / Errors / Dataset viewers. */
-export function setDevtoolFilterMapId(filterMapId: string) {
-  if (state.filterMapId === filterMapId) return;
-  patchState({ filterMapId });
-}
-
 /** Open the Devtools panel on the Errors tab. */
 export function openMapDevtoolsErrors() {
   patchState({ isOpen: true, activeTab: 'errors' });
 }
 
-export const OPEN_DEVTOOLS_ERRORS_EVENT = 'hungpvq:map-open-devtools-errors';
-
-let errorsShortcutInstalled = false;
-
-export function installDevtoolsErrorsShortcut() {
-  if (typeof window === 'undefined' || errorsShortcutInstalled) return;
-  errorsShortcutInstalled = true;
-  window.addEventListener(OPEN_DEVTOOLS_ERRORS_EVENT, () => {
-    openMapDevtoolsErrors();
-  });
-}
-
 export function clearDevtoolLogs() {
   void resolveMaybePromise(getDevtoolLogDataStore().clear());
-}
-
-/**
- * Drop Devtools log records for one mapId (no-op if the log store was never
- * created — does not spin up IndexedDB just to clear).
- */
-export function clearDevtoolLogsForMapId(mapId: string): void {
-  if (!mapId) return;
-  const bag = getMapDebugStore();
-  const store = bag.logDataStore;
-  if (!store) return;
-  void (async () => {
-    const all = await resolveMaybePromise(store.getAll());
-    const kept = all.filter((r) => logMapId(r) !== mapId);
-    if (kept.length === all.length) return;
-    await resolveMaybePromise(store.clear());
-    for (const r of [...kept].reverse()) {
-      await resolveMaybePromise(store.append(r));
-    }
-    patchState({ logs: [...kept] });
-  })();
 }
 
 /** Re-read the log store into Devtools UI state (Logs tab / badge count). */
@@ -234,14 +200,6 @@ export async function refreshDevtoolLogsFromStore(): Promise<void> {
 
 export function clearDevtoolErrors() {
   patchState({ errors: [] });
-}
-
-/** Drop in-memory Devtools error rows whose context.mapId matches. */
-export function clearDevtoolErrorsForMapId(mapId: string): void {
-  if (!mapId) return;
-  const next = state.errors.filter((e) => e.context?.['mapId'] !== mapId);
-  if (next.length === state.errors.length) return;
-  patchState({ errors: next });
 }
 
 export function replaceDevtoolLogs(logs: LogRecord[]) {
@@ -259,13 +217,8 @@ export function replaceDevtoolErrors(errors: DevtoolErrorRecord[]) {
   patchState({ errors });
 }
 
-let errorListenerInstalled = false;
-
 export function installDevtoolErrorListener() {
-  if (errorListenerInstalled) return;
-  errorListenerInstalled = true;
-
-  errorHandler.onError((error) => {
+  return errorHandler.onError((error) => {
     patchState({
       errors: [
         {
@@ -276,7 +229,7 @@ export function installDevtoolErrorListener() {
           recoverable: error.recoverable,
           timestamp: Date.now(),
         },
-        ...state.errors,
+        ...getDevtoolState().errors,
       ].slice(0, 50),
     });
   });
@@ -292,8 +245,16 @@ export function createDevtoolLogAdapter() {
   return bag.logAdapter;
 }
 
-/** Initialize shared devtools store side effects (idempotent). */
-export function initDevtoolStoreCore() {
-  installDevtoolsErrorsShortcut();
-  installDevtoolErrorListener();
+export function clearFunctionLog() {
+  getMapDebugStore().__cleanup__?.forEach((cleanup) => {
+    cleanup();
+  });
+  getMapDebugStore().__cleanup__ = [];
+}
+
+export function addClearFunctionLog(cleanup: () => void) {
+  if (!getMapDebugStore().__cleanup__) {
+    getMapDebugStore().__cleanup__ = [];
+  }
+  getMapDebugStore().__cleanup__.push(cleanup);
 }

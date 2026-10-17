@@ -7,10 +7,9 @@ import './menu-debug-item';
 
 export {
   getDatasetDebugApi,
-  installDatasetDebug,
+  initDatasetDebug,
   uninstallDatasetDebug,
 } from './bridge';
-export type { CommonDatasetPartType } from './describe';
 export {
   COMMON_DATASET_PART_TYPES,
   describeDataset,
@@ -19,6 +18,7 @@ export {
   listTypesInSubtree,
   suggestPartTypes,
 } from './describe';
+export type { CommonDatasetPartType } from './describe';
 export {
   debugFindAllByType,
   debugFindPartByType,
@@ -31,19 +31,18 @@ export {
   inspectDataset,
   listTypesInStoreRoots,
 } from './inspect';
-export type {
-  CaptureDatasetFromMenuOptions,
-  CreateMenuItemDebugDatasetOptions,
-} from './menu-debug-item';
+export { installDatasetDebug } from './install';
 export {
   captureDatasetFromMenu,
   createMenuItemDebugDataset,
-  installDatasetDebugMenus,
   MENU_ITEM_DEBUG_DATASET_ICON,
   MENU_ITEM_DEBUG_DATASET_ID,
   MENU_ITEM_DEBUG_DATASET_ID_ITEM,
   openDatasetDevtools,
-  uninstallDatasetDebugMenus,
+} from './menu-debug-item';
+export type {
+  CaptureDatasetFromMenuOptions,
+  CreateMenuItemDebugDatasetOptions,
 } from './menu-debug-item';
 export {
   explainMenus,

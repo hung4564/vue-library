@@ -14,8 +14,8 @@ import {
   type IHighlightPart,
 } from '@hungpvq/map-dataset/highlight';
 import {
-  createDefaultHighlightResolver,
   createDatasetPartIdentifyComponentBuilder,
+  createDefaultHighlightResolver,
   highlightResolver,
   setGlobalHighlightResolver,
   type HighlightContext,
@@ -32,7 +32,7 @@ import { demoLine, demoPoint, demoPolygon } from '../../fixtures/geojson';
 import { registerFactoryViewSource } from '../data-management/view-source-registry';
 import { createDatasetCustomHighlightComponent } from './helper';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:highlight', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:highlight');
 
 const DEMO_DETAIL_FIELDS = [
   { text: 'Id', value: 'id' },

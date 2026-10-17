@@ -18,7 +18,7 @@ import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:draw', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:draw');
 const MAP_ID = 'draw-demo';
 const RESULT_SOURCE = 'demo-draw-result';
 const RESULT_LAYERS = [

@@ -43,7 +43,7 @@ export default defineConfig(() => ({
         'react-dom',
         'react/jsx-runtime',
         '@hungpvq/map-core',
-        '@hungpvq/map-core/devtools',
+        '@hungpvq/map-debug',
         '@hungpvq/map-debug',
         '@hungpvq/map-debug/dataset',
         '@hungpvq/map-dataset',

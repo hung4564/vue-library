@@ -1,5 +1,7 @@
 import { getOrCreateStore } from '@hungpvq/shared-store';
 
+import mitt, { Emitter } from 'mitt';
+import { MapError } from '../errors';
 import type { MapErrorHandler } from '../services/error-handler.service';
 import { MAP_STORE_KEY } from '../types/constants';
 import { isUsableMapId } from './is-usable-map-id';
@@ -29,7 +31,11 @@ export type MapCoreMetaRegistryBag = {
  * (`MAP_STORE_KEY.RESOLVER`), keyed by registry id.
  */
 export type MapResolverStore = Record<string, unknown>;
-
+export type EventHandlerMapCoreMeta = {
+  'error:update': MapError;
+  'debug:update': void;
+  'toolbar:update': void;
+};
 export type MapCoreMetaStore = {
   /** Tombstones after `removeMap` so getMap/subscribeMapReady do not wait. */
   removedMapIds: Set<string>;
@@ -43,6 +49,7 @@ export type MapCoreMetaStore = {
    * {@link createMapCoreMetaRegistry}.
    */
   registries: Map<string, MapCoreMetaRegistryBag>;
+  events: Emitter<EventHandlerMapCoreMeta>;
 };
 
 export function getMapCoreMetaStore(): MapCoreMetaStore {
@@ -55,6 +62,7 @@ export function getMapCoreMetaStore(): MapCoreMetaStore {
         uninstall: undefined,
       },
       registries: new Map(),
+      events: mitt<EventHandlerMapCoreMeta>(),
     }),
   );
   // Hot reload / older bags may lack newer fields.
@@ -179,4 +187,8 @@ export function createMapCoreMetaRegistry<T>(
       ensureMapResolverStore(mapId)[options.key] = value;
     },
   };
+}
+
+export function getMapCoreMetaStoreEvent() {
+  return getMapCoreMetaStore().events;
 }

@@ -13,6 +13,7 @@ import {
 import { inject, nextTick, onBeforeUnmount, Ref, ref, watch } from 'vue';
 import VueDraggableResizable from 'vue-draggable-resizable';
 
+import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import {
   useComponent,
   useContainerOrder,
@@ -31,6 +32,7 @@ import {
 } from '../../hook';
 import { useDragLayout } from '../../store';
 import DragButton from '../parts/DragButton.vue';
+useLiveHookDebug('DraggableItemPopup');
 const {
   CloseIcon,
   CloseExpandedIcon,

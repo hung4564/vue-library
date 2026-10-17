@@ -13,7 +13,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ExportGeo } from './export-geo';
 
 vi.mock('@hungpvq/react-draggable', () => ({
-  DraggableModal: ({
+  DraggableItemModal: ({
     children,
     show,
   }: {

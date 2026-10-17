@@ -54,7 +54,7 @@ Every application log call **must** use `.with({ fn, span })` before the level m
 ```ts
 import { loggerFactory } from '@hungpvq/shared-log';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:list', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:list');
 
 logger.with({ fn: 'onLayerSelect', span: 'menu.action' }).info('Dataset layer selected from the list.', { mapId, layerId });
 ```

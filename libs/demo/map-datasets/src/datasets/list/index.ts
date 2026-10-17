@@ -1,6 +1,4 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
-import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
-import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import {
   createDatasetPartGroupSubListViewUiComponentBuilder,
   createDatasetPartListViewUiComponentBuilder,
@@ -10,13 +8,15 @@ import {
   createMultiMapboxLayerComponent,
   createRootDataset,
 } from '@hungpvq/map-dataset';
-import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
+import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import {
   createMenuBuilder,
   createMenuItemShowDetailInfoSource,
   createMenuItemToBoundActionForList,
   createMenuItemToggleShow,
+  createMultiLegend,
 } from '@hungpvq/map-dataset/menu';
+import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { mdiPen, mdiStar } from '@mdi/js';
@@ -27,10 +27,10 @@ import {
   demoPolygon,
 } from '../../fixtures/geojson';
 import { createRasterSourceConfig } from '../../fixtures/raster';
-import { createMultiLegend } from '@hungpvq/map-dataset/menu';
+import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
 import { DEMO_SAMPLE_LAYER_MENU_KEY } from '../../registry/menu-handlers';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:list', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:list');
 
 /** List-only: bare row in LayerControl. */
 export function createListOnlyDefaultDataset() {

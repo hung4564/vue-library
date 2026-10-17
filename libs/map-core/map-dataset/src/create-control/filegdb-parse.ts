@@ -13,7 +13,7 @@ import { featuresWithGeometry } from './filegdb-meta';
 import { isIgnoredZipEntry } from './gis-format';
 import type { GisLoadResult, GisProgress } from './gis-parse';
 
-const log = loggerFactory.createLogger().setNamespace('map-dataset:filegdb', 2);
+const log = loggerFactory.createLogger().setNamespace('map-dataset:filegdb');
 
 export type FileGdbGdalConfig = {
   /** Directory or CDN base that contains `gdal3WebAssembly.wasm` / `.data`. */

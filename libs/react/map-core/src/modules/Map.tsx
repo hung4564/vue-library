@@ -19,7 +19,6 @@ import React, {
   useState,
 } from 'react';
 
-import { MapErrorToast } from '../components/MapErrorToast';
 import { MapContextProvider } from '../context/MapContext';
 import { ActionControl } from '../extra/event/modules/ActionControl';
 import { useBreakpoints } from '../hooks/useBreakpoints';
@@ -177,7 +176,6 @@ export function Map({
           {/* Render children after map is loaded */}
           {loaded && loadedDrag && children}
           {loaded && loadedDrag && <ActionControl />}
-          <MapErrorToast />
         </div>
       </div>
     </MapContextProvider>

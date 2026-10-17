@@ -45,6 +45,7 @@ export default defineConfig(() => ({
         /^@hungpvq\/map-dataset\//,
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
+        'mitt',
       ],
       output: {
         assetFileNames: 'style.css',

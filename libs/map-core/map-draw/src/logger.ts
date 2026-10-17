@@ -1,2 +1,2 @@
 import { loggerFactory } from '@hungpvq/shared-log';
-export const logger = loggerFactory.createLogger().setNamespace('map:draw', 2);
+export const logger = loggerFactory.createLogger().setNamespace('map:draw');

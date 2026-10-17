@@ -1,11 +1,11 @@
 import {
   DraggableContainer,
-  DraggableDrawer,
   DraggableItemBottom,
+  DraggableItemDrawer,
   DraggableItemFloat,
+  DraggableItemModal,
   DraggableItemPopup,
   DraggableItemSideBar,
-  DraggableModal,
   ManagementControl,
   useDragComponent,
 } from '@hungpvq/react-draggable';
@@ -113,7 +113,7 @@ export function CustomCardPage() {
         <div className="panel">Local override on float.</div>
       </DraggableItemFloat>
 
-      <DraggableDrawer
+      <DraggableItemDrawer
         show
         title="Drawer (global)"
         location="bottom"
@@ -123,7 +123,7 @@ export function CustomCardPage() {
         onUpdateSize={setDrawerSize}
       >
         <div className="panel">Drawer with global card.</div>
-      </DraggableDrawer>
+      </DraggableItemDrawer>
 
       <DraggableItemBottom
         show
@@ -136,7 +136,7 @@ export function CustomCardPage() {
         </div>
       </DraggableItemBottom>
 
-      <DraggableModal
+      <DraggableItemModal
         show={showModal}
         title="Modal (local)"
         width={360}
@@ -146,7 +146,7 @@ export function CustomCardPage() {
         onUpdateShow={setShowModal}
       >
         <div className="panel">Modal with local custom card.</div>
-      </DraggableModal>
+      </DraggableItemModal>
     </DraggableContainer>
   );
 }

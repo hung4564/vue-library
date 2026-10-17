@@ -14,7 +14,7 @@ import { GEO_EXPORT_FORMATS, type GeoExportFormat } from './types';
 
 const AT_DEFAULT_SCOPES: GeoExportScope[] = ['all', 'filtered', 'selected'];
 const geoExportLogger = () =>
-  loggerFactory.createLogger().setNamespace('map:geo-export', 2);
+  loggerFactory.createLogger().setNamespace('map:geo-export');
 
 export type OpenGeoExportFromAttributeTableOptions = {
   layer: IDataset;

@@ -1,8 +1,3 @@
-import {
-  isMapDevtoolsInstalled,
-  setDevtoolActiveTab,
-  setDevtoolOpen,
-} from '@hungpvq/map-core/devtools';
 import { createDataset, createRootDataset } from '@hungpvq/map-dataset';
 import {
   clearGlobalDatasetMenus,
@@ -15,28 +10,16 @@ import {
 import { GlobalStoreService } from '@hungpvq/shared-store';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  getDatasetDebugApi,
-  installDatasetDebug,
-  uninstallDatasetDebug,
-} from './bridge';
+import { isMapDevtoolsInstalled } from '../core/install';
+import { setDevtoolActiveTab, setDevtoolOpen } from '../core/store-core';
+import { getDatasetDebugApi, uninstallDatasetDebug } from './bridge';
+import { installDatasetDebug } from './install';
 import {
   captureDatasetFromMenu,
   createMenuItemDebugDataset,
   MENU_ITEM_DEBUG_DATASET_ID,
   MENU_ITEM_DEBUG_DATASET_ID_ITEM,
 } from './menu-debug-item';
-
-vi.mock('@hungpvq/map-core/devtools', async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import('@hungpvq/map-core/devtools')>();
-  return {
-    ...actual,
-    setDevtoolOpen: vi.fn(),
-    setDevtoolActiveTab: vi.fn(),
-    isMapDevtoolsInstalled: vi.fn(() => true),
-  };
-});
 
 describe('createMenuItemDebugDataset', () => {
   beforeEach(() => {
@@ -119,8 +102,8 @@ describe('createMenuItemDebugDataset', () => {
     expect(api.session.control).toBe(MENU_CONTROL_ID.layerDetail);
     expect(api.session.target).toBe('item');
     expect(api.dataset?.id).toBe(layer.id);
-    expect(api.vars.dataset).toBe(layer);
-    expect(api.vars.value).toEqual({ id: 'row-1', name: 'Demo' });
+    expect(api.vars['dataset']).toBe(layer);
+    expect(api.vars['value']).toEqual({ id: 'row-1', name: 'Demo' });
     expect(setDevtoolOpen).toHaveBeenCalledWith(true);
     expect(setDevtoolActiveTab).toHaveBeenCalledWith('dataset');
     expect(getDatasetDebugApi()).toBe(api);
@@ -151,6 +134,6 @@ describe('createMenuItemDebugDataset', () => {
 
     const api = getDatasetDebugApi();
     expect(api?.session.control).toBe(MENU_CONTROL_ID.identify);
-    expect(api?.vars.dataset).toBe(layer);
+    expect(api?.vars['dataset']).toBe(layer);
   });
 });

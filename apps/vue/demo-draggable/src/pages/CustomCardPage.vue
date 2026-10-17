@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import {
   DraggableContainer,
-  DraggableDrawer,
   DraggableItemBottom,
+  DraggableItemDrawer,
   DraggableItemFloat,
+  DraggableItemModal,
   DraggableItemPopup,
   DraggableItemSideBar,
-  DraggableModal,
   ManagementControl,
   useDragComponent,
 } from '@hungpvq/vue-draggable';
@@ -111,7 +111,7 @@ onUnmounted(() => {
       <div class="panel">Local override on float.</div>
     </DraggableItemFloat>
 
-    <DraggableDrawer
+    <DraggableItemDrawer
       show
       title="Drawer (global)"
       location="bottom"
@@ -120,7 +120,7 @@ onUnmounted(() => {
       :max-size="360"
     >
       <div class="panel">Drawer with global card.</div>
-    </DraggableDrawer>
+    </DraggableItemDrawer>
 
     <DraggableItemBottom
       show
@@ -133,7 +133,7 @@ onUnmounted(() => {
       </div>
     </DraggableItemBottom>
 
-    <DraggableModal
+    <DraggableItemModal
       v-model:show="showModal"
       title="Modal (local)"
       :width="360"
@@ -142,6 +142,6 @@ onUnmounted(() => {
       :componentCardHeader="LocalHeader"
     >
       <div class="panel">Modal with local custom card.</div>
-    </DraggableModal>
+    </DraggableItemModal>
   </DraggableContainer>
 </template>

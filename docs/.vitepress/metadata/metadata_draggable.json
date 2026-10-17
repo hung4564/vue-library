@@ -31,13 +31,13 @@
       "category": "Component"
     },
     {
-      "name": "DraggableModal",
+      "name": "DraggableItemModal",
       "package": "Draggable",
       "docs": "/draggable/draggable-modal",
       "category": "Component"
     },
     {
-      "name": "DraggableDrawer",
+      "name": "DraggableItemDrawer",
       "package": "Draggable",
       "docs": "/draggable/draggable-drawer",
       "category": "Component"

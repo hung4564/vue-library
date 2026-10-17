@@ -1,5 +1,8 @@
 import type { Position } from '../types';
-import { ensureMapToolbarApi, ensureMapToolbarStore } from './register-domain-store';
+import {
+  ensureMapToolbarApi,
+  ensureMapToolbarStore,
+} from './register-domain-store';
 import {
   createLiveToolbarStrategy,
   createSubscribable,
@@ -22,11 +25,7 @@ export type HostStrategyConfig = {
   /** Strip author options (independent of host). */
   getToolbarOptions: () => AnyToolbarOptions | undefined;
   getControlLayout: () =>
-    | 'standalone'
-    | 'toolbar'
-    | 'menu'
-    | 'button'
-    | undefined;
+    'standalone' | 'toolbar' | 'menu' | 'button' | undefined;
   getPosition?: () => Position | undefined;
 };
 
@@ -63,9 +62,7 @@ function withPosition(
   };
 }
 
-function isAuthorToolbarOptions(
-  value: unknown,
-): value is AnyToolbarOptions {
+function isAuthorToolbarOptions(value: unknown): value is AnyToolbarOptions {
   if (!value || typeof value !== 'object') return false;
   const opts = value as AnyToolbarOptions;
   if (opts.kind === 'module' || opts.kind === 'module-expandable') return true;
@@ -94,15 +91,8 @@ function normalizeAuthorButton(
 
   if (isAuthorToolbarOptions(button)) {
     const single = button as ToolbarOptionsSingle;
-    if (
-      (single.kind ?? 'single') === 'single' &&
-      !single.onClick &&
-      onClick
-    ) {
-      return stampSingleId(
-        { ...single, kind: 'single', onClick },
-        controlId,
-      );
+    if ((single.kind ?? 'single') === 'single' && !single.onClick && onClick) {
+      return stampSingleId({ ...single, kind: 'single', onClick }, controlId);
     }
     return stampSingleId(button, controlId);
   }

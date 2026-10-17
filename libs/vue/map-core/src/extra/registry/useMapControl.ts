@@ -480,9 +480,7 @@ export function useMapControl(
 
   const hostActive = computed(() => !!options.host?.button);
   const toolbarActive = computed(() => !!toValue(options.toolbar));
-  const chromeActive = computed(
-    () => hostActive.value || toolbarActive.value,
-  );
+  const chromeActive = computed(() => hostActive.value || toolbarActive.value);
 
   const hostOpts = computed((): AnyToolbarOptions | undefined => {
     const base = resolveHostButtonOptions({

@@ -112,7 +112,6 @@ export const VUE_MAP_CORE_FIELDS_RUNTIME_EXPORTS = [
   'InputTextarea',
   'MapButton',
   'MapCard',
-  'MapErrorToast',
   'MapIcon',
   'MapImage',
   'MapRangeSlider',

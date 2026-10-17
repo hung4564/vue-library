@@ -6,7 +6,7 @@ import {
   shortActionId,
   type RequestFlowTreeNode,
 } from '@hungpvq/map-debug';
-import { DraggableModal } from '@hungpvq/react-draggable';
+import { DraggableItemModal } from '@hungpvq/react-draggable';
 import {
   MapControlButton,
   ModuleContainer,
@@ -277,7 +277,7 @@ export function LogRequestFlowModal({
     NonNullable<ModuleContainerProps['draggable']>
   >(
     ({ containerId }) => (
-      <DraggableModal
+      <DraggableItemModal
         show={show}
         title={title}
         containerId={containerId}
@@ -347,9 +347,9 @@ export function LogRequestFlowModal({
             <LogDetailPanel log={selected} />
           </div>
         </div>
-      </DraggableModal>
+      </DraggableItemModal>
     ),
-    [],
+    [displayNodes, selected],
   );
   return (
     <ModuleContainer

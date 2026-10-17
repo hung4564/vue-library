@@ -2,11 +2,11 @@
 category: Component
 ---
 
-# DraggableModal
+# DraggableItemModal
 
 ## Overview
 
-`DraggableModal` is a centered dialog with an optional mask overlay. The dialog can be dragged and resized inside the container and always stays on top of other draggable items (including drawer layout layers). When multiple modals are open, **later-opened modals stack above earlier ones**.
+`DraggableItemModal` is a centered dialog with an optional mask overlay. The dialog can be dragged and resized inside the container and always stays on top of other draggable items (including drawer layout layers). When multiple modals are open, **later-opened modals stack above earlier ones**.
 
 ## Props
 
@@ -63,19 +63,19 @@ Header layout: `[ pre-title ] [ title | after-title ] …… spacer …… [ ext
 
 ```vue
 <script setup lang="ts">
-import { DraggableContainer, DraggableModal } from '@hungpvq/vue-draggable';
+import { DraggableContainer, DraggableItemModal } from '@hungpvq/vue-draggable';
 </script>
 
 <template>
   <DraggableContainer>
-    <DraggableModal
+    <DraggableItemModal
       title="Confirm"
       show
       :width="480"
       :height="280"
     >
       <div style="padding: 12px">Modal content</div>
-    </DraggableModal>
+    </DraggableItemModal>
   </DraggableContainer>
 </template>
 ```
@@ -84,13 +84,13 @@ import { DraggableContainer, DraggableModal } from '@hungpvq/vue-draggable';
 
 ```tsx
 import { useState } from 'react';
-import { DraggableContainer, DraggableModal } from '@hungpvq/react-draggable';
+import { DraggableContainer, DraggableItemModal } from '@hungpvq/react-draggable';
 
 export function Example() {
   const [show, setShow] = useState(true);
   return (
     <DraggableContainer>
-      <DraggableModal
+      <DraggableItemModal
         title="Confirm"
         show={show}
         onUpdateShow={setShow}
@@ -98,7 +98,7 @@ export function Example() {
         height={280}
       >
         <div style={{ padding: 12 }}>Modal content</div>
-      </DraggableModal>
+      </DraggableItemModal>
     </DraggableContainer>
   );
 }

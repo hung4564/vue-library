@@ -1,9 +1,7 @@
 <template>
   <div class="error-viewer">
     <div class="error-viewer__toolbar">
-      <span class="error-viewer__count"
-        >Errors {{ filteredErrors.length }}</span
-      >
+      <span class="error-viewer__count">Errors {{ errors.length }}</span>
       <div class="error-viewer__actions">
         <MapControlButton
           variant="text"
@@ -16,7 +14,7 @@
     </div>
     <div class="error-viewer__body">
       <div
-        v-for="(error, index) in filteredErrors"
+        v-for="(error, index) in errors"
         :key="index"
         class="error-viewer__item"
         :class="
@@ -60,7 +58,7 @@
         </details>
       </div>
       <div
-        v-if="filteredErrors.length === 0"
+        v-if="errors.length === 0"
         class="error-viewer__empty"
       >
         No errors logged
@@ -71,21 +69,16 @@
 
 <script setup lang="ts">
 import {
+  clearDevtoolErrors,
   errorMapId,
-  filterErrorsByMapId,
   formatDevtoolErrorForCopy,
   formatErrorTime,
 } from '@hungpvq/map-debug';
 import { MapControlButton, MapCopyButton } from '@hungpvq/vue-map-core';
-import { computed } from 'vue';
 
-import { clearDevtoolErrors, useDevtoolState } from '../store';
+import { useDevtoolState } from '../store';
 
-const { errors, filterMapId } = useDevtoolState();
-
-const filteredErrors = computed(() =>
-  filterErrorsByMapId(errors.value, filterMapId.value),
-);
+const { errors } = useDevtoolState();
 
 function clearErrors() {
   clearDevtoolErrors();

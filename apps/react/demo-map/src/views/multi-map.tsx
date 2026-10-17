@@ -12,7 +12,7 @@ import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:multi-map', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:multi-map');
 
 const SAMPLE_A: FeatureCollection = {
   type: 'FeatureCollection',

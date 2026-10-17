@@ -30,6 +30,7 @@ import {
   watch,
 } from 'vue';
 
+import { defineProps, withDefaults } from 'vue';
 import MapCommonButton from '../../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
@@ -179,8 +180,7 @@ onMounted(() => {
   const onDoc = (e: MouseEvent) => {
     const t = e.target;
     const inside =
-      t instanceof Element &&
-      t.closest(TOOLBAR_EXPAND_OUTSIDE_IGNORE_SELECTOR);
+      t instanceof Element && t.closest(TOOLBAR_EXPAND_OUTSIDE_IGNORE_SELECTOR);
     if (!inside) {
       moreOpen.value = false;
       moreOpenCorner.value = null;

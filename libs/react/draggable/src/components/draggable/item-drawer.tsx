@@ -54,7 +54,7 @@ export interface DraggableDrawerProps {
   afterTitle?: ReactNode;
 }
 
-export function DraggableDrawer({
+export function DraggableItemDrawer({
   id: stableId,
   show: propShow,
   title = '',

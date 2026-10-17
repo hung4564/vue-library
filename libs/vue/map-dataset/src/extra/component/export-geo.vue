@@ -17,7 +17,7 @@ import {
   resolveGeoExportCrs,
   resolveGeoExportUiSlot,
 } from '@hungpvq/map-dataset/geo-export';
-import { DraggableModal } from '@hungpvq/vue-draggable';
+import { DraggableItemModal } from '@hungpvq/vue-draggable';
 import {
   ModuleContainer,
   RegistryItem,
@@ -241,7 +241,7 @@ const formProps = computed(() => ({
 <template>
   <ModuleContainer v-bind="moduleContainerProps">
     <template #draggable="{ containerId }">
-      <DraggableModal
+      <DraggableItemModal
         :show="show"
         :title="title"
         :container-id="containerId"
@@ -257,7 +257,7 @@ const formProps = computed(() => ({
           :mapId="props.mapId"
           v-bind="formProps"
         />
-      </DraggableModal>
+      </DraggableItemModal>
     </template>
   </ModuleContainer>
 </template>

@@ -20,13 +20,13 @@ createHostStrategy (useMapControl)
 ToolbarControl: planToolbarLayout + planToolbarExpansion + shared click
 ```
 
-| Piece                            | Role                                                                      |
-| -------------------------------- | ------------------------------------------------------------------------- |
-| **`host.button`** / **`toolbar`** | Independent corner vs strip author options                               |
-| **`createHostStrategy`**         | Adapter entry: layout switch + expand ctx                                 |
-| **`createLiveToolbarStrategy`**  | Only engine for all kinds (pass noop `Toolbar` for host-only)             |
-| **`createToolbarModuleApi`**     | Register into the store only when layout is `toolbar` \| `menu`           |
-| **`ToolbarControl`**             | Renders store buttons; overflow; expandable secondary row                 |
+| Piece                             | Role                                                            |
+| --------------------------------- | --------------------------------------------------------------- |
+| **`host.button`** / **`toolbar`** | Independent corner vs strip author options                      |
+| **`createHostStrategy`**          | Adapter entry: layout switch + expand ctx                       |
+| **`createLiveToolbarStrategy`**   | Only engine for all kinds (pass noop `Toolbar` for host-only)   |
+| **`createToolbarModuleApi`**      | Register into the store only when layout is `toolbar` \| `menu` |
+| **`ToolbarControl`**              | Renders store buttons; overflow; expandable secondary row       |
 
 Do not merge or fall back between `host.button` and `toolbar` (same object is fine for simple singles).
 
@@ -90,23 +90,23 @@ Primary row shows a **launcher** from `expandableButton({ active })`. Options li
 }
 ```
 
-| Behavior          | Detail                                                                               |
-| ----------------- | ------------------------------------------------------------------------------------ |
-| Launcher `active` | Synced from `expandedModuleId === moduleId`                                          |
-| Click launcher    | `toggleExpandedModule(moduleId)` via `handleToolbarButtonClick` / host strategy      |
-| Strip secondary   | Option buttons of that module (+ close control in ToolbarControl)                    |
-| Host auto         | Options to the right on `*-left`, to the left on `*-right`                           |
-| Close             | Escape / outside when `closeOnOutsideClick !== false`                                |
+| Behavior          | Detail                                                                          |
+| ----------------- | ------------------------------------------------------------------------------- |
+| Launcher `active` | Synced from `expandedModuleId === moduleId`                                     |
+| Click launcher    | `toggleExpandedModule(moduleId)` via `handleToolbarButtonClick` / host strategy |
+| Strip secondary   | Option buttons of that module (+ close control in ToolbarControl)               |
+| Host auto         | Options to the right on `*-left`, to the left on `*-right`                      |
+| Close             | Escape / outside when `closeOnOutsideClick !== false`                           |
 
 Stamps: launcher `role: 'launcher'`, `expandable: true`; options `role: 'option'`, `expandable: true`.
 
 ## Shared helpers
 
-| Helper                                                                    | Use                                                 |
-| ------------------------------------------------------------------------- | --------------------------------------------------- |
-| `mapToolbarOptions` / `withLayoutToolbarOptions`                          | Map UI state across all buttons                     |
-| `createHostStrategy` / `createLiveToolbarStrategy`                        | Adapter + shared engine                             |
-| `planToolbarLayout` / `planToolbarExpansion`                              | Overflow / primary vs secondary                     |
-| `handleToolbarButtonClick` / `shouldCloseExpandedOnOutsideClick`          | Launcher toggle vs option `action`                  |
+| Helper                                                           | Use                                |
+| ---------------------------------------------------------------- | ---------------------------------- |
+| `mapToolbarOptions` / `withLayoutToolbarOptions`                 | Map UI state across all buttons    |
+| `createHostStrategy` / `createLiveToolbarStrategy`               | Adapter + shared engine            |
+| `planToolbarLayout` / `planToolbarExpansion`                     | Overflow / primary vs secondary    |
+| `handleToolbarButtonClick` / `shouldCloseExpandedOnOutsideClick` | Launcher toggle vs option `action` |
 
 Mount `ToolbarControl` when any control uses `controlLayout: 'toolbar'` or mobile `buttonInMobile: 'toolbar' | 'menu'`.

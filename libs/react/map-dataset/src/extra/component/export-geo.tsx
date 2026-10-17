@@ -14,7 +14,7 @@ import {
   resolveGeoExportCrs,
   resolveGeoExportUiSlot,
 } from '@hungpvq/map-dataset/geo-export';
-import { DraggableModal } from '@hungpvq/react-draggable';
+import { DraggableItemModal } from '@hungpvq/react-draggable';
 import {
   ModuleContainer,
   ModuleContainerProps,
@@ -227,7 +227,7 @@ export function ExportGeo(props: ExportGeoProps) {
     NonNullable<ModuleContainerProps['draggable']>
   >(
     ({ containerId }) => (
-      <DraggableModal
+      <DraggableItemModal
         show={show}
         title={title}
         containerId={containerId}
@@ -259,7 +259,7 @@ export function ExportGeo(props: ExportGeoProps) {
           onCancel={handleClose}
           onDownload={() => void onDownload()}
         />
-      </DraggableModal>
+      </DraggableItemModal>
     ),
     [
       busy,

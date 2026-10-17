@@ -821,7 +821,6 @@ const ready = ref(false);
 const api = shallowRef<DatasetDebugApi | null>(null);
 const pane = ref<PaneId>('roots');
 const mapId = ref('');
-const { filterMapId } = useDevtoolState();
 const datasetId = ref('');
 const target = ref<'layer' | 'item'>('layer');
 const control = ref('layer-control');
@@ -1106,11 +1105,7 @@ function hydrateFromSession() {
   refreshLists();
   const s = d.session;
   const preferred =
-    filterMapId.value !== 'all' && mapIds.value.includes(filterMapId.value)
-      ? filterMapId.value
-      : s.mapId && mapIds.value.includes(s.mapId)
-        ? s.mapId
-        : mapIds.value[0] || '';
+    s.mapId && mapIds.value.includes(s.mapId) ? s.mapId : mapIds.value[0] || '';
   mapId.value = preferred;
   refreshLists();
   const stillThere = searchable.value.some((x) => x.id === s.datasetId);
@@ -1318,12 +1313,6 @@ onMounted(() => {
     lastRev = rev;
     hydrateFromSession();
   }, 300);
-});
-
-watch(filterMapId, () => {
-  if (!ready.value) return;
-  refreshLists();
-  applyGlobalMapFilter(filterMapId.value);
 });
 
 onBeforeUnmount(() => {

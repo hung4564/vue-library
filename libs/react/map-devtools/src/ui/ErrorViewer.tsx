@@ -1,28 +1,20 @@
 import {
+  clearDevtoolErrors,
   errorMapId,
-  filterErrorsByMapId,
   formatDevtoolErrorForCopy,
   formatErrorTime,
 } from '@hungpvq/map-debug';
 import { MapControlButton, MapCopyButton } from '@hungpvq/react-map-core';
 import { useMemo } from 'react';
-import { clearDevtoolErrors } from '../store';
-import { useDevtoolState } from '../useDevtoolState';
+import { useDevtoolState } from '../store';
 
 export function ErrorViewer() {
-  const { errors, filterMapId } = useDevtoolState();
-
-  const filteredErrors = useMemo(
-    () => filterErrorsByMapId(errors, filterMapId),
-    [errors, filterMapId],
-  );
+  const { errors } = useDevtoolState();
 
   return (
     <div className="error-viewer">
       <div className="error-viewer__toolbar">
-        <span className="error-viewer__count">
-          Errors {filteredErrors.length}
-        </span>
+        <span className="error-viewer__count">Errors {errors.length}</span>
         <div className="error-viewer__actions">
           <MapControlButton
             variant="text"
@@ -34,7 +26,7 @@ export function ErrorViewer() {
         </div>
       </div>
       <div className="error-viewer__body">
-        {filteredErrors.map((error, index) => (
+        {errors.map((error, index) => (
           <div
             key={`${error.timestamp}-${index}`}
             className={`error-viewer__item error-viewer__item--${error.recoverable ? 'recoverable' : 'fatal'}`}
@@ -71,7 +63,7 @@ export function ErrorViewer() {
             ) : null}
           </div>
         ))}
-        {filteredErrors.length === 0 ? (
+        {errors.length === 0 ? (
           <div className="error-viewer__empty">No errors logged</div>
         ) : null}
       </div>

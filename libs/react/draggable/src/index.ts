@@ -1,5 +1,5 @@
-import './style.css';
 import '@hungpvq/draggable';
+import './style.css';
 /** Ensure React `configureDragStore` runs before any shell/hook consumers. */
 import './store';
 
@@ -12,22 +12,22 @@ import './store';
  */
 import {
   DraggableContainer,
-  DraggableDrawer,
   DraggableItemBottom,
+  DraggableItemDrawer,
   DraggableItemFloat,
+  DraggableItemModal,
   DraggableItemPopup,
   DraggableItemSideBar,
-  DraggableModal,
 } from './components/draggable';
 
 export {
   DraggableContainer,
-  DraggableDrawer,
   DraggableItemBottom,
+  DraggableItemDrawer,
   DraggableItemFloat,
+  DraggableItemModal,
   DraggableItemPopup,
   DraggableItemSideBar,
-  DraggableModal,
 };
 
 // --- Stable: HOC ---
@@ -84,6 +84,16 @@ export {
 export { ContainerProvider, useContainerId } from './context/ContainerContext';
 
 // --- Experimental ---
+export {
+  ContextMenu,
+  ContextMenuItem,
+  Item,
+  ItemList,
+  ManagementControl,
+  ShowStatusDragItem,
+  ShowStatusDrawer,
+  ShowStatusSideBar,
+} from './experimental';
 export type {
   ContextMenuItemProps,
   ContextMenuProps,
@@ -94,14 +104,4 @@ export type {
   ShowStatusDragItemProps,
   ShowStatusDrawerProps,
   ShowStatusSideBarProps,
-} from './experimental';
-export {
-  ContextMenu,
-  ContextMenuItem,
-  Item,
-  ItemList,
-  ManagementControl,
-  ShowStatusDragItem,
-  ShowStatusDrawer,
-  ShowStatusSideBar,
 } from './experimental';

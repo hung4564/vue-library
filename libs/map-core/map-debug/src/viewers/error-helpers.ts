@@ -1,4 +1,4 @@
-import type { DevtoolErrorRecord } from '@hungpvq/map-core/devtools';
+import { DevtoolErrorRecord } from '../core/store-core';
 
 export function errorMapId(error: DevtoolErrorRecord): string | null {
   const id = (error.context as { mapId?: string } | undefined)?.mapId;
@@ -16,14 +16,6 @@ export function collectErrorMapIds(errors: DevtoolErrorRecord[]): string[] {
     if (id) set.add(id);
   }
   return [...set].sort();
-}
-
-export function filterErrorsByMapId(
-  errors: DevtoolErrorRecord[],
-  mapIdValue: string,
-): DevtoolErrorRecord[] {
-  if (mapIdValue === 'all') return errors;
-  return errors.filter((error) => errorMapId(error) === mapIdValue);
 }
 
 export function formatErrorTime(timestamp: number): string {

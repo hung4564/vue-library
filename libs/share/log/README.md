@@ -45,7 +45,7 @@ Write via `DataStoreLogAdapter` / `loggerFactory.setDataStore(store)`. Query wit
 ```ts
 import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
 
-const log = loggerFactory.createLogger().setNamespace('map:identify', 2);
+const log = loggerFactory.createLogger().setNamespace('map:identify');
 
 await loggerFactory.ensureActionContext({ mapId, span: 'identify.query' }, async () => {
   await runWithFunctionLog(log, { fn: 'runIdentify', span: 'identify.query', mapId }, async () => {

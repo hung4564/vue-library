@@ -43,7 +43,7 @@ export default defineConfig({
       external: [
         'vue',
         '@hungpvq/map-core',
-        '@hungpvq/map-core/devtools',
+        '@hungpvq/map-debug',
         '@hungpvq/map-debug',
         '@hungpvq/map-debug/dataset',
         '@hungpvq/map-dataset',

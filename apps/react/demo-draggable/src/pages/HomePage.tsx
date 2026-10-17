@@ -1,6 +1,6 @@
 import {
   DraggableContainer,
-  DraggableDrawer,
+  DraggableItemDrawer,
   DraggableItemBottom,
   DraggableItemFloat,
   DraggableItemPopup,
@@ -115,7 +115,7 @@ export function HomePage() {
         </div>
       </DraggableItemBottom>
 
-      <DraggableDrawer
+      <DraggableItemDrawer
         show
         title="Drawer 1"
         location="right"
@@ -127,9 +127,9 @@ export function HomePage() {
         <div className="panel">
           Resize me ({drawerSize}px). Switch to Drawer 2 via menu.
         </div>
-      </DraggableDrawer>
+      </DraggableItemDrawer>
 
-      <DraggableDrawer
+      <DraggableItemDrawer
         show={false}
         title="Drawer 2"
         location="right"
@@ -139,7 +139,7 @@ export function HomePage() {
         onUpdateSize={setDrawerSize}
       >
         <div className="panel">Second drawer on the same edge.</div>
-      </DraggableDrawer>
+      </DraggableItemDrawer>
     </DraggableContainer>
   );
 }

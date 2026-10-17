@@ -1,29 +1,27 @@
+import {
+  createActionFeedback,
+  type ActionFeedbackPhase,
+} from '@hungpvq/map-core';
+import {
+  LEVEL_FILTERS,
+  clearDevtoolLogs,
+  formatDevtoolsLogEntryForCopy,
+  formatLogTime,
+  getDevtoolLogDataStore,
+  refreshDevtoolLogsFromStore,
+  shortActionId,
+  textMessage,
+  type LevelFilter,
+} from '@hungpvq/map-debug';
 import { MapControlButton, MapCopyButton } from '@hungpvq/react-map-core';
 import {
   InputCheckbox,
   InputSelect,
   InputText,
 } from '@hungpvq/react-map-core/fields';
-import {
-  createActionFeedback,
-  type ActionFeedbackPhase,
-} from '@hungpvq/map-core';
-import {
-  formatDevtoolsLogEntryForCopy,
-  getDevtoolLogDataStore,
-  refreshDevtoolLogsFromStore,
-} from '@hungpvq/map-core/devtools';
 import { logActionId, type LogRecord } from '@hungpvq/shared-log';
-import {
-  LEVEL_FILTERS,
-  formatLogTime,
-  shortActionId,
-  textMessage,
-  type LevelFilter,
-} from '@hungpvq/map-debug';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { clearDevtoolLogs } from '../store';
-import { useDevtoolState } from '../useDevtoolState';
+import { useDevtoolState } from '../store';
 import { LogDetailPanel } from './LogDetailPanel';
 import { LogRequestFlowModal } from './LogRequestFlowModal';
 import { useLogStoreView } from './useLogStoreView';
@@ -145,7 +143,7 @@ function LogRenderItem({
 }
 
 export function LogViewer() {
-  const { logs, filterMapId } = useDevtoolState();
+  const { logs } = useDevtoolState();
   const logListRef = useRef<HTMLDivElement | null>(null);
   const [actionIdFilter, setActionIdFilter] = useState('');
   const [level, setLevel] = useState<LevelFilter>('all');
@@ -168,10 +166,9 @@ export function LogViewer() {
     () => ({
       level,
       namespace,
-      mapId: filterMapId,
       actionId: actionIdFilter,
     }),
-    [level, namespace, filterMapId, actionIdFilter],
+    [level, namespace, actionIdFilter],
   );
 
   const { listed, all, namespaces, totalCount } = useLogStoreView(
@@ -204,7 +201,7 @@ export function LogViewer() {
   useEffect(() => {
     const el = logListRef.current;
     if (el) el.scrollTop = 0;
-  }, [actionIdFilter, level, namespace, filterMapId]);
+  }, [actionIdFilter, level, namespace]);
 
   async function onRefresh() {
     await refreshFeedbackRef.current.run('refresh', async () => {

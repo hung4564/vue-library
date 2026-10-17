@@ -188,7 +188,7 @@ export function createAttributeTableController(
       },
       async () =>
         runWithFunctionLog(
-          loggerFactory.createLogger().setNamespace('map:attribute-table', 2),
+          loggerFactory.createLogger().setNamespace('map:attribute-table'),
           {
             fn: 'load',
             span: 'attribute-table.load',
@@ -198,7 +198,7 @@ export function createAttributeTableController(
           async () => {
             const atLog = loggerFactory
               .createLogger()
-              .setNamespace('map:attribute-table', 2)
+              .setNamespace('map:attribute-table')
               .with({
                 fn: 'load',
                 span: 'attribute-table.load',

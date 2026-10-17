@@ -3,6 +3,7 @@ import { DatasetService } from '@hungpvq/map-dataset';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { loggerFactory } from '@hungpvq/shared-log';
 
+import { addClearFunctionLog } from '../core/store-core';
 import { getDatasetStore, listMapIds } from '../store-access';
 import {
   describeDataset,
@@ -22,6 +23,7 @@ import {
   listTypesInStoreRoots,
 } from './inspect';
 import { getMapDebugStore } from './map-debug-store';
+import { installDatasetDebugMenus } from './menu-debug-item';
 import {
   explainMenus as explainMenusSteps,
   findMenuInResolved,
@@ -50,18 +52,6 @@ const logger = loggerFactory.createLogger().setNamespace('map-debug:dataset');
 
 /** Console alias for F12; canonical singleton lives on `map:debug.dataset`. */
 const WINDOW_KEY = '__hungpvqDatasetDebug';
-
-type DatasetDebugMenuHooks = {
-  onInstall?: () => void;
-  onUninstall?: () => void;
-};
-
-let menuHooks: DatasetDebugMenuHooks = {};
-
-/** Used by menu-debug-item to attach global debug menus on install. */
-export function setDatasetDebugMenuHooks(hooks: DatasetDebugMenuHooks): void {
-  menuHooks = hooks;
-}
 
 const session: DatasetDebugSession = {
   target: 'layer',
@@ -505,50 +495,46 @@ function createApi(): DatasetDebugApi {
  * `window.__hungpvqDatasetDebug` for F12. Requires `@hungpvq/map-dataset`.
  * Idempotent — mutates the same object reference across refreshes.
  */
-export function installDatasetDebug(): DatasetDebugApi {
+export function initDatasetDebug(): DatasetDebugApi {
   const bag = getMapDebugStore();
-  const existing = bag.dataset ?? api;
+  const existing = bag.dataset;
   if (existing) {
-    api = existing;
     bag.dataset = existing;
     refreshLive(existing);
     syncWindowAlias(existing);
-    menuHooks.onInstall?.();
     return existing;
   }
-  api = createApi();
+  const api = createApi();
   bag.dataset = api;
   syncWindowAlias(api);
-  menuHooks.onInstall?.();
   logger
     .with({ fn: 'installDatasetDebug', span: 'init' })
     .debug('map:debug.dataset + window.__hungpvqDatasetDebug installed');
   return api;
 }
-
 function syncWindowAlias(target: DatasetDebugApi): void {
   if (typeof window !== 'undefined') {
     window[WINDOW_KEY] = target;
   }
 }
 
-export function uninstallDatasetDebug(): void {
-  menuHooks.onUninstall?.();
+export function clearDatasetDebug(): void {
   const bag = getMapDebugStore();
   delete bag.dataset;
   if (typeof window !== 'undefined' && window[WINDOW_KEY]) {
     delete window[WINDOW_KEY];
   }
-  api = undefined;
   for (const key of Object.keys(vars)) delete vars[key];
   logger
     .with({ fn: 'uninstallDatasetDebug', span: 'cleanup' })
     .debug('map:debug.dataset uninstalled');
 }
+export function uninstallDatasetDebug(): void {
+  clearDatasetDebug();
+}
 
 export function getDatasetDebugApi(): DatasetDebugApi | undefined {
   return (
-    api ??
     getMapDebugStore().dataset ??
     (typeof window !== 'undefined' ? window[WINDOW_KEY] : undefined)
   );

@@ -7,6 +7,7 @@ export default {
 import type { LocationSideBar } from '@hungpvq/draggable';
 import { computed, inject, Ref, ref, toRef } from 'vue';
 
+import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import {
   useInitAction,
   useShow,
@@ -18,6 +19,7 @@ import {
 } from '../../hook';
 import { useInitSidebar } from '../../hook/useInitSidebar';
 import SidebarModule from './sidebar/sidebar-module.vue';
+useLiveHookDebug('DraggableItemSideBar');
 const props = defineProps({
   ...withShowProps,
   ...withShareComponent,

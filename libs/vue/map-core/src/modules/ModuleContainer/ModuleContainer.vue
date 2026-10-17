@@ -55,7 +55,8 @@ import { computed, inject, onUnmounted, ref, useSlots } from 'vue';
 
 import { defineProps } from 'vue';
 import MapAutoHostButtons from '../../components/MapAutoHostButtons.vue';
-
+import { useLiveHookDebug } from '../../hooks/useLiveHookDebug.js';
+useLiveHookDebug('ModuleContainer');
 const slots = useSlots();
 const props = defineProps({
   mapId: { type: String, default: '' },
@@ -163,10 +164,7 @@ const btnTo = computed(() =>
 const bindDrag = computed(() =>
   buildModuleBindPosition({
     position: props.position as
-      | 'top-left'
-      | 'top-right'
-      | 'bottom-left'
-      | 'bottom-right',
+      'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
     btnWidth: props.btnWidth,
     containerId: c_containerId.value,
   }),

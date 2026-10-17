@@ -138,7 +138,7 @@ export function toggleListIdentifyScope(
     { mapId, span: 'identify.scope', fn: 'toggleListIdentifyScope' },
     () =>
       runWithFunctionLog(
-        loggerFactory.createLogger().setNamespace('map:identify', 2),
+        loggerFactory.createLogger().setNamespace('map:identify'),
         {
           fn: 'toggleListIdentifyScope',
           span: 'identify.scope',

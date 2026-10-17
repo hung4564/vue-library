@@ -9,13 +9,13 @@ import {
 } from '@hungpvq/map-debug';
 import { MapControlButton } from '@hungpvq/react-map-core';
 import { useEffect, useRef, useState } from 'react';
-import { useDevtoolState } from '../useDevtoolState';
+import { useDevtoolState } from '../store';
 import { TreeItem } from './TreeItem';
 
 const ALL = 'all';
 
-function dumpStore(mapId: string): Record<string, unknown> {
-  return mapId === ALL ? snapshotGlobalStore() : snapshotMapScopedStore(mapId);
+function dumpStore(): Record<string, unknown> {
+  return snapshotGlobalStore();
 }
 
 function refreshActionLabel(phase: ActionFeedbackPhase): string {
@@ -26,7 +26,6 @@ function refreshActionLabel(phase: ActionFeedbackPhase): string {
 }
 
 export function StoreViewer() {
-  const { filterMapId } = useDevtoolState();
   const [storeState, setStoreState] = useState<Record<string, unknown>>({});
   const [refreshPhase, setRefreshPhase] = useState<ActionFeedbackPhase>('idle');
   const refreshFeedbackRef = useRef(
@@ -38,18 +37,14 @@ export function StoreViewer() {
   useEffect(() => () => refreshFeedbackRef.current.dispose(), []);
 
   const refreshQuiet = () => {
-    const ids = listMapIds();
-    const selected =
-      filterMapId !== ALL && ids.includes(filterMapId) ? filterMapId : ALL;
-    setStoreState(dumpStore(selected));
+    setStoreState(dumpStore());
   };
 
   useEffect(() => {
     refreshQuiet();
     const timer = window.setInterval(refreshQuiet, 1000);
     return () => window.clearInterval(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- poll + filterMapId
-  }, [filterMapId]);
+  }, []);
 
   return (
     <div className="store-viewer">

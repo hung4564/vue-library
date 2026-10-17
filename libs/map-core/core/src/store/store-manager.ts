@@ -3,10 +3,6 @@
  * Handles store operations, map instance registry, and cleanup
  */
 
-import {
-  clearDevtoolErrorsForMapId,
-  clearDevtoolLogsForMapId,
-} from '../devtools/store-core';
 import { MapInitializationError } from '../errors';
 import { UniversalRegistry } from '../registry/universal-registry';
 import { hasMapInstance, type MapSimple } from '../types';
@@ -310,8 +306,6 @@ export class MapStoreManager {
     const root = this.getRoot();
     delete root[mapId];
     getRemovedMapIds().add(mapId);
-    clearDevtoolLogsForMapId(mapId);
-    clearDevtoolErrorsForMapId(mapId);
   }
 
   /**

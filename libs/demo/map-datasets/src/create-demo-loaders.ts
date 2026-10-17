@@ -27,9 +27,7 @@ import { MENU_DEMO_DATASET_FACTORIES } from './datasets/menu';
 import { loadDemoDatasets } from './loaders/types';
 import { DEMO_CUSTOM_MENU_HANDLER_KEY } from './registry/menu-handlers';
 
-const logger = loggerFactory
-  .createLogger()
-  .setNamespace('demo:menu-handler', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:menu-handler');
 
 export type DemoLoaderDeps = {
   addDatasetToMap: (mapId: string, dataset: IDataset) => void | Promise<void>;

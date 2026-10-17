@@ -1,13 +1,11 @@
 import { loggerFactory } from '@hungpvq/shared-log';
 
-export const logger = loggerFactory
-  .createLogger()
-  .setNamespace('map:dataset', 2);
+export const logger = loggerFactory.createLogger().setNamespace('map:dataset');
 
 export const loggerIdentify = loggerFactory
   .createLogger()
-  .setNamespace('map:identify', 2);
+  .setNamespace('map:identify');
 
 export const loggerHighlight = loggerFactory
   .createLogger()
-  .setNamespace('map:highlight', 2);
+  .setNamespace('map:highlight');

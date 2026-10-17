@@ -9,12 +9,12 @@ import * as api from './index';
 
 export const VUE_DRAGGABLE_STABLE_RUNTIME_EXPORTS = [
   'DraggableContainer',
-  'DraggableDrawer',
+  'DraggableItemDrawer',
   'DraggableItemBottom',
   'DraggableItemFloat',
   'DraggableItemPopup',
   'DraggableItemSideBar',
-  'DraggableModal',
+  'DraggableItemModal',
   'WithMobileHandle',
   'useBottomContainer',
   'useBottomItem',

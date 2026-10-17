@@ -106,7 +106,10 @@ export function MapAutoHostButtons({
       : null;
 
     return (
-      <MapControlGroupButton row={row} className="map-host-expandable">
+      <MapControlGroupButton
+        row={row}
+        className="map-host-expandable"
+      >
         {expandRight ? (
           <>
             {launcherBtn}

@@ -2,8 +2,6 @@ import {
   createActionFeedback,
   type ActionFeedbackPhase,
 } from '@hungpvq/map-core';
-import { MapControlButton, MapCopyButton } from '@hungpvq/react-map-core';
-import { InputActionRow, InputSelect } from '@hungpvq/react-map-core/fields';
 import {
   type DatasetDebugApi,
   type DatasetInspectSnapshot,
@@ -13,6 +11,8 @@ import {
   type MenuSummary,
   type PartitionedMenuSummary,
 } from '@hungpvq/map-debug/dataset';
+import { MapControlButton, MapCopyButton } from '@hungpvq/react-map-core';
+import { InputActionRow, InputSelect } from '@hungpvq/react-map-core/fields';
 import {
   useCallback,
   useEffect,
@@ -21,7 +21,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { useDevtoolState } from '../useDevtoolState';
+import { useDevtoolState } from '../store';
 import { DatasetTreeNav } from './DatasetTreeNav';
 import { TreeItem } from './TreeItem';
 
@@ -106,7 +106,6 @@ function DetailRow({
 }
 
 export function DatasetMenuViewer() {
-  const { filterMapId } = useDevtoolState();
   const [ready, setReady] = useState(false);
   const [api, setApi] = useState<DatasetDebugApi | null>(null);
   const [pane, setPane] = useState<PaneId>('roots');
@@ -497,12 +496,7 @@ export function DatasetMenuViewer() {
     setMapIds(ids);
     setControlIds({ ...d.MENU_CONTROL_ID });
     const s = d.session;
-    const mid =
-      filterMapId !== 'all' && ids.includes(filterMapId)
-        ? filterMapId
-        : s.mapId && ids.includes(s.mapId)
-          ? s.mapId
-          : ids[0] || '';
+    const mid = s.mapId && ids.includes(s.mapId) ? s.mapId : ids[0] || '';
     setMapId(mid);
     refreshLists(mid);
     const search = mid ? d.listSearchable(mid) : [];
@@ -533,19 +527,14 @@ export function DatasetMenuViewer() {
       target: s.target === 'item' ? 'item' : 'layer',
       pane: nextPane,
     });
-  }, [control, filterMapId, getApi, refreshLists, syncSession]);
+  }, [control, getApi, refreshLists, syncSession]);
 
   useEffect(() => {
     if (!ready) return;
     const ids = mapIds;
-    const next =
-      filterMapId !== 'all' && ids.includes(filterMapId)
-        ? filterMapId
-        : mapId && ids.includes(mapId)
-          ? mapId
-          : ids[0] || '';
+    const next = mapId && ids.includes(mapId) ? mapId : ids[0] || '';
     if (next !== mapId) onMapChange(next);
-  }, [filterMapId, mapIds, mapId, onMapChange, ready]);
+  }, [mapIds, mapId, onMapChange, ready]);
 
   useEffect(() => {
     const d =

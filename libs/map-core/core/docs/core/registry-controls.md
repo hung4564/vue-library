@@ -195,8 +195,7 @@ const [show, setShow] = useShow(props.show);
 const { mapId, order } = useMap(props);
 const singleButton = {
   kind: 'single' as const,
-  getState: () =>
-    mdiButtonState(mdiLayers, { title: 'Layers', order: order.value }),
+  getState: () => mdiButtonState(mdiLayers, { title: 'Layers', order: order.value }),
   onClick: () => setShow(!show.value),
 };
 const { moduleContainerProps, panelBind } = useMapControl(mapId, {

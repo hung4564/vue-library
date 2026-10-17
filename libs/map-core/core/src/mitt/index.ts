@@ -16,8 +16,7 @@ import {
 import { MAP_STORE_KEY } from '../types/constants';
 import { logHelper } from '../utils/log';
 
-const mittLogger = () =>
-  loggerFactory.createLogger().setNamespace('map:mitt', 2);
+const mittLogger = () => loggerFactory.createLogger().setNamespace('map:mitt');
 
 export type CreateMapMittOptions = {
   /** Stamped into emitted context when ambient context has no `mapId`. */

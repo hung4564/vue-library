@@ -1,5 +1,5 @@
-import './style.css';
 import '@hungpvq/draggable';
+import './style.css';
 /** Ensure Vue `configureDragStore` runs before shell/hook consumers. */
 import './store';
 
@@ -9,22 +9,22 @@ import './store';
  */
 import {
   DraggableContainer,
-  DraggableDrawer,
   DraggableItemBottom,
+  DraggableItemDrawer,
   DraggableItemFloat,
+  DraggableItemModal,
   DraggableItemPopup,
   DraggableItemSideBar,
-  DraggableModal,
 } from './components/draggable';
 
 export {
   DraggableContainer,
-  DraggableDrawer,
   DraggableItemBottom,
+  DraggableItemDrawer,
   DraggableItemFloat,
+  DraggableItemModal,
   DraggableItemPopup,
   DraggableItemSideBar,
-  DraggableModal,
 };
 
 // --- Stable: HOC ---

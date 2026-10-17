@@ -39,7 +39,7 @@ See [`@hungpvq/map-debug` README](../../../map-debug/README.md) for console API 
 
 `DevtoolsControl` is also exported (same UI path). The old floating FAB / overlay shell (`mode="overlay"`) has been removed.
 
-Request Flow (Logs tab → Flow) opens via `ModuleContainer` + `DraggableModal` on the host map (`useMap` inject) and renders a nested call / emit / handler tree from `flowKind` / `flowDepth` / `eventName`.
+Request Flow (Logs tab → Flow) opens via `ModuleContainer` + `DraggableItemModal` on the host map (`useMap` inject) and renders a nested call / emit / handler tree from `flowKind` / `flowDepth` / `eventName`.
 
 ## Bootstrap (Vue + React)
 
@@ -71,7 +71,7 @@ Config and live instances live on **`getMapDebugStore()`** (`MAP_DEBUG_STORE_KEY
 **Custom:** pass any `LogDataStore` instance (or set `getMapDebugStore().logStoreOptions` / call `configureDevtoolLogStore` before install).
 
 ```ts
-import { configureDevtoolLogStore, getMapDebugStore } from '@hungpvq/map-core/devtools';
+import { configureDevtoolLogStore, getMapDebugStore } from '@hungpvq/map-debug';
 
 configureDevtoolLogStore({ kind: 'memory', limit: 2_000 });
 // equivalent: getMapDebugStore().logStoreOptions = { kind: 'memory', limit: 2_000 };
@@ -91,7 +91,7 @@ Logs tab **Refresh** re-reads the store (`refreshDevtoolLogsFromStore`) with sho
 | `installDevtools` / `uninstallDevtools`                          | Bootstrap (`installDevtools({ logStore })` optional)      |
 | `setDevtoolOpen` / `toggleDevtoolOpen` / `openMapDevtoolsErrors` | Open helpers                                              |
 
-Runtime lock: `public-api.spec.ts` in each adapter package. Experimental core helpers: `@hungpvq/map-core/devtools` (`configureDevtoolLogStore`, `getMapDebugStore`, `getDevtoolLogDataStore`, …).
+Runtime lock: `public-api.spec.ts` in each adapter package. Experimental core helpers: `@hungpvq/map-debug` (`configureDevtoolLogStore`, `getMapDebugStore`, `getDevtoolLogDataStore`, …).
 
 ## Demos
 

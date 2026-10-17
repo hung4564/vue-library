@@ -8,6 +8,7 @@ export default {
 <script setup lang="ts">
 import { computed, inject, Ref, ref } from 'vue';
 
+import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import {
   useInitAction,
   useShow,
@@ -19,6 +20,7 @@ import {
 import { useInitBottom } from '../../hook/useInitBottom';
 import BottomModule from './bottom/bottom-module.vue';
 
+useLiveHookDebug('DraggableItemBottom');
 const props = defineProps({
   ...withShowProps,
   ...withShareProps,

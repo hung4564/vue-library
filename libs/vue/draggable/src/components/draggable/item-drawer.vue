@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'DraggableDrawer',
+  name: 'DraggableItemDrawer',
 };
 </script>
 <script setup lang="ts">
@@ -16,6 +16,7 @@ import {
   watch,
 } from 'vue';
 
+import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import {
   useComponent,
   useContainerSize,
@@ -32,6 +33,7 @@ import { useDragLayout, useDrawerItem } from '../../store';
 import ContextMenu from '../ContextMenu.vue';
 import ContextMenuItem from '../ContextMenuItem.vue';
 import DragButton from '../parts/DragButton.vue';
+useLiveHookDebug('DraggableItemDrawer');
 
 const { CloseIcon, SidebarOpenMenu } = useIcon();
 

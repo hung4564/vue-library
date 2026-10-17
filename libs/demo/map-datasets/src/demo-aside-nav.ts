@@ -24,7 +24,6 @@ export const DEMO_ASIDE_NAV_ITEMS: readonly DemoAsideNavItem[] = [
   { to: '/theme', label: 'Theme' },
   { to: '/legend', label: 'Legend' },
   { to: '/basemap', label: 'Basemap' },
-  { to: '/basemap-error', label: 'Basemap error' },
   { to: '/multi-map', label: 'Multi-map' },
   { to: '/crs', label: 'CRS' },
   { to: '/print', label: 'Print' },

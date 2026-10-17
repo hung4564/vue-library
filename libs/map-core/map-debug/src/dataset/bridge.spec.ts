@@ -9,7 +9,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   getDatasetDebugApi,
-  installDatasetDebug,
+  initDatasetDebug,
   uninstallDatasetDebug,
 } from './bridge';
 import { explainFindPart } from './find';
@@ -107,7 +107,7 @@ describe('dataset debug bridge', () => {
       },
     };
 
-    const api = installDatasetDebug();
+    const api = initDatasetDebug();
     api.setSession({
       mapId,
       datasetId: layer.id,
@@ -157,7 +157,7 @@ describe('dataset debug bridge', () => {
       },
     };
 
-    const api = installDatasetDebug();
+    const api = initDatasetDebug();
     expect(api.listDatasets(mapId).map((d) => d.id)).toEqual([root.id]);
 
     api.setSession({ mapId, datasetId: list.id });
@@ -192,7 +192,7 @@ describe('dataset debug bridge', () => {
       },
     };
 
-    const api = installDatasetDebug();
+    const api = initDatasetDebug();
     api.setSession({ mapId, datasetId: list.id });
     const snap = api.inspect();
     expect(snap?.identity.kind).toBe('leaf');
@@ -234,7 +234,7 @@ describe('dataset debug bridge', () => {
       },
     };
 
-    const api = installDatasetDebug();
+    const api = initDatasetDebug();
     api.setSession({
       mapId,
       datasetId: layer.id,
@@ -272,7 +272,7 @@ describe('dataset debug bridge', () => {
       },
     };
 
-    const api = installDatasetDebug();
+    const api = initDatasetDebug();
     api.setSession({
       mapId,
       datasetId: layer.id,

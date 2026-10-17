@@ -90,7 +90,7 @@ export interface DraggableModalProps {
   afterTitle?: ReactNode;
 }
 
-export function DraggableModal({
+export function DraggableItemModal({
   id: stableId,
   show: propShow,
   title = '',

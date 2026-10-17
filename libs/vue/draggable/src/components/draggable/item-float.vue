@@ -16,6 +16,7 @@ import {
   watch,
 } from 'vue';
 
+import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import {
   useComponent,
   useContainerOrder,
@@ -32,6 +33,7 @@ import {
   withShowProps,
 } from '../../hook';
 import DragButton from '../parts/DragButton.vue';
+useLiveHookDebug('DraggableItemFloat');
 const { CloseIcon, ToBackIcon, ToFrontIcon, ExpandedIcon, CloseExpandedIcon } =
   useIcon();
 const props = defineProps({

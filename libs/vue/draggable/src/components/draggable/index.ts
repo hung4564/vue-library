@@ -18,17 +18,17 @@ const DraggableItemFloat = WithMobileHandle(
   DraggableItemFloatOrigin,
   DraggableItemBottom,
 );
-const DraggableModal = DraggableModalOrigin;
-const DraggableDrawer = WithMobileHandle(
+const DraggableItemModal = DraggableModalOrigin;
+const DraggableItemDrawer = WithMobileHandle(
   DraggableDrawerOrigin,
   DraggableItemBottom,
 );
 export {
   DraggableContainer,
-  DraggableDrawer,
   DraggableItemBottom,
+  DraggableItemDrawer,
   DraggableItemFloat,
+  DraggableItemModal,
   DraggableItemPopup,
   DraggableItemSideBar,
-  DraggableModal,
 };

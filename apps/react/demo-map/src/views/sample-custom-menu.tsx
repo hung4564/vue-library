@@ -5,7 +5,7 @@ import { mdiChevronRight, mdiClose, mdiInformation, mdiStar } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useState } from 'react';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:list-menu', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:list-menu');
 
 export function SampleCustomMenu({
   item,

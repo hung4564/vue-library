@@ -35,15 +35,10 @@ import {
   onUnmounted,
   ref,
   shallowRef,
-  watch,
 } from 'vue';
 
-import { useDevtoolState } from '../store';
 import TreeItem from './TreeItem.vue';
 
-const ALL = 'all';
-
-const { filterMapId } = useDevtoolState();
 const storeState = shallowRef<Record<string, unknown>>({});
 const refreshPhase = ref<ActionFeedbackPhase>('idle');
 
@@ -62,17 +57,12 @@ const refreshLabel = computed(() => {
   return 'Refresh';
 });
 
-function dump(mapId: string): Record<string, unknown> {
-  return mapId === ALL ? snapshotGlobalStore() : snapshotMapScopedStore(mapId);
+function dump(): Record<string, unknown> {
+  return snapshotGlobalStore();
 }
 
 function refreshQuiet() {
-  const ids = listMapIds();
-  const selected =
-    filterMapId.value !== ALL && ids.includes(filterMapId.value)
-      ? filterMapId.value
-      : ALL;
-  storeState.value = dump(selected);
+  storeState.value = dump();
 }
 
 async function onRefresh() {
@@ -80,10 +70,6 @@ async function onRefresh() {
     refreshQuiet();
   });
 }
-
-watch(filterMapId, () => {
-  refreshQuiet();
-});
 
 let pollTimer: ReturnType<typeof setInterval> | undefined;
 

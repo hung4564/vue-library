@@ -22,7 +22,8 @@ Styles re-export shared chrome from `@hungpvq/map-debug` (Dataset Inspect/Menus 
 
 ```ts
 import { createApp } from 'vue';
-import { Devtools, installDevtools } from '@hungpvq/vue-map-devtools';
+import { Devtools } from '@hungpvq/vue-map-devtools';
+import { installDevtools } from '@hungpvq/map-devtools';
 import '@hungpvq/vue-map-devtools/style.css';
 
 installDevtools();
@@ -61,7 +62,6 @@ Roots → Inspect → Menus. Anonymous menus get debug-only `anon:…` ids (`idG
 | `uninstallDevtools` | Remove global error capture                  |
 | `Devtools`          | Map control + popup (mount inside `<Map>`)   |
 | `DevtoolsControl`   | Same as `Devtools`                           |
-| `DEVTOOLS_CONTROL`  | `{ id: 'mapDevtools' }`                      |
 
 See [Stable API](../../map-core/core/docs/core/stable-api.md) and `public-api.spec.ts`.
 

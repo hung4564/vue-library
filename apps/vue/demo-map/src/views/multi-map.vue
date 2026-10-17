@@ -49,7 +49,7 @@ import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import AsideControl from '../layout/aside-control.vue';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:multi-map', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:multi-map');
 
 const SAMPLE_A: FeatureCollection = {
   type: 'FeatureCollection',

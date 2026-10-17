@@ -1,3 +1,4 @@
+import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import {
   createMenuItemIdentifyForList,
   createMenuItemShowDetailForItem,
@@ -6,7 +7,6 @@ import {
   createMenuItemToBoundActionForItem,
   createMenuItemToggleShow,
 } from '@hungpvq/map-dataset/menu';
-import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { IDENTIFY_GROUP, NO_GROUP_IDENTIFY } from '../../fixtures/geojson';
 import {
@@ -14,7 +14,7 @@ import {
   createIdentifyDemoMultiDataset,
 } from './factory';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:identify', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:identify');
 
 const DEMO_ID_NAME_FIELDS = [
   { text: 'Id', value: 'id' },

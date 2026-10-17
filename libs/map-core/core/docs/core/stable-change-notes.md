@@ -18,7 +18,7 @@ Short notes for app authors following `@hungpvq` map **Stable** surfaces. Packag
 | Draw toolbar      | `role="toolbar"`; Esc cancels while drawing when focus is in draw chrome (Vue/React DrawControl).                                                                                                                        |
 | InputSelect (Vue) | `TItem` / `TValue` generics so `{ value, text }[]` items work with string-union `v-model`.                                                                                                                               |
 | Story telling     | React demo `#/story-telling` / `#/story-telling-gps` shares the chapter action engine with Vue (parity).                                                                                                                 |
-| Demos             | Focused routes `#/print`, `#/crs`, `#/devtools`, `#/theme` (plus `#/basemap-error`, `#/multi-map`). Kitchen-sink guide lists key controls.                                                                               |
+| Demos             | Focused routes `#/print`, `#/crs`, `#/devtools`, `#/theme`. Kitchen-sink guide lists key controls.                                                                                                                       |
 | Dist smoke        | `npm run map:smoke:dist` checks map package dist outputs / declared exports (core, dataset, draw, vue/react adapters).                                                                                                   |
 
 ## Related
