@@ -1,23 +1,23 @@
 # `@hungpvq/map-debug`
 
-Experimental shared debug toolkit for map packages.
+Experimental **dataset** debug toolkit. Generic Store / Live / Logs / Errors live in `@hungpvq/shared-log`.
 
-- **Root** (`@hungpvq/map-debug`): viewer helpers + store peek. No `map-dataset` dependency.
-- **`./dataset`**: optional Dataset Inspector + pin on shared-store `map:debug.dataset` (F12 alias `window.__hungpvqDatasetDebug`). Requires peer `@hungpvq/map-dataset`.
+- **Root** (`@hungpvq/map-debug`): `DEVTOOLS_CONTROL`, install flag, map-scoped store peek. No `map-dataset` dependency.
+- **`./dataset`**: Dataset Inspector + pin on shared-store `map:debug.dataset` (F12 alias `window.__hungpvqDatasetDebug`). Requires peer `@hungpvq/map-dataset`.
 
 ```ts
-import { installMapDebug } from '@hungpvq/map-debug';
 import { installDatasetDebug } from '@hungpvq/map-debug/dataset';
 
-installMapDebug();
 installDatasetDebug(); // only when map-dataset is installed
 ```
 
-Prefer `installDevtools()` from `@hungpvq/vue-map-devtools` / `@hungpvq/react-map-devtools` — it installs map-debug + dataset bridge together. Devtools UI mounts as a **map control popup** (`DraggableItemPopup`), not a floating overlay.
+Prefer `installDevtools()` from `@hungpvq/vue-map-devtools` / `@hungpvq/react-map-devtools` — it installs shared-log debug + the dataset bridge and pin-registers the Dataset tab. Devtools UI mounts as a **map control popup** (`DraggableItemPopup`), not a floating overlay.
+
+`map:debug` holds the dataset pin and `installed` flag only. Log persistence is `log:debug` on `@hungpvq/shared-log`.
 
 ## Devtools Dataset panes
 
-Framework adapters render a **Dataset** tab on top of this package:
+Framework adapters register a **Dataset** tab on `globalThis.__hungpvqDebug`:
 
 | Pane        | Purpose                                                                   |
 | ----------- | ------------------------------------------------------------------------- |
@@ -25,7 +25,7 @@ Framework adapters render a **Dataset** tab on top of this package:
 | **Inspect** | Hierarchy, fields, children; find-by-type helpers                         |
 | **Menus**   | Resolved menus by placement (`title` / `extra` / `menu` / …) + raw detail |
 
-Shared CSS lives in `@hungpvq/map-debug` (`style.css`) and is imported by both Vue and React map-devtools packages. See [Map Devtools](../core/docs/core/devtools.md).
+Dataset CSS (`.dataset-viewer*`) lives in `@hungpvq/map-debug` (`style.css`). Generic chrome is `@hungpvq/shared-log/style.css`. See [Map Devtools](../core/docs/core/devtools.md).
 
 ### Anonymous menu ids
 
@@ -57,7 +57,7 @@ Console helpers after `installDatasetDebug()` — prefer F12 `window.__hungpvqDa
 | `for: 'layer'` | `title` (LayerDetail / AttributeTable header); `menu` on layer-control / identify / attribute-table rows |
 | `for: 'item'`  | `menu`                                                                                                   |
 
-Hidden unless `isMapDevtoolsInstalled()` (set by `installDevtoolsCore` / framework `installDevtools`).
+Hidden unless `isMapDevtoolsInstalled()` (set by framework `installDevtools`). Click opens tab `dataset` via `openDebugTab('dataset')`.
 
 ```ts
 import { createMenuItemDebugDataset } from '@hungpvq/map-debug/dataset';

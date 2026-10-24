@@ -8,6 +8,7 @@ export default {
 <script setup lang="ts">
 import { computed, inject, Ref, ref } from 'vue';
 
+import { trackLiveEventAction } from '@hungpvq/shared-log';
 import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import {
   useInitAction,
@@ -33,7 +34,11 @@ const containerId = inject<Ref<string>>(
 if (!containerId.value) {
   throw new Error('Not set container id');
 }
-const { show, open, close } = useShow(props, emit);
+const { show, open, close } = useShow(
+  props,
+  emit,
+  trackLiveEventAction('DraggableItemBottom'),
+);
 const { itemId } = useInitBottom(
   containerId.value,
   show,

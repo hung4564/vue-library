@@ -21,8 +21,9 @@ import {
 import { Icon } from '@mdi/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { CopyButton } from '@hungpvq/react-ui-core';
+
 import { MapControlButton } from '../../components/MapControlButton';
-import { MapCopyButton } from '../../components/MapCopyButton';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -263,7 +264,7 @@ export function InfoControl(props: InfoControlProps) {
                 >
                   <div className="map-info-control__label">{row.label}</div>
                   <div className="map-info-control__value">{row.value}</div>
-                  <MapCopyButton
+                  <CopyButton
                     className="map-info-control__copy"
                     value={row.value}
                     title={trans('map.info-control.copy')}

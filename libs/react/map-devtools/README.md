@@ -1,6 +1,6 @@
 # `@hungpvq/react-map-devtools`
 
-React debug panel for `@hungpvq/react-map-core` (store, logs, errors, dataset inspect/menus).
+React map host for the shared-log Devtools shell, plus a pin-registered Dataset tab.
 
 ## Install
 
@@ -8,7 +8,7 @@ React debug panel for `@hungpvq/react-map-core` (store, logs, errors, dataset in
 npm install @hungpvq/react-map-devtools
 ```
 
-Peers: `@hungpvq/map-core`, `@hungpvq/react-map-core`, `@hungpvq/react-draggable`, `@hungpvq/shared-log`, `@hungpvq/shared-store`, React 18+. Optional peer `@hungpvq/map-dataset` enables the Dataset tab via `@hungpvq/map-debug/dataset`.
+Peers: `@hungpvq/map-core`, `@hungpvq/react-map-core`, `@hungpvq/react-draggable`, `@hungpvq/react-shared-log`, `@hungpvq/shared-log`, `@hungpvq/shared-store`, React 18+. Optional peer `@hungpvq/map-dataset` enables the Dataset tab via `@hungpvq/map-debug/dataset`.
 
 ## Styles
 
@@ -16,11 +16,11 @@ Peers: `@hungpvq/map-core`, `@hungpvq/react-map-core`, `@hungpvq/react-draggable
 import '@hungpvq/react-map-devtools/style.css';
 ```
 
-Styles re-export shared chrome from `@hungpvq/map-debug` (Dataset Inspect/Menus layout included).
+Styles import generic chrome from `@hungpvq/react-shared-log` and Dataset layout from `@hungpvq/map-debug`.
 
 ## Usage
 
-Call `installDevtools()` once at bootstrap (wires `@hungpvq/shared-log` into the panel — default **IndexedDB**, uncapped; config on `getMapDebugStore()` — captures map errors, and installs the dataset debug bridge when available). Optional: `installDevtools({ logStore: 'memory' | customStore | { kind, limit? } })`. Mount `<Devtools />` **inside** `<Map>`:
+Call `installDevtools()` once at bootstrap (`installDebug()` — default **IndexedDB** on `log:debug` — built-in tabs, map error capture, Dataset tab via pin when `map-dataset` is present). Optional: `installDevtools({ logStore: 'memory' | customStore | { kind, limit? } })`. Mount `<Devtools />` **inside** `<Map>`:
 
 ```tsx
 import { StrictMode } from 'react';

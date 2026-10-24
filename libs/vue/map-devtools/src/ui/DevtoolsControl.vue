@@ -3,11 +3,8 @@ export default { name: 'devtools-control' };
 </script>
 <script setup lang="ts">
 import type { WithMapPropType } from '@hungpvq/map-core';
-import {
-  DEVTOOLS_CONTROL,
-  setDevtoolOpen,
-  toggleDevtoolOpen,
-} from '@hungpvq/map-debug';
+import { DEVTOOLS_CONTROL } from '@hungpvq/map-debug';
+import { setDebugOpen, toggleDebugOpen } from '@hungpvq/shared-log';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import {
   defaultMapProps,
@@ -45,7 +42,7 @@ watch(
 );
 
 watch(show, (value) => {
-  setDevtoolOpen(value);
+  setDebugOpen(value);
 });
 
 const { panelBind, moduleContainerProps } = useMapControl(mapId, {
@@ -61,13 +58,13 @@ const { panelBind, moduleContainerProps } = useMapControl(mapId, {
   defaultPanelSize: { width: 600, height: 400 },
   setShow: (value) => {
     setShow(value);
-    setDevtoolOpen(value);
+    setDebugOpen(value);
   },
   actions: [
     {
       type: DEVTOOLS_CONTROL.id,
       run: () => {
-        toggleDevtoolOpen();
+        toggleDebugOpen();
         setShow(isOpen.value);
       },
     },
@@ -75,18 +72,18 @@ const { panelBind, moduleContainerProps } = useMapControl(mapId, {
 });
 
 function onToggle() {
-  toggleDevtoolOpen();
+  toggleDebugOpen();
   setShow(isOpen.value);
 }
 
 function onUpdateShow(value: boolean) {
   setShow(value);
-  setDevtoolOpen(value);
+  setDebugOpen(value);
 }
 
 function onClose() {
   setShow(false);
-  setDevtoolOpen(false);
+  setDebugOpen(false);
 }
 </script>
 

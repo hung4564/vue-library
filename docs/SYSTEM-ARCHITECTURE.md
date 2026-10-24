@@ -67,7 +67,7 @@ MapLibre GL + @mapbox/mapbox-gl-draw
 | Map React | `react-map` (meta), `react-map-core`, `react-map-dataset`, `react-map-draw`, `react-map-devtools` |
 | Draggable | `@hungpvq/draggable`, `vue-draggable`, `react-draggable`                                          |
 | Share     | `shared`, `shared-core`, `shared-store`, `shared-log`, `shared-file`, `router`                    |
-| UI        | `ui-core`                                                                                         |
+| UI        | `@hungpvq/vue-ui-core`, `@hungpvq/react-ui-core`                                                  |
 | Fixtures  | `demo-map-datasets` (private)                                                                     |
 | Apps      | `vue-demo-map`, `react-demo-map`, `demo-draggable`, `react-demo-draggable`, e2e apps              |
 | Docs / CI | `docs/` VitePress; `.github/workflows/ci.yml`, `publish.yml`                                      |

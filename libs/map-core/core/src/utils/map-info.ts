@@ -153,8 +153,8 @@ export type ActionFeedbackController = {
 
 /**
  * Short-lived action-button feedback (Pin, Refresh, Run, …).
- * Prefer this + `MapControlButton` for non-copy actions; use `MapCopyButton`
- * for clipboard copy.
+ * Prefer this + `MapControlButton` for non-copy actions; use ui-core
+ * `CopyButton` for clipboard copy.
  */
 export function createActionFeedback(options?: {
   durationMs?: number;

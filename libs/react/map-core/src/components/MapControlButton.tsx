@@ -2,11 +2,11 @@ import {
   isMapButtonFluidVariant,
   type MapButtonSize,
   type MapButtonVariant,
+  mapButtonSizeClass,
+  mapButtonVariantClass,
 } from '@hungpvq/map-core';
+import { BaseButton, Icon } from '@hungpvq/react-ui-core';
 import React, { createContext, useContext } from 'react';
-
-import { MapButton } from './MapButton';
-import { MapIcon } from './MapIcon';
 
 interface MapControlButtonGroupContextValue {
   isGroup: boolean;
@@ -31,6 +31,23 @@ export interface MapControlButtonProps extends React.ButtonHTMLAttributes<HTMLBu
   children?: React.ReactNode;
 }
 
+function buttonClassName(
+  variant: MapButtonVariant,
+  size: MapButtonSize | string | undefined,
+  active: boolean,
+  disabled: boolean,
+) {
+  return [
+    'map-control-button',
+    mapButtonVariantClass(variant),
+    mapButtonSizeClass(size),
+    active ? 'map-control-button-active' : '',
+    disabled ? 'map-control-button-disabled' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
 export function MapControlButton({
   icon,
   tooltip,
@@ -42,6 +59,8 @@ export function MapControlButton({
   variant = 'icon',
   contentButton,
   children,
+  className = '',
+  style,
   ...props
 }: MapControlButtonProps) {
   const groupContext = useContext(MapControlButtonGroupContext);
@@ -52,43 +71,41 @@ export function MapControlButton({
   const isFluid = isMapButtonFluidVariant(variant);
   const resolvedSize =
     isGroup && groupSize != null && groupSize !== '' ? groupSize : size;
+  const resolvedVariant = isGroup && !isFluid ? 'icon' : variant;
+  const mapClass = buttonClassName(
+    resolvedVariant,
+    resolvedSize,
+    active,
+    disabled,
+  );
+
+  const body = (
+    <BaseButton
+      className={[mapClass, className].filter(Boolean).join(' ')}
+      style={style}
+      variant={resolvedVariant}
+      size={resolvedSize}
+      active={active}
+      title={label}
+      aria-label={label}
+      aria-pressed={active}
+      disabled={disabled}
+      loading={loading}
+      {...props}
+    >
+      <span className="map-control-button__content">
+        {children || (isFluid ? null : <Icon>{icon}</Icon>)}
+      </span>
+    </BaseButton>
+  );
 
   if (isGroup || isFluid) {
-    return (
-      <MapButton
-        variant={isFluid ? variant : 'icon'}
-        size={resolvedSize}
-        active={active}
-        title={label}
-        aria-label={label}
-        aria-pressed={active}
-        disabled={disabled}
-        loading={loading}
-        {...props}
-      >
-        {children || (isFluid ? null : <MapIcon>{icon}</MapIcon>)}
-      </MapButton>
-    );
+    return body;
   }
 
   return (
     <div className="button-container">
-      <div title={label}>
-        {contentButton || (
-          <MapButton
-            variant="icon"
-            size={resolvedSize}
-            active={active}
-            loading={loading}
-            disabled={disabled}
-            aria-label={label}
-            aria-pressed={active}
-            {...props}
-          >
-            {children || <MapIcon>{icon}</MapIcon>}
-          </MapButton>
-        )}
-      </div>
+      <div title={label}>{contentButton || body}</div>
     </div>
   );
 }

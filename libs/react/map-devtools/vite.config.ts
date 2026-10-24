@@ -53,6 +53,8 @@ export default defineConfig(() => ({
         '@hungpvq/shared',
         '@hungpvq/shared-store',
         '@hungpvq/shared-log',
+        '@hungpvq/react-shared-log',
+        '@hungpvq/react-ui-core',
       ],
     },
   },

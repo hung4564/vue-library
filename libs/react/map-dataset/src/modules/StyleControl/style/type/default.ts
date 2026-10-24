@@ -1,12 +1,5 @@
 import { buildConfigTabs, type Tab } from '@hungpvq/map-dataset/style';
-import {
-  InputCheckbox,
-  InputChoose,
-  InputColorPicker,
-  InputSelect,
-  InputSlider,
-  InputText,
-} from '@hungpvq/react-map-core/fields';
+import { InputCheckbox, InputChoose, InputColorPicker, InputSelect, InputSlider, InputText } from '@hungpvq/react-ui-core';
 
 import { InputArrayIndex } from '../field/InputArrayIndex';
 import { InputArrayXY } from '../field/InputArrayXY';

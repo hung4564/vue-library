@@ -3,10 +3,8 @@ import { useEffect, useRef } from 'react';
 import {
   registerInstance,
   unregisterInstance,
-} from '../live-hook/instance-registry';
-
+} from '../core/instance-registry';
 import { traceLiveEvent } from '../live-hook/trace-store';
-
 import type { LiveTraceEvent } from '../live-hook/types';
 
 type PropsSnapshot = Record<string, unknown>;

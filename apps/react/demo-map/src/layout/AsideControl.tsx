@@ -79,11 +79,11 @@ export function AsideControl(props: WithMapPropType & { show?: boolean }) {
         }
         containerId={bind.containerId}
       >
-        <ul className="v-list">
+        <ul className="aside-control__nav">
           {navItems.map((item) => (
             <li
               key={item.to}
-              className="v-list-item"
+              className="aside-control__item"
             >
               <Link
                 to={item.to}

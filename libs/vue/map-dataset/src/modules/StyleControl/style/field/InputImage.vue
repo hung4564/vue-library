@@ -29,7 +29,7 @@
 </template>
 <script setup lang="ts">
 import { useMapImages } from '@hungpvq/vue-map-core';
-import { InputText } from '@hungpvq/vue-map-core/fields';
+import { InputText } from '@hungpvq/vue-ui-core';
 const form = defineModel<string | undefined>({ default: undefined });
 const emit = defineEmits(['update:modelValue']);
 

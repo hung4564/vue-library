@@ -5,8 +5,8 @@
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
-    "tslib": "^2.3.0",
-    "mitt": "^3.0.1"
+    "@hungpvq/shared-store": "^0.3.1",
+    "tslib": "^2.3.0"
   },
   "author": {
     "name": "hung.pv"
@@ -38,6 +38,9 @@
       "import": "./src/vue/index.js",
       "require": "./src/vue/index.js",
       "default": "./src/vue/index.js"
+    },
+    "./style.css": {
+      "default": "./src/style.css"
     }
   },
   "peerDependencies": {

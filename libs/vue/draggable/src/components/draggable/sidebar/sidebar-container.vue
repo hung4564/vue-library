@@ -1,6 +1,6 @@
 <script lang="ts">
 export default {
-  name: 'DraggableItemSideBar',
+  name: 'DraggableSidebarContainer',
 };
 </script>
 <script setup lang="ts">
@@ -17,6 +17,7 @@ import {
   watch,
 } from 'vue';
 
+import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import {
   useComponent,
   useContainerSize,
@@ -34,6 +35,7 @@ import ContextMenuItem from '../../ContextMenuItem.vue';
 import DragButton from '../../parts/DragButton.vue';
 import DragSidebarToggle from '../../parts/DragSidebarToggle.vue';
 import { useSidebarBehavior } from './useSidebarBehavior';
+useLiveHookDebug();
 const contextMenuRef = ref<
   | {
       open(event: MouseEvent): void;

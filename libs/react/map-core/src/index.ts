@@ -1,6 +1,7 @@
 /**
  * Root barrel: explicit named Stable exports only.
- * Experimental field/UI helpers live on `@hungpvq/react-map-core/fields`.
+ * Map-only field helpers live on `@hungpvq/react-map-core/fields`.
+ * Generic inputs: `@hungpvq/react-ui-core`.
  * Direct leaf imports (no internal-barrel).
  */
 export { MapCommonButton } from './components/MapCommonButton';
@@ -9,8 +10,6 @@ export {
   MapControlButtonGroupContext,
 } from './components/MapControlButton';
 export { MapControlGroupButton } from './components/MapControlGroupButton';
-export { MapCopyButton } from './components/MapCopyButton';
-export type { MapCopyButtonProps } from './components/MapCopyButton';
 export { MapTabs } from './components/MapTabs';
 export type { MapTabItem, MapTabsProps } from './components/MapTabs';
 export {

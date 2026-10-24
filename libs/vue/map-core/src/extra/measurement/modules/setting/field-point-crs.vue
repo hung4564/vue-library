@@ -5,12 +5,12 @@ import {
   resolveCrsDisplayItems,
 } from '@hungpvq/map-core/crs';
 import type { IViewSettingField } from '@hungpvq/map-core/measurement';
+import { CopyButton } from '@hungpvq/vue-ui-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDeleteOutline } from '@mdi/js';
 import { computed } from 'vue';
 
 import MapControlButton from '../../../../components/MapControlButton.vue';
-import MapCopyButton from '../../../../components/MapCopyButton.vue';
 import { useLang } from '../../../../extra/lang/hook';
 import { useMap } from '../../../../hooks/useMap';
 import {
@@ -82,7 +82,7 @@ function onRemove(epsg: string) {
       >
       <span class="map-measurement-point-crs__value">{{ row.value }}</span>
       <div class="map-measurement-point-crs__actions">
-        <MapCopyButton
+        <CopyButton
           class="map-measurement-point-crs__action"
           :value="row.value"
           :title="trans('map.measurement.action.copy')"

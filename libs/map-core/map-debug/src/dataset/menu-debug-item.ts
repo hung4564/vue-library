@@ -12,8 +12,9 @@ import {
 
 import { loggerFactory } from '@hungpvq/shared-log';
 
+import { openDebugTab } from '@hungpvq/shared-log';
+
 import { isMapDevtoolsInstalled } from '../core/install';
-import { setDevtoolActiveTab, setDevtoolOpen } from '../core/store-core';
 import { getDatasetDebugApi, initDatasetDebug } from './bridge';
 import type { DatasetMenuTarget } from './types';
 
@@ -47,8 +48,7 @@ export type CreateMenuItemDebugDatasetOptions =
 
 /** Open map Devtools and select the Dataset inspector tab. */
 export function openDatasetDevtools(): void {
-  setDevtoolOpen(true);
-  setDevtoolActiveTab('dataset');
+  openDebugTab('dataset');
 }
 
 /**

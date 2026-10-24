@@ -22,7 +22,7 @@ import { type MapTabItem, MapTabs } from '../../components/MapTabs';
 import { useLang } from '../../extra/lang/hook';
 import { UniversalRegistry } from '../../extra/registry/plugin';
 import { useMapControl } from '../../extra/registry/useMapControl';
-import { InputCheckbox, InputSelect, InputText } from '../../field';
+import { InputCheckbox, InputSelect, InputText } from '@hungpvq/react-ui-core';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow } from '../../hooks/useShow';
 import {

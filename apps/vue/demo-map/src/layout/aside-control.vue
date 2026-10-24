@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <ModuleContainer
     v-bind="moduleContainerProps"
     :active="show"
@@ -14,18 +14,19 @@
             {{ trans('map.aside-control.title') }}
           </span>
         </template>
-        <v-list>
-          <v-list-item
+        <ul class="aside-control__nav">
+          <li
             v-for="item in navItems"
             :key="item.to"
+            class="aside-control__item"
           >
             <RouterLink
               :to="item.to"
               @click="toggleShow(false)"
               >{{ item.label }}</RouterLink
             >
-          </v-list-item>
-        </v-list>
+          </li>
+        </ul>
       </DraggableItemSideBar>
     </template>
   </ModuleContainer>
@@ -33,7 +34,6 @@
 <script lang="ts">
 import { getDemoAsideNavItems } from '@hungpvq/demo-map-datasets';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-import { VList, VListItem } from '@hungpvq/ui-core';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   makeShowProps,
@@ -49,10 +49,8 @@ import { RouterLink } from 'vue-router';
 export default {
   name: 'AsideControl',
   components: {
-    VList,
     DraggableItemSideBar,
     ModuleContainer,
-    VListItem,
     RouterLink,
   },
   props: {
@@ -121,4 +119,41 @@ export default {
   },
 };
 </script>
-<style lang=""></style>
+<style>
+/* Teleported into the sidebar — keep unscoped so chrome CSS cannot drop the nav. */
+.aside-control__title {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aside-control__nav {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0.25rem 0;
+  list-style: none;
+}
+
+.aside-control__item {
+  margin: 0;
+  padding: 0.75rem 1rem !important;
+  cursor: pointer;
+}
+
+.aside-control__item > a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.aside-control__item:hover {
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.aside-control__item:active,
+.aside-control__item:has(a.router-link-active) {
+  background-color: color-mix(in srgb, currentColor 18%, transparent);
+}
+</style>

@@ -28,7 +28,7 @@
 </template>
 <script lang="ts">
 export default {
-  name: 'ModuleSidebarContainer',
+  name: 'DraggableSidebarModule',
 };
 </script>
 <script setup lang="ts">
@@ -43,9 +43,11 @@ import {
   watch,
 } from 'vue';
 
+import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
 import { useDragComponent } from '../../../store';
 
+useLiveHookDebug();
 const slots = useSlots();
 const props = defineProps({
   containerId: { type: String, required: true },

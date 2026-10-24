@@ -16,7 +16,31 @@ Queryable persistence separate from output sinks (`LogAdapter`):
 
 Write via `DataStoreLogAdapter` / `loggerFactory.setDataStore(store)`. Query with `await resolveMaybePromise(store.getAll())` / `await resolveMaybePromise(store.list(query))` (memory is sync; IndexedDB is async).
 
-**Map Devtools** default store is IndexedDB (see [devtools.md](../../map-core/core/docs/core/devtools.md)); config lives on `getMapDebugStore()` (`map:debug`).
+**Devtools** default store is IndexedDB on `log:debug` (`getLogDebugStore()`). Vue UI: `@hungpvq/vue-shared-log`. React UI: `@hungpvq/react-shared-log`. Map host: `*-map-devtools`.
+
+## Register a debug tab (pin-first)
+
+Packages that must **not** peer `@hungpvq/shared-log` call the process pin. First caller creates a stub; `installDebug()` adopts the same object.
+
+```ts
+import { ensureHungpvqDebugHost } from './ensure-debug-host'; // vendor copy — no shared-log import
+
+ensureHungpvqDebugHost().registerTab({
+  id: 'draggable',
+  label: 'Draggable',
+  order: 20,
+  framework: 'vue',
+  component: DraggableDebugPanel,
+});
+```
+
+Copy the helper from `apps/vue/demo-map/src/views/shared-log/ensure-debug-host.ts` (React demo has the same file). First caller creates a stub on `globalThis.__hungpvqDebug`; `installDebug()` adopts that object.
+
+Apps that already depend on shared-log can use `ensureHungpvqDebugHost()` from `@hungpvq/shared-log`, or `registerDebugTab` from `@hungpvq/vue-shared-log` / `@hungpvq/react-shared-log`. F12: `window.__hungpvqDebug.help()`.
+
+Demo `#/shared-log` registers `app:demo` through the vendor helper (not `registerDebugTab`).
+
+Built-in tabs (`store`, `live`, `logs`, `errors`) register when the Vue/React UI package loads. Dataset is added by `*-map-devtools`.
 
 ## Correlation IDs (schema B)
 

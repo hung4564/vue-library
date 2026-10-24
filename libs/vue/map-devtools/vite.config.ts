@@ -52,6 +52,8 @@ export default defineConfig({
         '@hungpvq/vue-draggable',
         '@hungpvq/shared-store',
         '@hungpvq/shared-log',
+        '@hungpvq/vue-shared-log',
+        '@hungpvq/vue-ui-core',
       ],
       output: {
         assetFileNames: 'style.css',

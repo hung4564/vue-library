@@ -3,11 +3,8 @@ import {
   resolveGeoExportUiSlot,
 } from '@hungpvq/map-dataset/geo-export';
 import { MapControlButton, RegistryItem } from '@hungpvq/react-map-core';
-import {
-  InputCrs,
-  InputSelect,
-  InputText,
-} from '@hungpvq/react-map-core/fields';
+import { InputSelect, InputText } from '@hungpvq/react-ui-core';
+import { InputCrs } from '@hungpvq/react-map-core/fields';
 import type { ComponentType } from 'react';
 import { useMemo } from 'react';
 

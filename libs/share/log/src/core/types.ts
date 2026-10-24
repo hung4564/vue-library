@@ -86,3 +86,4 @@ export interface LogAdapter {
   /** When true, receives logs even when logging is globally disabled */
   alwaysOn?: boolean;
 }
+export type Framework = 'vue' | 'react' | 'core';

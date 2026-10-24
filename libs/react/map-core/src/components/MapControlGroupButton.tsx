@@ -1,9 +1,8 @@
 import { type MapButtonSize, resolveMapButtonSizePx } from '@hungpvq/map-core';
+import { BaseButton, Icon } from '@hungpvq/react-ui-core';
 import React, { useMemo } from 'react';
 
-import { MapButton } from './MapButton';
 import { MapControlButtonGroupContext } from './MapControlButton';
-import { MapIcon } from './MapIcon';
 
 export interface ButtonItem {
   title: string;
@@ -64,14 +63,18 @@ export function MapControlGroupButton({
           style={{ borderRadius: '150px' }}
         >
           {items.map((item, i) => (
-            <MapButton
+            <BaseButton
               key={i}
+              variant="icon"
               size={sizePx}
+              className="map-control-button"
               title={item.title}
               onClick={item.onClick}
             >
-              <MapIcon>{item.icon}</MapIcon>
-            </MapButton>
+              <span className="map-control-button__content">
+                <Icon>{item.icon}</Icon>
+              </span>
+            </BaseButton>
           ))}
           {children}
         </div>

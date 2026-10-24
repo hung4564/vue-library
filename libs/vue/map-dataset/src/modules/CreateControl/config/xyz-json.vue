@@ -48,11 +48,7 @@ import {
   resolveCreateControlSampleSelection,
 } from '@hungpvq/map-dataset/create-control';
 import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
-import {
-  InputActionRow,
-  InputSelect,
-  InputText,
-} from '@hungpvq/vue-map-core/fields';
+import { InputActionRow, InputSelect, InputText } from '@hungpvq/vue-ui-core';
 import { computed, ref } from 'vue';
 
 const form = defineModel();

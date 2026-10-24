@@ -52,6 +52,7 @@ export default defineConfig(() => ({
         '@hungpvq/map-dataset',
         /^@hungpvq\/map-dataset\//,
         '@hungpvq/react-map-core',
+        '@hungpvq/react-ui-core',
         '@hungpvq/react-draggable',
         '@hungpvq/shared',
         '@hungpvq/shared-log',

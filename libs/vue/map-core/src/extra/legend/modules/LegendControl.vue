@@ -10,7 +10,7 @@ import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';
 
 import { defineProps, withDefaults } from 'vue';
-import { InputCheckbox } from '../../../field';
+import { InputCheckbox } from '@hungpvq/vue-ui-core';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';

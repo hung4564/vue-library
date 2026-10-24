@@ -3,7 +3,6 @@ import path from 'path';
 
 const ROOT = 'g:/code/0-library/vue-library';
 const SCAN_DIRS = [
-  'libs/ui/core',
   'libs/share',
   'libs/map-core',
   'libs/vue',

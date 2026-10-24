@@ -1,6 +1,6 @@
 # `@hungpvq/vue-map-devtools`
 
-Vue 3 debug panel for `@hungpvq/vue-map-core` (store, logs, errors, dataset inspect/menus).
+Vue 3 map host for the shared-log Devtools shell, plus a pin-registered Dataset tab.
 
 ## Install
 
@@ -8,7 +8,7 @@ Vue 3 debug panel for `@hungpvq/vue-map-core` (store, logs, errors, dataset insp
 npm install @hungpvq/vue-map-devtools
 ```
 
-Peers: `@hungpvq/map-core`, `@hungpvq/vue-map-core`, `@hungpvq/vue-draggable`, `@hungpvq/shared-log`, `@hungpvq/shared-store`, Vue 3.3+. Optional peer `@hungpvq/map-dataset` enables the Dataset tab via `@hungpvq/map-debug/dataset`.
+Peers: `@hungpvq/map-core`, `@hungpvq/vue-map-core`, `@hungpvq/vue-draggable`, `@hungpvq/vue-shared-log`, `@hungpvq/shared-log`, `@hungpvq/shared-store`, Vue 3.3+. Optional peer `@hungpvq/map-dataset` enables the Dataset tab via `@hungpvq/map-debug/dataset`.
 
 ## Styles
 
@@ -16,14 +16,14 @@ Peers: `@hungpvq/map-core`, `@hungpvq/vue-map-core`, `@hungpvq/vue-draggable`, `
 import '@hungpvq/vue-map-devtools/style.css';
 ```
 
-Styles re-export shared chrome from `@hungpvq/map-debug` (Dataset Inspect/Menus layout included).
+Styles import generic chrome from `@hungpvq/vue-shared-log` and Dataset layout from `@hungpvq/map-debug`.
 
 ## Usage
 
 ```ts
 import { createApp } from 'vue';
 import { Devtools } from '@hungpvq/vue-map-devtools';
-import { installDevtools } from '@hungpvq/map-devtools';
+import { installDevtools } from '@hungpvq/vue-map-devtools';
 import '@hungpvq/vue-map-devtools/style.css';
 
 installDevtools();
@@ -31,7 +31,7 @@ installDevtools();
 const app = createApp(App);
 ```
 
-`installDevtools()` wires `@hungpvq/shared-log` into the panel (default **IndexedDB**, uncapped; config on `getMapDebugStore()`), captures map errors for the Errors tab, and installs the dataset debug bridge when available. Mount the panel **inside** `<Map>`:
+`installDevtools()` calls `installDebug()` (default **IndexedDB** on `log:debug`), registers built-in tabs, captures map errors for the Errors tab, and pin-registers Dataset when `map-dataset` is available. Mount the panel **inside** `<Map>`:
 
 ```vue
 <script setup lang="ts">

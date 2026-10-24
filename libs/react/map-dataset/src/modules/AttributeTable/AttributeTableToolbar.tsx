@@ -7,7 +7,7 @@ import {
   type GeoExportFormat,
 } from '@hungpvq/map-dataset/geo-export';
 import { MapControlButton } from '@hungpvq/react-map-core';
-import { InputSelect, InputText } from '@hungpvq/react-map-core/fields';
+import { InputSelect, InputText } from '@hungpvq/react-ui-core';
 import { type MouseEvent, useState } from 'react';
 
 export function AttributeTableToolbar(props: AttributeTableToolbarProps) {

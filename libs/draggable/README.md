@@ -166,7 +166,7 @@ Breaking if you:
 4. Prefer peer ranges like `^<!-- docs-ver:draggable.exact -->1.3.1<!-- /docs-ver:draggable.exact -->` over long-lived exact pins once release process is stable; adapters currently use `<!-- docs-ver:draggable.peer -->^1.3.0<!-- /docs-ver:draggable.peer -->`.
 5. **React Vite demos:** exclude workspace `libs/` from `@vitejs/plugin-react` Fast Refresh (`react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] })`). Otherwise browser ESM reports missing named exports from path-aliased source. See `apps/react/demo-draggable/vite.config.ts`.
 6. **React store:** do not re-export `useStoreReactive` from `store/index.ts` (circular with `useStoreReactive.ts`).
-7. **Internal chrome** (`DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`) is **not** public API — do not confuse with map-core `MapControlButton` / Experimental `MapButton`.
+7. **Internal chrome** (`DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`) is **not** public API — do not confuse with map-core `MapControlButton`.
 
 ## 8. Team policy (one line)
 

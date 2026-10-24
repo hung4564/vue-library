@@ -1,4 +1,4 @@
-import { InputText } from '@hungpvq/react-map-core/fields';
+import { InputText } from '@hungpvq/react-ui-core';
 
 export function InputArrayIndex({
   value = [],

@@ -20,7 +20,7 @@
         "outputPath": "dist/libs/share/log",
         "main": "libs/share/log/src/index.ts",
         "tsConfig": "libs/share/log/tsconfig.lib.json",
-        "assets": ["libs/share/log/*.md"]
+        "assets": ["libs/share/log/*.md", "libs/share/log/src/style.css"]
       }
     },
     "test": {

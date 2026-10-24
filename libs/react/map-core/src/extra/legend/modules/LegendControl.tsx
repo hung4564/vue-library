@@ -10,7 +10,7 @@ import { mdiMapLegend } from '@mdi/js';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { InputCheckbox } from '../../../field';
+import { InputCheckbox } from '@hungpvq/react-ui-core';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
 import {

@@ -37,7 +37,7 @@ import {
   useMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
-import { InputSelect } from '@hungpvq/react-map-core/fields';
+import { InputSelect } from '@hungpvq/react-ui-core';
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

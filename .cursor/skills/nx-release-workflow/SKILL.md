@@ -89,7 +89,7 @@ npm run shared-log:release
 npm run shared-log:release:local
 ```
 
-Peer sync updates map / draggable / router package.json ranges only — it does **not** bump or republish those packages. Publish peer bumps via their own `map:release` / `draggable:release` when ready.
+Peer sync updates map / draggable package.json ranges only — it does **not** bump or republish those packages. Publish peer bumps via their own `map:release` / `draggable:release` when ready.
 
 ## Single-package Nx
 

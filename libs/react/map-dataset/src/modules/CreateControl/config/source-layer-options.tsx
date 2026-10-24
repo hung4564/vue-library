@@ -1,6 +1,6 @@
 import { buildSourceLayerOptionMetaChips } from '@hungpvq/map-dataset/create-control';
 import { MapControlButton } from '@hungpvq/react-map-core';
-import { InputCheckbox } from '@hungpvq/react-map-core/fields';
+import { InputCheckbox } from '@hungpvq/react-ui-core';
 
 import type { CreateConfigFormProps } from './types';
 

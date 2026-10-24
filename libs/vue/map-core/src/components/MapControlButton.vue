@@ -1,8 +1,9 @@
 <template>
-  <MapButton
+  <BaseButton
     v-if="isGroup || isFluid"
     v-bind="$attrs"
-    :variant="variant"
+    :class="buttonClass"
+    :variant="resolvedVariant"
     :size="resolvedSize"
     :active="active"
     :title="tooltip || title"
@@ -11,21 +12,24 @@
     :disabled="disabled"
     :loading="loading"
   >
-    <slot>
-      <MapIcon v-if="!isFluid">
-        {{ icon }}
-      </MapIcon>
-    </slot>
-  </MapButton>
+    <span class="map-control-button__content">
+      <slot>
+        <Icon v-if="!isFluid">
+          {{ icon }}
+        </Icon>
+      </slot>
+    </span>
+  </BaseButton>
   <div
     v-else
     class="button-container"
   >
     <div :title="tooltip || title">
       <slot name="content">
-        <MapButton
+        <BaseButton
           v-bind="$attrs"
-          variant="icon"
+          :class="buttonClass"
+          :variant="resolvedVariant"
           :size="resolvedSize"
           :active="active"
           :loading="loading"
@@ -33,12 +37,14 @@
           :aria-label="ariaLabel"
           :aria-pressed="active"
         >
-          <slot>
-            <MapIcon>
-              {{ icon }}
-            </MapIcon>
-          </slot>
-        </MapButton>
+          <span class="map-control-button__content">
+            <slot>
+              <Icon>
+                {{ icon }}
+              </Icon>
+            </slot>
+          </span>
+        </BaseButton>
       </slot>
     </div>
   </div>
@@ -49,16 +55,15 @@ import {
   isMapButtonFluidVariant,
   isMapButtonSize,
   isMapButtonVariant,
+  mapButtonSizeClass,
+  mapButtonVariantClass,
 } from '@hungpvq/map-core';
-
-import MapButton from './MapButton.vue';
-import MapIcon from './MapIcon.vue';
+import { BaseButton, Icon } from '@hungpvq/vue-ui-core';
 
 export default {
   name: 'MapControlButton',
-  components: { MapButton, MapIcon },
-  // Keep `class` / listeners on MapButton — not on the square `.button-container`
-  // wrapper (otherwise styles like `.devtools-toggle { border }` ring the container).
+  components: { BaseButton, Icon },
+  // Keep `class` / listeners on BaseButton — not on the square `.button-container`
   inheritAttrs: false,
   props: {
     icon: {
@@ -80,7 +85,7 @@ export default {
     disabled: Boolean,
     /**
      * icon (default) | plain | text | tonal | outlined | filled
-     * @see map-button-variant.ts
+     * @see @hungpvq/map-core map-button helpers
      */
     variant: {
       type: String,
@@ -102,8 +107,22 @@ export default {
       }
       return this.size;
     },
+    resolvedVariant() {
+      return this.isGroup && !this.isFluid ? 'icon' : this.variant;
+    },
     ariaLabel() {
       return this.tooltip || this.title;
+    },
+    buttonClass() {
+      return [
+        'map-control-button',
+        mapButtonVariantClass(this.resolvedVariant),
+        mapButtonSizeClass(this.resolvedSize),
+        {
+          'map-control-button-active': this.active,
+          'map-control-button-disabled': this.disabled,
+        },
+      ];
     },
   },
 };

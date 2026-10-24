@@ -1,6 +1,7 @@
 import { isCreateControlCrsMismatch } from '@hungpvq/map-dataset/create-control';
 import { GEOJSON_STYLE_AUTO } from '@hungpvq/map-dataset/geojson';
-import { InputCrs, InputSelect } from '@hungpvq/react-map-core/fields';
+import { InputSelect } from '@hungpvq/react-ui-core';
+import { InputCrs } from '@hungpvq/react-map-core/fields';
 import { useMemo } from 'react';
 
 import type { CreateConfigFormProps } from './types';

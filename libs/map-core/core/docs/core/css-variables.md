@@ -62,9 +62,9 @@ GeoLocateControl also uses `--map-geolocate-dot-color` and `--map-geolocate-accu
 
 Below is the list of specific variables for each component and their default values (which usually point back to the Global Theme).
 
-### Core - MapControlButton / MapButton
+### Core - MapControlButton
 
-Stable root: `MapControlButton` (Vue/React map-core). Experimental chrome: `MapButton` on `./fields` (also used internally by `MapControlButton`).
+Stable root: `MapControlButton` (Vue/React map-core), composed from `@hungpvq/*-ui-core` `BaseButton` + `Icon`.
 
 **`variant`:** `icon` (default, circular toolbar) · `plain` (transparent icon) · `text` · `tonal` · `outlined` · `filled` (primary CTA; label uses `--map-on-primary-color`).
 
@@ -90,35 +90,36 @@ CSS classes: `map-control-button--{variant}`, `map-control-button--size-{small|m
 
 Guidance: dense lists (layer rows) → `size="small"`; header / toolbar beside draggable chrome → `medium` (matches 32×32 `hungpvq-draggable-button`). Size/variant helpers: `@hungpvq/map-core` (`resolveMapButtonSizePx`, `MAP_BUTTON_VARIANTS`, …).
 
-### Core - MapCopyButton
+### Core - CopyButton
 
-Stable root: `MapCopyButton` (Vue/React map-core). Clipboard copy with short icon/title feedback — **no toast**.
+`CopyButton` lives on `@hungpvq/vue-ui-core` / `@hungpvq/react-ui-core` (not map-core). Clipboard copy with short icon/title feedback — **no toast**.
 
-Built on `MapControlButton` + `@hungpvq/map-core` `createCopyFeedback` / `COPY_FEEDBACK_MS` (1500ms). Success: `mdiContentCopy` → `mdiCheck`, title → `copiedTitle` (“Copied”), then revert.
+Success: `mdiContentCopy` → `mdiCheck`, title → `copiedTitle` (“Copied”), then revert (~1.5s).
 
 | Prop          | Default             | Notes                          |
 | ------------- | ------------------- | ------------------------------ |
 | `value`       | `''`                | Text written to clipboard      |
 | `title`       | `'Copy'`            | Idle tooltip / aria-label      |
 | `copiedTitle` | `'Copied'`          | Feedback tooltip / aria-label  |
-| `variant`     | `'plain'`           | Same as `MapControlButton`     |
-| `size`        | `'small'`           | Same as `MapControlButton`     |
+| `variant`     | `'plain'`           | Same tokens as `BaseButton`    |
+| `size`        | `'small'`           | Same tokens as `BaseButton`    |
 | `iconSize`    | `14`                | SvgIcon / @mdi/react size (px) |
+| `labeled`     | `false`             | Also show title text           |
 | `disabled`    | auto when empty/`—` | Or force via prop              |
 
 ```vue
-<MapCopyButton :value="row.value" :title="trans('map.info-control.copy')" :copied-title="trans('map.info-control.copied')" />
+<CopyButton :value="row.value" :title="trans('map.info-control.copy')" :copied-title="trans('map.info-control.copied')" />
 ```
 
 ```tsx
-<MapCopyButton
+<CopyButton
   value={row.value}
   title={trans('map.info-control.copy')}
   copiedTitle={trans('map.info-control.copied')}
 />
 ```
 
-**Rule:** do **not** hand-roll `MapControlButton` + `createCopyFeedback` + `mdiCheck` for text copy in map UI — use `MapCopyButton`. Low-level `copyText` / `createCopyFeedback` remain Stable on `@hungpvq/map-core` for non-button flows (menus, programmatic copy).
+**Rule:** do **not** hand-roll a map-core copy wrapper. Low-level `copyText` / `createCopyFeedback` remain Stable on `@hungpvq/map-core` for non-button flows (menus, programmatic copy).
 
 ### Core - General (Map/Card)
 

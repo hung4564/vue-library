@@ -30,7 +30,7 @@ import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { useWorkerMonitor } from '../../extra/worker/useWorkerMonitor';
-import { Collapse } from '../../field';
+import { Collapse } from '@hungpvq/vue-ui-core';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';

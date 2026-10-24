@@ -22,7 +22,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { InputText } from '@hungpvq/vue-map-core/fields';
+import { InputText } from '@hungpvq/vue-ui-core';
 const form = defineModel<number[]>({ default: () => [] });
 const emit = defineEmits(['update:modelValue']);
 

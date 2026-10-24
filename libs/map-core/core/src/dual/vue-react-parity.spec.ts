@@ -151,15 +151,17 @@ describe('Vue ↔ React dual-framework parity', () => {
     }
 
     const vueMapButton = readFileSync(
-      join(vueCore, 'components/MapButton.vue'),
+      join(vueCore, 'components/MapControlButton.vue'),
       'utf8',
     );
     const reactMapButton = readFileSync(
-      join(reactCore, 'components/MapButton.tsx'),
+      join(reactCore, 'components/MapControlButton.tsx'),
       'utf8',
     );
     expect(vueMapButton).toContain("from '@hungpvq/map-core'");
     expect(reactMapButton).toContain("from '@hungpvq/map-core'");
+    expect(vueMapButton).toContain("from '@hungpvq/vue-ui-core'");
+    expect(reactMapButton).toContain("from '@hungpvq/react-ui-core'");
     expect(existsSync(join(vueCore, 'components/map-button-variant.ts'))).toBe(
       false,
     );

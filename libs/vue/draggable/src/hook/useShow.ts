@@ -18,14 +18,27 @@ type ExpandProps = {
   expand?: boolean;
   [key: string]: unknown;
 };
+export interface UseShowLogEvent {
+  action: 'open' | 'close';
+  previousValue: boolean;
+  nextValue: boolean;
+}
+
+export type UseShowLogger = (event: UseShowLogEvent, run: () => void) => void;
 
 /**
  * Visibility vs dismiss:
  * - `show` / `update:show` — hide/show only (toggle, exclusive bottom/sidebar).
  * - `close()` — dismiss request (X / Escape / management Hide); emits `close`.
  */
-export function useShow(props: ShowProps, emit?: LooseEmit, init?: boolean) {
-  const p_show = ref<boolean>(!!props.show || !!init);
+
+export function useShow(
+  props: ShowProps,
+  emit?: LooseEmit,
+  onLog?: UseShowLogger,
+) {
+  const p_show = ref<boolean>(!!props.show);
+
   watch(
     () => props.show,
     (value) => {
@@ -34,29 +47,60 @@ export function useShow(props: ShowProps, emit?: LooseEmit, init?: boolean) {
       }
     },
   );
+
   const show = computed({
     get() {
       return p_show.value;
     },
     set(val) {
       if (p_show.value === val) return;
+
       p_show.value = val;
-      emit && emit('update:show', val);
+      emit?.('update:show', val);
     },
   });
-  function open() {
-    show.value = true;
-  }
-  function close() {
-    const wasOpen = p_show.value;
-    p_show.value = false;
-    if (wasOpen) {
-      emit && emit('update:show', false);
+
+  function executeAction(
+    action: 'open' | 'close',
+    nextValue: boolean,
+    run: () => void,
+  ) {
+    const previousValue = p_show.value;
+
+    const execute = () => {
+      run();
+    };
+
+    if (onLog) {
+      onLog({ action, previousValue, nextValue }, execute);
+    } else {
+      execute();
     }
-    emit && emit('close');
   }
+
+  function open() {
+    executeAction('open', true, () => {
+      show.value = true;
+    });
+  }
+
+  function close() {
+    executeAction('close', false, () => {
+      const previousValue = p_show.value;
+
+      p_show.value = false;
+
+      if (previousValue) {
+        emit?.('update:show', false);
+      }
+
+      emit?.('close');
+    });
+  }
+
   return { show, open, close };
 }
+
 export const withShowProps = {
   show: Boolean,
 };

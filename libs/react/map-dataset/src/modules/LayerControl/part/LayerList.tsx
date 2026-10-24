@@ -12,7 +12,7 @@ import {
 } from '@hungpvq/map-dataset';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
-import { InputText } from '@hungpvq/react-map-core/fields';
+import { InputText } from '@hungpvq/react-ui-core';
 import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {

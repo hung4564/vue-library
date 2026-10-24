@@ -10,8 +10,17 @@ import {
 import { GlobalStoreService } from '@hungpvq/shared-store';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { openDebugTab } from '@hungpvq/shared-log';
+
 import { isMapDevtoolsInstalled } from '../core/install';
-import { setDevtoolActiveTab, setDevtoolOpen } from '../core/store-core';
+
+vi.mock('@hungpvq/shared-log', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@hungpvq/shared-log')>();
+  return { ...actual, openDebugTab: vi.fn() };
+});
+vi.mock('../core/install', () => ({
+  isMapDevtoolsInstalled: vi.fn(() => true),
+}));
 import { getDatasetDebugApi, uninstallDatasetDebug } from './bridge';
 import { installDatasetDebug } from './install';
 import {
@@ -104,8 +113,7 @@ describe('createMenuItemDebugDataset', () => {
     expect(api.dataset?.id).toBe(layer.id);
     expect(api.vars['dataset']).toBe(layer);
     expect(api.vars['value']).toEqual({ id: 'row-1', name: 'Demo' });
-    expect(setDevtoolOpen).toHaveBeenCalledWith(true);
-    expect(setDevtoolActiveTab).toHaveBeenCalledWith('dataset');
+    expect(openDebugTab).toHaveBeenCalledWith('dataset');
     expect(getDatasetDebugApi()).toBe(api);
   });
 

@@ -48,6 +48,7 @@ export default defineConfig({
         '@hungpvq/map-dataset',
         /^@hungpvq\/map-dataset\//,
         '@hungpvq/vue-map-core',
+        '@hungpvq/vue-ui-core',
         '@hungpvq/shared',
         '@hungpvq/vue-draggable',
         'vuedraggable',

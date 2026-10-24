@@ -15,7 +15,7 @@ import { defineProps, withDefaults } from 'vue';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
-import { InputText } from '../../field';
+import { InputText } from '@hungpvq/vue-ui-core';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';

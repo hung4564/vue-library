@@ -11,7 +11,7 @@ import {
   resolveAttributeTableComponentRef,
 } from '@hungpvq/map-dataset/attribute-table';
 import { RegistryItem } from '@hungpvq/vue-map-core';
-import { InputText } from '@hungpvq/vue-map-core/fields';
+import { InputText } from '@hungpvq/vue-ui-core';
 import {
   type Component,
   computed,

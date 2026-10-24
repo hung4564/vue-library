@@ -13,7 +13,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { MapControlButton } from '../../components/MapControlButton';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
-import { InputText } from '../../field';
+import { InputText } from '@hungpvq/react-ui-core';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow } from '../../hooks/useShow';
 import {

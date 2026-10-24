@@ -20,9 +20,9 @@
             <div class="base-map-button__content">
               <map-image :src="current_baseMaps.thumbnail">
                 <div class="base-map-button__title">
-                  <map-icon v-if="controlIcon">
+                  <Icon v-if="controlIcon">
                     {{ controlIcon }}
-                  </map-icon>
+                  </Icon>
                   <SvgIcon
                     type="mdi"
                     :path="path.layer"
@@ -164,10 +164,10 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDelete, mdiLayersOutline, mdiPlus } from '@mdi/js';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
+import { Icon } from '@hungpvq/vue-ui-core';
 import { defineProps, withDefaults } from 'vue';
 import MapCard from '../../../components/MapCard.vue';
 import MapControlButton from '../../../components/MapControlButton.vue';
-import MapIcon from '../../../components/MapIcon.vue';
 import MapImage from '../../../components/MapImage.vue';
 import { useLang } from '../../../extra/lang/hook';
 import { useMapControl } from '../../../extra/registry/useMapControl';

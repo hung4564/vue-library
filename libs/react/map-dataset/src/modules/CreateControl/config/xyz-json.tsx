@@ -6,11 +6,7 @@ import {
   resolveCreateControlSampleSelection,
 } from '@hungpvq/map-dataset/create-control';
 import { MapControlButton } from '@hungpvq/react-map-core';
-import {
-  InputActionRow,
-  InputSelect,
-  InputText,
-} from '@hungpvq/react-map-core/fields';
+import { InputActionRow, InputSelect, InputText } from '@hungpvq/react-ui-core';
 import { useMemo, useState } from 'react';
 
 import type { CreateConfigFormProps } from './types';

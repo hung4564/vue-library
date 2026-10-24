@@ -82,7 +82,7 @@ import { computed, ref } from 'vue';
 
 import MapControlButton from '../../../components/MapControlButton.vue';
 import { useLang } from '../../../extra/lang/hook';
-import { InputSelect, InputText } from '../../../field';
+import { InputSelect, InputText } from '@hungpvq/vue-ui-core';
 import { useMap } from '../../../hooks/useMap';
 
 const props = withDefaults(

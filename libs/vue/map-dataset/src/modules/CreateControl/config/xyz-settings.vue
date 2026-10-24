@@ -52,7 +52,7 @@
 
 <script setup>
 import { useLang, useMap } from '@hungpvq/vue-map-core';
-import { InputText } from '@hungpvq/vue-map-core/fields';
+import { InputText } from '@hungpvq/vue-ui-core';
 
 const form = defineModel();
 const { mapId } = useMap();

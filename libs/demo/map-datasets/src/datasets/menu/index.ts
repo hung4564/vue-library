@@ -5,6 +5,7 @@ import {
   createGroupDataset,
   createMultiMapboxLayerComponent,
   createRootDataset,
+  type IDataset,
 } from '@hungpvq/map-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import { createHighlightPart } from '@hungpvq/map-dataset/highlight';
@@ -24,6 +25,7 @@ import {
   LIST_VIEW_MENU_ID,
   MENU_CONTROL_ID,
   type MenuItemClick,
+  type MenuItemProps,
 } from '@hungpvq/map-dataset/menu';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { loggerFactory } from '@hungpvq/shared-log';
@@ -585,18 +587,24 @@ export function createCustomChainSupportDataset() {
         'custom click with execute',
         createMenuClickBuilder()
           .addCommand({
-            execute(click, props) {
+            execute<P = unknown, T = IDataset>(
+              _click: unknown,
+              props: MenuItemProps<P, T>,
+            ) {
               logger
                 .with({ fn: 'onCustomChainExecute', span: 'menu.action' })
                 .info('custom chain execute', props);
-              return createMenuClickBuilder().addCommand({
-                execute(click, props) {
+              return createMenuClickBuilder<P, T>().addCommand({
+                execute<P2 = unknown, T2 = IDataset>(
+                  click: unknown,
+                  nextProps: MenuItemProps<P2, T2>,
+                ) {
                   logger
                     .with({
                       fn: 'onCustomChainAfterExecute',
                       span: 'menu.action',
                     })
-                    .info('custom chain after execute', click, props);
+                    .info('custom chain after execute', click, nextProps);
                 },
               });
             },
@@ -612,13 +620,16 @@ export function createCustomChainSupportDataset() {
               .with({ fn: 'onCustomChainClick', span: 'menu.action' })
               .info('custom chain click', props);
             return createMenuClickBuilder().addCommand({
-              execute(click, props) {
+              execute<P = unknown, T = IDataset>(
+                click: unknown,
+                nextProps: MenuItemProps<P, T>,
+              ) {
                 logger
                   .with({
                     fn: 'onCustomChainAfterClick',
                     span: 'menu.action',
                   })
-                  .info('custom chain after click', click, props);
+                  .info('custom chain after click', click, nextProps);
               },
             });
           })

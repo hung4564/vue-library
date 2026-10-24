@@ -196,8 +196,32 @@
           }
         }
       },
+      "ui": {
+        "projects": ["@hungpvq/vue-ui-core", "@hungpvq/react-ui-core"],
+        "projectsRelationship": "fixed",
+        "releaseTagPattern": "ui@{version}",
+        "version": {
+          "conventionalCommits": true,
+          "fallbackCurrentVersionResolver": "disk",
+          "versionPrefix": "^",
+          "updateDependents": "auto",
+          "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"]
+        },
+        "changelog": {
+          "file": "{projectRoot}/CHANGELOG.md",
+          "renderOptions": {
+            "commitReferences": true,
+            "versionTitleDate": true,
+            "applyUsernameToAuthors": true
+          }
+        }
+      },
       "shared-log": {
-        "projects": ["shared-log"],
+        "projects": [
+          "shared-log",
+          "@hungpvq/vue-shared-log",
+          "@hungpvq/react-shared-log"
+        ],
         "projectsRelationship": "fixed",
         "releaseTagPattern": "shared-log@{version}",
         "version": {
@@ -244,7 +268,9 @@
           "!@hungpvq/react-map-devtools",
           "!@hungpvq/draggable",
           "!@hungpvq/vue-draggable",
-          "!@hungpvq/react-draggable"
+          "!@hungpvq/react-draggable",
+          "!@hungpvq/vue-ui-core",
+          "!@hungpvq/react-ui-core"
         ],
         "projectsRelationship": "independent",
         "releaseTagPattern": "{projectName}@{version}",

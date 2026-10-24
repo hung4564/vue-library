@@ -16,6 +16,7 @@ import {
   watch,
 } from 'vue';
 
+import { trackLiveEventAction } from '@hungpvq/shared-log';
 import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import {
   useComponent,
@@ -63,7 +64,11 @@ const containerId = inject<Ref<string>>(
 if (!containerId.value) {
   throw new Error('Not set container id');
 }
-const { show, open, close } = useShow(props, emit);
+const { show, open, close } = useShow(
+  props,
+  emit,
+  trackLiveEventAction('DraggableItemFloat'),
+);
 const { zIndex, itemId } = useInitItem(
   containerId.value,
   show,

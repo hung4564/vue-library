@@ -1,7 +1,7 @@
 <template>
   <div class="layer-detail-row">
     <div class="layer-detail-row__copy">
-      <MapCopyButton :value="value == null ? '' : String(value)" />
+      <CopyButton :value="value == null ? '' : String(value)" />
     </div>
     <template v-if="!field.inline">
       <div class="layer-detail-grid">
@@ -30,8 +30,7 @@
   </div>
 </template>
 <script setup>
-import { MapCopyButton } from '@hungpvq/vue-map-core';
-import { InputTextArea } from '@hungpvq/vue-map-core/fields';
+import { CopyButton, InputTextArea } from '@hungpvq/vue-ui-core';
 import { computed } from 'vue';
 
 const props = defineProps({

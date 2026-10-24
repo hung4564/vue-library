@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { MapControlButton, useShow } from '@hungpvq/vue-map-core';
-import { InputSelect } from '@hungpvq/vue-map-core/fields';
+import { InputSelect } from '@hungpvq/vue-ui-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose, mdiDelete, mdiPlus } from '@mdi/js';
 import { LayerSpecification } from 'maplibre-gl';

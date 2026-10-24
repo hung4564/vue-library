@@ -11,8 +11,7 @@ import { installMapApp } from '@hungpvq/react-map-dataset';
 import * as ReactDOM from 'react-dom/client';
 import { HashRouter, Route, Routes } from 'react-router';
 
-import { installDevtools } from '@hungpvq/map-debug';
-import { installDatasetDebug } from '@hungpvq/map-debug/dataset';
+import { installDevtools } from '@hungpvq/react-map-devtools';
 import App from './app/app';
 import { AllMapView } from './views/all-map-view';
 import { BasemapPage } from './views/basemap';
@@ -48,7 +47,6 @@ import { WorkerSamplePage } from './views/worker-sample';
 // Theme stays in App as bootstrapMapTheme('auto'); dataset registry via installMapApp
 installMapApp({ theme: false });
 installDevtools();
-installDatasetDebug();
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );

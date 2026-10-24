@@ -69,7 +69,7 @@
 <script setup>
 import { buildSourceLayerOptionMetaChips } from '@hungpvq/map-dataset/create-control';
 import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
-import { InputCheckbox } from '@hungpvq/vue-map-core/fields';
+import { InputCheckbox } from '@hungpvq/vue-ui-core';
 
 const props = defineProps({
   options: { type: Array, default: () => [] },

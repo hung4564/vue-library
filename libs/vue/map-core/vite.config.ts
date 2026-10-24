@@ -49,6 +49,7 @@ export default defineConfig({
         '@hungpvq/map-core',
         'mitt',
         '@hungpvq/shared-log',
+        '@hungpvq/vue-ui-core',
         'maplibre-gl',
         '@mdi/js',
         'geojson',

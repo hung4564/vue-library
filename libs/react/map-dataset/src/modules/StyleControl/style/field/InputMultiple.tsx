@@ -1,5 +1,5 @@
 import { MapControlButton } from '@hungpvq/react-map-core';
-import { InputText } from '@hungpvq/react-map-core/fields';
+import { InputText } from '@hungpvq/react-ui-core';
 import { mdiDelete } from '@mdi/js';
 import { Icon } from '@mdi/react';
 

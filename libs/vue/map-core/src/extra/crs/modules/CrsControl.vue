@@ -13,7 +13,7 @@ import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
 import { computed, ref, watch } from 'vue';
 
 import { defineProps, withDefaults } from 'vue';
-import { Collapse, InputSelect, InputText } from '../../../field';
+import { Collapse, InputSelect, InputText } from '@hungpvq/vue-ui-core';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow, type WithShowProps } from '../../../hooks/useShow';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';

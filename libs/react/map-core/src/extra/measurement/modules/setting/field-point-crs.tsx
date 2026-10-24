@@ -6,10 +6,11 @@ import {
 import type { IViewSettingField } from '@hungpvq/map-core/measurement';
 import { mdiDeleteOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
+
+import { CopyButton } from '@hungpvq/react-ui-core';
 
 import { MapControlButton } from '../../../../components/MapControlButton';
-import { MapCopyButton } from '../../../../components/MapCopyButton';
 import { useMap } from '../../../../hooks/useMap';
 import {
   useMapCrsDisplayEpsgs,
@@ -73,7 +74,7 @@ export function FieldPointCrs({ fields = [], onChange }: FieldPointCrsProps) {
           </span>
           <span className="map-measurement-point-crs__value">{row.value}</span>
           <div className="map-measurement-point-crs__actions">
-            <MapCopyButton
+            <CopyButton
               className="map-measurement-point-crs__action"
               value={row.value}
               title={trans('map.measurement.action.copy')}

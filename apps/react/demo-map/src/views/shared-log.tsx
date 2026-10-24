@@ -1,10 +1,10 @@
 import {
-  formatSharedLogRecord,
   getDemoAsideNavItems,
   runSharedLogScenario,
   SHARED_LOG_SCENARIOS,
   type SharedLogScenarioId,
 } from '@hungpvq/demo-map-datasets';
+import { DevtoolsShell } from '@hungpvq/react-shared-log';
 import {
   type LogAdapter,
   loggerFactory,
@@ -14,6 +14,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
 
 import { MapPageShell } from '../components/MapPageShell';
+import { ensureHungpvqDebugHost } from './ensure-debug-host';
+import { SharedLogDemoTab } from './shared-log-demo-tab';
+
+ensureHungpvqDebugHost().registerTab({
+  id: 'app:demo',
+  label: 'Demo',
+  order: 20,
+  framework: 'react',
+  component: SharedLogDemoTab,
+});
 
 const NAV_ITEMS = getDemoAsideNavItems('react');
 
@@ -106,12 +116,10 @@ export function SharedLogPage() {
             </button>
           </aside>
           <section className="shared-log-demo__logs">
-            <h2>Buffered records ({records.length})</h2>
-            <pre className="shared-log-demo__pre">
-              {records.length
-                ? records.map(formatSharedLogRecord).join('\n')
-                : '(empty)'}
-            </pre>
+            <h2>Devtools ({records.length} buffered)</h2>
+            <div className="shared-log-demo__shell">
+              <DevtoolsShell />
+            </div>
           </section>
         </div>
       </div>
@@ -204,18 +212,11 @@ export function SharedLogPage() {
   padding: 6px 10px;
   cursor: pointer;
 }
-.shared-log-demo__pre {
-  margin: 0;
-  padding: 12px;
-  max-height: min(70vh, 640px);
-  overflow: auto;
-  background: #0f1419;
-  color: #d7e0ea;
+.shared-log-demo__shell {
+  height: min(70vh, 640px);
+  border: 1px solid #e2e4e8;
   border-radius: 6px;
-  font-size: 12px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  word-break: break-word;
+  overflow: hidden;
 }
 `}</style>
     </MapPageShell>

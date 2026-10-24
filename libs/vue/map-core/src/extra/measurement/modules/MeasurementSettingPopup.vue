@@ -117,7 +117,7 @@ import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { computed, ref, watch } from 'vue';
 
 import { defineEmits, defineModel, defineProps, withDefaults } from 'vue';
-import { InputCheckbox, InputSelect } from '../../../field';
+import { InputCheckbox, InputSelect } from '@hungpvq/vue-ui-core';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import CrsDisplaySettings from '../../crs/CrsDisplaySettings.vue';

@@ -158,6 +158,7 @@ export const MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'getMap',
   'getMapBreakpointThreshold',
   'getMapCoreMetaStore',
+  'getMapCoreMetaStoreEvent',
   'getMapCoreRootStore',
   'getMapPointerProfile',
   'GLOBE_CONTROL_LOCALE',
@@ -262,7 +263,6 @@ export const MAP_CORE_STABLE_RUNTIME_EXPORTS = [
 
 /** Experimental root exports (may change in a minor). */
 export const MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [
-  'DEVTOOLS_CONTROL',
   'GeoLocateSession',
 ] as const;
 

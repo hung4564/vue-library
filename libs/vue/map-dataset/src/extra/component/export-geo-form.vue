@@ -7,7 +7,8 @@ import {
   resolveGeoExportUiSlot,
 } from '@hungpvq/map-dataset/geo-export';
 import { MapControlButton, RegistryItem } from '@hungpvq/vue-map-core';
-import { InputCrs, InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
+import { InputSelect, InputText } from '@hungpvq/vue-ui-core';
+import { InputCrs } from '@hungpvq/vue-map-core/fields';
 import { type Component, computed, markRaw } from 'vue';
 
 import ExportGeoLoading from './export-geo-loading.vue';

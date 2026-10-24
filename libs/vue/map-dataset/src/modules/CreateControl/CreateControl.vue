@@ -20,7 +20,7 @@ import {
   useMap,
   useMapControl,
 } from '@hungpvq/vue-map-core';
-import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
+import { InputSelect, InputText } from '@hungpvq/vue-ui-core';
 import { mdiPlus } from '@mdi/js';
 import { type Component, computed, onMounted, type Ref, ref, watch } from 'vue';
 

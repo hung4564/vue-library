@@ -23,7 +23,7 @@ import { MapControlButton } from '../../components/MapControlButton';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { useWorkerMonitor } from '../../extra/worker/useWorkerMonitor';
-import { BaseCollapse } from '../../field';
+import { BaseCollapse } from '@hungpvq/react-ui-core';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow } from '../../hooks/useShow';
 import {

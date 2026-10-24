@@ -7,7 +7,7 @@ import {
 } from '@hungpvq/map-dataset/create-control';
 import { closeVectorTileArchive } from '@hungpvq/map-dataset/vector-tile';
 import { MapControlButton } from '@hungpvq/react-map-core';
-import { DragDropFile } from '@hungpvq/react-map-core/fields';
+import { DragDropFile } from '@hungpvq/react-ui-core';
 import { useState } from 'react';
 
 import type { CreateConfigFormProps } from './types';

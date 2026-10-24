@@ -11,7 +11,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { MapControlButton } from '../../../components/MapControlButton';
 import { MapImage } from '../../../components/MapImage';
-import { InputSelect, MapRangeSlider } from '../../../field';
+import { InputSelect } from '@hungpvq/react-ui-core';
+import { MapRangeSlider } from '../../../field';
 import { useMap } from '../../../hooks/useMap';
 import { useLang } from '../../lang/hook';
 import { useBaseMap } from '../hooks/useBaseMap';

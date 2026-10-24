@@ -7,7 +7,7 @@ import {
   type TabConfig,
   TABS,
 } from '@hungpvq/map-dataset/style';
-import { BaseCollapse, InputSlider } from '@hungpvq/react-map-core/fields';
+import { BaseCollapse, InputSlider } from '@hungpvq/react-ui-core';
 import type { LayerSpecification } from 'maplibre-gl';
 import { useEffect, useMemo, useState } from 'react';
 

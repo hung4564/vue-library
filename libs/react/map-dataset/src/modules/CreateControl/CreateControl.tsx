@@ -21,7 +21,7 @@ import {
   useMap,
   useMapControl,
 } from '@hungpvq/react-map-core';
-import { InputSelect, InputText } from '@hungpvq/react-map-core/fields';
+import { InputSelect, InputText } from '@hungpvq/react-ui-core';
 import { mdiPlus } from '@mdi/js';
 import {
   type ComponentType,

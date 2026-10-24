@@ -40,7 +40,6 @@ export const VUE_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'MapCommonButton',
   'MapContextMenuControl',
   'MapControlButton',
-  'MapCopyButton',
   'MapControlGroupButton',
   'MapTabs',
   'MeasurementControl',
@@ -96,23 +95,8 @@ export const VUE_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
 
 /** Runtime exports of `@hungpvq/vue-map-core/fields` (Experimental; may change in a minor). */
 export const VUE_MAP_CORE_FIELDS_RUNTIME_EXPORTS = [
-  'BaseCollapse',
-  'Collapse',
-  'DragDropFile',
-  'InputActionRow',
-  'InputCheckbox',
-  'InputChoose',
-  'InputColorPicker',
   'InputCrs',
-  'InputFile',
-  'InputSelect',
-  'InputSlider',
-  'InputText',
-  'InputTextArea',
-  'InputTextarea',
-  'MapButton',
   'MapCard',
-  'MapIcon',
   'MapImage',
   'MapRangeSlider',
 ] as const;

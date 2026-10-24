@@ -1,64 +1,42 @@
-import mitt from 'mitt';
+import type { LiveTraceEvent } from './types';
 
-import type { LiveTraceEvent, TraceInput } from './types';
+const MAX_EVENTS = 2_000;
 
-type TraceEvents = {
-  'live:trace': LiveTraceEvent;
-};
+const events: LiveTraceEvent[] = [];
+const listeners = new Set<() => void>();
 
-const emitter = mitt<TraceEvents>();
-
-let enabled = true;
-let consoleEnabled = true;
-let nextEventId = 0;
-
-function createEventId(): string {
-  return `trace:${Date.now()}:${++nextEventId}`;
+function notify() {
+  for (const listener of listeners) listener();
 }
 
-export function setLiveDebugEnabled(value: boolean): void {
-  enabled = value;
+export function traceLiveEvent(
+  event: Omit<LiveTraceEvent, 'ts'> & { ts?: number },
+): void {
+  events.unshift({
+    ...event,
+    ts: event.ts ?? Date.now(),
+  });
+  if (events.length > MAX_EVENTS) events.length = MAX_EVENTS;
+  notify();
 }
 
-export function isLiveDebugEnabled(): boolean {
-  return enabled;
+export function getLiveTraceEvents(): LiveTraceEvent[] {
+  return events;
 }
 
-export function setLiveConsoleEnabled(value: boolean): void {
-  consoleEnabled = value;
+export function clearLiveTraceEvents(): void {
+  events.length = 0;
+  notify();
 }
 
-export function traceLiveEvent(input: TraceInput): LiveTraceEvent | undefined {
-  if (!enabled) return undefined;
-
-  const { context, ...data } = input;
-
-  const event: LiveTraceEvent = {
-    ...data,
-    id: createEventId(),
-    ts: Date.now(),
-    actionId: context?.actionId ?? data.cause?.actionId,
-    causeId: context?.causeId ?? data.cause?.causeId,
-  };
-
-  if (consoleEnabled) {
-    console.log(
-      `[LiveTrace][${event.framework}] ${event.event} ${event.component}`,
-      event,
-    );
-  }
-
-  emitter.emit('live:trace', event);
-
-  return event;
-}
-
-export function subscribeLiveTrace(
-  listener: (event: LiveTraceEvent) => void,
-): () => void {
-  emitter.on('live:trace', listener);
-
+export function subscribeLiveTrace(listener: () => void): () => void {
+  listeners.add(listener);
   return () => {
-    emitter.off('live:trace', listener);
+    listeners.delete(listener);
   };
+}
+
+export function resetLiveTraceForTests(): void {
+  events.length = 0;
+  listeners.clear();
 }

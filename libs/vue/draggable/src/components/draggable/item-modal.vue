@@ -21,6 +21,7 @@ import {
 } from 'vue';
 import VueDraggableResizable from 'vue-draggable-resizable';
 
+import { trackLiveEventAction } from '@hungpvq/shared-log';
 import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import {
   useComponent,
@@ -79,7 +80,11 @@ const containerId = inject<Ref<string>>(
 if (!containerId.value) {
   throw new Error('Not set container id');
 }
-const { show, open, close } = useShow(props, emit);
+const { show, open, close } = useShow(
+  props,
+  emit,
+  trackLiveEventAction('DraggableItemModal'),
+);
 const { itemId, zIndex } = useInitItem(
   containerId.value,
   show,

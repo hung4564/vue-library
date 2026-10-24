@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { MapCard } from '../../../components/MapCard';
 import { MapControlButton } from '../../../components/MapControlButton';
-import { MapIcon } from '../../../components/MapIcon';
+import { Icon as UiIcon } from '@hungpvq/react-ui-core';
 import { MapImage } from '../../../components/MapImage';
 import { MapRangeSlider } from '../../../field';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
@@ -371,7 +371,7 @@ export function BaseMapControl({
             <MapImage src={displayBaseMap.thumbnail}>
               <div className="base-map-button__title">
                 {controlIcon ? (
-                  <MapIcon>{controlIcon}</MapIcon>
+                  <UiIcon>{controlIcon}</UiIcon>
                 ) : (
                   <Icon
                     path={mdiLayersOutline}

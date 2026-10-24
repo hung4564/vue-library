@@ -16,6 +16,7 @@ import {
   watch,
 } from 'vue';
 
+import { trackLiveEventAction } from '@hungpvq/shared-log';
 import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
 import {
   useComponent,
@@ -71,7 +72,11 @@ const isHorizontal = computed(
   () => location.value === 'left' || location.value === 'right',
 );
 
-const { show, open, close } = useShow(props, emit);
+const { show, open, close } = useShow(
+  props,
+  emit,
+  trackLiveEventAction('DraggableItemDrawer'),
+);
 const { itemId } = useInitDrawer(
   containerId.value,
   show,

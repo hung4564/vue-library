@@ -3,8 +3,9 @@ name: vue-library-overview
 description: >-
   Orients agents to the vue-library Nx monorepo (@hungpvq map, draggable, share
   packages for Vue and React). Use when starting work in this repo, locating the
-  right package, choosing where to put GIS vs UI code, picking npm/nx scripts,
-  or when adding logging (must use @hungpvq/shared-log, never raw console.*).
+  right package, choosing where to put GIS vs UI code, adding or reusing generic
+  UI (always @hungpvq/*-ui-core when possible), picking npm/nx scripts, or when
+  adding logging (must use @hungpvq/shared-log, never raw console.*).
 ---
 
 # Vue Library Overview
@@ -19,10 +20,10 @@ Nx + TypeScript monorepo publishing `@hungpvq/*` packages for MapLibre GIS maps,
 | Vue map      | `libs/vue/map-core`, `map-dataset`, `map-draw`, `map-devtools`      | `@hungpvq/vue-map-*`                                        |
 | React map    | `libs/react/map-core`, `map-dataset`, `map-draw`, `map-devtools`    | `@hungpvq/react-map-*`                                      |
 | Draggable    | `libs/draggable/core`, `libs/vue/draggable`, `libs/react/draggable` | `@hungpvq/draggable`, `vue-draggable`, `react-draggable`    |
-| Share / UI   | `libs/share/*`, `libs/ui/core`, `libs/router`                       | `@hungpvq/shared*`, UI kit                                  |
+| Share / UI   | `libs/share/*`, `libs/vue/ui-core`, `libs/react/ui-core`            | `@hungpvq/shared*`, `vue-ui-core`, `react-ui-core`          |
 | Demos / docs | Nx serve demos, `docs/`, `deploy/demo-*`                            | VitePress sites                                             |
 
-Nx tags: `map`, `draggable`, `share`, `demo`, `e2e`, plus framework tags. `tag:map` / `tag:draggable` are for publishable libs (+ demo apps); e2e and private fixtures like `demo-map-datasets` do **not** carry those release tags. Release groups: `map`, `draggable`, `shared-store`, `shared-log` (see root `nx.json`).
+Nx tags: `map`, `draggable`, `share`, `demo`, `e2e`, plus framework tags. `tag:map` / `tag:draggable` are for publishable libs (+ demo apps); e2e and private fixtures like `demo-map-datasets` do **not** carry those release tags. Release groups: `map`, `draggable`, `shared-store`, `shared-log`, `ui` (see root `nx.json`).
 
 ## Where to change code
 
@@ -32,6 +33,7 @@ Nx tags: `map`, `draggable`, `share`, `demo`, `e2e`, plus framework tags. `tag:m
 4. **Draw / edit** → protocol in `libs/map-core/map-draw`; UI in `libs/vue/map-draw` and `libs/react/map-draw` (shared InspectController). Docs: `libs/map-core/map-draw/docs` → `/map/draw/`. Demo: `/#/draw` only.
 5. **Dataset builders / identify / style protocol** → `libs/map-core/map-dataset`; UI in `vue`/`react` `map-dataset`. Docs: `libs/map-core/map-dataset/docs`.
 6. **Shared non-map utils** → `libs/share/*`.
+7. **Generic UI → always `*-ui-core` when possible.** Reuse `@hungpvq/vue-ui-core` / `@hungpvq/react-ui-core` first (`InputText`, `BaseButton`, `Icon`, `Tabs`, `CopyButton`, `Collapse`, fields, …). If a reusable, non-map control is missing, **add it there** (Vue + React parity, public-api lock) and import it — do **not** invent a local copy, re-export, or one-off SFC/TSX in map adapters, shared-log, or demos. Do **not** import generics from `*-map-core/fields`. Map-only fields (`InputCrs`, `MapRangeSlider`, `MapCard`, `MapImage`) stay on `*-map-core/fields`. Map chrome (`MapControlButton`, `MapTabs`) stays on `*-map-core` root (those compose ui-core; do not bypass them with raw `<button>` / `BaseButton` in map packages). Text copy uses ui-core `CopyButton` (not a map-core wrapper). Avoid reserved HTML names (`Button` → `BaseButton`).
 
 **Process / app stores:** always `@hungpvq/shared-store` (`getOrCreateStore` / `defineStore` / `GlobalStoreService` → `globalThis.$_hungpv_store`, process-wide SSR). Never invent a parallel bag on `@hungpvq/shared`.
 
@@ -41,7 +43,7 @@ Do not put MapLibre business logic only in a Vue or React package if it belongs 
 
 **Import paths:** cores (`@hungpvq/map-core`, `map-dataset`, `map-draw`, `draggable`) for protocol/types/services; adapters (`@hungpvq/vue-*` / `react-*`) for UI/hooks only. Adapters must not re-export core.
 
-**Map UI buttons:** in Vue/React map packages, always use Stable `MapControlButton` (see `map-dual-framework`) — never raw `<button>` / `BaseButton` for map chrome. Text copy actions use Stable `MapCopyButton` (icon feedback, no toast). Other action buttons (Pin, Run, async) must use `createActionFeedback` phases: idle → loading → success|error → idle (~1.5s).
+**Map UI buttons:** in Vue/React map packages, always use Stable `MapControlButton` (see `map-dual-framework`) — never raw `<button>` / `BaseButton` for map chrome. Text copy actions use `@hungpvq/*-ui-core` `CopyButton` (icon `mdiContentCopy` → `mdiCheck`, no toast). Other action buttons (Pin, Run, async) must use `createActionFeedback` phases: idle → loading → success|error → idle (~1.5s).
 
 ## Logging (`@hungpvq/shared-log`)
 
@@ -120,7 +122,7 @@ When adding a function, changing a business flow, or touching a logger, check:
 
 ### Devtools mount
 
-Mount `@hungpvq/vue-map-devtools` / `react-map-devtools` `<Devtools />` **inside** `<Map>` (`DraggableItemPopup`). Do not remount a global overlay shell. Log store default is IndexedDB on `getMapDebugStore()` (`map:debug`); see `libs/map-core/core/docs/core/devtools.md`.
+Mount `@hungpvq/vue-map-devtools` / `react-map-devtools` `<Devtools />` **inside** `<Map>` (`DraggableItemPopup`). Do not remount a global overlay shell. Generic tabs (Store / Live / Logs / Errors) come from `*-shared-log`; Dataset is pin-registered by map-devtools. Log store default is IndexedDB on `getLogDebugStore()` (`log:debug` in `@hungpvq/shared-log`). See `libs/map-core/core/docs/core/devtools.md`.
 
 ## Common scripts (root `package.json`)
 

@@ -61,16 +61,26 @@ function createBrowserZoneStorage<T>(): ZoneContextStorage<T> {
   };
 }
 
+type NodeProcessLike = { versions?: { node?: string } };
+type AsyncLocalStorageLike<T> = {
+  run<R>(store: T, fn: () => R): R;
+  getStore(): T | undefined;
+};
+type AsyncHooksLike = {
+  AsyncLocalStorage?: new <S>() => AsyncLocalStorageLike<S>;
+};
+
+/** CJS require without pulling `@types/node` into Vue/React consumers. */
+declare function require(id: string): unknown;
+
 function createNodeZoneStorage<T>(): ZoneContextStorage<T> | undefined {
   try {
-    if (
-      typeof process === 'undefined' ||
-      !(process as { versions?: { node?: string } }).versions?.node
-    ) {
+    const nodeProcess = (globalThis as { process?: NodeProcessLike }).process;
+    if (!nodeProcess?.versions?.node) {
       return undefined;
     }
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires -- Node-only ALS; keep sync for zone bootstrap
-    const mod = require('async_hooks') as typeof import('async_hooks');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- Node-only ALS; keep sync for zone bootstrap
+    const mod = require('async_hooks') as AsyncHooksLike;
     if (!mod?.AsyncLocalStorage) return undefined;
     const als = new mod.AsyncLocalStorage<T>();
     return {

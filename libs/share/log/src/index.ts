@@ -1,2 +1,3 @@
 export * from './core';
-export * from './live-hook/types';
+export * from './debug';
+export * from './live-hook';

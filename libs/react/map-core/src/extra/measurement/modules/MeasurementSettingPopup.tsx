@@ -22,7 +22,7 @@ import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { InputCheckbox, InputSelect } from '../../../field';
+import { InputCheckbox, InputSelect } from '@hungpvq/react-ui-core';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import {
   ModuleContainer,

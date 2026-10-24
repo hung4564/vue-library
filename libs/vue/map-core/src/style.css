@@ -1,2 +1,3 @@
 /* Bundled entry for `@hungpvq/vue-map-core/style.css` */
+@import '../../ui-core/src/style.css';
 @import '../../../map-core/core/src/style/index.scss';

@@ -243,7 +243,7 @@
                         <span>{{ snapshot.identity.name }}</span>
                       </div>
                       <div class="dataset-viewer__row-copy">
-                        <MapCopyButton
+                        <CopyButton
                           title="Copy Name"
                           :value="snapshot.identity.name"
                         />
@@ -257,7 +257,7 @@
                         }}</code>
                       </div>
                       <div class="dataset-viewer__row-copy">
-                        <MapCopyButton
+                        <CopyButton
                           title="Copy ID"
                           :value="snapshot.identity.id"
                         />
@@ -269,7 +269,7 @@
                         <span>{{ snapshot.identity.type }}</span>
                       </div>
                       <div class="dataset-viewer__row-copy">
-                        <MapCopyButton
+                        <CopyButton
                           title="Copy Type"
                           :value="snapshot.identity.type"
                         />
@@ -357,7 +357,7 @@
                         }}</code>
                       </div>
                       <div class="dataset-viewer__row-copy">
-                        <MapCopyButton
+                        <CopyButton
                           title="Copy Path"
                           :value="snapshot.hierarchy.pathLabel"
                         />
@@ -579,7 +579,7 @@
                     <strong>{{
                       menuDetail.name || menuDetail.id || 'Menu'
                     }}</strong>
-                    <MapCopyButton
+                    <CopyButton
                       title="Copy menu JSON"
                       :value="menuDetailJson"
                     />
@@ -590,7 +590,7 @@
                       {{ menuDetail.name || '—' }}
                     </div>
                     <div class="dataset-viewer__row-copy">
-                      <MapCopyButton
+                      <CopyButton
                         title="Copy name"
                         :value="menuDetail.name || ''"
                       />
@@ -610,7 +610,7 @@
                       >
                     </div>
                     <div class="dataset-viewer__row-copy">
-                      <MapCopyButton
+                      <CopyButton
                         title="Copy id"
                         :value="menuDetail.id || ''"
                       />
@@ -770,8 +770,9 @@ import {
   type MenuSummary,
   type PartitionedMenuSummary,
 } from '@hungpvq/map-debug/dataset';
-import { MapControlButton, MapCopyButton } from '@hungpvq/vue-map-core';
-import { InputActionRow, InputSelect } from '@hungpvq/vue-map-core/fields';
+import { MapControlButton } from '@hungpvq/vue-map-core';
+import { TreeItem } from '@hungpvq/vue-shared-log';
+import { CopyButton, InputActionRow, InputSelect } from '@hungpvq/vue-ui-core';
 import {
   computed,
   nextTick,
@@ -784,7 +785,6 @@ import {
 
 import { useDevtoolState } from '../store';
 import DatasetTreeNav from './DatasetTreeNav.vue';
-import TreeItem from './TreeItem.vue';
 
 type PaneId = 'roots' | 'inspect' | 'menus';
 type SelectItem = { value: string; text: string };

@@ -7,7 +7,7 @@ import {
 import { useCallback, useMemo, useState } from 'react';
 
 import { MapControlButton } from '../../../components/MapControlButton';
-import { InputSelect, InputText } from '../../../field';
+import { InputSelect, InputText } from '@hungpvq/react-ui-core';
 import { useMap } from '../../../hooks/useMap';
 import { useLang } from '../../lang/hook';
 

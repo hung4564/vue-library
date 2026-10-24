@@ -17,7 +17,7 @@ import { saveAs } from 'file-saver';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { MapControlButton } from '../../../components/MapControlButton';
-import { InputSelect, InputText } from '../../../field';
+import { InputSelect, InputText } from '@hungpvq/react-ui-core';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import {
   ModuleContainer,

@@ -1,9 +1,6 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
-import {
-  DEVTOOLS_CONTROL,
-  setDevtoolOpen,
-  toggleDevtoolOpen,
-} from '@hungpvq/map-debug';
+import { DEVTOOLS_CONTROL } from '@hungpvq/map-debug';
+import { setDebugOpen, toggleDebugOpen } from '@hungpvq/shared-log';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
@@ -34,7 +31,7 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
   const { isOpen } = useDevtoolState();
 
   const setOpen = (value: boolean) => {
-    setDevtoolOpen(value);
+    setDebugOpen(value);
   };
 
   const { panelBind, moduleContainerProps } = useMapControl(mapId, {
@@ -51,7 +48,7 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
       {
         type: DEVTOOLS_CONTROL.id,
         run: () => {
-          toggleDevtoolOpen();
+          toggleDebugOpen();
         },
       },
     ],
@@ -88,7 +85,7 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
           aria-label="Map Devtools"
           onClick={(event) => {
             event.stopPropagation();
-            toggleDevtoolOpen();
+            toggleDebugOpen();
           }}
         >
           <Icon

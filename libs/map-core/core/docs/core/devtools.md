@@ -1,13 +1,15 @@
 # Map Devtools
 
-Debug panel for map apps: **Store**, **Logs**, **Errors**, and **Dataset** (Inspect + Menus).
+Generic debug tabs (**Store**, **Live**, **Logs**, **Errors**) live in `@hungpvq/shared-log` + `@hungpvq/vue-shared-log` / `@hungpvq/react-shared-log`. Map packages only host the popup and add the **Dataset** tab.
 
 | Package                       | Bootstrap           | Panel                                   |
 | ----------------------------- | ------------------- | --------------------------------------- |
 | `@hungpvq/vue-map-devtools`   | `installDevtools()` | Mount `<Devtools />` **inside** `<Map>` |
 | `@hungpvq/react-map-devtools` | `installDevtools()` | Mount `<Devtools />` **inside** `<Map>` |
 
-Both packages export `./style.css` (imports shared chrome from `@hungpvq/map-debug`). Peers include `@hungpvq/map-core`, the matching framework map-core / map-devtools peers (`@hungpvq/vue-draggable` or `@hungpvq/react-draggable`), and `@hungpvq/shared-log`. When `map-dataset` is present, `installDevtools()` also installs `@hungpvq/map-debug/dataset` (canonical pin `map:debug.dataset`; F12 alias `window.__hungpvqDatasetDebug`).
+`installDevtools()` calls `installDebug()` from `@hungpvq/shared-log` (default IndexedDB on `log:debug`), registers built-in tabs, wires `errorHandler.onError` → `reportDebugError`, and (when `map-dataset` is present) `installDatasetDebug()` + pin-registers the Dataset tab. F12: `window.__hungpvqDebug` (tabs) and `window.__hungpvqDatasetDebug` (dataset inspect).
+
+Standalone (no map): mount `DevtoolsShell` from `*-shared-log` and register extra tabs on `globalThis.__hungpvqDebug` — see [`@hungpvq/shared-log` README](../../../share/log/README.md). Demo: `#/shared-log`.
 
 ## Dataset tab
 
@@ -17,9 +19,9 @@ Both packages export `./style.css` (imports shared chrome from `@hungpvq/map-deb
 | Inspect | Node hierarchy, fields, find-by-type      |
 | Menus   | Resolved menus by placement + detail JSON |
 
-Menus without `id` show generated debug keys (`anon:…:<index>`, `idGenerated`). Selection is summary-based so anonymous items stay clickable. Shared layout/CSS is owned by `@hungpvq/map-debug` (SoT); Vue/React only host the UI.
+Menus without `id` show generated debug keys (`anon:…:<index>`, `idGenerated`). Shared dataset CSS is owned by `@hungpvq/map-debug` (`.dataset-viewer*`); generic chrome is `@hungpvq/shared-log/style.css`.
 
-See [`@hungpvq/map-debug` README](../../../map-debug/README.md) for console API and the Debug-dataset menu item.
+See [`@hungpvq/map-debug` README](../../../map-debug/README.md) for the console API and the Debug-dataset menu item.
 
 ## Mount (Map control only)
 
@@ -37,9 +39,9 @@ See [`@hungpvq/map-debug` README](../../../map-debug/README.md) for console API 
 </Map>
 ```
 
-`DevtoolsControl` is also exported (same UI path). The old floating FAB / overlay shell (`mode="overlay"`) has been removed.
+`DevtoolsControl` is also exported (same UI path).
 
-Request Flow (Logs tab → Flow) opens via `ModuleContainer` + `DraggableItemModal` on the host map (`useMap` inject) and renders a nested call / emit / handler tree from `flowKind` / `flowDepth` / `eventName`.
+Request Flow (Logs tab → Flow) is a self-contained overlay in `*-shared-log` (no Map modal).
 
 ## Bootstrap (Vue + React)
 
@@ -53,49 +55,32 @@ installDevtools();
 // or: installDevtools({ logStore: myCustomLogDataStore })
 ```
 
-`installDevtools()` attaches a log adapter and installs global error capture via `errorHandler` from `@hungpvq/map-core`. Call `uninstallDevtools()` to tear down capture.
-
-### Log store (`map:debug`)
-
-Config and live instances live on **`getMapDebugStore()`** (`MAP_DEBUG_STORE_KEY = 'map:debug'`):
-
-| Field             | Role                                                                                             |
-| ----------------- | ------------------------------------------------------------------------------------------------ |
-| `logStoreOptions` | Config before first create (`kind`, `limit` for memory only, `dbName` / `storeName`, or `store`) |
-| `logDataStore`    | Live `LogDataStore` (created once)                                                               |
-| `logAdapter`      | `DataStoreLogAdapter` wired to that store                                                        |
-| `logStoreUnsub`   | Subscribe handle for UI mirror                                                                   |
-
-**Default:** uncapped `IndexedDBLogDataStore` (indexes on `actionId` + `namespace`).  
-**Memory:** `logStore: 'memory'` — ring buffer; `limit` applies only here (default `10_000`).  
-**Custom:** pass any `LogDataStore` instance (or set `getMapDebugStore().logStoreOptions` / call `configureDevtoolLogStore` before install).
+Log store config lives on **`getLogDebugStore()`** (`LOG_DEBUG_STORE_KEY = 'log:debug'`) via `configureDebugLogStore` from `@hungpvq/shared-log` — not on `map:debug`.
 
 ```ts
-import { configureDevtoolLogStore, getMapDebugStore } from '@hungpvq/map-debug';
+import { configureDebugLogStore } from '@hungpvq/shared-log';
 
-configureDevtoolLogStore({ kind: 'memory', limit: 2_000 });
-// equivalent: getMapDebugStore().logStoreOptions = { kind: 'memory', limit: 2_000 };
-
+configureDebugLogStore({ kind: 'memory', limit: 2_000 });
 installDevtools();
 ```
 
-Logs tab **Refresh** re-reads the store (`refreshDevtoolLogsFromStore`) with short loading → success feedback (same pattern as Pin / copy).
+`map:debug` keeps only the dataset pin + `installed` flag (`getMapDebugStore()`).
 
 ## Stable API
 
-| Export                                                           | Notes                                                     |
-| ---------------------------------------------------------------- | --------------------------------------------------------- |
-| `Devtools`                                                       | Map control + `DraggableItemPopup` (mount inside `<Map>`) |
-| `DevtoolsControl`                                                | Explicit map-control popup (same as `Devtools`)           |
-| `DEVTOOLS_CONTROL`                                               | `{ id: 'mapDevtools' }`                                   |
-| `installDevtools` / `uninstallDevtools`                          | Bootstrap (`installDevtools({ logStore })` optional)      |
-| `setDevtoolOpen` / `toggleDevtoolOpen` / `openMapDevtoolsErrors` | Open helpers                                              |
+| Export                                          | Notes                                                     |
+| ----------------------------------------------- | --------------------------------------------------------- |
+| `Devtools`                                      | Map control + `DraggableItemPopup` (mount inside `<Map>`) |
+| `DevtoolsControl`                               | Explicit map-control popup (same as `Devtools`)           |
+| `DEVTOOLS_CONTROL`                              | `{ id: 'mapDevtools' }` (from `@hungpvq/map-debug`)       |
+| `installDevtools` / `uninstallDevtools`         | Bootstrap (`installDevtools({ logStore })` optional)      |
+| `openMapDevtoolsErrors`                         | `openDebugTab('errors')`                                  |
 
-Runtime lock: `public-api.spec.ts` in each adapter package. Experimental core helpers: `@hungpvq/map-debug` (`configureDevtoolLogStore`, `getMapDebugStore`, `getDevtoolLogDataStore`, …).
+Generic helpers (`configureDebugLogStore`, `reportDebugError`, `openDebugTab`, `setDebugOpen`, …) come from `@hungpvq/shared-log`. Runtime lock: `public-api.spec.ts` in each adapter package.
 
 ## Demos
 
-- Vue: `apps/vue/demo-map` — `installDevtools()` in `main.ts`; every `<Map>` includes `<DevtoolsControl position="bottom-right" />`
-- React: `apps/react/demo-map` — same pattern
+- Viewport map: `installDevtools()` + `<DevtoolsControl />` in `apps/vue/demo-map` and `apps/react/demo-map`
+- Standalone log: `#/shared-log` mounts `DevtoolsShell` and pin-registers `app:demo` (vendor `ensure-debug-host`, no `registerDebugTab` import)
 
-See also [Stable API](./stable-api.md) · [Map store keys](./map-store.md) · [Error handling](./error-handling.md).
+See also [Stable API](./stable-api.md) · [Map store keys](./map-store.md) · [Error handling](./error-handling.md) · [`@hungpvq/shared-log` README](../../../share/log/README.md).

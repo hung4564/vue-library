@@ -3,7 +3,7 @@ import { DatasetService } from '@hungpvq/map-dataset';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { loggerFactory } from '@hungpvq/shared-log';
 
-import { addClearFunctionLog } from '../core/store-core';
+import { addClearFunctionLog } from '../core/map-debug-store';
 import { getDatasetStore, listMapIds } from '../store-access';
 import {
   describeDataset,

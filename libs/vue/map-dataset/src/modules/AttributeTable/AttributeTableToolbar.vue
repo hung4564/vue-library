@@ -11,7 +11,7 @@ import {
   type GeoExportFormat,
 } from '@hungpvq/map-dataset/geo-export';
 import { MapControlButton } from '@hungpvq/vue-map-core';
-import { InputSelect, InputText } from '@hungpvq/vue-map-core/fields';
+import { InputSelect, InputText } from '@hungpvq/vue-ui-core';
 import { computed, ref } from 'vue';
 
 const props = defineProps<AttributeTableToolbarProps>();

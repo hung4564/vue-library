@@ -11,8 +11,9 @@ import {
   type MenuSummary,
   type PartitionedMenuSummary,
 } from '@hungpvq/map-debug/dataset';
-import { MapControlButton, MapCopyButton } from '@hungpvq/react-map-core';
-import { InputActionRow, InputSelect } from '@hungpvq/react-map-core/fields';
+import { MapControlButton } from '@hungpvq/react-map-core';
+import { TreeItem } from '@hungpvq/react-shared-log';
+import { CopyButton, InputActionRow, InputSelect } from '@hungpvq/react-ui-core';
 import {
   useCallback,
   useEffect,
@@ -23,7 +24,6 @@ import {
 } from 'react';
 import { useDevtoolState } from '../store';
 import { DatasetTreeNav } from './DatasetTreeNav';
-import { TreeItem } from './TreeItem';
 
 const BUCKETS = ['title', 'extra', 'menu', 'bottom', 'prebottom'] as const;
 type PaneId = 'roots' | 'inspect' | 'menus';
@@ -95,7 +95,7 @@ function DetailRow({
       <div className="dataset-viewer__row-value">{children}</div>
       {copyValue ? (
         <div className="dataset-viewer__row-copy">
-          <MapCopyButton
+          <CopyButton
             title={`Copy ${label}`}
             value={copyValue}
           />
@@ -1219,7 +1219,7 @@ export function DatasetMenuViewer() {
                       <strong>
                         {menuDetail.name || menuDetail.id || 'Menu'}
                       </strong>
-                      <MapCopyButton
+                      <CopyButton
                         title="Copy menu JSON"
                         value={JSON.stringify(menuDetail, null, 2)}
                       />

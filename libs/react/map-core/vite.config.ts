@@ -56,6 +56,7 @@ export default defineConfig(() => ({
         '@hungpvq/react-draggable',
         '@hungpvq/shared',
         '@hungpvq/shared-log',
+        '@hungpvq/react-ui-core',
         '@hungpvq/shared-store',
         '@hungpvq/shared-store/react',
         'maplibre-gl',

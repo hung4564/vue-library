@@ -17,7 +17,7 @@ import {
   useLang,
   useMap,
 } from '@hungpvq/vue-map-core';
-import { InputText } from '@hungpvq/vue-map-core/fields';
+import { InputText } from '@hungpvq/vue-ui-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
 import { computed, nextTick, onUnmounted, ref, VNode, watch } from 'vue';

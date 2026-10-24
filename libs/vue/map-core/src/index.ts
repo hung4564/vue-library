@@ -1,13 +1,13 @@
 /**
  * Root barrel: explicit named Stable exports only.
- * Experimental field/UI helpers live on `@hungpvq/vue-map-core/fields`.
+ * Map-only field helpers live on `@hungpvq/vue-map-core/fields`.
+ * Generic inputs: `@hungpvq/vue-ui-core`.
  * Direct leaf imports (no internal-barrel).
  */
 export type { MapTabItem } from './components/map-tabs';
 export { default as MapCommonButton } from './components/MapCommonButton.vue';
 export { default as MapControlButton } from './components/MapControlButton.vue';
 export { default as MapControlGroupButton } from './components/MapControlGroupButton.vue';
-export { default as MapCopyButton } from './components/MapCopyButton.vue';
 export { default as MapTabs } from './components/MapTabs.vue';
 export { DefaultBaseMapAdapter } from './extra/basemap/adapter/base';
 export { useBaseMap } from './extra/basemap/hooks/useBaseMap';

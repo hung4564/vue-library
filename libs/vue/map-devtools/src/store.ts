@@ -1,29 +1,19 @@
-import {
-  type DevtoolErrorRecord,
-  type DevtoolTab,
-  getDevtoolState as getDevtoolStateCore,
-  subscribeDevtoolState,
-} from '@hungpvq/map-debug';
+import { ensureHungpvqDebugHost } from '@hungpvq/shared-log';
 import { reactive, toRefs } from 'vue';
 
-export type ErrorRecord = DevtoolErrorRecord;
-
-export type { DevtoolTab };
-
-const devtoolState = reactive(getDevtoolStateCore());
-
-subscribeDevtoolState(() => {
-  const next = getDevtoolStateCore();
-  devtoolState.isOpen = next.isOpen;
-  devtoolState.activeTab = next.activeTab;
-  devtoolState.errors = next.errors;
-  devtoolState.logs = next.logs;
+const host = ensureHungpvqDebugHost();
+const state = reactive({
+  isOpen: host.isOpen(),
+  activeTab: host.getActiveTab(),
 });
 
-export function getDevtoolState() {
-  return devtoolState;
-}
+host.subscribe(() => {
+  state.isOpen = host.isOpen();
+  state.activeTab = host.getActiveTab();
+});
 
 export function useDevtoolState() {
-  return toRefs(devtoolState);
+  return toRefs(state);
 }
+
+export type DevtoolTab = string;

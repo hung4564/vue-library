@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  formatSharedLogRecord,
   getDemoAsideNavItems,
   runSharedLogScenario,
   SHARED_LOG_SCENARIOS,
@@ -11,8 +10,20 @@ import {
   loggerFactory,
   type LogRecord,
 } from '@hungpvq/shared-log';
+import { DevtoolsShell } from '@hungpvq/vue-shared-log';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
+
+import DemoTab from './DemoTab.vue';
+import { ensureHungpvqDebugHost } from './ensure-debug-host';
+
+ensureHungpvqDebugHost().registerTab({
+  id: 'app:demo',
+  label: 'Demo',
+  order: 20,
+  framework: 'vue',
+  component: DemoTab,
+});
 
 loggerFactory.enableEverything();
 
@@ -108,12 +119,10 @@ function clear() {
         </button>
       </aside>
       <section class="shared-log-demo__logs">
-        <h2>Buffered records ({{ records.length }})</h2>
-        <pre class="shared-log-demo__pre">{{
-          records.length
-            ? records.map(formatSharedLogRecord).join('\n')
-            : '(empty)'
-        }}</pre>
+        <h2>Devtools ({{ records.length }} buffered)</h2>
+        <div class="shared-log-demo__shell">
+          <DevtoolsShell />
+        </div>
       </section>
     </div>
   </div>
@@ -208,17 +217,10 @@ function clear() {
   padding: 6px 10px;
   cursor: pointer;
 }
-.shared-log-demo__pre {
-  margin: 0;
-  padding: 12px;
-  max-height: min(70vh, 640px);
-  overflow: auto;
-  background: #0f1419;
-  color: #d7e0ea;
+.shared-log-demo__shell {
+  height: min(70vh, 640px);
+  border: 1px solid #e2e4e8;
   border-radius: 6px;
-  font-size: 12px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  word-break: break-word;
+  overflow: hidden;
 }
 </style>

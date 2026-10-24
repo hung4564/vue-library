@@ -8,7 +8,7 @@ import {
   type TabConfig,
   TABS,
 } from '@hungpvq/map-dataset/style';
-import { Collapse, InputSlider } from '@hungpvq/vue-map-core/fields';
+import { Collapse, InputSlider } from '@hungpvq/vue-ui-core';
 import { LayerSpecification } from 'maplibre-gl';
 import { computed, onMounted, ref } from 'vue';
 

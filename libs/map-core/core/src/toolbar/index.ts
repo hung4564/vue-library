@@ -57,6 +57,7 @@ export {
   createLiveToolbarStrategy,
   createSubscribable,
   createToolbarModuleApi,
+  createToolbarStoreApi,
 } from './toolbar';
 export type {
   Listener,

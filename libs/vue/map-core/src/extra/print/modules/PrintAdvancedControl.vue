@@ -20,7 +20,7 @@ import { defineProps, withDefaults } from 'vue';
 import MapControlButton from '../../../components/MapControlButton.vue';
 import { useLang } from '../../../extra/lang/hook';
 import { useMapControl } from '../../../extra/registry/useMapControl';
-import { InputSelect, InputText } from '../../../field';
+import { InputSelect, InputText } from '@hungpvq/vue-ui-core';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useMapPrint } from '../store';

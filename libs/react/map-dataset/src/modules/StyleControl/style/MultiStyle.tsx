@@ -1,6 +1,6 @@
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { MapControlButton, useShow } from '@hungpvq/react-map-core';
-import { InputSelect } from '@hungpvq/react-map-core/fields';
+import { InputSelect } from '@hungpvq/react-ui-core';
 import { mdiClose, mdiDelete, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import type { LayerSpecification } from 'maplibre-gl';

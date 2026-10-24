@@ -14,7 +14,7 @@ import {
 } from '@hungpvq/map-dataset/create-control';
 import { terminateGeojsonWorker } from '@hungpvq/map-dataset/geojson';
 import { MapControlButton } from '@hungpvq/react-map-core';
-import { DragDropFile } from '@hungpvq/react-map-core/fields';
+import { DragDropFile } from '@hungpvq/react-ui-core';
 import { useMemo, useRef, useState } from 'react';
 
 import type { CreateConfigFormProps } from './types';

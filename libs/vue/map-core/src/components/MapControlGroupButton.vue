@@ -15,17 +15,21 @@
       :class="{ 'button-group-sheet-column': !row }"
       style="border-radius: 150px"
     >
-      <MapButton
+      <BaseButton
         v-for="(item, i) in items"
         :key="i"
+        variant="icon"
         :size="resolvedSizePx"
+        class="map-control-button"
         :title="item.title"
         @click="item.onClick"
       >
-        <MapIcon>
-          {{ item.icon }}
-        </MapIcon>
-      </MapButton>
+        <span class="map-control-button__content">
+          <Icon>
+            {{ item.icon }}
+          </Icon>
+        </span>
+      </BaseButton>
       <slot />
     </div>
   </div>
@@ -37,10 +41,8 @@ import {
   type MapButtonSize,
   resolveMapButtonSizePx,
 } from '@hungpvq/map-core';
+import { BaseButton, Icon } from '@hungpvq/vue-ui-core';
 import type { PropType } from 'vue';
-
-import MapButton from './MapButton.vue';
-import MapIcon from './MapIcon.vue';
 
 interface ButtonItem {
   title: string;
@@ -49,7 +51,7 @@ interface ButtonItem {
 }
 export default {
   name: 'MapControlGroupButton',
-  components: { MapButton, MapIcon },
+  components: { BaseButton, Icon },
   inheritAttrs: false,
   props: {
     items: {

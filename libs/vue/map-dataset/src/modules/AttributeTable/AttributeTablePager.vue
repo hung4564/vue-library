@@ -7,7 +7,7 @@ import {
   type AttributeTablePagerProps,
 } from '@hungpvq/map-dataset/attribute-table';
 import { MapControlButton } from '@hungpvq/vue-map-core';
-import { InputSelect } from '@hungpvq/vue-map-core/fields';
+import { InputSelect } from '@hungpvq/vue-ui-core';
 import { computed } from 'vue';
 
 const props = defineProps<AttributeTablePagerProps>();

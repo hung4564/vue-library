@@ -25,13 +25,7 @@ import {
 } from '@hungpvq/map-dataset/create-control';
 import { terminateGeojsonWorker } from '@hungpvq/map-dataset/geojson';
 import { MapControlButton } from '@hungpvq/react-map-core';
-import {
-  DragDropFile,
-  InputActionRow,
-  InputSelect,
-  InputText,
-  InputTextarea,
-} from '@hungpvq/react-map-core/fields';
+import { DragDropFile, InputActionRow, InputSelect, InputText, InputTextarea } from '@hungpvq/react-ui-core';
 import type { GeoJSON } from 'geojson';
 import { useEffect, useMemo, useRef, useState } from 'react';
 

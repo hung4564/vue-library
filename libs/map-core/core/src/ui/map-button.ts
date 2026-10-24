@@ -1,5 +1,5 @@
 /**
- * Shared MapButton / MapControlButton variants + sizes (framework-agnostic).
+ * Shared MapControlButton variants + sizes (framework-agnostic).
  * Used by Vue/React map-core adapters — single source of truth.
  *
  * Size: `small` | `medium` | `large` (or numeric px). Applies to every variant.

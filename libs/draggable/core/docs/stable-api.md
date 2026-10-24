@@ -111,7 +111,7 @@ Documented header slot / prop names are Stable (rename = **major**). Full layout
 
 ## Internal chrome (not public)
 
-Adapter shells compose private parts: `DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`. These are **not** root exports and must not be confused with `@hungpvq/vue-map-core` / `react-map-core` `MapControlButton` (or Experimental `MapButton` on `./fields`). Override sidebar toggle via the documented `componentSidebarToggle` prop / store card APIs only. The **slot names** forwarded through those shells (above) remain Stable even though `DragHeader` itself is internal.
+Adapter shells compose private parts: `DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`. These are **not** root exports and must not be confused with `@hungpvq/vue-map-core` / `react-map-core` `MapControlButton`. Override sidebar toggle via the documented `componentSidebarToggle` prop / store card APIs only. The **slot names** forwarded through those shells (above) remain Stable even though `DragHeader` itself is internal.
 
 ## Enforcing the allowlist
 

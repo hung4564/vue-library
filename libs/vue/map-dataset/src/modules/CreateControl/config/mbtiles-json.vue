@@ -84,7 +84,7 @@ import {
 } from '@hungpvq/map-dataset/create-control';
 import { closeVectorTileArchive } from '@hungpvq/map-dataset/vector-tile';
 import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
-import { DragDropFile } from '@hungpvq/vue-map-core/fields';
+import { DragDropFile } from '@hungpvq/vue-ui-core';
 import { computed, ref } from 'vue';
 
 const form = defineModel();

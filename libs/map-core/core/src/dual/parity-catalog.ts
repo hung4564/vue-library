@@ -96,7 +96,6 @@ export const MAP_CORE_ADAPTER_SHARED_STABLE = [
   'MapCommonButton',
   'MapContextMenuControl',
   'MapControlButton',
-  'MapCopyButton',
   'MapControlGroupButton',
   'MapTabs',
   'MeasurementControl',
@@ -153,24 +152,12 @@ export const MAP_CORE_ADAPTER_SHARED_STABLE = [
   'useWorkerMonitor',
 ] as const;
 
-/** Shared Experimental field helpers on `./fields` (aliases included). */
+/** Shared Experimental map-only helpers on `./fields`. Generic inputs: `*-ui-core`. */
 export const MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL = [
-  'BaseCollapse',
-  'Collapse',
-  'InputCheckbox',
-  'InputChoose',
-  'InputColorPicker',
   'InputCrs',
-  'InputFile',
-  'InputSelect',
-  'InputSlider',
-  'InputText',
-  'InputTextArea',
-  'InputTextarea',
-  'MapButton',
   'MapCard',
-  'MapIcon',
   'MapImage',
+  'MapRangeSlider',
 ] as const;
 
 export const MAP_DATASET_ADAPTER_SHARED_STABLE = [

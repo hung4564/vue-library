@@ -556,7 +556,8 @@ function createHighlightByClickedCategory() {
     ],
     highlight: createHighlightPart({
       filterCreator: (feature) => {
-        const category = feature?.properties?.category;
+        if (!feature || !('properties' in feature)) return undefined;
+        const category = feature.properties?.category;
         if (typeof category !== 'string') return undefined;
         return ['==', 'category', category];
       },

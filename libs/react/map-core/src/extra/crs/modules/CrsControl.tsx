@@ -11,7 +11,7 @@ import { mdiDelete, mdiInboxOutline, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { BaseCollapse, InputSelect, InputText } from '../../../field';
+import { BaseCollapse, InputSelect, InputText } from '@hungpvq/react-ui-core';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';
 import {

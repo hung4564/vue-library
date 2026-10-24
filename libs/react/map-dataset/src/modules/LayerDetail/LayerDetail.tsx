@@ -12,7 +12,6 @@ import {
 } from '@hungpvq/map-dataset/menu';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
-  MapCopyButton,
   ModuleContainer,
   ModuleContainerProps,
   useLang,
@@ -20,7 +19,7 @@ import {
   useMapControl,
   useShow,
 } from '@hungpvq/react-map-core';
-import { InputTextarea } from '@hungpvq/react-map-core/fields';
+import { CopyButton, InputTextarea } from '@hungpvq/react-ui-core';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { MenuConditionProvider } from '../../extra/menu/condition-context';
@@ -46,7 +45,7 @@ function TableTdCopy({
   return (
     <div className="layer-detail-row">
       <div className="layer-detail-row__copy">
-        <MapCopyButton value={value == null ? '' : String(value)} />
+        <CopyButton value={value == null ? '' : String(value)} />
       </div>
       {children}
     </div>

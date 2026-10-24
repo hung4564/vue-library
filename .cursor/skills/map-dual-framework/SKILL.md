@@ -22,6 +22,8 @@ libs/vue|react/map-draw     → DrawControl / InspectControl (shared InspectCont
 
 **Import rule:** adapters must **not** re-export core. Apps import builders/types/services from `@hungpvq/map-core` / `@hungpvq/map-dataset` / `@hungpvq/map-draw`, and UI/hooks from `@hungpvq/vue-*` or `@hungpvq/react-*`.
 
+**Generic UI:** always use (or add) `@hungpvq/vue-ui-core` / `@hungpvq/react-ui-core` when the control is reusable and not map-specific. Do not copy/redefine form fields or chrome in adapters. Map chrome still uses `MapControlButton`; text copy uses ui-core `CopyButton`. See `vue-library-overview`.
+
 Never reintroduce adapter `builder/` / `model/` / `services/` barrels that only re-export `@hungpvq/map-dataset` (or core). Domain protocol stays on `@hungpvq/map-dataset/<domain>`; adapter `extra/` is framework menu-action UI only.
 
 - Prefer importing `UniversalRegistry` / `runMapControlAction` / `buildMapControlHandle` from `@hungpvq/map-core` in framework-agnostic code.
@@ -90,7 +92,7 @@ Existing pure owners to copy: `GeoLocateSession`, `createCopyFeedback`, theme/fu
 - Do not rename documented control ids or menu component keys without a major bump.
 - **Component overrides (dataset UI, attribute-table parts, menu action UI, …):** prefer `UniversalRegistry.registerComponent` / `registerComponentForMap` + stable keys (`ATTRIBUTE_TABLE_COMPONENT_KEY`, `LIST_VIEW_MENU_COMPONENT_KEY`, …) and `RegistryItem`. Props are for data / toggles (`ui`, `columns`, `store`, …). Do **not** add a parallel “pass components via props” API unless the feature has no registry key yet.
 
-## Buttons: always `MapControlButton` (+ `MapCopyButton` for copy)
+## Buttons: always `MapControlButton` (copy → ui-core `CopyButton`)
 
 In **all** map library UI (`libs/vue/map-*`, `libs/react/map-*`, including dataset, draw, devtools, controls, toolbars, pagers, menus chrome):
 
@@ -98,7 +100,7 @@ In **all** map library UI (`libs/vue/map-*`, `libs/react/map-*`, including datas
 - Do **not** use raw `<button>`, `BaseButton`, ad-hoc button classes, or Experimental `./fields` button primitives for map chrome actions.
 - Prefer `variant` (`icon` \| `plain` \| `text` \| `tonal` \| `outlined` \| `filled`) + `size` (`small` \| `medium` \| `large` \| px). Dense rows (attribute table, layer list): usually `size="small"`.
 - Variant/size SoT lives in `@hungpvq/map-core` `ui/map-button` (locked via dual parity tests).
-- **Text copy chrome:** always use Stable root `MapCopyButton` (wraps `MapControlButton` + core `createCopyFeedback`). Success feedback = icon `mdiContentCopy` → `mdiCheck` + title “Copied” for ~1.5s — **no toast**. Do not reimplement with ad-hoc `createCopyFeedback` + check icon in Vue/React map UI. Low-level `copyText` / `createCopyFeedback` stay on `@hungpvq/map-core` for menus / non-button copy. Docs: `css-variables.md` § MapCopyButton, `stable-api.md`.
+- **Text copy chrome:** always use `@hungpvq/vue-ui-core` / `@hungpvq/react-ui-core` `CopyButton` (icon `mdiContentCopy` → `mdiCheck` + title “Copied” for ~1.5s — **no toast**). Do not add a map-core copy wrapper. Low-level `copyText` / `createCopyFeedback` stay on `@hungpvq/map-core` for menus / non-button copy.
 
 ### Action-button feedback (Pin, Refresh, Run, save, …)
 
@@ -106,7 +108,7 @@ Các nút có hành động thì phải đủ các trạng thái → loading →
 
 - **Phases:** `idle` → `loading` → `success` | `error` → `idle` after ~`ACTION_FEEDBACK_MS` (1.5s). **No toast.**
 - **SoT:** `createActionFeedback` from `@hungpvq/map-core` (+ `MapControlButton`). Wire label/icon/title/`disabled` from `phase` + `key`.
-- **Copy** stays on `MapCopyButton` / `createCopyFeedback` (idle → success only).
+- **Copy** stays on ui-core `CopyButton` (idle → success only). `createCopyFeedback` is for non-button / menu copy.
 - Sync work may use `succeed(key)` (skip loading) when there is nothing to await; async work must use `run(key, work)` so loading is visible.
 - Show success in the control itself (label “Pinned” / check icon / title) — same pattern as copy — not a separate banner.
 
@@ -172,8 +174,9 @@ Rules:
 - [ ] Demo or docs smoke path noted if UI-visible
 - [ ] New React Vite apps that alias `libs/` exclude Fast Refresh on `libs/`
 - [ ] Experimental field names on `./fields`: prefer `BaseCollapse` / `InputTextArea` (aliases `Collapse` / `InputTextarea`)
-- [ ] Every new/changed map UI button uses `MapControlButton` (never raw `<button>` / removed `BaseButton`); text-copy actions use `MapCopyButton`
-- [ ] Action buttons (Pin / Run / save / async) use `createActionFeedback` phases: idle → loading → success|error → idle (~1.5s); copy uses `MapCopyButton`
+- [ ] Generic reusable UI imported from (or added to) `*-ui-core` — no local copies
+- [ ] Every new/changed map UI button uses `MapControlButton` (never raw `<button>` / `BaseButton`); text-copy actions use ui-core `CopyButton`
+- [ ] Action buttons (Pin / Run / save / async) use `createActionFeedback` phases: idle → loading → success|error → idle (~1.5s); copy uses `CopyButton`
 - [ ] Run `nx test @hungpvq/map-core -- vue-react-parity.spec.ts` when adding dual controls or shared exports
 
 **Automated lock:** `libs/map-core/core/src/dual/parity-catalog.ts` + `vue-react-parity.spec.ts` (control ids + shared Stable root + shared `/fields` Experimental allowlists + `MapControlButton` `variant`/`size` SoT in `@hungpvq/map-core` `ui/map-button`).

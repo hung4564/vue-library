@@ -42,16 +42,13 @@
     "@jamescoyle/vue-icon": "^0.1.2",
     "@hungpvq/shared": "^0.4.0",
     "@hungpvq/shared-log": "^0.1.0",
-    "@ckpack/vue-color": "^1.5.0",
+    "@hungpvq/vue-ui-core": "^0.1.0",
     "@mdi/js": "^7.4.47",
     "maplibre-gl": "^5.4.0",
     "mitt": "^3.0.1",
     "file-saver": "^2.0.5"
   },
   "peerDependenciesMeta": {
-    "@ckpack/vue-color": {
-      "optional": true
-    },
     "file-saver": {
       "optional": true
     },

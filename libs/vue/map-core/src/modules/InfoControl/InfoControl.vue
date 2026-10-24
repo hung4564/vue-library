@@ -20,6 +20,7 @@ import {
 import { exportMapbox } from '@hungpvq/map-core/print';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemPopup } from '@hungpvq/vue-draggable';
+import { CopyButton } from '@hungpvq/vue-ui-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import {
   mdiCameraOutline,
@@ -29,8 +30,8 @@ import {
 import { computed, onUnmounted, ref, watch } from 'vue';
 
 import { defineProps, withDefaults } from 'vue';
+
 import MapControlButton from '../../components/MapControlButton.vue';
-import MapCopyButton from '../../components/MapCopyButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
@@ -277,7 +278,7 @@ async function onPasteGoTo() {
             >
               <div class="map-info-control__label">{{ row.label }}</div>
               <div class="map-info-control__value">{{ row.value }}</div>
-              <MapCopyButton
+              <CopyButton
                 class="map-info-control__copy"
                 :value="row.value"
                 :title="trans('map.info-control.copy')"

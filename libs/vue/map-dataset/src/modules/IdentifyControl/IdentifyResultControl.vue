@@ -42,7 +42,7 @@ import {
   useMap,
   useMapControl,
 } from '@hungpvq/vue-map-core';
-import { InputSelect } from '@hungpvq/vue-map-core/fields';
+import { InputSelect } from '@hungpvq/vue-ui-core';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCursorPointer, mdiSelect } from '@mdi/js';
 import type { MapMouseEvent } from 'maplibre-gl';

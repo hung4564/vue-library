@@ -7,7 +7,7 @@ import {
   resolveAttributeTableComponentRef,
 } from '@hungpvq/map-dataset/attribute-table';
 import { RegistryItem } from '@hungpvq/react-map-core';
-import { InputText } from '@hungpvq/react-map-core/fields';
+import { InputText } from '@hungpvq/react-ui-core';
 import type { ComponentType, KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 

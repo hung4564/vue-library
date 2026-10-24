@@ -24,6 +24,7 @@ export const MAP_DEBUG_DATASET_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'flattenDatasetTree',
   'getDatasetChildren',
   'getDatasetDebugApi',
+  'initDatasetDebug',
   'getMenuPartData',
   'getMenusRaw',
   'getParentChain',

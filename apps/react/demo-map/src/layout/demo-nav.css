@@ -5,28 +5,31 @@
   text-overflow: ellipsis;
 }
 
-.v-list {
+.aside-control__nav {
   display: flex;
   flex-direction: column;
-  padding-left: 0;
   margin: 0;
+  padding: 0.25rem 0;
   list-style: none;
 }
 
-.v-list-item {
-  padding: 1rem 0.5rem !important;
+.aside-control__item {
+  margin: 0;
+  padding: 0.75rem 1rem !important;
+  cursor: pointer;
 }
 
-.v-list-item > * {
+.aside-control__item > a {
   display: block;
   color: inherit;
   text-decoration: none;
 }
 
-.v-list-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+.aside-control__item:hover {
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
 }
 
-.v-list-item:active {
-  background-color: rgba(255, 255, 255, 0.2);
+.aside-control__item:active,
+.aside-control__item:has(a.active) {
+  background-color: color-mix(in srgb, currentColor 18%, transparent);
 }

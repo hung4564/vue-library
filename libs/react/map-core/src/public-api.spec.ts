@@ -42,7 +42,6 @@ export const REACT_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'MapContextProvider',
   'MapControlButton',
   'MapControlButtonGroupContext',
-  'MapCopyButton',
   'MapControlGroupButton',
   'MapTabs',
   'MeasurementControl',
@@ -99,23 +98,8 @@ export const REACT_MAP_CORE_EXPERIMENTAL_RUNTIME_EXPORTS = [] as const;
 
 /** Runtime exports of `@hungpvq/react-map-core/fields` (Experimental; may change in a minor). */
 export const REACT_MAP_CORE_FIELDS_RUNTIME_EXPORTS = [
-  'BaseCollapse',
-  'Collapse',
-  'DragDropFile',
-  'InputActionRow',
-  'InputCheckbox',
-  'InputChoose',
-  'InputColorPicker',
   'InputCrs',
-  'InputFile',
-  'InputSelect',
-  'InputSlider',
-  'InputText',
-  'InputTextArea',
-  'InputTextarea',
-  'MapButton',
   'MapCard',
-  'MapIcon',
   'MapImage',
   'MapRangeSlider',
 ] as const;

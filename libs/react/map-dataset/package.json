@@ -35,6 +35,7 @@
     "@hungpvq/map-dataset": "^1.2.0",
     "@hungpvq/react-draggable": "^1.4.0",
     "@hungpvq/react-map-core": "^1.2.0",
+    "@hungpvq/react-ui-core": "^0.1.0",
     "@hungpvq/shared": "^0.4.0",
     "@hungpvq/shared-log": "^0.1.0",
     "@mdi/js": "^7.4.47",

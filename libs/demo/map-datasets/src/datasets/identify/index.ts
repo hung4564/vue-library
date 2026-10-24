@@ -276,8 +276,14 @@ export function createIdentifyApiDetailDataset() {
         .setConfigFields(DEMO_API_FIELDS)
         .addMenus([createMenuItemToBoundActionForItem()]),
     onIdentifyBuilt: (identify) => {
-      identify.getList = async (_mapId, features) =>
-        fakeFetchIdentifyDetail(features) as Promise<never[]>;
+      type IdentifyWithList = IIdentifyView & {
+        getList?: (
+          mapId: string,
+          features: Parameters<typeof fakeFetchIdentifyDetail>[0],
+        ) => ReturnType<typeof fakeFetchIdentifyDetail>;
+      };
+      (identify as IdentifyWithList).getList = async (_mapId, features) =>
+        fakeFetchIdentifyDetail(features);
     },
   });
 }

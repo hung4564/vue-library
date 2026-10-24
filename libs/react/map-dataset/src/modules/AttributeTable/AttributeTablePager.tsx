@@ -3,7 +3,7 @@ import {
   type AttributeTablePagerProps,
 } from '@hungpvq/map-dataset/attribute-table';
 import { MapControlButton } from '@hungpvq/react-map-core';
-import { InputSelect } from '@hungpvq/react-map-core/fields';
+import { InputSelect } from '@hungpvq/react-ui-core';
 
 export function AttributeTablePager(props: AttributeTablePagerProps) {
   if (props.total <= 0) return null;

@@ -1,19 +1,22 @@
-import {
-  getDevtoolState,
-  subscribeDevtoolState,
-  type DevtoolErrorRecord,
-  type DevtoolTab,
-} from '@hungpvq/map-debug';
+import { ensureHungpvqDebugHost } from '@hungpvq/shared-log';
 import { useSyncExternalStore } from 'react';
 
-export type ErrorRecord = DevtoolErrorRecord;
+const host = ensureHungpvqDebugHost();
 
-export type { DevtoolTab };
+function subscribe(cb: () => void) {
+  return host.subscribe(cb);
+}
+
+function getSnapshot() {
+  return {
+    isOpen: host.isOpen(),
+    activeTab: host.getActiveTab(),
+  };
+}
 
 export function useDevtoolState() {
-  return useSyncExternalStore(
-    subscribeDevtoolState,
-    getDevtoolState,
-    getDevtoolState,
-  );
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }
+
+export type DevtoolTab = string;
+export type ErrorRecord = unknown;

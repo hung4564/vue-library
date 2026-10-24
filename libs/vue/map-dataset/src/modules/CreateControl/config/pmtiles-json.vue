@@ -122,11 +122,7 @@ import {
 } from '@hungpvq/map-dataset/create-control';
 import { closeVectorTileArchive } from '@hungpvq/map-dataset/vector-tile';
 import { MapControlButton, useLang, useMap } from '@hungpvq/vue-map-core';
-import {
-  DragDropFile,
-  InputActionRow,
-  InputText,
-} from '@hungpvq/vue-map-core/fields';
+import { DragDropFile, InputActionRow, InputText } from '@hungpvq/vue-ui-core';
 import { computed, ref } from 'vue';
 
 import DataSourceTabs from './DataSourceTabs.vue';

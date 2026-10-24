@@ -38,6 +38,7 @@
     "@hungpvq/shared": "^0.4.0",
     "@hungpvq/shared-log": "^0.1.0",
     "@hungpvq/vue-map-core": "^1.2.0",
+    "@hungpvq/vue-ui-core": "^0.1.0",
     "@hungpvq/map-core": "^1.2.0",
     "@hungpvq/map-dataset": "^1.2.0",
     "maplibre-gl": "^5.4.0",
