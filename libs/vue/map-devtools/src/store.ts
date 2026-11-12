@@ -1,19 +1,8 @@
-import { ensureHungpvqDebugHost } from '@hungpvq/shared-log';
-import { reactive, toRefs } from 'vue';
-
-const host = ensureHungpvqDebugHost();
-const state = reactive({
-  isOpen: host.isOpen(),
-  activeTab: host.getActiveTab(),
-});
-
-host.subscribe(() => {
-  state.isOpen = host.isOpen();
-  state.activeTab = host.getActiveTab();
-});
+import { useDebugHost } from '@hungpvq/vue-shared-log';
 
 export function useDevtoolState() {
-  return toRefs(state);
+  const { isOpen, activeTab } = useDebugHost();
+  return { isOpen, activeTab };
 }
 
 export type DevtoolTab = string;

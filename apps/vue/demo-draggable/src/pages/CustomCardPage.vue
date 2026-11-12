@@ -8,10 +8,10 @@ import {
   DraggableItemPopup,
   DraggableItemSideBar,
   ManagementControl,
-  useDragComponent,
 } from '@hungpvq/vue-draggable';
 import { onBeforeMount, onUnmounted, ref } from 'vue';
 
+import { useDragComponent } from '@hungpvq/draggable';
 import GlobalCard from '../components/custom-cards/GlobalCard.vue';
 import GlobalHeader from '../components/custom-cards/GlobalHeader.vue';
 import LocalCard from '../components/custom-cards/LocalCard.vue';

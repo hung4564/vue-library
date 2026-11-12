@@ -39,6 +39,9 @@ export default defineConfig({
         '@hungpvq/draggable',
         '@hungpvq/shared',
         '@hungpvq/shared-store',
+        '@hungpvq/shared-log',
+        '@hungpvq/vue-shared-log',
+        '@hungpvq/vue-ui-core',
         'vue-draggable-resizable',
       ],
       output: {
@@ -53,6 +56,7 @@ export default defineConfig({
     watch: false,
     globals: true,
     environment: 'jsdom',
+    setupFiles: ['vitest.setup.ts'],
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {

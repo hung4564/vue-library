@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { type LogRecord, MemoryLogDataStore } from '../../core';
+import { migrateDebugRecord, MemoryLogDataStore } from '../../core';
+import type { DebugRecord, LogData } from '../../core';
 
 import {
   buildRequestFlowSteps,
@@ -16,17 +17,17 @@ function entry(
   namespaces: string[],
   args: unknown[],
   ts = 1,
-): LogRecord {
-  return {
+): DebugRecord<LogData> {
+  return migrateDebugRecord({
     id,
     header: { ts, level, namespaces },
     args,
-  };
+  });
 }
 
-function storeOf(records: LogRecord[]) {
+function storeOf(records: unknown[]) {
   const store = new MemoryLogDataStore({ limit: 10_000 });
-  for (const r of [...records].reverse()) store.append(r);
+  for (const r of [...records].reverse()) store.append(migrateDebugRecord(r));
   return store;
 }
 
@@ -478,6 +479,28 @@ describe('log-helpers', () => {
     expect(emit.children[0]!.children.map((c) => c.label)).toEqual([
       'onDatasetB · END',
     ]);
+  });
+});
+
+describe('envelope migrate', () => {
+  it('rewrites root args + header extra into { id, header, data }', () => {
+    const next = migrateDebugRecord({
+      id: 'old-1',
+      header: {
+        ts: 10,
+        level: 'info',
+        namespaces: ['demo'],
+        actionId: 'a1',
+        mapId: 'm1',
+        flowKind: 'call',
+      },
+      args: ['hello', { n: 1 }],
+    });
+    expect(next.header.kind).toBe('log');
+    expect(next.header.actionId).toBe('a1');
+    expect(next.header.mapId).toBeUndefined();
+    expect(next.data.args).toEqual(['hello', { n: 1 }]);
+    expect(next.data.extra).toMatchObject({ mapId: 'm1', flowKind: 'call' });
   });
 });
 

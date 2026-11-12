@@ -1,6 +1,6 @@
 # @hungpvq/vue-shared-log
 
-Vue Devtools shell for `@hungpvq/shared-log`: Store, Live, Logs, Errors.
+Vue Devtools shell for `@hungpvq/shared-log`: Store, Live, Logs, Errors, plus `useLiveHookDebug`. Logs and Live share `{ id, header, data }`. Style: `@hungpvq/shared-log/style.css` (re-exported).
 
 ```ts
 import { installDebug } from '@hungpvq/shared-log';

@@ -43,16 +43,17 @@ import {
   watch,
 } from 'vue';
 
-import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
+import { useDragComponent } from '@hungpvq/draggable';
+import { useLiveHookDebug } from '@hungpvq/vue-shared-log';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
-import { useDragComponent } from '../../../store';
 
-useLiveHookDebug();
+useLiveHookDebug('sidebar-module');
 const slots = useSlots();
 const props = defineProps({
   containerId: { type: String, required: true },
   itemId: { type: String, required: true },
   location: { type: String, required: true },
+  highlight: { type: Boolean, default: false },
 });
 
 const c_containerId = computed(() => props.containerId);
@@ -114,6 +115,19 @@ onMounted(() => {
 watch([titleTo, afterTitleTo, contentTo, isCurrentShow], () => {
   nextTick(resolveTargets);
 });
+watch(
+  () => props.highlight,
+  (on) => {
+    const card =
+      contentEl.value?.closest('.hungpvq-draggable-card') ??
+      document
+        .querySelector(
+          `#sidebar-content-${c_containerId.value}-${props.location}`,
+        )
+        ?.closest('.hungpvq-draggable-card');
+    card?.classList.toggle('highlight', !!on);
+  },
+);
 watch(
   () => [cards.getComponentCard(), cards.getComponentCardHeader()],
   () => {

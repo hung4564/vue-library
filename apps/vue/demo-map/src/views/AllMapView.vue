@@ -53,11 +53,15 @@ import {
   LayerControl,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
-import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
+import {
+  DevtoolsControl,
+  installDatasetDebug,
+} from '@hungpvq/vue-map-devtools';
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { mdiPlus } from '@mdi/js';
 import { onMounted, onUnmounted, ref } from 'vue';
 
+import { registerDragDebugTab } from '@hungpvq/vue-draggable';
 import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import AsideControl from '../layout/aside-control.vue';
 
@@ -160,6 +164,14 @@ onMounted(() => {
   mq = window.matchMedia(MOBILE_MQ);
   syncMobile();
   mq.addEventListener('change', syncMobile);
+});
+const unregisterDragDebugTab = ref();
+onMounted(() => {
+  installDatasetDebug();
+  unregisterDragDebugTab.value = registerDragDebugTab();
+});
+onUnmounted(() => {
+  unregisterDragDebugTab.value?.();
 });
 function syncMobile() {
   isMobile.value = !!mq?.matches;

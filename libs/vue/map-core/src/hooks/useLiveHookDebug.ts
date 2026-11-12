@@ -1,6 +1,8 @@
-import { useLiveHookDebug as useSharedLiveHookDebug } from '@hungpvq/shared-log/vue';
+import { useLiveHookDebug as useSharedLiveHookDebug } from '@hungpvq/vue-shared-log';
 
-export function useLiveHookDebug(name: string, enabled = true): void {
-  if (!enabled) return;
-  useSharedLiveHookDebug(name);
+export function useLiveHookDebug(
+  name: string,
+  enabled = true,
+): string | undefined {
+  return useSharedLiveHookDebug(name, enabled);
 }

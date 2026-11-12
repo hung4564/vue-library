@@ -2,7 +2,11 @@ import { mount } from '@vue/test-utils';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, nextTick, ref } from 'vue';
 
-import { useDragContainer, useDragStore } from '../../store';
+import {
+  useBottomItem,
+  useDragContainer,
+  useDragStore,
+} from '@hungpvq/draggable';
 import DraggableItemBottom from './item-bottom.vue';
 import DraggableItemDrawer from './item-drawer.vue';
 import DraggableItemFloat from './item-float.vue';
@@ -150,7 +154,6 @@ describe('Stable item shells register into store', () => {
     const c = useDragStore().container[CID];
     expect(c.bottom.items).toEqual(['bot-a', 'bot-b']);
     expect(c.bottom.show).toBe('bot-b');
-    const { useBottomItem } = await import('../../store');
     useBottomItem(CID).registerBottomShow('bot-a', true);
     expect(c.bottom.show).toBe('bot-a');
     wrapper.unmount();

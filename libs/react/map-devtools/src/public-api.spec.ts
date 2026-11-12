@@ -5,8 +5,8 @@ import * as api from './index';
 export const REACT_MAP_DEVTOOLS_STABLE_RUNTIME_EXPORTS = [
   'Devtools',
   'DevtoolsControl',
+  'installDatasetDebug',
   'installDevtools',
-  'openMapDevtoolsErrors',
   'uninstallDevtools',
   'useDevtoolState',
 ] as const;

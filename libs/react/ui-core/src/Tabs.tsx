@@ -25,13 +25,10 @@ export function Tabs({
   const activeId = items.some((item) => item.id === value)
     ? value
     : (items[0]?.id ?? '');
-  const hasPanes =
-    withPanes && items.some((item) => panes?.[item.id] != null);
+  const hasPanes = withPanes && items.some((item) => panes?.[item.id] != null);
 
   return (
-    <div
-      className={`ui-tabs-root${hasPanes ? '' : ' ui-tabs-root--bar-only'}`}
-    >
+    <div className={`ui-tabs-root${hasPanes ? '' : ' ui-tabs-root--bar-only'}`}>
       <div
         className="ui-tabs"
         role="tablist"

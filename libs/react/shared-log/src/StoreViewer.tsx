@@ -1,9 +1,11 @@
 import { snapshotGlobalStore } from '@hungpvq/shared-log';
-import { BaseButton } from '@hungpvq/react-ui-core';
+import { BaseButton, TreeItem } from '@hungpvq/react-ui-core';
 import { useEffect, useState } from 'react';
 
 import { phaseLabel, runWithPhase, type ActionFeedbackPhase } from './feedback';
-import { TreeItem } from './TreeItem';
+import { DevtoolPanelCard } from './ui/DevtoolPanelCard';
+import { DevtoolPanelContainer } from './ui/DevtoolPanelContainer';
+import { DevtoolPanelToolbar } from './ui/DevtoolPanelToolbar';
 
 export function StoreViewer() {
   const [storeState, setStoreState] = useState<Record<string, unknown>>({});
@@ -19,22 +21,28 @@ export function StoreViewer() {
   }, []);
 
   return (
-    <div className="store-viewer">
-      <div className="store-viewer__toolbar">
-        <BaseButton
-          disabled={refreshPhase === 'loading'}
-          onClick={() =>
-            void runWithPhase(setRefreshPhase, () => {
-              setStoreState(snapshotGlobalStore());
-            })
+    <DevtoolPanelContainer
+      title={
+        <DevtoolPanelToolbar
+          actions={
+            <BaseButton
+              title="Refresh store snapshot"
+              disabled={refreshPhase === 'loading'}
+              onClick={() =>
+                void runWithPhase(setRefreshPhase, () => {
+                  setStoreState(snapshotGlobalStore());
+                })
+              }
+            >
+              {phaseLabel(refreshPhase, 'Refresh')}
+            </BaseButton>
           }
-        >
-          {phaseLabel(refreshPhase, 'Refresh')}
-        </BaseButton>
-      </div>
-      <div className="store-viewer__body">
+        />
+      }
+    >
+      <DevtoolPanelCard>
         <TreeItem data={storeState} />
-      </div>
-    </div>
+      </DevtoolPanelCard>
+    </DevtoolPanelContainer>
   );
 }

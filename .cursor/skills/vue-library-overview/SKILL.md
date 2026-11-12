@@ -35,7 +35,7 @@ Nx tags: `map`, `draggable`, `share`, `demo`, `e2e`, plus framework tags. `tag:m
 6. **Shared non-map utils** → `libs/share/*`.
 7. **Generic UI → always `*-ui-core` when possible.** Reuse `@hungpvq/vue-ui-core` / `@hungpvq/react-ui-core` first (`InputText`, `BaseButton`, `Icon`, `Tabs`, `CopyButton`, `Collapse`, fields, …). If a reusable, non-map control is missing, **add it there** (Vue + React parity, public-api lock) and import it — do **not** invent a local copy, re-export, or one-off SFC/TSX in map adapters, shared-log, or demos. Do **not** import generics from `*-map-core/fields`. Map-only fields (`InputCrs`, `MapRangeSlider`, `MapCard`, `MapImage`) stay on `*-map-core/fields`. Map chrome (`MapControlButton`, `MapTabs`) stays on `*-map-core` root (those compose ui-core; do not bypass them with raw `<button>` / `BaseButton` in map packages). Text copy uses ui-core `CopyButton` (not a map-core wrapper). Avoid reserved HTML names (`Button` → `BaseButton`).
 
-**Process / app stores:** always `@hungpvq/shared-store` (`getOrCreateStore` / `defineStore` / `GlobalStoreService` → `globalThis.$_hungpv_store`, process-wide SSR). Never invent a parallel bag on `@hungpvq/shared`.
+**Process / app stores:** always `@hungpvq/shared-store` (`getOrCreateStore` / `defineStore` / `GlobalStoreService` → `globalThis.$_hungpv_store`, process-wide SSR). Never invent a parallel bag on `@hungpvq/shared`. Module-level `let` / `const Map` for process state is forbidden — put it on an existing `ensure*` / `get*Store` bag (see **shared-store-state**).
 
 **Per-map protocol stores:** always `map:core[mapId]` via `registerMapDomainStoreFactory` / `ensureMapDomainStore` / `peekMapDomainStore` (see **map-domain-store** skill and `libs/map-core/core/docs/core/map-store.md`). Do not add new `getOrCreateStore(…).maps[mapId]` bags.
 
@@ -47,7 +47,7 @@ Do not put MapLibre business logic only in a Vue or React package if it belongs 
 
 ## Logging (`@hungpvq/shared-log`)
 
-**Always** log through `@hungpvq/shared-log`. Do **not** use raw `console.log` / `console.info` / `console.warn` / `console.debug` / `console.error` in libs, demos, or apps (except inside `@hungpvq/shared-log` adapters themselves). Package details: `libs/share/log/README.md`.
+**Always** log through `@hungpvq/shared-log`. Do **not** use raw `console.log` / `console.info` / `console.warn` / `console.debug` / `console.error` in libs, demos, or apps (except inside `@hungpvq/shared-log` adapters themselves). Package details: `libs/share/log/README.md`. `@hungpvq/shared-log` is **vanilla JS only** — Vue/React hooks (`useLiveHookDebug`, `LiveHookScope`) live in `@hungpvq/vue-shared-log` / `@hungpvq/react-shared-log` (see **shared-log-vanilla** skill).
 
 ### Logger Context Rule (required)
 
@@ -122,7 +122,7 @@ When adding a function, changing a business flow, or touching a logger, check:
 
 ### Devtools mount
 
-Mount `@hungpvq/vue-map-devtools` / `react-map-devtools` `<Devtools />` **inside** `<Map>` (`DraggableItemPopup`). Do not remount a global overlay shell. Generic tabs (Store / Live / Logs / Errors) come from `*-shared-log`; Dataset is pin-registered by map-devtools. Log store default is IndexedDB on `getLogDebugStore()` (`log:debug` in `@hungpvq/shared-log`). See `libs/map-core/core/docs/core/devtools.md`.
+Mount `@hungpvq/vue-map-devtools` / `react-map-devtools` **inside** `<Map>` (`DraggableItemPopup`). Do not remount a global overlay shell. Generic tabs (Store / Live / Logs / Errors) come from `*-shared-log`; Dataset is pin-registered by map-devtools. Log store default is IndexedDB on `getLogDebugStore()` (`log:debug` in `@hungpvq/shared-log`). See `libs/map-core/core/docs/core/devtools.md`.
 
 ## Common scripts (root `package.json`)
 
@@ -186,3 +186,5 @@ Tsconfig paths point `@hungpvq/react-*` at `libs/**/src`. React Vite demos must 
 - Release → `nx-release-workflow`
 - Docs sites → `map-docs-vitepress`
 - Tests → `map-testing`
+- Shared-log vanilla JS (no Vue/React in `libs/share/log`) → `shared-log-vanilla`
+- Process / local state on `ensure*` + `@hungpvq/shared-store` → `shared-store-state`

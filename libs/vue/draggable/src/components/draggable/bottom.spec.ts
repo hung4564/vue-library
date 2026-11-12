@@ -2,7 +2,11 @@ import { mount } from '@vue/test-utils';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { defineComponent, nextTick, ref } from 'vue';
 
-import { useDragContainer, useDragStore } from '../../store';
+import {
+  useBottomItem,
+  useDragContainer,
+  useDragStore,
+} from '@hungpvq/draggable';
 import BottomContainer from './bottom/bottom-container.vue';
 import DraggableItemBottom from './item-bottom.vue';
 
@@ -149,7 +153,6 @@ describe('BottomContainer portal hosts', () => {
       document.getElementById(`bottom-content-${CID}`)?.textContent,
     ).toContain('A body');
 
-    const { useBottomItem } = await import('../../store');
     useBottomItem(CID).registerBottomShow('bot-b', true);
     await nextTick();
     await new Promise((r) => setTimeout(r, 0));

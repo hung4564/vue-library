@@ -59,7 +59,6 @@ import {
 import { MapMouseEvent } from 'maplibre-gl';
 import { computed, nextTick, reactive, watch } from 'vue';
 
-import { defineProps, withDefaults } from 'vue';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import {

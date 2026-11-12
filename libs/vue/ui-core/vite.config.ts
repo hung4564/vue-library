@@ -38,12 +38,7 @@ export default defineConfig({
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      external: [
-        'vue',
-        '@ckpack/vue-color',
-        '@jamescoyle/vue-icon',
-        '@mdi/js',
-      ],
+      external: ['vue', '@ckpack/vue-color', '@jamescoyle/vue-icon', '@mdi/js'],
       output: {
         assetFileNames: 'style.css',
         globals: { vue: 'Vue' },

@@ -1,6 +1,7 @@
+import { extraString, extraValue, recordArgs } from '../record';
 import { noopLogDataStore } from '../store/noop-store';
 import type { LogDataStore } from '../store/types';
-import type { LogAdapter, LogLevel, LogRecord } from '../types';
+import type { DebugRecord, LogAdapter, LogData, LogLevel } from '../types';
 
 const LEVEL_STYLE: Record<LogLevel, string> = {
   debug: 'color:#9aa0a6;font-weight:600',
@@ -12,25 +13,37 @@ const LEVEL_STYLE: Record<LogLevel, string> = {
 const META_STYLE = 'color:#80868b;font-weight:400';
 const RESET_STYLE = 'color:inherit;font-weight:400';
 
-function formatMeta(record: LogRecord): string {
+function formatMeta(record: DebugRecord<LogData>): string {
   const { header } = record;
   const ns = header.namespaces.map((n) => `[${n}]`).join('');
   const parts: string[] = [ns];
-  if (header.index != null) parts.push(`[#${header.index}]`);
-  if (header.mapId) parts.push(`[mapId=${header.mapId}]`);
-  if (header.actionId) parts.push(`[action=${header.actionId}]`);
-  if (header.requestId) parts.push(`[httpReq=${header.requestId}]`);
-  if (header.span) parts.push(`[span=${header.span}]`);
-  if (header.fn) parts.push(`[fn=${header.fn}]`);
-  if (header.eventName) parts.push(`[event=${header.eventName}]`);
-  if (header.spanId) parts.push(`[spanId=${header.spanId}]`);
-  if (header.parentSpanId) parts.push(`[parentSpan=${header.parentSpanId}]`);
-  if (header.durationMs != null) parts.push(`[${header.durationMs}ms]`);
-  if (header.outcome) parts.push(`[${header.outcome}]`);
-  if (header.control) parts.push(`[control=${header.control}]`);
-  if (header.menuId) parts.push(`[menuId=${header.menuId}]`);
-  if (header.menuName) parts.push(`[menu=${header.menuName}]`);
-  if (header.datasetId) parts.push(`[datasetId=${header.datasetId}]`);
+  const push = (text: string | undefined) => {
+    if (text) parts.push(text);
+  };
+  if (header.index != null) push(`[#${header.index}]`);
+  const mapId = extraString(record, 'mapId');
+  if (mapId) push(`[mapId=${mapId}]`);
+  if (header.actionId) push(`[action=${header.actionId}]`);
+  const requestId = extraString(record, 'requestId');
+  if (requestId) push(`[httpReq=${requestId}]`);
+  if (header.span) push(`[span=${header.span}]`);
+  if (header.fn) push(`[fn=${header.fn}]`);
+  const eventName = extraString(record, 'eventName');
+  if (eventName) push(`[event=${eventName}]`);
+  if (header.spanId) push(`[spanId=${header.spanId}]`);
+  if (header.parentSpanId) push(`[parentSpan=${header.parentSpanId}]`);
+  const durationMs = extraValue(record, 'durationMs');
+  if (durationMs != null) push(`[${durationMs}ms]`);
+  const outcome = extraString(record, 'outcome');
+  if (outcome) push(`[${outcome}]`);
+  const control = extraString(record, 'control');
+  if (control) push(`[control=${control}]`);
+  const menuId = extraString(record, 'menuId');
+  if (menuId) push(`[menuId=${menuId}]`);
+  const menuName = extraString(record, 'menuName');
+  if (menuName) push(`[menu=${menuName}]`);
+  const datasetId = extraString(record, 'datasetId');
+  if (datasetId) push(`[datasetId=${datasetId}]`);
   return parts.filter(Boolean).join('');
 }
 
@@ -45,21 +58,17 @@ export class ConsoleAdapter implements LogAdapter {
     return this.store;
   }
 
-  log(record: LogRecord): void {
+  log(record: DebugRecord<LogData>): void {
     void this.store.append(record);
-    const level = record.header.level;
+    const level = record.header.level ?? 'info';
     const levelTag = `[${level.toUpperCase()}]`;
     const meta = formatMeta(record);
     const fn = console[level].bind(console);
+    const args = recordArgs(record);
     if (meta) {
-      fn(
-        `%c${levelTag}%c${meta}`,
-        LEVEL_STYLE[level],
-        META_STYLE,
-        ...record.args,
-      );
+      fn(`%c${levelTag}%c${meta}`, LEVEL_STYLE[level], META_STYLE, ...args);
     } else {
-      fn(`%c${levelTag}%c`, LEVEL_STYLE[level], RESET_STYLE, ...record.args);
+      fn(`%c${levelTag}%c`, LEVEL_STYLE[level], RESET_STYLE, ...args);
     }
   }
 }

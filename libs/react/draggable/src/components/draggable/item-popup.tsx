@@ -4,6 +4,8 @@ import {
   restoreFocus,
   trapTabKey,
 } from '@hungpvq/draggable';
+import { useLiveHookDebug } from '@hungpvq/react-shared-log';
+import { trackLiveEventAction } from '@hungpvq/shared-log';
 import {
   type MouseEvent,
   type ReactNode,
@@ -15,6 +17,7 @@ import {
 } from 'react';
 import { Rnd } from 'react-rnd';
 
+import { useDragLayout } from '@hungpvq/draggable';
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,
@@ -29,7 +32,6 @@ import {
   useShow,
 } from '../../hook';
 import { useContainerSize } from '../../hook/useContainerSize';
-import { useDragLayout } from '../../store';
 import { DragButton } from '../parts/DragButton';
 
 const STICKS_TO_RND: Record<string, string> = {
@@ -121,12 +123,19 @@ export function DraggableItemPopup({
   afterTitle,
 }: DraggableItemPopupProps) {
   const containerId = useContainerId(propContainerId);
+  const liveId = useLiveHookDebug('DraggableItemPopup');
+  const onLog = useMemo(
+    () => trackLiveEventAction('DraggableItemPopup', liveId),
+    [liveId],
+  );
   const { show, setShow, open, close } = useShow(
     { show: propShow },
     {
       'update:show': onUpdateShow,
       close: onClose,
     },
+    undefined,
+    onLog,
   );
   const { zIndex, itemId } = useInitItem(
     containerId,

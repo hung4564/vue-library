@@ -1,5 +1,12 @@
-import type { LogRecord } from '../../core';
 import { compareLogOrder, logSpanId, rootNamespace } from '../../core';
+import {
+  extraString,
+  isLiveData,
+  isLogData,
+  recordArgs,
+  recordExtra,
+} from '../../core/record';
+import type { DebugRecord } from '../../core/types';
 
 export type LevelFilter = 'all' | 'error' | 'warn' | 'info' | 'debug';
 
@@ -24,7 +31,7 @@ function isObject(val: unknown): boolean {
   return val !== null && typeof val === 'object';
 }
 
-function namespaceKey(log: LogRecord): string {
+function namespaceKey(log: DebugRecord): string {
   return log.header.namespaces.join(':');
 }
 
@@ -32,19 +39,27 @@ export function formatLogTime(ts: number): string {
   return new Date(ts).toLocaleTimeString();
 }
 
-export function textMessage(log: LogRecord): string {
-  return log.args
-    .filter((arg) => !isObject(arg))
-    .map(formatArg)
-    .join(' ');
+export function textMessage(log: DebugRecord): string {
+  if (isLogData(log.data)) {
+    return log.data.args
+      .filter((arg) => !isObject(arg))
+      .map(formatArg)
+      .join(' ');
+  }
+  if (isLiveData(log.data)) {
+    return `${log.data.event} · ${log.data.component}`;
+  }
+  return '';
 }
 
-export function objectArgs(log: LogRecord): unknown[] {
-  return log.args.filter((arg) => arg !== null && typeof arg === 'object');
+export function objectArgs(log: DebugRecord): unknown[] {
+  return recordArgs(log).filter(
+    (arg) => arg !== null && typeof arg === 'object',
+  );
 }
 
 /** Safe JSON for detail/copy — tolerates cycles and non-POJO values. */
-export function stringifyLogRecord(log: LogRecord): string {
+export function stringifyDebugRecord(log: DebugRecord): string {
   const seen = new WeakSet<object>();
   try {
     return JSON.stringify(
@@ -91,20 +106,25 @@ export type RequestFlowStep = {
   phase?: string;
 };
 
-export function buildRequestFlowSteps(logs: LogRecord[]): RequestFlowStep[] {
+export function buildRequestFlowSteps(logs: DebugRecord[]): RequestFlowStep[] {
   if (logs.length === 0) return [];
   const t0 = logs[0]!.header.ts;
   return logs.map((log) => toRequestFlowStep(log, t0));
 }
 
-function toRequestFlowStep(log: LogRecord, t0: number): RequestFlowStep {
+function toRequestFlowStep(log: DebugRecord, t0: number): RequestFlowStep {
+  const extra = recordExtra(log);
   const message = textMessage(log);
   const namespace = rootNamespace(log) || namespaceKey(log);
-  const menu = log.header.menuName || log.header.menuId;
-  const flowKind = log.header.flowKind;
-  const eventName = log.header.eventName;
+  const menu = extraString(log, 'menuName') || extraString(log, 'menuId');
+  const flowKind = extraString(log, 'flowKind');
+  const eventName = extraString(log, 'eventName');
   const fn = log.header.fn;
   const spanId = logSpanId(log);
+  const durationMs =
+    typeof extra['durationMs'] === 'number' ? extra['durationMs'] : undefined;
+  const flowDepth =
+    typeof extra['flowDepth'] === 'number' ? extra['flowDepth'] : 0;
 
   let phase: string | undefined;
   if (message === 'START' || message === 'END' || message === 'ERROR') {
@@ -133,7 +153,7 @@ function toRequestFlowStep(log: LogRecord, t0: number): RequestFlowStep {
     label =
       fn ||
       log.header.span ||
-      log.header.control ||
+      extraString(log, 'control') ||
       menu ||
       namespace ||
       '(log)';
@@ -150,16 +170,16 @@ function toRequestFlowStep(log: LogRecord, t0: number): RequestFlowStep {
     label,
     span: log.header.span,
     fn,
-    control: log.header.control,
+    control: extraString(log, 'control'),
     menu,
     flowKind,
     eventName,
-    parentFn: log.header.parentFn,
+    parentFn: extraString(log, 'parentFn'),
     spanId,
     parentSpanId: log.header.parentSpanId,
-    durationMs: log.header.durationMs,
-    outcome: log.header.outcome,
-    flowDepth: log.header.flowDepth ?? 0,
+    durationMs,
+    outcome: extraString(log, 'outcome'),
+    flowDepth,
     phase,
   };
 }
@@ -171,7 +191,9 @@ export type RequestFlowTreeNode = RequestFlowStep & {
 /**
  * Nest action logs into a call / emit / handler tree.
  */
-export function buildRequestFlowTree(logs: LogRecord[]): RequestFlowTreeNode[] {
+export function buildRequestFlowTree(
+  logs: DebugRecord[],
+): RequestFlowTreeNode[] {
   if (logs.length === 0) return [];
   const ordered = logs.slice().sort(compareLogOrder);
   const t0 = ordered[0]!.header.ts;

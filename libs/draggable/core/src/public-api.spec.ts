@@ -18,6 +18,16 @@ export const DRAGGABLE_STABLE_RUNTIME_EXPORTS = [
   'createEmptyItemGroup',
   'createEmptySideBar',
   'itemTypeToGroup',
+  // debug
+  'applyDragDebugAction',
+  'captureDragOrigin',
+  'describeDragOrigin',
+  'dragOriginKey',
+  'formatDragOrigin',
+  'isInternalDragOriginName',
+  'listDragDebugContainers',
+  'listDragDebugItems',
+  'registerDragItemOrigin',
   // store
   'configureDragStore',
   'useBottomItem',

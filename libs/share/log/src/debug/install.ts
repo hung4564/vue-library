@@ -1,6 +1,7 @@
 import { ConsoleAdapter, type LogAdapter, LoggerFactory } from '../core';
 import { ensureHungpvqDebugHost } from './host';
 import { installWindowErrorCapture } from './error-bus';
+import { installNavigateLogClear } from './navigate-clear';
 import {
   addDebugCleanup,
   configureDebugLogStore,
@@ -8,6 +9,7 @@ import {
   type DebugInstallOptions,
   getLogDebugStore,
   runDebugCleanup,
+  setClearLogsOnNavigate,
 } from './store';
 
 export function isDebugInstalled(): boolean {
@@ -22,7 +24,9 @@ export function installDebugCore(devtoolLogAdapter: LogAdapter): () => void {
   getLogDebugStore().installed = true;
   ensureHungpvqDebugHost();
   const log = logger.createLogger().setNamespace('shared-log:debug');
-  log.with({ fn: 'installDebug', span: 'init' }).debug('shared-log debug installed');
+  log
+    .with({ fn: 'installDebug', span: 'init' })
+    .debug('shared-log debug installed');
   const uninstallCapture = installWindowErrorCapture();
   return () => {
     log
@@ -37,10 +41,29 @@ export function installDebug(options?: DebugInstallOptions): void {
   if (options?.logStore !== undefined) {
     configureDebugLogStore(options.logStore);
   }
+  if (options?.clearOnNavigate !== undefined) {
+    setClearLogsOnNavigate(options.clearOnNavigate);
+  }
   runDebugCleanup();
   addDebugCleanup(installDebugCore(createDebugLogAdapter()));
+  addDebugCleanup(installNavigateLogClear());
 }
 
 export function uninstallDebug(): void {
   runDebugCleanup();
+  const bag = getLogDebugStore();
+  const debugAdapter = bag.logAdapter;
+  bag.logAdapter = undefined;
+  const factory = LoggerFactory.getInstance();
+  const remaining = factory
+    .getAdapters()
+    .filter((adapter) => adapter !== debugAdapter);
+  factory.clearAdapters();
+  if (!remaining.some((adapter) => adapter instanceof ConsoleAdapter)) {
+    remaining.unshift(new ConsoleAdapter());
+  }
+  for (const adapter of remaining) factory.addAdapter(adapter);
+  if (bag.logDataStore) {
+    factory.setDataStore(bag.logDataStore);
+  }
 }

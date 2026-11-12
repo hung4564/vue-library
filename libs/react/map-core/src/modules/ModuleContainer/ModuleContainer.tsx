@@ -14,13 +14,15 @@ import React, {
   useEffect,
   useLayoutEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
 
+import { LiveHookScope } from '@hungpvq/react-shared-log';
+
 import { MapAutoHostButtons } from '../../components/MapAutoHostButtons';
 import { useMapContext } from '../../context/MapContext';
+import { useLiveHookDebug } from '../../hooks/useLiveHookDebug';
 
 export interface ModuleContainerProps {
   mapId?: string;
@@ -166,6 +168,7 @@ export function ModuleContainer({
     needDragHost ? draggableSelector : null,
   );
 
+  const liveId = useLiveHookDebug('ModuleContainer');
   const btnClassName = moduleBtnContainerClassName(controlId);
 
   const btnContent = hasBtn ? (
@@ -179,28 +182,30 @@ export function ModuleContainer({
   ) : null;
 
   return (
-    <div className="module__container">
-      {needBtnHost && btnPortalTarget
-        ? createPortal(
-            <>
-              {btnContent ? (
-                <div
-                  className={btnClassName}
-                  style={{ order: controlOrder }}
-                  data-map-control-id={controlId || undefined}
-                >
-                  {btnContent}
-                </div>
-              ) : null}
-              {btnOutside}
-            </>,
-            btnPortalTarget,
-          )
-        : null}
-      {children}
-      {needDragHost && draggablePortalTarget && draggable
-        ? createPortal(draggable(bindDrag), draggablePortalTarget)
-        : null}
-    </div>
+    <LiveHookScope id={liveId}>
+      <div className="module__container">
+        {needBtnHost && btnPortalTarget
+          ? createPortal(
+              <>
+                {btnContent ? (
+                  <div
+                    className={btnClassName}
+                    style={{ order: controlOrder }}
+                    data-map-control-id={controlId || undefined}
+                  >
+                    {btnContent}
+                  </div>
+                ) : null}
+                {btnOutside}
+              </>,
+              btnPortalTarget,
+            )
+          : null}
+        {children}
+        {needDragHost && draggablePortalTarget && draggable
+          ? createPortal(draggable(bindDrag), draggablePortalTarget)
+          : null}
+      </div>
+    </LiveHookScope>
   );
 }

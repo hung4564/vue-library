@@ -4,6 +4,8 @@ import {
   setModalSiblingsInert,
   trapTabKey,
 } from '@hungpvq/draggable';
+import { useLiveHookDebug } from '@hungpvq/react-shared-log';
+import { trackLiveEventAction } from '@hungpvq/shared-log';
 import {
   ReactNode,
   useCallback,
@@ -15,6 +17,7 @@ import {
 import { createPortal } from 'react-dom';
 import { Rnd } from 'react-rnd';
 
+import { useDragLayout } from '@hungpvq/draggable';
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,
@@ -27,7 +30,6 @@ import {
   useInitItem,
   useShow,
 } from '../../hook';
-import { useDragLayout } from '../../store';
 import { DragButton } from '../parts/DragButton';
 
 const MODAL_Z_INDEX = 10000;
@@ -122,12 +124,19 @@ export function DraggableItemModal({
   afterTitle,
 }: DraggableModalProps) {
   const containerId = useContainerId(propContainerId);
+  const liveId = useLiveHookDebug('DraggableItemModal');
+  const onLog = useMemo(
+    () => trackLiveEventAction('DraggableItemModal', liveId),
+    [liveId],
+  );
   const { show, setShow, open, close } = useShow(
     { show: propShow },
     {
       'update:show': onUpdateShow,
       close: onClose,
     },
+    undefined,
+    onLog,
   );
   const { itemId, zIndex } = useInitItem(
     containerId,

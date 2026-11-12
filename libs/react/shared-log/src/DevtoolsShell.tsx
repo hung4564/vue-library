@@ -8,7 +8,12 @@ import { useDebugHost } from './use-debug-host';
 registerBuiltinDebugTabs();
 
 function tabLabel(tab: DebugTabRegistration): string {
-  return typeof tab.label === 'function' ? tab.label() : tab.label;
+  const base = typeof tab.label === 'function' ? tab.label() : tab.label;
+  const badge = tab.badge?.();
+  if (badge == null || badge === '' || String(base).includes(String(badge))) {
+    return base;
+  }
+  return `${base} (${badge})`;
 }
 
 export function DevtoolsShell({

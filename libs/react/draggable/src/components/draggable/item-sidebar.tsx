@@ -1,10 +1,13 @@
 import type { LocationSideBar } from '@hungpvq/draggable';
-import type { ComponentType, ReactNode } from 'react';
+import { trackLiveEventAction } from '@hungpvq/shared-log';
+import { useLiveHookDebug } from '@hungpvq/react-shared-log';
+import { type ComponentType, type ReactNode, useMemo } from 'react';
 
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,
   ShareHeaderComponent,
+  useHighlight,
   useInitAction,
   useInitSidebar,
   useShow,
@@ -52,12 +55,19 @@ export function DraggableItemSideBar({
   children,
 }: DraggableItemSideBarProps) {
   const containerId = useContainerId(propContainerId);
+  const liveId = useLiveHookDebug('DraggableItemSideBar');
+  const onLog = useMemo(
+    () => trackLiveEventAction('DraggableItemSideBar', liveId),
+    [liveId],
+  );
   const { show, setShow, open, close } = useShow(
     { show: propShow },
     {
       'update:show': onUpdateShow,
       close: onClose,
     },
+    undefined,
+    onLog,
   );
   const c_location =
     propLocation != null ? propLocation : right ? 'right' : 'left';
@@ -72,9 +82,11 @@ export function DraggableItemSideBar({
     },
     stableId,
   );
+  const { isHighlight, setHighLight } = useHighlight();
   useInitAction(containerId, itemId, {
     open,
     close,
+    setHighLight,
   });
 
   return (
@@ -84,6 +96,7 @@ export function DraggableItemSideBar({
       itemId={itemId}
       title={titleNode ?? title}
       afterTitle={afterTitle}
+      highlight={isHighlight}
     >
       {children}
     </SidebarModule>

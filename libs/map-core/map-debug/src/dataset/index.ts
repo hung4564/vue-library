@@ -6,6 +6,7 @@
 import './menu-debug-item';
 
 export {
+  clearDatasetDebug,
   getDatasetDebugApi,
   initDatasetDebug,
   uninstallDatasetDebug,
@@ -18,6 +19,8 @@ export {
   listTypesInSubtree,
   suggestPartTypes,
 } from './describe';
+export { installDatasetDebugMenus } from './menu-debug-item';
+
 export type { CommonDatasetPartType } from './describe';
 export {
   debugFindAllByType,
@@ -31,7 +34,6 @@ export {
   inspectDataset,
   listTypesInStoreRoots,
 } from './inspect';
-export { installDatasetDebug } from './install';
 export {
   captureDatasetFromMenu,
   createMenuItemDebugDataset,

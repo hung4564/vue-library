@@ -6,56 +6,44 @@ export type LogFlowKind = 'call' | 'emit' | 'handler';
 /** Frame close status for Flow filtering. */
 export type LogOutcome = 'ok' | 'error' | 'abort';
 
+export type Framework = 'vue' | 'react' | 'core';
+
+export type DebugKind = 'log' | 'live';
+
 /**
- * Ambient / bound fields merged into every log header.
+ * Ambient / bound fields merged when a log is written.
+ * Header keeps correlation keys; everything else is packed into `data.extra`.
  *
  * Correlation IDs:
- * - `actionId` — one user/action (replaces former action-level `requestId`)
- * - `spanId` — one operation frame (replaces former `functionId`)
+ * - `actionId` — one user/action
+ * - `spanId` — one operation frame
  * - `parentSpanId` — parent frame's `spanId` when nested
  * - `requestId` — HTTP request only (`trackRequest`)
  */
 export type LogContext = {
-  /** User/action correlation id. */
   actionId?: string;
-  /** Operation frame id (START/END pairing). */
   spanId?: string;
-  /** Parent frame's `spanId` when nested under `runWithFunctionLog`. */
   parentSpanId?: string;
-  /** HTTP request id — set only by `trackRequest`. */
   requestId?: string;
   mapId?: string;
   span?: string;
   fn?: string;
-  /** Dataset UI host control id (e.g. layer-control, identify). */
   control?: string;
-  /** Menu action id when started from a menu click. */
   menuId?: string;
-  /** Menu action display name. */
   menuName?: string;
-  /** Dataset / layer id related to the action. */
   datasetId?: string;
-  /** Dataset / layer display name when known. */
   datasetName?: string;
-  /** Dataset type string when known. */
   datasetType?: string;
-  /** Mitt / bus event name for emit or handler logs. */
   eventName?: string;
-  /** Call / mitt emit / mitt handler — for Request Flow reconstruction. */
   flowKind?: LogFlowKind;
-  /** Nesting depth (0 = root). */
   flowDepth?: number;
-  /** Parent function name (label). */
   parentFn?: string;
-  /** Elapsed ms for a closed frame or HTTP call. */
   durationMs?: number;
-  /** Frame / request outcome. */
   outcome?: LogOutcome;
   errorName?: string;
   errorMessage?: string;
   httpMethod?: string;
   httpStatus?: number;
-  /** Sanitized URL (no secrets). */
   httpUrl?: string;
   featureCount?: number;
   hitCount?: number;
@@ -63,27 +51,56 @@ export type LogContext = {
   check?: string;
 };
 
-export type LogHeader = {
+/** Shared envelope header for Logs and Live. */
+export type DebugHeader = {
   ts: number;
-  level: LogLevel;
+  kind: DebugKind;
   namespaces: string[];
-  /**
-   * Hierarchical method write order (`1`, `1.1`, `2`). Prefer over `ts`
-   * when sorting within one action — many logs share the same millisecond.
-   */
   index?: string;
-} & LogContext;
+  actionId?: string;
+  spanId?: string;
+  parentSpanId?: string;
+  fn?: string;
+  span?: string;
+  level?: LogLevel;
+};
 
-export type LogRecord = {
-  /** Stable id for UI selection / Flow (minted when the record is built). */
-  id: string;
-  header: LogHeader;
+export type LogData = {
   args: unknown[];
+  extra?: Record<string, unknown>;
+};
+
+export type LiveTraceEventName =
+  | 'component:mount'
+  | 'component:render'
+  | 'component:update'
+  | 'component:unmount';
+
+export type LiveTraceChange = {
+  source: string;
+  key: string;
+  previousValue: unknown;
+  nextValue: unknown;
+};
+
+export type LiveData = {
+  event: LiveTraceEventName;
+  instanceId: string;
+  component: string;
+  framework: Framework;
+  parentId?: string;
+  renderCount?: number;
+  changes?: LiveTraceChange[];
+};
+
+export type DebugRecord<TData = unknown> = {
+  id: string;
+  header: DebugHeader;
+  data: TData;
 };
 
 export interface LogAdapter {
-  log(record: LogRecord): void;
+  log(record: DebugRecord<LogData>): void;
   /** When true, receives logs even when logging is globally disabled */
   alwaysOn?: boolean;
 }
-export type Framework = 'vue' | 'react' | 'core';

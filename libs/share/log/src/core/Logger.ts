@@ -1,6 +1,13 @@
 import { captureLogCallerSite } from './caller';
 import { LoggerFactory } from './LoggerFactory';
-import type { LogAdapter, LogContext, LogLevel, LogRecord } from './types';
+import { splitLogContext } from './record';
+import type {
+  DebugRecord,
+  LogAdapter,
+  LogContext,
+  LogData,
+  LogLevel,
+} from './types';
 import { getUUIDv4 } from './uuid';
 
 type LoggerOptions = {
@@ -86,28 +93,33 @@ export class Logger {
     return [...base, ...this.extraNamespaces];
   }
 
-  private buildRecord(level: LogLevel, args: unknown[]): LogRecord {
+  private buildRecord(level: LogLevel, args: unknown[]): DebugRecord<LogData> {
     const nsList = this.getSortedNamespaces();
     const filteredNs = nsList.filter((x) => !this.namespaceMapHide.get(x));
     const ambient = this.getAmbientContext() ?? {};
     const index = LoggerFactory.getInstance().nextMethodIndex();
-    const header: LogRecord['header'] = {
-      ts: Date.now(),
-      level,
-      namespaces: filteredNs,
-      ...ambient,
-      ...this.bound,
-      // Always last — bound/ambient must not overwrite hierarchical index.
-      index,
-    };
-    if (!header.actionId) {
-      header.actionId = getUUIDv4();
-    }
-    if (!header.fn) {
+    const merged: LogContext = { ...ambient, ...this.bound };
+    if (!merged.actionId) merged.actionId = getUUIDv4();
+    if (!merged.fn) {
       const site = captureLogCallerSite();
-      if (site.fn) header.fn = site.fn;
+      if (site.fn) merged.fn = site.fn;
     }
-    return { id: getUUIDv4(), header, args };
+    const { header: ctxHeader, extra } = splitLogContext(merged);
+    return {
+      id: getUUIDv4(),
+      header: {
+        ts: Date.now(),
+        kind: 'log',
+        level,
+        namespaces: filteredNs,
+        ...ctxHeader,
+        index,
+      },
+      data: {
+        args,
+        extra: Object.keys(extra).length ? extra : undefined,
+      },
+    };
   }
 
   private log(level: LogLevel, ...args: unknown[]) {

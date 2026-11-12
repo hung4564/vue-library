@@ -126,9 +126,15 @@ function onDrop(event: DragEvent) {
 <style lang="scss" scoped>
 .ddf {
   &__active {
-    border-color: var(--ui-accent-color, var(--map-accent-color, #1a73e8)) !important;
+    border-color: var(
+      --ui-accent-color,
+      var(--map-accent-color, #1a73e8)
+    ) !important;
     .ddf__icon {
-      color: var(--ui-accent-color, var(--map-accent-color, #1a73e8)) !important;
+      color: var(
+        --ui-accent-color,
+        var(--map-accent-color, #1a73e8)
+      ) !important;
     }
   }
   &__area {

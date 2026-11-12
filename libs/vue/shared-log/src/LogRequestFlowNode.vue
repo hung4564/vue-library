@@ -81,6 +81,8 @@ function toggleExpand(event: MouseEvent) {
       'log-request-flow__frame': isFrame,
       'log-request-flow__frame--open':
         isFrame && expanded && frameParts.body.length > 0,
+      'log-request-flow__frame--has-end':
+        isFrame && frameParts.closers.length > 0,
     }"
     :style="{ '--flow-depth': String(depthVal) }"
   >
@@ -90,6 +92,8 @@ function toggleExpand(event: MouseEvent) {
       role="button"
       tabindex="0"
       @click="emit('select', node.id)"
+      @keydown.enter="emit('select', node.id)"
+      @keydown.space.prevent="emit('select', node.id)"
     >
       <button
         v-if="canToggle"
@@ -106,28 +110,40 @@ function toggleExpand(event: MouseEvent) {
       <span class="log-request-flow__delta">{{
         formatFlowDelta(node.deltaMs)
       }}</span>
+      <span class="log-request-flow__rail">
+        <span class="log-request-flow__dot" />
+      </span>
       <span class="log-request-flow__card">
-        <span class="log-request-flow__label">{{ node.label }}</span>
+        <span class="log-request-flow__title">
+          <span
+            v-if="node.phase && node.phase !== 'mid'"
+            class="log-request-flow__kind"
+            >{{ node.phase }}</span
+          >
+          <span class="log-request-flow__label">{{ node.label }}</span>
+        </span>
         <span class="log-request-flow__sub">
           {{ formatLogTime(node.ts) }}
           <template v-if="node.fn"> · {{ node.fn }}</template>
         </span>
       </span>
     </div>
-    <ol
+    <div
       v-if="isFrame && expanded && frameParts.body.length > 0"
-      class="log-request-flow__children"
+      class="log-request-flow__frame-body"
     >
-      <LogRequestFlowNode
-        v-for="child in frameParts.body"
-        :key="child.id"
-        :node="child"
-        :depth="depthVal + 1"
-        :flat="flat"
-        :active-log-id="activeLogId"
-        @select="emit('select', $event)"
-      />
-    </ol>
+      <ol class="log-request-flow__children">
+        <LogRequestFlowNode
+          v-for="child in frameParts.body"
+          :key="child.id"
+          :node="child"
+          :depth="depthVal + 1"
+          :flat="flat"
+          :active-log-id="activeLogId"
+          @select="emit('select', $event)"
+        />
+      </ol>
+    </div>
     <ol
       v-if="!isFrame && canToggle && expanded"
       class="log-request-flow__children"
@@ -137,6 +153,34 @@ function toggleExpand(event: MouseEvent) {
         :key="child.id"
         :node="child"
         :depth="depthVal + 1"
+        :flat="flat"
+        :active-log-id="activeLogId"
+        @select="emit('select', $event)"
+      />
+    </ol>
+    <ol
+      v-if="isFrame && frameParts.closers.length > 0"
+      class="log-request-flow__children"
+    >
+      <LogRequestFlowNode
+        v-for="child in frameParts.closers"
+        :key="child.id"
+        :node="child"
+        :depth="depthVal"
+        :flat="flat"
+        :active-log-id="activeLogId"
+        @select="emit('select', $event)"
+      />
+    </ol>
+    <ol
+      v-if="isFrame && frameParts.after.length > 0"
+      class="log-request-flow__children"
+    >
+      <LogRequestFlowNode
+        v-for="child in frameParts.after"
+        :key="child.id"
+        :node="child"
+        :depth="depthVal"
         :flat="flat"
         :active-log-id="activeLogId"
         @select="emit('select', $event)"

@@ -1,4 +1,4 @@
-import type { LogRecord } from '../types';
+import type { DebugRecord, LogData } from '../types';
 import { matchLogRecords } from './query';
 import type { LogDataStore, LogFilterQuery, MaybePromise } from './types';
 
@@ -16,22 +16,22 @@ export abstract class BaseLogDataStore implements LogDataStore {
 
   private listeners = new Set<() => void>();
 
-  abstract append(record: LogRecord): MaybePromise<void>;
+  abstract append(record: DebugRecord<LogData>): MaybePromise<void>;
   abstract clear(): MaybePromise<void>;
-  abstract getAll(): MaybePromise<LogRecord[]>;
+  abstract getAll(): MaybePromise<DebugRecord<LogData>[]>;
 
   /**
    * Filter via {@link matchLogRecords} after {@link getAll}.
    * Sync stores (memory/noop) may override with a sync return; IndexedDB keeps async.
    */
-  list(query?: LogFilterQuery): MaybePromise<LogRecord[]> {
+  list(query?: LogFilterQuery): MaybePromise<DebugRecord<LogData>[]> {
     const all = this.getAll();
     if (isPromiseLike(all)) {
-      return Promise.resolve(all as PromiseLike<LogRecord[]>).then((rows) =>
-        matchLogRecords(rows, query),
+      return Promise.resolve(all as PromiseLike<DebugRecord<LogData>[]>).then(
+        (rows) => matchLogRecords(rows, query),
       );
     }
-    return matchLogRecords(all as LogRecord[], query);
+    return matchLogRecords(all as DebugRecord<LogData>[], query);
   }
 
   subscribe(listener: () => void): () => void {

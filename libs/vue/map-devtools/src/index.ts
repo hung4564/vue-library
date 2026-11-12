@@ -1,12 +1,12 @@
 /**
  * Root barrel: explicit named exports (Stable).
  */
-export { default as Devtools } from './ui/Devtools.vue';
-export { default as DevtoolsControl } from './ui/DevtoolsControl.vue';
 export {
+  installDatasetDebug,
   installDevtools,
-  openMapDevtoolsErrors,
   uninstallDevtools,
 } from './install';
 export { useDevtoolState } from './store';
 export type { DevtoolTab } from './store';
+export { default as Devtools } from './ui/Devtools.vue';
+export { default as DevtoolsControl } from './ui/DevtoolsControl.vue';

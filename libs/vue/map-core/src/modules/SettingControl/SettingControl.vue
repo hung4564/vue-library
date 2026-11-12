@@ -11,11 +11,10 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiCog } from '@mdi/js';
 import { ref, watch } from 'vue';
 
-import { defineProps, withDefaults } from 'vue';
+import { InputText } from '@hungpvq/vue-ui-core';
 import MapControlButton from '../../components/MapControlButton.vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
-import { InputText } from '@hungpvq/vue-ui-core';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';

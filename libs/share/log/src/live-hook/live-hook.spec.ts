@@ -9,10 +9,10 @@ import {
 } from '../core/instance-registry';
 import { trackLiveEventAction } from './track-action';
 import {
+  emitLiveRecord,
   getLiveTraceEvents,
   resetLiveTraceForTests,
   subscribeLiveTrace,
-  traceLiveEvent,
 } from './trace-store';
 
 afterEach(() => {
@@ -32,7 +32,6 @@ describe('live-hook registry', () => {
       framework: 'vue',
       component: 'Child',
       parentId: parent.id,
-      parent: parent.component,
     });
 
     const tree = getRegisteredInstances();
@@ -59,28 +58,28 @@ describe('live-hook trace', () => {
       ticks += 1;
     });
 
-    traceLiveEvent({
+    emitLiveRecord({
       framework: 'vue',
       event: 'component:mount',
       instanceId: 'vue:1',
       component: 'Demo',
       renderCount: 1,
     });
-    traceLiveEvent({
+    emitLiveRecord({
       framework: 'vue',
       event: 'component:render',
       instanceId: 'vue:1',
       component: 'Demo',
       renderCount: 1,
     });
-    traceLiveEvent({
+    emitLiveRecord({
       framework: 'vue',
       event: 'component:update',
       instanceId: 'vue:1',
       component: 'Demo',
       renderCount: 2,
     });
-    traceLiveEvent({
+    emitLiveRecord({
       framework: 'vue',
       event: 'component:unmount',
       instanceId: 'vue:1',
@@ -88,17 +87,19 @@ describe('live-hook trace', () => {
       renderCount: 2,
     });
 
-    expect(getLiveTraceEvents().map((e) => e.event)).toEqual([
+    expect(getLiveTraceEvents().map((e) => e.data.event)).toEqual([
       'component:unmount',
       'component:update',
       'component:render',
       'component:mount',
     ]);
+    expect(getLiveTraceEvents()[0]?.header.kind).toBe('live');
+    expect(getLiveTraceEvents()[0]?.id).toBeTruthy();
     expect(ticks).toBe(4);
     stop();
   });
 
-  it('trackLiveEventAction traces show change then runs', () => {
+  it('trackLiveEventAction traces change then runs', () => {
     const parentTok = {};
     registerInstance(parentTok, {
       framework: 'vue',
@@ -115,11 +116,11 @@ describe('live-hook trace', () => {
 
     expect(ran).toBe(true);
     const last = getLiveTraceEvents()[0];
-    expect(last?.event).toBe('component:update');
-    expect(last?.component).toBe('DraggableItemPopup');
-    expect(last?.cause).toBe('open');
-    expect(last?.changes?.[0]).toMatchObject({
-      key: 'show',
+    expect(last?.data.event).toBe('component:update');
+    expect(last?.data.component).toBe('DraggableItemPopup');
+    expect(last?.header.span).toBe('open');
+    expect(last?.data.changes?.[0]).toMatchObject({
+      key: 'open',
       previousValue: false,
       nextValue: true,
     });

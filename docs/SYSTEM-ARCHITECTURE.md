@@ -14,7 +14,7 @@ An **Nx TypeScript monorepo** that publishes npm packages under `@hungpvq/*` for
 
 1. **Map SDK** — MapLibre GIS maps with dual **Vue 3** and **React** adapters on framework-agnostic cores (`map-core`, `map-dataset`, `map-draw`).
 2. **Draggable UI** — floating/sidebar shell used by map panels and standalone demos (`draggable` + vue/react adapters).
-3. **Share infrastructure** — process-wide store (`shared-store`), logging (`shared-log`), utilities (`shared`, `shared-core`, `shared-file`).
+3. **Share infrastructure** — process-wide store (`shared-store`), logging (`shared-log` envelope `{ id, header, data }` for Logs + Live), utilities (`shared`, `shared-core`, `shared-file`).
 4. **Demos / docs / CI** — Vue/React demo apps, VitePress docs, GitHub Actions CI + Publish on tags.
 
 ## Main capability groups (product view)

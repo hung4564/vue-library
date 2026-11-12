@@ -15,7 +15,7 @@
   },
   "scripts": {
     "ts-check": "nx run-many --target ts-check --all",
-    "lint": "nx run-many --target lint --all",
+    "lint": "nx run-many --target lint,typecheck,ts-check --all",
     "format": "prettier --write . && nx run-many --target lint --all -- --fix",
     "format:prettier": "prettier --write .",
     "format:check": "prettier --check .",

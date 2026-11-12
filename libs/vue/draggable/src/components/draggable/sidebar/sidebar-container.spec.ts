@@ -2,7 +2,11 @@ import { mount } from '@vue/test-utils';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { defineComponent, nextTick, ref } from 'vue';
 
-import { useDragContainer, useDragStore, useSidebarItem } from '../../../store';
+import {
+  useDragContainer,
+  useDragStore,
+  useSidebarItem,
+} from '@hungpvq/draggable';
 import DraggableItemSideBar from '../item-sidebar.vue';
 import SidebarContainer from './sidebar-container.vue';
 

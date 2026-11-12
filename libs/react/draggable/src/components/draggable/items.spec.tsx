@@ -2,11 +2,12 @@ import { act, cleanup, render, waitFor } from '@testing-library/react';
 import React, { ComponentType, ReactNode } from 'react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { ContainerProvider } from '../../context/ContainerContext';
 import {
+  useBottomItem,
   useDragContainer as getDragContainer,
   useDragStore as getDragStore,
-} from '../../store';
+} from '@hungpvq/draggable';
+import { ContainerProvider } from '../../context/ContainerContext';
 import { DraggableItemBottom } from './item-bottom';
 import { DraggableItemDrawer } from './item-drawer';
 import { DraggableItemFloat } from './item-float';
@@ -159,7 +160,6 @@ describe('Stable item shells register into store', () => {
     const c = getDragStore().container[CID];
     expect(c.bottom.items).toEqual(['bot-a', 'bot-b']);
     expect(c.bottom.show).toBe('bot-b');
-    const { useBottomItem } = await import('../../store');
     act(() => {
       useBottomItem(CID).registerBottomShow('bot-a', true);
     });

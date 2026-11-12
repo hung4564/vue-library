@@ -97,7 +97,6 @@ export const MAP_CORE_ADAPTER_SHARED_STABLE = [
   'MapContextMenuControl',
   'MapControlButton',
   'MapControlGroupButton',
-  'MapTabs',
   'MeasurementControl',
   'MeasurementSettingPopup',
   'ModuleContainer',

@@ -179,7 +179,8 @@ Visibility updates differ by framework: Vue uses `v-model:show` / `@update:show`
 Pass optional `id` on any item so remounts and imperative APIs share the same store key:
 
 ```ts
-import { useDragCommands } from '@hungpvq/vue-draggable'; // or react-draggable
+import { DraggableContainer } from '@hungpvq/vue-draggable'; // configures Vue store
+import { useDragCommands } from '@hungpvq/draggable';
 
 const cmds = useDragCommands('my-container');
 cmds.open('layers');
@@ -192,6 +193,10 @@ Popup / modal emit `update:bounds` (React: `onBoundsChange`) on drag/resize **st
 Theme tokens: [css-tokens.md](./css-tokens.md).
 
 ## FAQ
+
+### Where do I inspect declared items?
+
+Importing `@hungpvq/vue-draggable` / `@hungpvq/react-draggable` (or mounting `DraggableContainer`, or `installDevtools` when the peer is present) registers a **Draggable** tab on the shared debug host (`__hungpvqDebug`). The tab lists declared items, toggles show, moves sidebar/drawer location, and shows whether each item was created from a component or a function (`describeDragOrigin`, plus hook / caller / file when known). Protocol: `listDragDebugItems` / `applyDragDebugAction` on `@hungpvq/draggable`. Viewer + `registerDragDebugTab` are experimental adapter exports.
 
 ### Why is my draggable item not visible?
 

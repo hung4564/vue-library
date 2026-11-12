@@ -3,7 +3,7 @@ import {
   formatDebugLogEntryForCopy,
   formatLogTime,
   logActionId,
-  type LogRecord,
+  type DebugRecord,
   shortActionId,
   textMessage,
 } from '@hungpvq/shared-log';
@@ -12,7 +12,7 @@ import { computed } from 'vue';
 import { BaseButton, CopyButton } from '@hungpvq/vue-ui-core';
 
 const props = defineProps<{
-  log: LogRecord;
+  log: DebugRecord;
   selectedId?: string | null;
 }>();
 
@@ -20,7 +20,7 @@ const emit = defineEmits<{
   'namespace-click': [namespace: string];
   'action-id-click': [actionId: string];
   'flow-click': [actionId: string];
-  select: [log: LogRecord];
+  select: [log: DebugRecord];
 }>();
 
 const isSelected = computed(() => props.selectedId === props.log.id);

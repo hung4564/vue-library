@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { LogRecord } from '../types';
+import { migrateDebugRecord } from '../record';
+import type { DebugHeader, DebugRecord, LogData } from '../types';
 import { DataStoreLogAdapter } from './data-store-adapter';
 import { IndexedDBLogDataStore } from './indexeddb-store';
 import { MemoryLogDataStore } from './memory-store';
@@ -8,11 +9,9 @@ import { NoopLogDataStore } from './noop-store';
 
 function rec(
   id: string,
-  partial: Partial<LogRecord['header']> & {
-    level?: LogRecord['header']['level'];
-  } = {},
-): LogRecord {
-  return {
+  partial: Partial<DebugHeader> & Record<string, unknown> = {},
+): DebugRecord<LogData> {
+  return migrateDebugRecord({
     id,
     header: {
       ts: partial.ts ?? 1,
@@ -21,7 +20,7 @@ function rec(
       ...partial,
     },
     args: ['x'],
-  };
+  });
 }
 
 describe('LogDataStore', () => {

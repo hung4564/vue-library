@@ -9,6 +9,12 @@
         "config": ".verdaccio/config.yml",
         "storage": "tmp/local-registry/storage"
       }
+    },
+    "typecheck": {
+      "executor": "nx:noop",
+      "options": {
+        "description": "Root tsconfig.json is solution-style (IDE references only). Per-package typecheck covers sources."
+      }
     }
   }
 }

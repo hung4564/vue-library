@@ -1,4 +1,6 @@
-import type { ReactNode } from 'react';
+import { trackLiveEventAction } from '@hungpvq/shared-log';
+import { useLiveHookDebug } from '@hungpvq/react-shared-log';
+import { type ReactNode, useMemo } from 'react';
 
 import { useContainerId } from '../../context/ContainerContext';
 import {
@@ -43,12 +45,19 @@ export function DraggableItemBottom({
   afterTitle,
 }: DraggableItemBottomProps) {
   const containerId = useContainerId(propContainerId);
+  const liveId = useLiveHookDebug('DraggableItemBottom');
+  const onLog = useMemo(
+    () => trackLiveEventAction('DraggableItemBottom', liveId),
+    [liveId],
+  );
   const { show, setShow, open, close } = useShow(
     { show: propShow },
     {
       'update:show': onUpdateShow,
       close: onClose,
     },
+    undefined,
+    onLog,
   );
   const { itemId } = useInitBottom(
     containerId,

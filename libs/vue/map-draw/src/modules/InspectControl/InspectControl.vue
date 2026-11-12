@@ -26,7 +26,6 @@ import {
 import { mdiMap, mdiMapSearch } from '@mdi/js';
 import { ref } from 'vue';
 
-import { defineProps, withDefaults } from 'vue';
 import { useEnsureDrawBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import type { InspectControlProps } from './InspectControl.props';
 

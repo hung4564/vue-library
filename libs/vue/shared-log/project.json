@@ -20,6 +20,13 @@
         "command": "vite build"
       }
     },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../../coverage/libs/vue/shared-log"
+      }
+    },
     "ts-check": {
       "executor": "nx:run-commands",
       "options": {

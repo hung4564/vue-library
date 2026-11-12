@@ -19,3 +19,7 @@ export { default as ShowStatusDragItem } from './components/ManagementControl/Sh
 export { default as ShowStatusDrawer } from './components/ManagementControl/ShowStatusDrawer.vue';
 /** @experimental Debug / management UI — not SemVer-stable. */
 export { default as ShowStatusSideBar } from './components/ManagementControl/ShowStatusSideBar.vue';
+/** @experimental Devtools tab — not SemVer-stable. */
+export { default as DragDebugViewer } from './debug/DragDebugViewer.vue';
+/** @experimental Devtools tab — not SemVer-stable. */
+export { registerDragDebugTab } from './debug/register';

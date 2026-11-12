@@ -2,6 +2,16 @@ import { act, cleanup, render, renderHook } from '@testing-library/react';
 import React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { listDragDebugItems } from '@hungpvq/draggable';
+
+import {
+  useBottomItem,
+  useDragCommands,
+  useDragContainer,
+  useDragItem,
+  useDragStore,
+  useSidebarItem,
+} from '@hungpvq/draggable';
 import { ContainerProvider } from '../context/ContainerContext';
 import { WithMobileHandle } from '../hoc/mobile-handle';
 import { useComponent } from '../hook/useComponent';
@@ -17,14 +27,6 @@ import {
 import { useInitSidebar } from '../hook/useInitSidebar';
 import { useExpand, useHighlight, useShow } from '../hook/useShow';
 import { useSideBarContainer } from '../hook/useSideBarContainer';
-import {
-  useBottomItem,
-  useDragCommands,
-  useDragContainer,
-  useDragItem,
-  useDragStore,
-  useSidebarItem,
-} from '../store';
 
 const storeSubscribers = new Set<() => void>();
 
@@ -53,6 +55,9 @@ afterEach(() => {
   store.componentCard = undefined;
   store.componentCardHeader = undefined;
   store.componentCardSidebarToggle = undefined;
+  for (const key of Object.keys(store.debugOrigins)) {
+    delete store.debugOrigins[key];
+  }
 });
 
 describe('useShow / useExpand / useHighlight', () => {
@@ -140,8 +145,15 @@ describe('useInitItem', () => {
     expect(useDragItem(CID).getItemsShow('popup')).toContain(
       'stable-react-popup',
     );
+    expect(
+      listDragDebugItems(CID).find((row) => row.id === 'stable-react-popup')
+        ?.origin?.hook,
+    ).toBe('useInitItem');
     unmount();
     expect(useDragItem(CID).getItems('popup')).toEqual([]);
+    expect(
+      listDragDebugItems(CID).find((row) => row.id === 'stable-react-popup'),
+    ).toBeUndefined();
   });
 });
 

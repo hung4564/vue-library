@@ -1,4 +1,5 @@
-﻿import type { LogRecord } from '../types';
+import { migrateDebugRecord, needsRecordRewrite } from '../record';
+import type { DebugRecord, LogData } from '../types';
 import { BaseLogDataStore } from './base-store';
 import { matchLogRecords } from './query';
 import type { LogFilterQuery } from './types';
@@ -16,7 +17,7 @@ const DB_VERSION = 2;
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function sortNewestFirst(rows: LogRecord[]): LogRecord[] {
+function sortNewestFirst(rows: DebugRecord<LogData>[]): DebugRecord<LogData>[] {
   return rows.slice().sort((a, b) => b.header.ts - a.header.ts);
 }
 
@@ -35,7 +36,8 @@ export class IndexedDBLogDataStore extends BaseLogDataStore {
   private readonly dbName: string;
   private readonly storeName: string;
   private dbPromise: Promise<IDBDatabase> | null = null;
-  private memoryFallback: LogRecord[] = [];
+  private memoryFallback: DebugRecord<LogData>[] = [];
+  private migrated = false;
   private useMemory = typeof indexedDB === 'undefined';
 
   constructor(options: IndexedDBLogDataStoreOptions = {}) {
@@ -96,8 +98,22 @@ export class IndexedDBLogDataStore extends BaseLogDataStore {
       return await new Promise<T>((resolve, reject) => {
         const tx = db.transaction(this.storeName, mode);
         const store = tx.objectStore(this.storeName);
-        Promise.resolve(fn(store)).then(resolve, reject);
+        let result: T | undefined;
+        let fnFailed = false;
+        Promise.resolve(fn(store)).then(
+          (value) => {
+            result = value;
+          },
+          (err) => {
+            fnFailed = true;
+            reject(err);
+          },
+        );
+        tx.oncomplete = () => {
+          if (!fnFailed) resolve(result as T);
+        };
         tx.onerror = () => reject(tx.error ?? new Error('IDB tx failed'));
+        tx.onabort = () => reject(tx.error ?? new Error('IDB tx aborted'));
       });
     } catch {
       this.useMemory = true;
@@ -105,7 +121,7 @@ export class IndexedDBLogDataStore extends BaseLogDataStore {
     }
   }
 
-  async append(record: LogRecord): Promise<void> {
+  async append(record: DebugRecord<LogData>): Promise<void> {
     if (this.useMemory) {
       this.memoryFallback.unshift(record);
       this.notify();
@@ -122,12 +138,32 @@ export class IndexedDBLogDataStore extends BaseLogDataStore {
     }
   }
 
-  private getAllFromDb(): Promise<LogRecord[]> {
+  private normalizeRows(raw: unknown[]): DebugRecord<LogData>[] {
+    return raw.map((row) =>
+      needsRecordRewrite(row)
+        ? migrateDebugRecord(row)
+        : (row as DebugRecord<LogData>),
+    );
+  }
+
+  private async rewriteStale(raw: unknown[]): Promise<void> {
+    const stale = raw.filter((row) => needsRecordRewrite(row));
+    if (stale.length === 0) return;
+    await this.withStore('readwrite', (store) => {
+      for (const row of stale) {
+        store.put(migrateDebugRecord(row));
+      }
+    });
+  }
+
+  private getAllFromDb(): Promise<DebugRecord<LogData>[]> {
     return this.withStore('readonly', (store) => {
-      return new Promise<LogRecord[]>((resolve, reject) => {
+      return new Promise<DebugRecord<LogData>[]>((resolve, reject) => {
         const req = store.getAll();
-        req.onsuccess = () =>
-          resolve(sortNewestFirst(req.result as LogRecord[]));
+        req.onsuccess = () => {
+          const raw = req.result as unknown[];
+          resolve(sortNewestFirst(this.normalizeRows(raw)));
+        };
         req.onerror = () => reject(req.error);
       });
     });
@@ -136,19 +172,21 @@ export class IndexedDBLogDataStore extends BaseLogDataStore {
   private getByIndex(
     indexName: string,
     key: IDBValidKey,
-  ): Promise<LogRecord[]> {
+  ): Promise<DebugRecord<LogData>[]> {
     return this.withStore('readonly', (store) => {
-      return new Promise<LogRecord[]>((resolve, reject) => {
+      return new Promise<DebugRecord<LogData>[]>((resolve, reject) => {
         if (!store.indexNames.contains(indexName)) {
           const req = store.getAll();
           req.onsuccess = () =>
-            resolve(sortNewestFirst(req.result as LogRecord[]));
+            resolve(
+              sortNewestFirst(this.normalizeRows(req.result as unknown[])),
+            );
           req.onerror = () => reject(req.error);
           return;
         }
         const req = store.index(indexName).getAll(key);
         req.onsuccess = () =>
-          resolve(sortNewestFirst(req.result as LogRecord[]));
+          resolve(sortNewestFirst(this.normalizeRows(req.result as unknown[])));
         req.onerror = () => reject(req.error);
       });
     });
@@ -158,7 +196,9 @@ export class IndexedDBLogDataStore extends BaseLogDataStore {
    * Narrow candidates via IDB indexes when possible; otherwise full scan.
    * Residual filters still go through {@link matchLogRecords}.
    */
-  private async fetchCandidates(query?: LogFilterQuery): Promise<LogRecord[]> {
+  private async fetchCandidates(
+    query?: LogFilterQuery,
+  ): Promise<DebugRecord<LogData>[]> {
     const action = query?.actionId?.trim() ?? '';
     const ns =
       query?.namespace && query.namespace !== 'all' ? query.namespace : '';
@@ -194,10 +234,21 @@ export class IndexedDBLogDataStore extends BaseLogDataStore {
     }
   }
 
-  async getAll(): Promise<LogRecord[]> {
+  async getAll(): Promise<DebugRecord<LogData>[]> {
     if (this.useMemory) return this.memoryFallback;
     try {
-      return await this.getAllFromDb();
+      const db = await this.openDb();
+      const raw = await new Promise<unknown[]>((resolve, reject) => {
+        const tx = db.transaction(this.storeName, 'readonly');
+        const req = tx.objectStore(this.storeName).getAll();
+        req.onsuccess = () => resolve(req.result as unknown[]);
+        req.onerror = () => reject(req.error);
+      });
+      if (!this.migrated) {
+        this.migrated = true;
+        void this.rewriteStale(raw);
+      }
+      return sortNewestFirst(this.normalizeRows(raw));
     } catch {
       return this.memoryFallback;
     }
@@ -207,7 +258,7 @@ export class IndexedDBLogDataStore extends BaseLogDataStore {
    * Prefer IDB `actionId` / `namespace` indexes, then {@link matchLogRecords}
    * for level / search / mapId / actionId substring.
    */
-  override async list(query?: LogFilterQuery): Promise<LogRecord[]> {
+  override async list(query?: LogFilterQuery): Promise<DebugRecord<LogData>[]> {
     if (this.useMemory) {
       return matchLogRecords(this.memoryFallback, query);
     }

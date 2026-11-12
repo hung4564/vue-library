@@ -56,14 +56,32 @@ export type {
   MemoryLogDataStoreApi,
   MemoryLogDataStoreOptions,
 } from './store';
+export {
+  debugHeaderRows,
+  extraString,
+  extraValue,
+  isLiveData,
+  isLogData,
+  migrateDebugRecord,
+  recordArgs,
+  recordExtra,
+  splitLogContext,
+} from './record';
+export type { DebugHeaderRow } from './record';
 export type {
+  DebugHeader,
+  DebugKind,
+  DebugRecord,
+  Framework,
+  LiveData,
+  LiveTraceChange,
+  LiveTraceEventName,
   LogAdapter,
   LogContext,
+  LogData,
   LogFlowKind,
-  LogHeader,
   LogLevel,
   LogOutcome,
-  LogRecord,
 } from './types';
 export {
   resetZoneContextStorageForTests,

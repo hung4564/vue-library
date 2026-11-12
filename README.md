@@ -222,3 +222,8 @@ vue-library/
 
 - **Issues**: [GitHub Issues](https://github.com/hung4564/vue-library/issues)
 - **Repository**: [GitHub Repository](https://github.com/hung4564/vue-library)
+
+## Todo
+
+- [ ] tách component ui cho devtool
+- [ ] xử lý việc xóa dataset

@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+export type UseShowLogEvent = {
+  action: 'open' | 'close';
+  previousValue: boolean;
+  nextValue: boolean;
+};
+
+export type UseShowLogger = (event: UseShowLogEvent, run: () => void) => void;
+
 /**
  * Visibility vs dismiss:
  * - `setShow` / `update:show` — hide/show only (toggle, exclusive bottom/sidebar).
@@ -12,11 +20,14 @@ export function useShow(
     close?: () => void;
   },
   init?: boolean,
+  onLog?: UseShowLogger,
 ) {
   // Match Vue: local state is source of truth; prop syncs in when it changes.
   const [p_show, setPShow] = useState<boolean>(!!props.show || !!init);
   const emitRef = useRef(emit);
   emitRef.current = emit;
+  const onLogRef = useRef(onLog);
+  onLogRef.current = onLog;
   const showRef = useRef(p_show);
   showRef.current = p_show;
 
@@ -34,17 +45,37 @@ export function useShow(
   }, []);
 
   const open = useCallback(() => {
-    setShow(true);
+    const run = () => setShow(true);
+    const logger = onLogRef.current;
+    if (logger) {
+      logger(
+        { action: 'open', previousValue: showRef.current, nextValue: true },
+        run,
+      );
+    } else {
+      run();
+    }
   }, [setShow]);
 
   const close = useCallback(() => {
-    const wasOpen = showRef.current;
-    showRef.current = false;
-    setPShow(false);
-    if (wasOpen) {
-      emitRef.current?.['update:show']?.(false);
+    const run = () => {
+      const wasOpen = showRef.current;
+      showRef.current = false;
+      setPShow(false);
+      if (wasOpen) {
+        emitRef.current?.['update:show']?.(false);
+      }
+      emitRef.current?.close?.();
+    };
+    const logger = onLogRef.current;
+    if (logger) {
+      logger(
+        { action: 'close', previousValue: showRef.current, nextValue: false },
+        run,
+      );
+    } else {
+      run();
     }
-    emitRef.current?.close?.();
   }, []);
 
   return { show: p_show, setShow, open, close };

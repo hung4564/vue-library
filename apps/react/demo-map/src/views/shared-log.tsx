@@ -6,9 +6,9 @@ import {
 } from '@hungpvq/demo-map-datasets';
 import { DevtoolsShell } from '@hungpvq/react-shared-log';
 import {
-  type LogAdapter,
   loggerFactory,
-  type LogRecord,
+  type DebugRecord,
+  type LogAdapter,
 } from '@hungpvq/shared-log';
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
@@ -17,21 +17,25 @@ import { MapPageShell } from '../components/MapPageShell';
 import { ensureHungpvqDebugHost } from './ensure-debug-host';
 import { SharedLogDemoTab } from './shared-log-demo-tab';
 
-ensureHungpvqDebugHost().registerTab({
-  id: 'app:demo',
-  label: 'Demo',
-  order: 20,
-  framework: 'react',
-  component: SharedLogDemoTab,
-});
-
 const NAV_ITEMS = getDemoAsideNavItems('react');
 
 export function SharedLogPage() {
   useEffect(() => {
+    const unsub = ensureHungpvqDebugHost().registerTab({
+      id: 'app:demo',
+      label: 'Demo',
+      order: 20,
+      framework: 'react',
+      component: SharedLogDemoTab,
+    });
+    return () => {
+      unsub();
+    };
+  }, []);
+  useEffect(() => {
     loggerFactory.enableEverything();
   }, []);
-  const [records, setRecords] = useState<LogRecord[]>([]);
+  const [records, setRecords] = useState<DebugRecord[]>([]);
   const [lastNote, setLastNote] = useState('');
   const [done, setDone] = useState<Record<string, boolean>>({});
 

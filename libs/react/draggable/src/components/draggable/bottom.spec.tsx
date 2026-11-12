@@ -2,12 +2,12 @@ import { act, cleanup, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { ContainerProvider } from '../../context/ContainerContext';
 import {
-  useBottomItem,
   useDragContainer as getDragContainer,
   useDragStore as getDragStore,
-} from '../../store';
+  useBottomItem,
+} from '@hungpvq/draggable';
+import { ContainerProvider } from '../../context/ContainerContext';
 import { BottomContainer } from './bottom/bottom-container';
 import { DraggableItemBottom } from './item-bottom';
 

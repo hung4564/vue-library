@@ -1,6 +1,5 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import { DEVTOOLS_CONTROL } from '@hungpvq/map-debug';
-import { setDebugOpen, toggleDebugOpen } from '@hungpvq/shared-log';
 import { DraggableItemPopup } from '@hungpvq/react-draggable';
 import {
   defaultMapProps,
@@ -10,12 +9,14 @@ import {
   useMap,
   useMapControl,
 } from '@hungpvq/react-map-core';
+import { setDebugOpen, toggleDebugOpen } from '@hungpvq/shared-log';
 import { mdiTools } from '@mdi/js';
 import { Icon } from '@mdi/react';
 
 import { useCallback } from 'react';
+
+import { DevtoolsShell } from '@hungpvq/react-shared-log';
 import { useDevtoolState } from '../store';
-import { DevtoolsPanelBody } from './DevtoolsPanelBody';
 
 export type DevtoolsControlProps = WithMapPropType & {
   show?: boolean;
@@ -67,7 +68,7 @@ export function DevtoolsControl(props: DevtoolsControlProps) {
         onUpdateShow={setOpen}
       >
         <div className="devtools-popup-body">
-          <DevtoolsPanelBody />
+          <DevtoolsShell />
         </div>
       </DraggableItemPopup>
     ),

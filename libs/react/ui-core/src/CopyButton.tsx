@@ -8,7 +8,11 @@ import {
   useState,
 } from 'react';
 
-import { BaseButton, type UiButtonSize, type UiButtonVariant } from './BaseButton';
+import {
+  BaseButton,
+  type UiButtonSize,
+  type UiButtonVariant,
+} from './BaseButton';
 
 export interface CopyButtonProps extends Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,

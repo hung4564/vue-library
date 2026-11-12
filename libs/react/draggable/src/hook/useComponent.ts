@@ -1,10 +1,10 @@
 import { type ComponentType, useMemo } from 'react';
 
+import { useDragComponent } from '@hungpvq/draggable';
 import type { DragCardProps } from '../components/parts/DragCard';
 import { DragCard } from '../components/parts/DragCard';
 import type { DragHeaderProps } from '../components/parts/DragHeader';
 import { DragHeader } from '../components/parts/DragHeader';
-import { useDragComponent } from '../store';
 
 export type ShareCardComponent = ComponentType<DragCardProps>;
 export type ShareHeaderComponent = ComponentType<DragHeaderProps>;

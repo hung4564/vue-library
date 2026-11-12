@@ -8,11 +8,11 @@ import {
 import React, { ReactNode } from 'react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { ContainerProvider } from '../../context/ContainerContext';
 import {
   useDragContainer as getDragContainer,
   useDragStore as getDragStore,
-} from '../../store';
+} from '@hungpvq/draggable';
+import { ContainerProvider } from '../../context/ContainerContext';
 import { BottomContainer } from '../draggable/bottom/bottom-container';
 import { DraggableItemBottom } from '../draggable/item-bottom';
 import { DraggableItemPopup } from '../draggable/item-popup';

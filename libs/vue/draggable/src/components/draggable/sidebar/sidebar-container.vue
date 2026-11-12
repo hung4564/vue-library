@@ -17,7 +17,12 @@ import {
   watch,
 } from 'vue';
 
-import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
+import {
+  useDragComponent,
+  useDragContainer,
+  useSidebarItem,
+} from '@hungpvq/draggable';
+import { useLiveHookDebug } from '@hungpvq/vue-shared-log';
 import {
   useComponent,
   useContainerSize,
@@ -25,17 +30,12 @@ import {
   withShareComponent,
 } from '../../../hook';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
-import {
-  useDragComponent,
-  useDragContainer,
-  useSidebarItem,
-} from '../../../store';
 import ContextMenu from '../../ContextMenu.vue';
 import ContextMenuItem from '../../ContextMenuItem.vue';
 import DragButton from '../../parts/DragButton.vue';
 import DragSidebarToggle from '../../parts/DragSidebarToggle.vue';
 import { useSidebarBehavior } from './useSidebarBehavior';
-useLiveHookDebug();
+useLiveHookDebug('sidebar-container');
 const contextMenuRef = ref<
   | {
       open(event: MouseEvent): void;

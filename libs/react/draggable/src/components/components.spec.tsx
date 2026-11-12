@@ -2,6 +2,7 @@ import { act, cleanup, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { useDragStore } from '@hungpvq/draggable';
 import { ContextMenu, type ContextMenuRef } from '../components/ContextMenu';
 import { ContextMenuItem } from '../components/ContextMenuItem';
 import { DraggableContainer } from '../components/draggable/draggable-container';
@@ -11,7 +12,6 @@ import { DragCard } from '../components/parts/DragCard';
 import { DragHeader } from '../components/parts/DragHeader';
 import { DragSidebarToggle } from '../components/parts/DragSidebarToggle';
 import { useContainerId } from '../context/ContainerContext';
-import { useDragStore } from '../store';
 
 vi.mock('@hungpvq/shared-store/react', () => ({
   useStoreSubscribe: vi.fn(),

@@ -40,7 +40,6 @@ import {
 import { mdiHandPointingUp } from '@mdi/js';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
-import { defineProps, withDefaults } from 'vue';
 import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import { useMapDataset } from '../../store/dataset-api';
 import IdentifyResultControl from './IdentifyResultControl.vue';

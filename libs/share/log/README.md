@@ -2,7 +2,7 @@
 
 Structured logging with ambient **zone** context (`ZoneContextStorage`) and required `.with({ fn, span })` on every line.
 
-Every emitted `LogRecord` has a stable `id` (UUID) for UI selection / Flow.
+Every emitted record is a `DebugRecord`: `{ id, header, data }`. Logs use `data.args` + `data.extra`; Live traces share the same envelope (`header.kind = 'live'`).
 
 ### Log data stores (`LogDataStore`)
 
@@ -16,7 +16,7 @@ Queryable persistence separate from output sinks (`LogAdapter`):
 
 Write via `DataStoreLogAdapter` / `loggerFactory.setDataStore(store)`. Query with `await resolveMaybePromise(store.getAll())` / `await resolveMaybePromise(store.list(query))` (memory is sync; IndexedDB is async).
 
-**Devtools** default store is IndexedDB on `log:debug` (`getLogDebugStore()`). Vue UI: `@hungpvq/vue-shared-log`. React UI: `@hungpvq/react-shared-log`. Map host: `*-map-devtools`.
+**Devtools** default store is IndexedDB on `log:debug` (`getLogDebugStore()`). This package is **vanilla JS** (no Vue/React). Vue UI + `useLiveHookDebug`: `@hungpvq/vue-shared-log`. React UI + `useLiveHookDebug` / `LiveHookScope`: `@hungpvq/react-shared-log`. Map host: `*-map-devtools`. `uninstallDebug` / HMR keeps persisted records; only Clear (`clearDebugLogs`) wipes them.
 
 ## Register a debug tab (pin-first)
 
@@ -107,8 +107,9 @@ await loggerFactory.ensureActionContext({ mapId, span: 'identify.query' }, async
 | `trackRequest(meta, fn)`                                  | HTTP boundary — mints `requestId`                                |
 | `runWithFunctionLog`                                      | START/END + `spanId` / `parentSpanId` + `durationMs` / `outcome` |
 | `packLogEvent` / `runWithLogEvent`                        | Mitt / delayed fan-out                                           |
-| `sanitizeHttpUrl`                                         | Strip query/hash for log headers                                 |
-| `LogAdapter.log(record)`                                  | Structured record                                                |
+| `sanitizeHttpUrl`                                         | Strip query/hash for `data.extra.httpUrl`                        |
+| `LogAdapter.log(record)`                                  | Structured `DebugRecord<LogData>`                                |
+| `emitLiveRecord`                                          | Live envelope (`DebugRecord<LiveData>`)                          |
 
 ## Building / tests
 

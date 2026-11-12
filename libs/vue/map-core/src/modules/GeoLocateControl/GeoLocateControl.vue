@@ -10,7 +10,6 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiCrosshairsGps, mdiCrosshairsOff } from '@mdi/js';
 import { ref, watch } from 'vue';
 
-import { defineEmits, defineProps, withDefaults } from 'vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';

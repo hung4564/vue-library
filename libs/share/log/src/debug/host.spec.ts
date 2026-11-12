@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { ConsoleAdapter, type LogAdapter, LoggerFactory } from '../core';
 import {
   ensureHungpvqDebugHost,
   openDebugTab,
@@ -7,6 +8,7 @@ import {
   resetHungpvqDebugHostForTests,
 } from './host';
 import { installDebug, uninstallDebug } from './install';
+import { getDebugLogDataStore } from './store';
 
 afterEach(() => {
   uninstallDebug();
@@ -95,6 +97,28 @@ describe('__hungpvqDebug pin', () => {
       component: {},
     });
     expect(peekHungpvqDebugHost()).toBeUndefined();
+  });
+
+  it('uninstallDebug keeps extras, Console, and the log store', () => {
+    const extra: LogAdapter = { write: () => undefined };
+    const factory = LoggerFactory.getInstance();
+    installDebug({ logStore: 'memory' });
+    factory.addAdapter(extra);
+    const store = getDebugLogDataStore();
+    const debugAdapter = factory
+      .getAdapters()
+      .find(
+        (adapter) => adapter !== extra && !(adapter instanceof ConsoleAdapter),
+      );
+    expect(debugAdapter).toBeTruthy();
+    uninstallDebug();
+    const adapters = factory.getAdapters();
+    expect(adapters).toContain(extra);
+    expect(adapters.some((adapter) => adapter instanceof ConsoleAdapter)).toBe(
+      true,
+    );
+    expect(adapters).not.toContain(debugAdapter);
+    expect(factory.getDataStore()).toBe(store);
   });
 
   it('subscribe fires on register', () => {

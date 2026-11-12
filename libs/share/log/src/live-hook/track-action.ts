@@ -1,46 +1,51 @@
-import { getRegisteredInstances } from '../core/instance-registry';
-import { traceLiveEvent } from './trace-store';
-
-export type LiveActionEvent = {
-  action: string;
-  previousValue?: unknown;
-  nextValue?: unknown;
-};
+import {
+  getInstanceMetadata,
+  getRegisteredInstances,
+} from '../core/instance-registry';
+import { emitLiveRecord } from './trace-store';
 
 export type LiveActionLogger = (
-  event: LiveActionEvent,
+  event: { action: string; previousValue?: unknown; nextValue?: unknown },
   run: () => void,
 ) => void;
 
+function resolveInstance(component: string, instanceId?: string) {
+  if (instanceId) return getInstanceMetadata(instanceId);
+  const matches = getRegisteredInstances().filter(
+    (row) => row.component === component,
+  );
+  return matches.length === 1 ? matches[0] : undefined;
+}
+
 /**
  * Wrap a show/open/close (or similar) mutation so the Live tab records it.
- * Looks up the latest registered instance for `component` when present.
+ * Prefer passing the id returned by `useLiveHookDebug`.
  */
-export function trackLiveEventAction(component: string): LiveActionLogger {
+export function trackLiveEventAction(
+  component: string,
+  instanceId?: string,
+): LiveActionLogger {
   return (event, run) => {
-    const matches = getRegisteredInstances().filter(
-      (row) => row.component === component,
-    );
-    const meta = matches[matches.length - 1];
+    const meta = resolveInstance(component, instanceId);
 
-    traceLiveEvent({
-      framework: meta?.framework ?? 'vue',
-      event: 'component:update',
-      instanceId: meta?.id ?? `action:${component}`,
-      component,
-      parentId: meta?.parentId,
-      parent: meta?.parent,
-      cause: event.action,
-      trigger: event.action,
-      changes: [
-        {
-          source: 'props',
-          key: 'show',
-          previousValue: event.previousValue,
-          nextValue: event.nextValue,
-        },
-      ],
-    });
+    emitLiveRecord(
+      {
+        framework: meta?.framework ?? 'core',
+        event: 'component:update',
+        instanceId: meta?.id ?? instanceId ?? `action:${component}`,
+        component,
+        parentId: meta?.parentId,
+        changes: [
+          {
+            source: 'props',
+            key: event.action,
+            previousValue: event.previousValue,
+            nextValue: event.nextValue,
+          },
+        ],
+      },
+      { span: event.action },
+    );
 
     run();
   };

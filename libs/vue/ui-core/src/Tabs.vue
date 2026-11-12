@@ -3,7 +3,7 @@ export default { name: 'Tabs' };
 export type { TabItem } from './tabs';
 </script>
 <script setup lang="ts">
-import { computed, useSlots } from 'vue';
+import { computed, useSlots, type Slots } from 'vue';
 
 import BaseButton from './BaseButton.vue';
 import type { TabItem } from './tabs';
@@ -18,18 +18,18 @@ const props = withDefaults(
   { withPanes: true },
 );
 
-const slots = useSlots();
+const slots: Slots = useSlots();
 
-const activeId = computed(() => {
+const activeId = computed<string>(() => {
   if (props.items.some((item) => item.id === model.value)) {
     return model.value;
   }
   return props.items[0]?.id ?? '';
 });
 
-const hasPanes = computed(
+const hasPanes = computed<boolean>(
   () =>
-    props.withPanes &&
+    Boolean(props.withPanes) &&
     props.items.some((item) => typeof slots[item.id] === 'function'),
 );
 

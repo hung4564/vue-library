@@ -1,7 +1,8 @@
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useBottomItem } from '../store';
+import { useBottomItem } from '@hungpvq/draggable';
+import { recordDragItemOrigin } from '../debug/origin';
 
 type BottomItemOptions = {
   title?: string;
@@ -27,6 +28,8 @@ export function useInitBottom(
   const [initDone, setInitDone] = useState(false);
   const storeRef = useRef(useBottomItem(containerId));
   const setShowRef = useRef(setShow);
+  const originStack = useRef<string | undefined>(undefined);
+  if (!originStack.current) originStack.current = new Error().stack;
 
   setShowRef.current = setShow;
 
@@ -52,6 +55,12 @@ export function useInitBottom(
       componentCardHeader: optionDefault.componentCardHeader,
     });
 
+    recordDragItemOrigin(
+      containerId,
+      itemId,
+      'useInitBottom',
+      originStack.current,
+    );
     setInitDone(true);
     return () => {
       currentStore.unRegisterBottom(itemId);

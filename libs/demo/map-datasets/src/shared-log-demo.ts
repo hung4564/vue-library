@@ -5,7 +5,7 @@
 import {
   loggerFactory,
   runWithFunctionLog,
-  type LogRecord,
+  type DebugRecord,
 } from '@hungpvq/shared-log';
 
 export type SharedLogScenarioId =
@@ -169,20 +169,28 @@ export async function runSharedLogScenario(
   }
 }
 
-export function formatSharedLogRecord(r: LogRecord): string {
+export function formatSharedLogRecord(r: DebugRecord): string {
   const h = r.header;
+  const extra =
+    r.data && typeof r.data === 'object' && 'extra' in r.data
+      ? ((r.data as { extra?: Record<string, unknown> }).extra ?? {})
+      : {};
+  const args =
+    r.data && typeof r.data === 'object' && 'args' in r.data
+      ? ((r.data as { args?: unknown[] }).args ?? [])
+      : [];
   const parts = [
     h.index != null ? `#${h.index}` : '',
-    h.level.toUpperCase(),
+    (h.level || 'info').toUpperCase(),
     h.namespaces.join(':'),
     h.actionId ? `action=${h.actionId.slice(0, 8)}…` : '',
     h.spanId ? `span=${h.spanId.slice(0, 8)}…` : '',
     h.parentSpanId ? `parent=${h.parentSpanId.slice(0, 8)}…` : '',
-    h.requestId ? `http=${h.requestId.slice(0, 8)}…` : '',
-    h.durationMs != null ? `${h.durationMs}ms` : '',
-    h.outcome ?? '',
+    extra.requestId ? `http=${String(extra.requestId).slice(0, 8)}…` : '',
+    extra.durationMs != null ? `${extra.durationMs}ms` : '',
+    extra.outcome != null ? String(extra.outcome) : '',
     h.fn ?? '',
-    String(r.args[0] ?? ''),
+    String(args[0] ?? ''),
   ].filter(Boolean);
   return parts.join(' ');
 }

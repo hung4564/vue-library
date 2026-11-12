@@ -17,7 +17,7 @@ import {
 } from 'vue';
 
 import { trackLiveEventAction } from '@hungpvq/shared-log';
-import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
+import { useLiveHookDebug } from '@hungpvq/vue-shared-log';
 import {
   useComponent,
   useContainerOrder,
@@ -34,7 +34,7 @@ import {
   withShowProps,
 } from '../../hook';
 import DragButton from '../parts/DragButton.vue';
-useLiveHookDebug('DraggableItemFloat');
+const liveId = useLiveHookDebug('DraggableItemFloat');
 const { CloseIcon, ToBackIcon, ToFrontIcon, ExpandedIcon, CloseExpandedIcon } =
   useIcon();
 const props = defineProps({
@@ -67,7 +67,7 @@ if (!containerId.value) {
 const { show, open, close } = useShow(
   props,
   emit,
-  trackLiveEventAction('DraggableItemFloat'),
+  trackLiveEventAction('DraggableItemFloat', liveId),
 );
 const { zIndex, itemId } = useInitItem(
   containerId.value,

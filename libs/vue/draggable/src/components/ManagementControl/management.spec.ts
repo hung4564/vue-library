@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { defineComponent, nextTick, ref } from 'vue';
 
-import { useDragContainer, useDragStore } from '../../store';
+import { useDragContainer, useDragStore } from '@hungpvq/draggable';
 import BottomContainer from '../draggable/bottom/bottom-container.vue';
 import DraggableItemBottom from '../draggable/item-bottom.vue';
 import DraggableItemPopup from '../draggable/item-popup.vue';

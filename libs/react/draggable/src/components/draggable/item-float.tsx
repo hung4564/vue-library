@@ -1,4 +1,6 @@
 import { focusFirst, restoreFocus } from '@hungpvq/draggable';
+import { trackLiveEventAction } from '@hungpvq/shared-log';
+import { useLiveHookDebug } from '@hungpvq/react-shared-log';
 import {
   type CSSProperties,
   type ReactNode,
@@ -77,12 +79,19 @@ export function DraggableItemFloat({
   afterTitle,
 }: DraggableItemFloatProps) {
   const containerId = useContainerId(propContainerId);
+  const liveId = useLiveHookDebug('DraggableItemFloat');
+  const onLog = useMemo(
+    () => trackLiveEventAction('DraggableItemFloat', liveId),
+    [liveId],
+  );
   const { show, setShow, open, close } = useShow(
     { show: propShow },
     {
       'update:show': onUpdateShow,
       close: onClose,
     },
+    undefined,
+    onLog,
   );
   const { zIndex, itemId } = useInitItem(
     containerId,

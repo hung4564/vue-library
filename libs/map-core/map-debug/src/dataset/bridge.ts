@@ -3,7 +3,6 @@ import { DatasetService } from '@hungpvq/map-dataset';
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { loggerFactory } from '@hungpvq/shared-log';
 
-import { addClearFunctionLog } from '../core/map-debug-store';
 import { getDatasetStore, listMapIds } from '../store-access';
 import {
   describeDataset,
@@ -23,7 +22,6 @@ import {
   listTypesInStoreRoots,
 } from './inspect';
 import { getMapDebugStore } from './map-debug-store';
-import { installDatasetDebugMenus } from './menu-debug-item';
 import {
   explainMenus as explainMenusSteps,
   findMenuInResolved,
@@ -61,8 +59,6 @@ const session: DatasetDebugSession = {
 let sessionRev = 0;
 
 const vars: Record<string, unknown> = {};
-
-let api: DatasetDebugApi | undefined;
 
 function resolveDataset(
   mapId?: string,

@@ -9,7 +9,7 @@ export default {
 import { computed, inject, Ref, ref } from 'vue';
 
 import { trackLiveEventAction } from '@hungpvq/shared-log';
-import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
+import { useLiveHookDebug } from '@hungpvq/vue-shared-log';
 import {
   useInitAction,
   useShow,
@@ -21,7 +21,7 @@ import {
 import { useInitBottom } from '../../hook/useInitBottom';
 import BottomModule from './bottom/bottom-module.vue';
 
-useLiveHookDebug('DraggableItemBottom');
+const liveId = useLiveHookDebug('DraggableItemBottom');
 const props = defineProps({
   ...withShowProps,
   ...withShareProps,
@@ -37,7 +37,7 @@ if (!containerId.value) {
 const { show, open, close } = useShow(
   props,
   emit,
-  trackLiveEventAction('DraggableItemBottom'),
+  trackLiveEventAction('DraggableItemBottom', liveId),
 );
 const { itemId } = useInitBottom(
   containerId.value,

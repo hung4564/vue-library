@@ -36,8 +36,8 @@
 </template>
 
 <script setup lang="ts">
+import { useDragContainer } from '@hungpvq/draggable';
 import { useIcon } from '../../hook';
-import { useDragContainer } from '../../store';
 import DragButton from '../parts/DragButton.vue';
 import ItemList from './ItemList.vue';
 

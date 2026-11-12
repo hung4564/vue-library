@@ -1,4 +1,4 @@
-import type { LogLevel, LogRecord } from '../types';
+import type { DebugRecord, LogData, LogLevel } from '../types';
 
 export type MaybePromise<T> = T | Promise<T>;
 
@@ -21,7 +21,7 @@ export type LogFilterQuery = {
 };
 
 /**
- * Queryable persistence for {@link LogRecord}s.
+ * Queryable persistence for {@link DebugRecord}<{@link LogData}>s.
  * Distinct from {@link import('../types').LogAdapter} (output sinks).
  *
  * Treat {@link getAll} / {@link list} as async-capable
@@ -33,11 +33,11 @@ export type LogFilterQuery = {
 export interface LogDataStore {
   readonly kind: string;
 
-  append(record: LogRecord): MaybePromise<void>;
+  append(record: DebugRecord<LogData>): MaybePromise<void>;
   clear(): MaybePromise<void>;
-  getAll(): MaybePromise<LogRecord[]>;
+  getAll(): MaybePromise<DebugRecord<LogData>[]>;
   /** Return records matching {@link LogFilterQuery}. */
-  list(query?: LogFilterQuery): MaybePromise<LogRecord[]>;
+  list(query?: LogFilterQuery): MaybePromise<DebugRecord<LogData>[]>;
   /** Notify listeners after mutations (memory / indexeddb). */
   subscribe(listener: () => void): () => void;
 }

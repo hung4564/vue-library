@@ -1,4 +1,4 @@
-import { useDragContainer } from '../../store';
+import { useDragContainer } from '@hungpvq/draggable';
 import { useStoreReactive } from '../../store/useStoreReactive';
 
 export interface ItemProps {

@@ -1,4 +1,4 @@
-import { useBottomItem } from '../store';
+import { useBottomItem } from '@hungpvq/draggable';
 
 export const useBottomContainer = (containerId: string) => {
   const store = useBottomItem(containerId);

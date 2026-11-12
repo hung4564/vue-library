@@ -19,7 +19,10 @@ export const VUE_UI_CORE_RUNTIME_EXPORTS = [
   'InputText',
   'InputTextArea',
   'InputTextarea',
+  'List',
+  'ListItem',
   'Tabs',
+  'TreeItem',
 ] as const;
 
 describe('public API surface', () => {

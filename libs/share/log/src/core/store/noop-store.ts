@@ -1,4 +1,4 @@
-import type { LogRecord } from '../types';
+import type { DebugRecord, LogData } from '../types';
 import { BaseLogDataStore } from './base-store';
 import type { LogFilterQuery } from './types';
 
@@ -6,7 +6,7 @@ import type { LogFilterQuery } from './types';
 export class NoopLogDataStore extends BaseLogDataStore {
   readonly kind = 'noop' as const;
 
-  append(_record: LogRecord): void {
+  append(_record: DebugRecord<LogData>): void {
     /* intentionally empty */
   }
 
@@ -14,11 +14,11 @@ export class NoopLogDataStore extends BaseLogDataStore {
     /* intentionally empty */
   }
 
-  getAll(): LogRecord[] {
+  getAll(): DebugRecord<LogData>[] {
     return [];
   }
 
-  override list(_query?: LogFilterQuery): LogRecord[] {
+  override list(_query?: LogFilterQuery): DebugRecord<LogData>[] {
     return [];
   }
 }

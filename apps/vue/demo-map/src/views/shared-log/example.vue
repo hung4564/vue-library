@@ -6,28 +6,33 @@ import {
   type SharedLogScenarioId,
 } from '@hungpvq/demo-map-datasets';
 import {
-  type LogAdapter,
   loggerFactory,
-  type LogRecord,
+  type DebugRecord,
+  type LogAdapter,
 } from '@hungpvq/shared-log';
 import { DevtoolsShell } from '@hungpvq/vue-shared-log';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { onBeforeUnmount, onMounted, onUnmounted, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 
 import DemoTab from './DemoTab.vue';
 import { ensureHungpvqDebugHost } from './ensure-debug-host';
-
-ensureHungpvqDebugHost().registerTab({
-  id: 'app:demo',
-  label: 'Demo',
-  order: 20,
-  framework: 'vue',
-  component: DemoTab,
+const unSub = ref();
+onMounted(() => {
+  unSub.value = ensureHungpvqDebugHost().registerTab({
+    id: 'app:demo',
+    label: 'Demo',
+    order: 20,
+    framework: 'vue',
+    component: DemoTab,
+  });
+});
+onUnmounted(() => {
+  unSub.value?.();
 });
 
 loggerFactory.enableEverything();
 
-const records = ref<LogRecord[]>([]);
+const records = ref<DebugRecord[]>([]);
 const lastNote = ref('');
 const done = ref<Record<string, boolean>>({});
 const navItems = getDemoAsideNavItems('vue');

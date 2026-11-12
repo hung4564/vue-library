@@ -1,5 +1,12 @@
 import type { LocationSideBar } from '@hungpvq/draggable';
-import { focusFirst, restoreFocus } from '@hungpvq/draggable';
+import {
+  focusFirst,
+  restoreFocus,
+  useDragComponent,
+  useDragContainer,
+  useSidebarItem,
+} from '@hungpvq/draggable';
+import { useLiveHookDebug } from '@hungpvq/react-shared-log';
 import {
   type ComponentType,
   type CSSProperties,
@@ -14,11 +21,7 @@ import { useContainerId } from '../../../context/ContainerContext';
 import { useComponent, useIcon } from '../../../hook';
 import { useContainerSize } from '../../../hook/useContainerSize';
 import { useSideBarContainer } from '../../../hook/useSideBarContainer';
-import {
-  useDragComponent,
-  useDragContainer,
-  useSidebarItem,
-} from '../../../store';
+
 import { useContainerReactive } from '../../../store/useStoreReactive';
 import { ContextMenu, type ContextMenuRef } from '../../ContextMenu';
 import { ContextMenuItem } from '../../ContextMenuItem';
@@ -34,6 +37,7 @@ export interface SidebarContainerProps {
 }
 
 export function SidebarContainer({ location }: SidebarContainerProps) {
+  useLiveHookDebug('sidebar-container');
   const containerId = useContainerId();
   // Subscribe to this container only (not the full drag:core tree)
   useContainerReactive(containerId);

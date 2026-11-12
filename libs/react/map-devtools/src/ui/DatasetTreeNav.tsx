@@ -1,5 +1,4 @@
 import type { DatasetTreeNode } from '@hungpvq/map-debug/dataset';
-import { MapControlButton } from '@hungpvq/react-map-core';
 import { useEffect, useState } from 'react';
 
 type NodeProps = {
@@ -32,7 +31,10 @@ function DatasetTreeNavNode({
 
   return (
     <div
-      className="dataset-tree-nav-node"
+      className={`dataset-tree-nav-node${open && hasChildren ? ' is-open' : ''}${
+        hasChildren ? ' has-children' : ''
+      }`}
+      style={{ '--tree-depth': String(depth) } as React.CSSProperties}
       role="treeitem"
       aria-expanded={hasChildren ? open : undefined}
       aria-selected={selected}
@@ -47,13 +49,19 @@ function DatasetTreeNavNode({
           .filter(Boolean)
           .join(' ')}
         data-dataset-id={node.id}
-        style={{ paddingLeft: 8 + depth * 12 }}
+        tabIndex={0}
+        onClick={() => onSelect(node.id)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onSelect(node.id);
+          }
+        }}
       >
         {hasChildren ? (
-          <MapControlButton
-            variant="text"
-            size="small"
-            className="dataset-tree-nav-node__toggle"
+          <button
+            type="button"
+            className="dataset-tree-nav-node__twist"
             aria-label={open ? 'Collapse' : 'Expand'}
             onClick={(e) => {
               e.stopPropagation();
@@ -61,27 +69,24 @@ function DatasetTreeNavNode({
             }}
           >
             {open ? '▾' : '▸'}
-          </MapControlButton>
+          </button>
         ) : (
           <span
-            className="dataset-tree-nav-node__toggle is-leaf"
+            className="dataset-tree-nav-node__twist dataset-tree-nav-node__twist--empty"
             aria-hidden="true"
-          >
-            ·
-          </span>
+          />
         )}
-        <MapControlButton
-          variant="text"
-          size="small"
-          className="dataset-tree-nav-node__select"
-          active={selected}
+        <span className="dataset-tree-nav-node__rail">
+          <span className="dataset-tree-nav-node__dot" />
+        </span>
+        <span
+          className="dataset-tree-nav-node__card"
           title={`${node.name} (${node.type}) · ${node.id}`}
-          onClick={() => onSelect(node.id)}
         >
           <span className="dataset-tree-nav-node__kind">{kindLabel}</span>
           <span className="dataset-tree-nav-node__name">{node.name}</span>
           <span className="dataset-tree-nav-node__type">{node.type}</span>
-        </MapControlButton>
+        </span>
       </div>
       {hasChildren && open ? (
         <div

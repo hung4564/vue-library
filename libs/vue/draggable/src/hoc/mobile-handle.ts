@@ -1,7 +1,7 @@
 import { Component, computed, defineComponent, h, inject, Ref, ref } from 'vue';
 
-import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
-import { useDragIsMobile } from '../store';
+import { useDragIsMobile } from '@hungpvq/draggable';
+import { useLiveHookDebug } from '@hungpvq/vue-shared-log';
 
 function getComponentName(component: Component): string {
   if (typeof component === 'object' && component && 'name' in component) {

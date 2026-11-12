@@ -11,7 +11,8 @@ import {
   watch,
 } from 'vue';
 
-import { useSidebarItem } from '../store';
+import { useDragStore, useSidebarItem } from '@hungpvq/draggable';
+import { recordDragItemOrigin } from '../debug/origin';
 
 function resolveTitle(
   title: MaybeRef<string | undefined> | undefined,
@@ -38,6 +39,7 @@ export function useInitSidebar(
     show.value = value;
   }
   const store = useSidebarItem(containerId);
+  const dragStore = useDragStore();
 
   const locationRef = computed(() => {
     const loc = optionDefault.location;
@@ -47,6 +49,14 @@ export function useInitSidebar(
   });
 
   const titleRef = computed(() => resolveTitle(optionDefault.title));
+
+  function currentLocation(): LocationSideBar {
+    const action = dragStore.container[containerId]?.actions?.[itemId.value];
+    if (action && 'location' in action && action.location) {
+      return action.location as LocationSideBar;
+    }
+    return locationRef.value;
+  }
 
   function syncAction(location: LocationSideBar) {
     store.registerAction(itemId.value, {
@@ -61,6 +71,7 @@ export function useInitSidebar(
   onMounted(() => {
     store.registerSideBar(itemId.value, locationRef.value);
     syncAction(locationRef.value);
+    recordDragItemOrigin(containerId, itemId.value, 'useInitSidebar');
     if (show.value) {
       store.registerSideBarShow(itemId.value, show.value);
     }
@@ -93,9 +104,16 @@ export function useInitSidebar(
     if (wasOpen) store.registerSideBarShow(itemId.value, true);
   });
   // Keep switcher menu labels in sync when locale / title prop updates.
+  // Use the store location so a debug/command move is not overwritten.
   watch(titleRef, () => {
-    syncAction(locationRef.value);
+    syncAction(currentLocation());
   });
-  const location = computed(() => locationRef.value);
+  const location = computed(() => {
+    const action = dragStore.container[containerId]?.actions?.[itemId.value];
+    if (action && 'location' in action && action.location) {
+      return action.location as LocationSideBar;
+    }
+    return locationRef.value;
+  });
   return { itemId, zIndex, location };
 }

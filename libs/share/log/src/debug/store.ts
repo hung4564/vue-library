@@ -2,10 +2,13 @@ import { getOrCreateStore } from '@hungpvq/shared-store';
 
 import {
   DataStoreLogAdapter,
+  type DebugRecord,
+  type Framework,
   IndexedDBLogDataStore,
+  type LiveData,
+  type LogData,
   type LogDataStore,
   loggerFactory,
-  type LogRecord,
   MemoryLogDataStore,
   resolveMaybePromise,
 } from '../core';
@@ -32,12 +35,19 @@ export type DebugLogStoreOptions = {
 };
 
 export type DebugLogStoreConfig =
-  | DebugLogStoreKind
-  | LogDataStore
-  | DebugLogStoreOptions;
+  DebugLogStoreKind | LogDataStore | DebugLogStoreOptions;
 
 export type DebugInstallOptions = {
   logStore?: DebugLogStoreConfig;
+  /** When true (default), clear logs + live traces on path/hash change. */
+  clearOnNavigate?: boolean;
+};
+
+export type LiveInstanceRecord = {
+  id: string;
+  framework: Framework;
+  component: string;
+  parentId?: string;
 };
 
 export type LogDebugStore = {
@@ -46,31 +56,73 @@ export type LogDebugStore = {
   logAdapter?: DataStoreLogAdapter;
   logStoreUnsub?: () => void;
   errors: DebugErrorRecord[];
-  logs: LogRecord[];
+  logs: DebugRecord<LogData>[];
   installed: boolean;
   __cleanup__: Array<() => void>;
+  dataListeners: Set<() => void>;
+  logsMirrorScheduled: boolean;
+  liveEvents: DebugRecord<LiveData>[];
+  liveListeners: Set<() => void>;
+  instances: Map<string, LiveInstanceRecord>;
+  instanceListeners: Set<() => void>;
+  instanceSnapshot: LiveInstanceRecord[];
+  nextVueId: number;
+  nextReactId: number;
+  clearOnNavigate: boolean;
+  navKey?: string;
 };
 
-const dataListeners = new Set<() => void>();
-
 export function subscribeDebugData(listener: () => void): () => void {
-  dataListeners.add(listener);
+  const bag = getLogDebugStore();
+  bag.dataListeners.add(listener);
   return () => {
-    dataListeners.delete(listener);
+    bag.dataListeners.delete(listener);
   };
 }
 
 function notifyData() {
-  for (const listener of dataListeners) listener();
+  for (const listener of getLogDebugStore().dataListeners) listener();
 }
 
 export function getLogDebugStore(): LogDebugStore {
-  return getOrCreateStore<LogDebugStore>(LOG_DEBUG_STORE_KEY, () => ({
+  const bag = getOrCreateStore<LogDebugStore>(LOG_DEBUG_STORE_KEY, () => ({
     installed: false,
     errors: [],
     logs: [],
     __cleanup__: [],
+    dataListeners: new Set(),
+    logsMirrorScheduled: false,
+    liveEvents: [],
+    liveListeners: new Set(),
+    instances: new Map(),
+    instanceListeners: new Set(),
+    instanceSnapshot: [],
+    nextVueId: 0,
+    nextReactId: 0,
+    clearOnNavigate: true,
   }));
+  if (!bag.dataListeners) bag.dataListeners = new Set();
+  if (bag.logsMirrorScheduled === undefined) bag.logsMirrorScheduled = false;
+  if (!bag.liveEvents) bag.liveEvents = [];
+  if (!bag.liveListeners) bag.liveListeners = new Set();
+  if (!bag.instances) bag.instances = new Map();
+  if (!bag.instanceListeners) bag.instanceListeners = new Set();
+  if (!bag.instanceSnapshot) bag.instanceSnapshot = [];
+  if (bag.nextVueId === undefined) bag.nextVueId = 0;
+  if (bag.nextReactId === undefined) bag.nextReactId = 0;
+  if (bag.clearOnNavigate === undefined) bag.clearOnNavigate = true;
+  return bag;
+}
+
+export function isClearLogsOnNavigate(): boolean {
+  return getLogDebugStore().clearOnNavigate !== false;
+}
+
+export function setClearLogsOnNavigate(enabled: boolean): void {
+  const bag = getLogDebugStore();
+  if (bag.clearOnNavigate === enabled) return;
+  bag.clearOnNavigate = enabled;
+  notifyData();
 }
 
 function isLogDataStore(value: unknown): value is LogDataStore {
@@ -106,29 +158,31 @@ function createDebugLogStore(options: DebugLogStoreOptions): LogDataStore {
   });
 }
 
-let logsMirrorScheduled = false;
-
 function scheduleLogsMirror() {
-  if (logsMirrorScheduled) return;
-  logsMirrorScheduled = true;
+  const bag = getLogDebugStore();
+  if (bag.logsMirrorScheduled) return;
+  bag.logsMirrorScheduled = true;
   queueMicrotask(() => {
-    logsMirrorScheduled = false;
+    bag.logsMirrorScheduled = false;
     const store = getLogDebugStore().logDataStore;
     if (!store) return;
-    void resolveMaybePromise(store.getAll()).then((logs) => {
-      getLogDebugStore().logs = [...logs];
+    void resolveMaybePromise(store.getAll()).then((rows) => {
+      const current = getLogDebugStore();
+      const byId = new Map(current.logs.map((row) => [row.id, row]));
+      for (const row of rows) byId.set(row.id, row);
+      current.logs = [...byId.values()].sort(
+        (a, b) => b.header.ts - a.header.ts,
+      );
       notifyData();
     });
   });
 }
 
-export function configureDebugLogStore(
-  config: DebugLogStoreConfig = {},
-): void {
+export function configureDebugLogStore(config: DebugLogStoreConfig = {}): void {
   const bag = getLogDebugStore();
   if (bag.logDataStore) return;
   bag.logStoreOptions = {
-    kind: 'indexeddb',
+    kind: 'memory',
     ...bag.logStoreOptions,
     ...normalizeStoreConfig(config),
   };
@@ -138,7 +192,7 @@ export function getDebugLogDataStore(): LogDataStore {
   const bag = getLogDebugStore();
   if (!bag.logDataStore) {
     const options: DebugLogStoreOptions = {
-      kind: 'indexeddb',
+      kind: 'memory',
       ...bag.logStoreOptions,
     };
     bag.logStoreOptions = options;
@@ -156,11 +210,21 @@ export function createDebugLogAdapter(): DataStoreLogAdapter {
   if (bag.logAdapter) return bag.logAdapter;
   const store = getDebugLogDataStore();
   loggerFactory.setDataStore(store);
-  bag.logAdapter = new DataStoreLogAdapter(store);
+  const adapter = new DataStoreLogAdapter(store);
+  const write = adapter.log.bind(adapter);
+  adapter.log = (record) => {
+    const current = getLogDebugStore();
+    if (!current.logs.some((row) => row.id === record.id)) {
+      current.logs = [record, ...current.logs];
+      notifyData();
+    }
+    write(record);
+  };
+  bag.logAdapter = adapter;
   return bag.logAdapter;
 }
 
-export function getDebugLogs(): LogRecord[] {
+export function getDebugLogs(): DebugRecord<LogData>[] {
   return getLogDebugStore().logs;
 }
 
@@ -169,6 +233,9 @@ export function getDebugErrors(): DebugErrorRecord[] {
 }
 
 export function clearDebugLogs(): void {
+  const bag = getLogDebugStore();
+  bag.logs = [];
+  notifyData();
   void resolveMaybePromise(getDebugLogDataStore().clear());
 }
 
@@ -179,7 +246,7 @@ export async function refreshDebugLogsFromStore(): Promise<void> {
   notifyData();
 }
 
-export function replaceDebugLogs(logs: LogRecord[]): void {
+export function replaceDebugLogs(logs: DebugRecord<LogData>[]): void {
   const store = getDebugLogDataStore();
   void (async () => {
     await resolveMaybePromise(store.clear());

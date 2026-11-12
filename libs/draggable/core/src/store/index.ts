@@ -1,5 +1,6 @@
 import { defineStore } from '@hungpvq/shared-store';
 
+import type { DragItemOrigin } from '../debug/origin';
 import {
   ContainerStore,
   ContainerStoreAction,
@@ -51,6 +52,9 @@ export function configureDragStore(options: {
     store.container = store.__config.makeReactive(
       store.container,
     ) as typeof store.container;
+    store.debugOrigins = store.__config.makeReactive(
+      store.debugOrigins,
+    ) as typeof store.debugOrigins;
   }
 }
 
@@ -64,10 +68,18 @@ export const useDragStore = defineStore('drag:core', () => {
     componentCard: undefined as unknown,
     componentCardHeader: undefined as unknown,
     componentCardSidebarToggle: undefined as unknown,
+    /** Origin metadata for Devtools (component vs hook/function). */
+    debugOrigins: {} as Record<string, DragItemOrigin>,
+    /** Unsubscribe for the Devtools Draggable tab. */
+    debugTabUnsub: undefined as (() => void) | undefined,
     /** @internal Adapter notify / makeReactive — do not treat as app state. */
     __config,
   };
 });
+
+function clearDebugOrigin(containerId: string, id: string) {
+  delete useDragStore().debugOrigins[`${containerId}::${id}`];
+}
 
 function getStoreContainer(id: string) {
   const store = useDragStore();
@@ -138,6 +150,7 @@ export const useSidebarItem = (containerId: string) => {
       ].items.filter((x) => x !== id);
       container.sideBar[location].show = undefined;
       delete container.actions[id];
+      clearDebugOrigin(containerId, id);
       notify(['drag:core', 'container', containerId]);
     },
     registerAction(id: string, action: ContainerStoreAction) {
@@ -206,6 +219,7 @@ export const useBottomItem = (containerId: string) => {
         container.bottom.show = undefined;
       }
       delete container.actions[id];
+      clearDebugOrigin(containerId, id);
       notify(['drag:core', 'container', containerId]);
     },
     registerAction(id: string, action: ContainerStoreAction) {
@@ -355,6 +369,7 @@ export const useDrawerItem = (containerId: string) => {
         }
       });
       delete container.actions[id];
+      clearDebugOrigin(containerId, id);
       notify(['drag:core', 'container', containerId]);
     },
   };
@@ -424,6 +439,7 @@ export const useDragItem = (containerId: string) => {
       p_store[group].items = p_store[group].items.filter((x) => x !== id);
       p_store[group].show = p_store[group].show.filter((x) => x !== id);
       delete p_store.actions[id];
+      clearDebugOrigin(containerId, id);
       notify(['drag:core', 'container', containerId]);
     },
     registerItemShow(id: string, show: boolean) {
@@ -571,6 +587,10 @@ export const useDragContainer = (containerId: string) => {
     },
     initContainer,
     removeContainer() {
+      const prefix = `${containerId}::`;
+      for (const key of Object.keys(store.debugOrigins)) {
+        if (key.startsWith(prefix)) delete store.debugOrigins[key];
+      }
       delete store.container[containerId];
       notify(['drag:core', 'container', containerId]);
     },

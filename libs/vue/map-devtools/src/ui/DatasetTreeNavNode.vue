@@ -1,6 +1,8 @@
 <template>
   <div
     class="dataset-tree-nav-node"
+    :class="{ 'is-open': open && hasChildren, 'has-children': hasChildren }"
+    :style="{ '--tree-depth': String(depth) }"
     role="treeitem"
     :aria-expanded="hasChildren ? open : undefined"
     :aria-selected="selected"
@@ -13,36 +15,36 @@
         [`is-kind-${kind}`]: true,
       }"
       :data-dataset-id="node.id"
-      :style="{ paddingLeft: `${8 + depth * 12}px` }"
+      tabindex="0"
+      @click="$emit('select', node.id)"
+      @keydown.enter.prevent="$emit('select', node.id)"
+      @keydown.space.prevent="$emit('select', node.id)"
     >
-      <MapControlButton
+      <button
         v-if="hasChildren"
-        variant="text"
-        size="small"
-        class="dataset-tree-nav-node__toggle"
+        type="button"
+        class="dataset-tree-nav-node__twist"
         :aria-label="open ? 'Collapse' : 'Expand'"
         @click.stop="open = !open"
       >
         {{ open ? '▾' : '▸' }}
-      </MapControlButton>
+      </button>
       <span
         v-else
-        class="dataset-tree-nav-node__toggle is-leaf"
+        class="dataset-tree-nav-node__twist dataset-tree-nav-node__twist--empty"
         aria-hidden="true"
-        >·</span
-      >
-      <MapControlButton
-        variant="text"
-        size="small"
-        class="dataset-tree-nav-node__select"
-        :active="selected"
+      />
+      <span class="dataset-tree-nav-node__rail">
+        <span class="dataset-tree-nav-node__dot" />
+      </span>
+      <span
+        class="dataset-tree-nav-node__card"
         :title="`${node.name} (${node.type}) · ${node.id}`"
-        @click="$emit('select', node.id)"
       >
         <span class="dataset-tree-nav-node__kind">{{ kindLabel }}</span>
         <span class="dataset-tree-nav-node__name">{{ node.name }}</span>
         <span class="dataset-tree-nav-node__type">{{ node.type }}</span>
-      </MapControlButton>
+      </span>
     </div>
     <div
       v-if="hasChildren && open"
@@ -65,7 +67,6 @@
 
 <script setup lang="ts">
 import type { DatasetTreeNode } from '@hungpvq/map-debug/dataset';
-import { MapControlButton } from '@hungpvq/vue-map-core';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{

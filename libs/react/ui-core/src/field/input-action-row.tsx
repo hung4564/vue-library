@@ -31,7 +31,9 @@ export function InputActionRow({
         .join(' ')}
     >
       {children}
-      <div className="input-action-row__action">{action}</div>
+      {action ? (
+        <div className="input-action-row__action">{action}</div>
+      ) : null}
     </div>
   );
 }

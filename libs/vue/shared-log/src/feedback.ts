@@ -14,10 +14,7 @@ export async function runWithPhase(
   setTimeout(() => setPhase('idle'), 1500);
 }
 
-export function phaseLabel(
-  phase: ActionFeedbackPhase,
-  idle: string,
-): string {
+export function phaseLabel(phase: ActionFeedbackPhase, idle: string): string {
   if (phase === 'loading') return '…';
   if (phase === 'success') return 'Refreshed';
   if (phase === 'error') return 'Failed';

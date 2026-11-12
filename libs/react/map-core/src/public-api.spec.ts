@@ -43,7 +43,6 @@ export const REACT_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'MapControlButton',
   'MapControlButtonGroupContext',
   'MapControlGroupButton',
-  'MapTabs',
   'MeasurementControl',
   'MeasurementSettingPopup',
   'ModuleContainer',

@@ -41,7 +41,6 @@ export const VUE_MAP_CORE_STABLE_RUNTIME_EXPORTS = [
   'MapContextMenuControl',
   'MapControlButton',
   'MapControlGroupButton',
-  'MapTabs',
   'MeasurementControl',
   'MeasurementSettingPopup',
   'ModuleContainer',

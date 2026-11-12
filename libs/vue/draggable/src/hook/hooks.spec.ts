@@ -2,6 +2,16 @@ import { mount } from '@vue/test-utils';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, nextTick, ref } from 'vue';
 
+import { listDragDebugItems } from '@hungpvq/draggable';
+
+import {
+  useBottomItem,
+  useDragCommands,
+  useDragContainer,
+  useDragItem,
+  useDragStore,
+  useSidebarItem,
+} from '@hungpvq/draggable';
 import { WithMobileHandle } from '../hoc/mobile-handle';
 import { useComponent } from '../hook/useComponent';
 import { useInitAction } from '../hook/useInit';
@@ -16,14 +26,6 @@ import {
 import { useInitSidebar } from '../hook/useInitSidebar';
 import { useExpand, useHighlight, useShow } from '../hook/useShow';
 import { useSideBarContainer } from '../hook/useSideBarContainer';
-import {
-  useBottomItem,
-  useDragCommands,
-  useDragContainer,
-  useDragItem,
-  useDragStore,
-  useSidebarItem,
-} from '../store';
 
 const CID = 'vue-spec-container';
 
@@ -35,6 +37,9 @@ afterEach(() => {
   store.componentCard = undefined;
   store.componentCardHeader = undefined;
   store.componentCardSidebarToggle = undefined;
+  for (const key of Object.keys(store.debugOrigins)) {
+    delete store.debugOrigins[key];
+  }
 });
 
 function mountSetup<T>(setup: () => T) {
@@ -184,8 +189,14 @@ describe('init hooks', () => {
     const id = api().itemId.value;
     expect(useDragItem(CID).getItems('popup')).toContain(id);
     expect(useDragItem(CID).getItemsShow('popup')).toContain(id);
+    expect(
+      listDragDebugItems(CID).find((row) => row.id === id)?.origin?.hook,
+    ).toBe('useInitItem');
     wrapper.unmount();
     expect(useDragItem(CID).getItems('popup')).not.toContain(id);
+    expect(
+      listDragDebugItems(CID).find((row) => row.id === id),
+    ).toBeUndefined();
   });
 
   it('useInitItem uses stable id when provided', async () => {

@@ -1,8 +1,9 @@
 import type { LocationSideBar } from '@hungpvq/draggable';
 import { getUUIDv4 } from '@hungpvq/shared';
-import { computed, onMounted, onUnmounted, Ref, ref } from 'vue';
+import { computed, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
 
-import { useDragItem, useDrawerItem } from '../store';
+import { useDragItem, useDragStore, useDrawerItem } from '@hungpvq/draggable';
+import { recordDragItemOrigin } from '../debug/origin';
 
 export function useInitDrawer(
   containerId: string,
@@ -24,6 +25,7 @@ export function useInitDrawer(
   }
   const drawerStore = useDrawerItem(containerId);
   const itemStore = useDragItem(containerId);
+  const dragStore = useDragStore();
 
   const locationRef = computed(() => {
     const loc = optionDefault.location;
@@ -41,10 +43,31 @@ export function useInitDrawer(
       setZIndex,
       setShow,
     });
+    recordDragItemOrigin(containerId, itemId.value, 'useInitDrawer');
   });
   onUnmounted(() => {
     drawerStore.unRegisterDrawer(itemId.value);
   });
 
-  return { itemId };
+  watch(locationRef, (next, prev) => {
+    if (!next || next === prev) return;
+    drawerStore.moveDrawerLocation(itemId.value, next);
+    itemStore.registerAction(itemId.value, {
+      title: optionDefault.title,
+      type: optionDefault.type,
+      location: next,
+      setZIndex,
+      setShow,
+    });
+  });
+
+  const location = computed(() => {
+    const action = dragStore.container[containerId]?.actions?.[itemId.value];
+    if (action && 'location' in action && action.location) {
+      return action.location as LocationSideBar;
+    }
+    return locationRef.value;
+  });
+
+  return { itemId, location };
 }

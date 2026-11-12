@@ -1,15 +1,6 @@
 import '@hungpvq/draggable';
 import './style.css';
 /** Ensure React `configureDragStore` runs before any shell/hook consumers. */
-import './store';
-
-/**
- * Root barrel is an **explicit Stable allowlist** (+ experimental re-exports).
- * Do not reintroduce `export *`. See `libs/draggable/core/docs/stable-api.md`.
- *
- * Shell exports use import-then-export so Vite ESM binds names even when the
- * components graph is heavy (avoids "does not provide an export named …").
- */
 import {
   DraggableContainer,
   DraggableItemBottom,
@@ -19,6 +10,18 @@ import {
   DraggableItemPopup,
   DraggableItemSideBar,
 } from './components/draggable';
+import './store';
+
+/**
+ * Root barrel is an **explicit Stable allowlist** (+ experimental re-exports).
+ * Do not reintroduce `export *`. See `libs/draggable/core/docs/stable-api.md`.
+ *
+ * Shell exports use import-then-export so Vite ESM binds names even when the
+ * components graph is heavy (avoids "does not provide an export named …").
+ *
+ * ESM hoists every import before this body runs, so the tab registers after
+ * `./store` has already called `configureDragStore`.
+ */
 
 export {
   DraggableContainer,
@@ -62,19 +65,6 @@ export type {
 } from './hook/useComponent';
 export { useContainerOrder, useManagement } from './hook/useInitItem';
 
-// --- Stable: store + React wiring ---
-export {
-  useBottomItem,
-  useDragCommands,
-  useDragComponent,
-  useDragContainer,
-  useDragIsMobile,
-  useDragItem,
-  useDragLayout,
-  useDragStore,
-  useDrawerItem,
-  useSidebarItem,
-} from './store';
 export {
   useContainerReactive,
   useStoreReactive,
@@ -87,9 +77,11 @@ export { ContainerProvider, useContainerId } from './context/ContainerContext';
 export {
   ContextMenu,
   ContextMenuItem,
+  DragDebugViewer,
   Item,
   ItemList,
   ManagementControl,
+  registerDragDebugTab,
   ShowStatusDragItem,
   ShowStatusDrawer,
   ShowStatusSideBar,

@@ -18,7 +18,10 @@ withDefaults(
     :class="{ 'input-action-row--flush': flush }"
   >
     <slot />
-    <div class="input-action-row__action">
+    <div
+      v-if="$slots.action"
+      class="input-action-row__action"
+    >
       <slot name="action" />
     </div>
   </div>

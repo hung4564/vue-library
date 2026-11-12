@@ -42,15 +42,15 @@ export function SampleAttributeTableView(props: AttributeTableViewProps) {
         >
           {props.labels.clear}
         </MapControlButton>
-        <MapControlButton
-          variant="outlined"
-          size="small"
-          onClick={(e) => props.onExportClick(e.nativeEvent)}
-        >
-          {state.selectedIds.length
-            ? props.labels.exportSelected
-            : props.labels.export}
-        </MapControlButton>
+        {props.onExport ? (
+          <MapControlButton
+            variant="outlined"
+            size="small"
+            onClick={(e) => props.onExport?.(e.nativeEvent)}
+          >
+            {props.labels.export}
+          </MapControlButton>
+        ) : null}
       </div>
       {state.loading ? (
         <div className="sample-at-view__status">{props.labels.loading}</div>

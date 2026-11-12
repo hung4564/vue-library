@@ -1,4 +1,4 @@
-import type { LogAdapter, LogRecord } from '../types';
+import type { DebugRecord, LogAdapter, LogData } from '../types';
 import type { LogDataStore } from './types';
 
 /**
@@ -14,7 +14,7 @@ export class DataStoreLogAdapter implements LogAdapter {
     return this.store;
   }
 
-  log(record: LogRecord): void {
+  log(record: DebugRecord<LogData>): void {
     void this.store.append(record);
   }
 

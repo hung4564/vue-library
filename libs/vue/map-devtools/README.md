@@ -1,6 +1,6 @@
 # `@hungpvq/vue-map-devtools`
 
-Vue 3 map host for the shared-log Devtools shell, plus a pin-registered Dataset tab.
+Vue 3 map host for the shared-log Devtools shell, plus pin-registered Dataset and Draggable tabs.
 
 ## Install
 
@@ -53,6 +53,10 @@ Tear down global error capture with `uninstallDevtools()` when the host app unmo
 ## Dataset tab
 
 Roots → Inspect → Menus. Anonymous menus get debug-only `anon:…` ids (`idGenerated`). Details: [map-debug README](../../map-core/map-debug/README.md).
+
+## Draggable tab
+
+Declared in `@hungpvq/vue-draggable`. Lists items, toggles show, moves sidebar/drawer location, and shows component vs function origin.
 
 ## Stable API
 

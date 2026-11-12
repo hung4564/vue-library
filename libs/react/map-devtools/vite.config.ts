@@ -51,7 +51,6 @@ export default defineConfig(() => ({
         '@hungpvq/react-map-core',
         '@hungpvq/react-draggable',
         '@hungpvq/shared',
-        '@hungpvq/shared-store',
         '@hungpvq/shared-log',
         '@hungpvq/react-shared-log',
         '@hungpvq/react-ui-core',

@@ -10,7 +10,8 @@ import {
   watch,
 } from 'vue';
 
-import { useBottomItem, useDragItem } from '../store';
+import { useBottomItem, useDragItem } from '@hungpvq/draggable';
+import { recordDragItemOrigin } from '../debug/origin';
 
 function rawCard(component: unknown) {
   if (component && typeof component === 'object') {
@@ -64,6 +65,7 @@ export function useInitBottom(
     if (show.value) {
       store.registerBottomShow(itemId.value, true);
     }
+    recordDragItemOrigin(containerId, itemId.value, 'useInitBottom');
   });
   onUnmounted(() => {
     store.unRegisterBottom(itemId.value);

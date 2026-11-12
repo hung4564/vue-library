@@ -1,8 +1,8 @@
 import { type ReactNode, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+import { useDragContainer } from '@hungpvq/draggable';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
-import { useDragContainer } from '../../../store';
 import { useContainerReactive } from '../../../store/useStoreReactive';
 
 export interface BottomModuleProps {

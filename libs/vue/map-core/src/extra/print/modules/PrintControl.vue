@@ -6,7 +6,6 @@ import { mdiPrinterOutline } from '@mdi/js';
 import { saveAs } from 'file-saver';
 import { ref } from 'vue';
 
-import { defineProps, withDefaults } from 'vue';
 import { useLang } from '../../../extra/lang/hook';
 import { useMapControl } from '../../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';

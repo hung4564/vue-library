@@ -1,8 +1,8 @@
 import { type Component, computed } from 'vue';
 
+import { useDragComponent } from '@hungpvq/draggable';
 import DragCard from '../components/parts/DragCard.vue';
 import DragHeader from '../components/parts/DragHeader.vue';
-import { useDragComponent } from '../store';
 
 export type ShareCardComponent = Component | string;
 export type ShareHeaderComponent = Component | string;

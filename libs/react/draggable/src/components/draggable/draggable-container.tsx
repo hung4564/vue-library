@@ -1,3 +1,4 @@
+import { LiveHookScope, useLiveHookDebug } from '@hungpvq/react-shared-log';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
   CSSProperties,
@@ -9,8 +10,8 @@ import {
   useState,
 } from 'react';
 
+import { useDragContainer, useDragStore } from '@hungpvq/draggable';
 import { ContainerProvider } from '../../context/ContainerContext';
-import { useDragContainer, useDragStore } from '../../store';
 import { useContainerReactive } from '../../store/useStoreReactive';
 import { BottomContainer } from './bottom/bottom-container';
 import { SidebarContainer } from './sidebar/sidebar-container';
@@ -85,6 +86,7 @@ export function DraggableContainer({
   const mobileBreakpointRef = useRef(mobileBreakpoint);
   mobileBreakpointRef.current = mobileBreakpoint;
 
+  const liveId = useLiveHookDebug('draggable-container');
   useContainerReactive(containerId);
   const dragStore = useDragStore();
   const drawer = dragStore.container[containerId]?.drawer;
@@ -179,55 +181,57 @@ export function DraggableContainer({
   }, [mobileBreakpoint, onResize]);
 
   return (
-    <ContainerProvider containerId={containerId}>
-      <div
-        ref={rootRef}
-        className={[
-          'draggable-root',
-          variant === 'plain' ? 'draggable-variant-plain' : '',
-          className,
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        style={drawerStyle}
-      >
+    <LiveHookScope id={liveId}>
+      <ContainerProvider containerId={containerId}>
         <div
-          className="drawer-slot drawer-slot-top"
-          id={`drawer-top-${containerId}`}
-        />
-        <div
-          className="drawer-slot drawer-slot-left"
-          id={`drawer-left-${containerId}`}
-        />
-        <div
-          className="draggable-container"
-          ref={boxRef}
-          id={containerId}
+          ref={rootRef}
+          className={[
+            'draggable-root',
+            variant === 'plain' ? 'draggable-variant-plain' : '',
+            className,
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          style={drawerStyle}
         >
-          {initDone && (
-            <>
-              <SidebarContainer location="left" />
-              <SidebarContainer location="right" />
-              <SidebarContainer location="top" />
-              <SidebarContainer location="bottom" />
-              <BottomContainer />
-              {children}
-            </>
-          )}
+          <div
+            className="drawer-slot drawer-slot-top"
+            id={`drawer-top-${containerId}`}
+          />
+          <div
+            className="drawer-slot drawer-slot-left"
+            id={`drawer-left-${containerId}`}
+          />
+          <div
+            className="draggable-container"
+            ref={boxRef}
+            id={containerId}
+          >
+            {initDone && (
+              <>
+                <SidebarContainer location="left" />
+                <SidebarContainer location="right" />
+                <SidebarContainer location="top" />
+                <SidebarContainer location="bottom" />
+                <BottomContainer />
+                {children}
+              </>
+            )}
+          </div>
+          <div
+            className="drawer-slot drawer-slot-right"
+            id={`drawer-right-${containerId}`}
+          />
+          <div
+            className="drawer-slot drawer-slot-bottom"
+            id={`drawer-bottom-${containerId}`}
+          />
+          <div
+            className="draggable-modal-layer"
+            id={`modal-layer-${containerId}`}
+          />
         </div>
-        <div
-          className="drawer-slot drawer-slot-right"
-          id={`drawer-right-${containerId}`}
-        />
-        <div
-          className="drawer-slot drawer-slot-bottom"
-          id={`drawer-bottom-${containerId}`}
-        />
-        <div
-          className="draggable-modal-layer"
-          id={`modal-layer-${containerId}`}
-        />
-      </div>
-    </ContainerProvider>
+      </ContainerProvider>
+    </LiveHookScope>
   );
 }

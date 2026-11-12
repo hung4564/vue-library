@@ -4,7 +4,12 @@ export default {
 };
 </script>
 <script setup lang="ts">
-import { focusFirst, restoreFocus } from '@hungpvq/draggable';
+import {
+  focusFirst,
+  restoreFocus,
+  useBottomItem,
+  useDragContainer,
+} from '@hungpvq/draggable';
 import {
   computed,
   inject,
@@ -23,7 +28,6 @@ import {
   withShareComponent,
 } from '../../../hook';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
-import { useBottomItem, useDragContainer } from '../../../store';
 import ContextMenu from '../../ContextMenu.vue';
 import ContextMenuItem from '../../ContextMenuItem.vue';
 import DragButton from '../../parts/DragButton.vue';

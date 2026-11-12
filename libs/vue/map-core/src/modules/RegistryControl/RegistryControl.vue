@@ -4,6 +4,7 @@ export default {
 };
 </script>
 <script setup lang="ts">
+import { useDragStore } from '@hungpvq/draggable';
 import {
   type ButtonInMobile,
   type ControlLayout,
@@ -15,18 +16,21 @@ import {
   type WithMapPropType,
 } from '@hungpvq/map-core';
 import { mdiButtonState } from '@hungpvq/map-core/toolbar';
-import { DraggableItemPopup, useDragStore } from '@hungpvq/vue-draggable';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiConsole } from '@mdi/js';
 import { computed, nextTick, onUnmounted, reactive, ref, watch } from 'vue';
 
-import { defineProps, withDefaults } from 'vue';
-import type { MapTabItem } from '../../components/map-tabs';
+import {
+  InputCheckbox,
+  InputSelect,
+  InputText,
+  type TabItem,
+  Tabs,
+} from '@hungpvq/vue-ui-core';
 import MapControlButton from '../../components/MapControlButton.vue';
-import MapTabs from '../../components/MapTabs.vue';
 import { useLang } from '../../extra/lang/hook';
 import { UniversalRegistry } from '../../extra/registry/plugin';
 import { useMapControl } from '../../extra/registry/useMapControl';
-import { InputCheckbox, InputSelect, InputText } from '@hungpvq/vue-ui-core';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow, WithShowProps } from '../../hooks/useShow';
 import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
@@ -106,8 +110,8 @@ const panelEdgeFields = computed(() => {
   };
 });
 
-const detailTabItems = computed((): MapTabItem[] => {
-  const items: MapTabItem[] = [
+const detailTabItems = computed((): TabItem[] => {
+  const items: TabItem[] = [
     {
       id: 'props',
       label: trans.value('map.registry-control.propsSection'),
@@ -522,7 +526,7 @@ onUnmounted(() => {
           class="map-registry-control map-registry-control--detail"
           :aria-label="detailTitle"
         >
-          <MapTabs
+          <Tabs
             v-model="detailTab"
             :items="detailTabItems"
           >
@@ -686,7 +690,7 @@ onUnmounted(() => {
                 </div>
               </div>
             </template>
-          </MapTabs>
+          </Tabs>
         </div>
       </DraggableItemPopup>
     </template>

@@ -1,4 +1,4 @@
-import { useDragContainer } from '../store';
+import { useDragContainer } from '@hungpvq/draggable';
 import { useContainerReactive } from '../store/useStoreReactive';
 
 export function useContainerSize(containerId: string) {

@@ -55,7 +55,7 @@ import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { loggerFactory } from '@hungpvq/shared-log';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiChevronRight, mdiClose, mdiInformation, mdiStar } from '@mdi/js';
-import { defineEmits, defineOptions, defineProps, ref } from 'vue';
+import { ref } from 'vue';
 
 defineOptions({ name: 'SampleLayerMenu' });
 

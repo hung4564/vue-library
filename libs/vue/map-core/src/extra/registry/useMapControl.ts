@@ -1,3 +1,4 @@
+import { useDragLayout, useDragStore } from '@hungpvq/draggable';
 import {
   boundsFromPanelPosition,
   buildMapControlHandle,
@@ -38,7 +39,6 @@ import {
   resolveToolbarSpecOptions,
   withLayoutToolbarOptions,
 } from '@hungpvq/map-core/toolbar';
-import { useDragLayout, useDragStore } from '@hungpvq/vue-draggable';
 import {
   computed,
   inject,

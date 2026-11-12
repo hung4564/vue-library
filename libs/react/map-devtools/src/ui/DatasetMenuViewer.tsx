@@ -12,8 +12,19 @@ import {
   type PartitionedMenuSummary,
 } from '@hungpvq/map-debug/dataset';
 import { MapControlButton } from '@hungpvq/react-map-core';
-import { TreeItem } from '@hungpvq/react-shared-log';
-import { CopyButton, InputActionRow, InputSelect } from '@hungpvq/react-ui-core';
+import {
+  DevtoolPanelCard,
+  DevtoolPanelContainer,
+  DevtoolPanelToolbar,
+} from '@hungpvq/react-shared-log';
+import {
+  CopyButton,
+  InputActionRow,
+  InputSelect,
+  List,
+  ListItem,
+  TreeItem,
+} from '@hungpvq/react-ui-core';
 import {
   useCallback,
   useEffect,
@@ -90,11 +101,11 @@ function DetailRow({
   copyValue?: string;
 }) {
   return (
-    <div className="dataset-viewer__row">
-      <span className="dataset-viewer__row-label">{label}</span>
-      <div className="dataset-viewer__row-value">{children}</div>
+    <div className="debug-list-item">
+      <span className="debug-list-item-label">{label}</span>
+      <div className="debug-list-item-value">{children}</div>
       {copyValue ? (
-        <div className="dataset-viewer__row-copy">
+        <div className="debug-list-item-copy">
           <CopyButton
             title={`Copy ${label}`}
             value={copyValue}
@@ -118,6 +129,15 @@ export function DatasetMenuViewer() {
   const [forest, setForest] = useState<DatasetTreeNode[]>([]);
   const [rootOptions, setRootOptions] = useState<DatasetNodeSummary[]>([]);
   const [snapshot, setSnapshot] = useState<DatasetInspectSnapshot | null>(null);
+  const ancestorSteps = useMemo(() => {
+    if (!snapshot?.hierarchy) return [];
+    const { pathIds, pathNames } = snapshot.hierarchy;
+    if (!pathIds || !pathNames) return [];
+    return pathIds.slice(0, -1).map((id, index) => ({
+      id,
+      name: pathNames[index] || id,
+    }));
+  }, [snapshot]);
   const [rootTypes, setRootTypes] = useState<string[]>([]);
   const [findType, setFindType] = useState('');
   const [findMiss, setFindMiss] = useState(false);
@@ -633,78 +653,83 @@ export function DatasetMenuViewer() {
     [menuBuckets],
   );
 
-  if (!ready) {
-    return (
-      <div className="dataset-viewer">
+  return (
+    <DevtoolPanelContainer
+      className="dataset-viewer"
+      title={
+        ready ? (
+          <DevtoolPanelToolbar
+            title={
+              snapshot ? (
+                <div
+                  className="dataset-viewer__current"
+                  title={snapshot.identity.id}
+                >
+                  <span
+                    className="dataset-viewer__kind"
+                    data-kind={snapshot.identity.kind}
+                  >
+                    {snapshot.identity.kind}
+                  </span>
+                  <span className="dataset-viewer__muted">
+                    {snapshot.identity.type}
+                  </span>
+                  <strong>{snapshot.identity.name}</strong>
+                </div>
+              ) : (
+                <p className="dataset-viewer__current dataset-viewer__muted">
+                  No dataset selected
+                </p>
+              )
+            }
+            actions={
+              hasDatasetSelection ? (
+                <>
+                  <MapControlButton
+                    variant="text"
+                    size="small"
+                    title="Clear dataset selection"
+                    onClick={clearSelection}
+                  >
+                    Clear
+                  </MapControlButton>
+                  <MapControlButton
+                    variant="text"
+                    size="small"
+                    title={actionLabel(
+                      actionPhase,
+                      actionKey,
+                      'dataset',
+                      'Pin dataset to vars.dataset',
+                    )}
+                    disabled={
+                      actionPhase === 'loading' && actionKey === 'dataset'
+                    }
+                    onClick={() => {
+                      void actionFeedbackRef.current.run('dataset', () => {
+                        getApi()?.pin('dataset');
+                      });
+                    }}
+                  >
+                    {actionLabel(actionPhase, actionKey, 'dataset', 'Pin')}
+                  </MapControlButton>
+                </>
+              ) : null
+            }
+          />
+        ) : undefined
+      }
+    >
+      {!ready ? (
         <p className="dataset-viewer__empty">
           Cần <code>@hungpvq/map-dataset</code> + <code>installDevtools()</code>
           . F12: <code>__hungpvqDatasetDebug.help()</code>
         </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="dataset-viewer">
-      <div className="dataset-viewer__toolbar">
-        {snapshot ? (
+      ) : (
+        <>
           <div
-            className="dataset-viewer__current"
-            title={snapshot.identity.id}
-          >
-            <span
-              className="dataset-viewer__kind"
-              data-kind={snapshot.identity.kind}
-            >
-              {snapshot.identity.kind}
-            </span>
-            <span className="dataset-viewer__muted">
-              {snapshot.identity.type}
-            </span>
-            <strong>{snapshot.identity.name}</strong>
-          </div>
-        ) : (
-          <p className="dataset-viewer__current dataset-viewer__muted">
-            No dataset selected
-          </p>
-        )}
-        <div className="dataset-viewer__actions">
-          {hasDatasetSelection ? (
-            <MapControlButton
-              variant="text"
-              size="small"
-              title="Clear dataset selection"
-              onClick={clearSelection}
-            >
-              Clear
-            </MapControlButton>
-          ) : null}
-          {hasDatasetSelection ? (
-            <MapControlButton
-              variant="text"
-              size="small"
-              title={actionLabel(
-                actionPhase,
-                actionKey,
-                'dataset',
-                'Pin dataset to vars.dataset',
-              )}
-              disabled={actionPhase === 'loading' && actionKey === 'dataset'}
-              onClick={() => {
-                void actionFeedbackRef.current.run('dataset', () => {
-                  getApi()?.pin('dataset');
-                });
-              }}
-            >
-              {actionLabel(actionPhase, actionKey, 'dataset', 'Pin')}
-            </MapControlButton>
-          ) : null}
-        </div>
-      </div>
-
-      <div
-        className="dataset-viewer__panes"
-        role="tablist"
+            className="dataset-viewer__panes"
+            role="tablist"
       >
         <div className="dataset-viewer__panes-tabs">
           {visiblePanes.map((p) => (
@@ -744,7 +769,7 @@ export function DatasetMenuViewer() {
 
       <div className="dataset-viewer__body">
         {pane === 'roots' ? (
-          <div
+          <DevtoolPanelCard
             className="dataset-viewer__roots"
             aria-label="Root datasets"
           >
@@ -753,27 +778,47 @@ export function DatasetMenuViewer() {
                 No root datasets on this map.
               </p>
             ) : (
-              <ul className="dataset-viewer__root-list">
+              <List dense divided>
                 {rootOptions.map((r) => (
-                  <li
+                  <ListItem
                     key={r.id}
-                    className={[
-                      'dataset-viewer__root-item',
-                      r.id === activeRootId ? 'is-selected' : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    aria-selected={r.id === activeRootId}
-                    role="button"
-                    tabIndex={0}
+                    selected={r.id === activeRootId}
+                    interactive
+                    dense
                     title={`Inspect ${r.name}`}
                     onClick={() => debugRoot(r.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        debugRoot(r.id);
-                      }
-                    }}
+                    prefix={
+                      <span
+                        className="dataset-viewer__kind"
+                        data-kind="root"
+                      >
+                        root
+                      </span>
+                    }
+                    suffix={
+                      <div
+                        className="dataset-viewer__root-actions"
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      >
+                        <MapControlButton
+                          variant="text"
+                          size="small"
+                          title={actionLabel(
+                            actionPhase,
+                            actionKey,
+                            'dataset',
+                            'Pin dataset to vars.dataset',
+                          )}
+                          disabled={
+                            actionPhase === 'loading' && actionKey === 'dataset'
+                          }
+                          onClick={() => pinRoot(r.id)}
+                        >
+                          {actionLabel(actionPhase, actionKey, 'dataset', 'Pin')}
+                        </MapControlButton>
+                      </div>
+                    }
                   >
                     <div
                       className="dataset-viewer__root-meta"
@@ -782,33 +827,11 @@ export function DatasetMenuViewer() {
                       <strong>{r.name}</strong>
                       <span className="dataset-viewer__muted">{r.type}</span>
                     </div>
-                    <div
-                      className="dataset-viewer__root-actions"
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => e.stopPropagation()}
-                    >
-                      <MapControlButton
-                        variant="text"
-                        size="small"
-                        title={actionLabel(
-                          actionPhase,
-                          actionKey,
-                          'dataset',
-                          'Pin dataset to vars.dataset',
-                        )}
-                        disabled={
-                          actionPhase === 'loading' && actionKey === 'dataset'
-                        }
-                        onClick={() => pinRoot(r.id)}
-                      >
-                        {actionLabel(actionPhase, actionKey, 'dataset', 'Pin')}
-                      </MapControlButton>
-                    </div>
-                  </li>
+                  </ListItem>
                 ))}
-              </ul>
+              </List>
             )}
-          </div>
+          </DevtoolPanelCard>
         ) : null}
 
         {pane === 'inspect' ? (
@@ -943,58 +966,95 @@ export function DatasetMenuViewer() {
                     </section>
 
                     <section className="dataset-viewer__section">
-                      <h3 className="dataset-viewer__section-h">Hierarchy</h3>
-                      <DetailRow label="Root">
-                        <MapControlButton
-                          variant="text"
-                          size="small"
-                          title={snapshot.hierarchy.rootId}
-                          onClick={() =>
-                            selectDataset(snapshot.hierarchy.rootId)
-                          }
-                        >
-                          {snapshot.hierarchy.rootName}
-                        </MapControlButton>
-                      </DetailRow>
-                      <DetailRow label="Parent">
-                        {snapshot.hierarchy.parentId ? (
-                          <MapControlButton
-                            variant="text"
-                            size="small"
-                            title={snapshot.hierarchy.parentId}
-                            onClick={() =>
-                              selectDataset(
-                                snapshot.hierarchy.parentId as string,
-                              )
-                            }
-                          >
-                            {snapshot.hierarchy.parentName || '—'}
-                          </MapControlButton>
-                        ) : (
-                          <span>(none — this is a root)</span>
-                        )}
-                      </DetailRow>
-                      <DetailRow label="Children">
-                        <span>{snapshot.hierarchy.childCount}</span>
-                      </DetailRow>
-                      {snapshot.hierarchy.children.length > 0 ? (
-                        <ul className="dataset-viewer__child-list">
-                          {snapshot.hierarchy.children.map((c) => (
-                            <li key={c.id}>
-                              <MapControlButton
-                                variant="text"
-                                size="small"
-                                onClick={() => selectDataset(c.id)}
+                      <h3 className="dataset-viewer__section-h">Hierarchy Flow</h3>
+
+                      <div className="dataset-flow">
+                        {/* Stepper path from Root to Current */}
+                        <div className="dataset-flow__trail">
+                          {ancestorSteps.map((step) => (
+                            <span key={step.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                              <button
+                                type="button"
+                                className="dataset-flow__step"
+                                title={`Inspect ${step.name} (${step.id})`}
+                                onClick={() => selectDataset(step.id)}
                               >
-                                {c.name}
-                                <span className="dataset-viewer__muted">
-                                  {c.type}
-                                </span>
-                              </MapControlButton>
-                            </li>
+                                <span>{step.name}</span>
+                              </button>
+                              <span className="dataset-flow__arrow">➔</span>
+                            </span>
                           ))}
-                        </ul>
-                      ) : null}
+
+                          {/* Current active dataset */}
+                          <span
+                            className="dataset-flow__step is-current"
+                            title={snapshot.identity.id}
+                          >
+                            <span
+                              className="dataset-viewer__kind"
+                              data-kind={snapshot.identity.kind}
+                              style={{ marginRight: '4px' }}
+                            >
+                              {snapshot.identity.kind}
+                            </span>
+                            <strong>{snapshot.identity.name}</strong>
+                            <span
+                              className="dataset-viewer__muted"
+                              style={{ marginLeft: '4px' }}
+                            >
+                              ({snapshot.identity.type})
+                            </span>
+                          </span>
+                        </div>
+
+                        {/* Children branch (if any) */}
+                        {snapshot.hierarchy.children && snapshot.hierarchy.children.length > 0 ? (
+                          <div className="dataset-flow__branch">
+                            <span className="dataset-flow__branch-title">
+                              ↳ Children ({snapshot.hierarchy.children.length})
+                            </span>
+                            <div className="dataset-flow__children">
+                              {snapshot.hierarchy.children.map((child) => (
+                                <button
+                                  key={child.id}
+                                  type="button"
+                                  className="dataset-flow__child-chip"
+                                  title={`Inspect ${child.name} (${child.id})`}
+                                  onClick={() => selectDataset(child.id)}
+                                >
+                                  <span
+                                    className="dataset-viewer__kind"
+                                    data-kind="leaf"
+                                    style={{ fontSize: '8px', padding: '0 3px' }}
+                                  >
+                                    L
+                                  </span>
+                                  <span>{child.name}</span>
+                                  <span className="dataset-viewer__muted">{child.type}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ) : null}
+
+                        {/* Dependency pipeline (dependsOn) */}
+                        {snapshot.dependsOn && snapshot.dependsOn.length > 0 ? (
+                          <div className="dataset-flow__depends">
+                            <span style={{ fontWeight: 600 }}>⚡ Depends on:</span>
+                            {snapshot.dependsOn.map((dep) => (
+                              <code
+                                key={dep}
+                                className="dataset-viewer__mono"
+                                style={{ background: '#fff', padding: '1px 4px', borderRadius: '3px' }}
+                              >
+                                {dep}
+                              </code>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+
+                      {/* Metadata details */}
                       <DetailRow label="Depth">
                         <span>{snapshot.hierarchy.depth}</span>
                       </DetailRow>
@@ -1136,34 +1196,51 @@ export function DatasetMenuViewer() {
                             {items.length}
                           </span>
                         </div>
-                        <ul>
+                        <List dense divided>
                           {items.map((m) => (
-                            <li
+                            <ListItem
                               key={
                                 m.id ||
                                 m.key ||
                                 `${bucket}-${m.type}-${m.name || ''}`
                               }
-                              className={[
-                                'dataset-viewer__menu-item',
-                                m.hidden || m.disabled ? 'is-muted' : '',
+                              selected={
                                 (m.id || m.key || m.name || m.type) ===
                                 selectedMenuId
-                                  ? 'is-selected'
-                                  : '',
-                              ]
-                                .filter(Boolean)
-                                .join(' ')}
-                              role="button"
-                              tabIndex={0}
+                              }
+                              disabled={m.disabled}
+                              interactive
+                              dense
                               title={m.name || m.id || bucket}
                               onClick={() => selectMenu(m)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  e.preventDefault();
-                                  selectMenu(m);
-                                }
-                              }}
+                              suffix={
+                                <span className="dataset-viewer__flags">
+                                  <span
+                                    className="dataset-viewer__chip"
+                                    data-source={m.source}
+                                  >
+                                    {m.source}
+                                  </span>
+                                  {m.idGenerated ? (
+                                    <span
+                                      className="dataset-viewer__chip"
+                                      data-source="generated"
+                                    >
+                                      anon
+                                    </span>
+                                  ) : null}
+                                  {m.hidden ? (
+                                    <span className="dataset-viewer__chip">
+                                      hidden
+                                    </span>
+                                  ) : null}
+                                  {m.disabled ? (
+                                    <span className="dataset-viewer__chip">
+                                      disabled
+                                    </span>
+                                  ) : null}
+                                </span>
+                              }
                             >
                               <span className="dataset-viewer__menu-name">
                                 {m.name || m.id || `(${m.type || 'unnamed'})`}
@@ -1173,35 +1250,9 @@ export function DatasetMenuViewer() {
                                   {m.id}
                                 </span>
                               ) : null}
-                              <span className="dataset-viewer__flags">
-                                <span
-                                  className="dataset-viewer__chip"
-                                  data-source={m.source}
-                                >
-                                  {m.source}
-                                </span>
-                                {m.idGenerated ? (
-                                  <span
-                                    className="dataset-viewer__chip"
-                                    data-source="generated"
-                                  >
-                                    anon
-                                  </span>
-                                ) : null}
-                                {m.hidden ? (
-                                  <span className="dataset-viewer__chip">
-                                    hidden
-                                  </span>
-                                ) : null}
-                                {m.disabled ? (
-                                  <span className="dataset-viewer__chip">
-                                    disabled
-                                  </span>
-                                ) : null}
-                              </span>
-                            </li>
+                            </ListItem>
                           ))}
-                        </ul>
+                        </List>
                       </div>
                     );
                   })
@@ -1342,6 +1393,8 @@ export function DatasetMenuViewer() {
       <p className="dataset-viewer__foot">
         F12 · <code>__hungpvqDatasetDebug.help()</code>
       </p>
-    </div>
-  );
+    </>
+  )}
+</DevtoolPanelContainer>
+);
 }

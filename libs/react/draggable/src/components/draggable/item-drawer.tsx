@@ -1,5 +1,7 @@
 import type { LocationSideBar } from '@hungpvq/draggable';
 import { focusFirst, restoreFocus } from '@hungpvq/draggable';
+import { useLiveHookDebug } from '@hungpvq/react-shared-log';
+import { trackLiveEventAction } from '@hungpvq/shared-log';
 import {
   type MouseEvent as ReactMouseEvent,
   type ReactNode,
@@ -12,6 +14,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
+import { useDragLayout, useDrawerItem } from '@hungpvq/draggable';
 import { useContainerId } from '../../context/ContainerContext';
 import {
   ShareCardComponent,
@@ -24,7 +27,6 @@ import {
   useShow,
 } from '../../hook';
 import { useContainerSize } from '../../hook/useContainerSize';
-import { useDragLayout, useDrawerItem } from '../../store';
 import { useContainerReactive } from '../../store/useStoreReactive';
 import { ContextMenu, type ContextMenuRef } from '../ContextMenu';
 import { ContextMenuItem } from '../ContextMenuItem';
@@ -64,7 +66,7 @@ export function DraggableItemDrawer({
   disabledHeader,
   disabledClose,
   highlightMs,
-  location = 'right',
+  location: propLocation = 'right',
   size: propSize = 360,
   minSize = 200,
   maxSize,
@@ -79,20 +81,27 @@ export function DraggableItemDrawer({
 }: DraggableDrawerProps) {
   const containerId = useContainerId(propContainerId);
   useContainerReactive(containerId);
+  const liveId = useLiveHookDebug('DraggableItemDrawer');
+  const onLog = useMemo(
+    () => trackLiveEventAction('DraggableItemDrawer', liveId),
+    [liveId],
+  );
   const { show, setShow, open, close } = useShow(
     { show: propShow },
     {
       'update:show': onUpdateShow,
       close: onClose,
     },
+    undefined,
+    onLog,
   );
-  const { itemId } = useInitDrawer(
+  const { itemId, location } = useInitDrawer(
     containerId,
     setShow,
     {
       title,
       type: 'item-drawer',
-      location,
+      location: propLocation,
     },
     stableId,
   );

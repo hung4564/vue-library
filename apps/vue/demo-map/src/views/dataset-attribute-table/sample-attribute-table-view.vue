@@ -60,15 +60,12 @@ function onRowClick(id: string) {
         {{ props.labels.clear }}
       </MapControlButton>
       <MapControlButton
+        v-if="props.onExport"
         variant="outlined"
         size="small"
-        @click="props.onExportClick($event)"
+        @click="props.onExport?.($event)"
       >
-        {{
-          state.selectedIds.length
-            ? props.labels.exportSelected
-            : props.labels.export
-        }}
+        {{ props.labels.export }}
       </MapControlButton>
     </div>
     <div

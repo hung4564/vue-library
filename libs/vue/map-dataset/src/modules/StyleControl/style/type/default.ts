@@ -1,5 +1,12 @@
 import { buildConfigTabs, type Tab } from '@hungpvq/map-dataset/style';
-import { InputCheckbox, InputChoose, InputColorPicker, InputSelect, InputSlider, InputText } from '@hungpvq/vue-ui-core';
+import {
+  InputCheckbox,
+  InputChoose,
+  InputColorPicker,
+  InputSelect,
+  InputSlider,
+  InputText,
+} from '@hungpvq/vue-ui-core';
 
 import InputArrayIndex from '../field/InputArrayIndex.vue';
 import InputArrayXY from '../field/InputArrayXY.vue';

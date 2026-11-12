@@ -30,7 +30,6 @@ import {
   watch,
 } from 'vue';
 
-import { defineProps, withDefaults } from 'vue';
 import MapCommonButton from '../../../components/MapCommonButton.vue';
 import MapControlGroupButton from '../../../components/MapControlGroupButton.vue';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';

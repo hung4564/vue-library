@@ -67,7 +67,6 @@ import type { Position } from '@hungpvq/map-core';
 import type { MapControlButtonUIState } from '@hungpvq/map-core/toolbar';
 import { computed } from 'vue';
 
-import { defineProps } from 'vue';
 import MapCommonButton from './MapCommonButton.vue';
 import MapControlGroupButton from './MapControlGroupButton.vue';
 

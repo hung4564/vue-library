@@ -42,8 +42,8 @@ import {
   watch,
 } from 'vue';
 
+import { useDragComponent, useDragContainer } from '@hungpvq/draggable';
 import { useBottomContainer } from '../../../hook/useBottomContainer';
-import { useDragComponent, useDragContainer } from '../../../store';
 
 const slots = useSlots();
 const props = defineProps({

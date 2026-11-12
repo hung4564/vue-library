@@ -9,7 +9,6 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import { mdiMapLegend } from '@mdi/js';
 import { ref, shallowRef, watch } from 'vue';
 
-import { defineProps, withDefaults } from 'vue';
 import { InputCheckbox } from '@hungpvq/vue-ui-core';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import { useShow } from '../../../hooks/useShow';

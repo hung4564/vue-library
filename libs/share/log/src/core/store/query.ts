@@ -1,21 +1,21 @@
-import type { LogRecord } from '../types';
+import { extraString, recordArgs, recordExtra } from '../record';
+import type { DebugRecord, LogData } from '../types';
 import type { LogFilterQuery, LogLevelFilter } from './types';
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export function logActionId(log: LogRecord): string | undefined {
-  return log.header.actionId ?? log.header.requestId;
+export function logActionId(log: DebugRecord): string | undefined {
+  return log.header.actionId ?? extraString(log, 'requestId');
 }
 
-export function logSpanId(log: LogRecord): string | undefined {
-  return (
-    log.header.spanId ?? (log.header as { functionId?: string }).functionId
-  );
+export function logSpanId(log: DebugRecord): string | undefined {
+  return log.header.spanId ?? extraString(log, 'functionId');
 }
 
-export function logMapId(log: LogRecord): string | null {
-  if (log.header.mapId) return log.header.mapId;
+export function logMapId(log: DebugRecord): string | null {
+  const mapId = extraString(log, 'mapId');
+  if (mapId) return mapId;
   const namespaces = log.header.namespaces;
   if (namespaces.length > 0 && UUID_RE.test(namespaces[0]!)) {
     return namespaces[0]!;
@@ -23,7 +23,7 @@ export function logMapId(log: LogRecord): string | null {
   return null;
 }
 
-export function rootNamespace(log: LogRecord): string {
+export function rootNamespace(log: DebugRecord): string {
   return log.header.namespaces[0] ?? '';
 }
 
@@ -36,23 +36,24 @@ function formatArg(arg: unknown): string {
   }
 }
 
-export function entryText(log: LogRecord): string {
+export function entryText(log: DebugRecord): string {
+  const extra = recordExtra(log);
   return [
     log.header.level,
     log.header.index != null ? `#${log.header.index}` : '',
     log.header.namespaces.join(':'),
     logActionId(log),
-    log.header.requestId,
+    extra['requestId'],
     log.header.span,
     log.header.fn,
     logSpanId(log),
     log.header.parentSpanId,
-    log.header.control,
-    log.header.menuId,
-    log.header.menuName,
-    log.header.datasetId,
-    log.header.outcome,
-    ...log.args.map((arg) => formatArg(arg)),
+    extra['control'],
+    extra['menuId'],
+    extra['menuName'],
+    extra['datasetId'],
+    extra['outcome'],
+    ...recordArgs(log).map((arg) => formatArg(arg)),
   ]
     .filter(Boolean)
     .join(' ')
@@ -71,7 +72,7 @@ function compareDottedIndex(a: string, b: string): number {
 }
 
 /** Prefer hierarchical method `index` (`1`, `2.1`), then `ts`, then `id`. */
-export function compareLogOrder(a: LogRecord, b: LogRecord): number {
+export function compareLogOrder(a: DebugRecord, b: DebugRecord): number {
   const ai = a.header.index;
   const bi = b.header.index;
   if (ai != null && bi != null && ai !== bi) {
@@ -84,9 +85,9 @@ export function compareLogOrder(a: LogRecord, b: LogRecord): number {
 
 /** Internal matcher for {@link LogDataStore.list} (not a public package export). */
 export function matchLogRecords(
-  records: LogRecord[],
+  records: DebugRecord<LogData>[],
   query: LogFilterQuery = {},
-): LogRecord[] {
+): DebugRecord<LogData>[] {
   const searchValue = query.search ?? '';
   const levelValue: LogLevelFilter = query.level ?? 'all';
   const namespaceValue = query.namespace ?? 'all';

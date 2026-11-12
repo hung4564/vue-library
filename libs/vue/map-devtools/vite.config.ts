@@ -50,7 +50,6 @@ export default defineConfig({
         /^@hungpvq\/map-dataset\//,
         '@hungpvq/vue-map-core',
         '@hungpvq/vue-draggable',
-        '@hungpvq/shared-store',
         '@hungpvq/shared-log',
         '@hungpvq/vue-shared-log',
         '@hungpvq/vue-ui-core',

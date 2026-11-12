@@ -10,8 +10,6 @@ export {
   MapControlButtonGroupContext,
 } from './components/MapControlButton';
 export { MapControlGroupButton } from './components/MapControlGroupButton';
-export { MapTabs } from './components/MapTabs';
-export type { MapTabItem, MapTabsProps } from './components/MapTabs';
 export {
   MapContext,
   MapContextProvider,

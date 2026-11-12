@@ -2,12 +2,12 @@ import { act, cleanup, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { ContainerProvider } from '../../../context/ContainerContext';
 import {
   useDragContainer as getDragContainer,
   useDragStore as getDragStore,
   useSidebarItem,
-} from '../../../store';
+} from '@hungpvq/draggable';
+import { ContainerProvider } from '../../../context/ContainerContext';
 import { DraggableItemSideBar } from '../item-sidebar';
 import { SidebarContainer } from './sidebar-container';
 

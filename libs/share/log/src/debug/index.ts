@@ -14,7 +14,7 @@ export {
   LEVEL_FILTERS,
   objectArgs,
   shortActionId,
-  stringifyLogRecord,
+  stringifyDebugRecord,
   textMessage,
 } from './helpers/log-helpers';
 export type {
@@ -67,8 +67,10 @@ export {
   getDebugLogDataStore,
   getDebugLogs,
   getLogDebugStore,
+  isClearLogsOnNavigate,
   LOG_DEBUG_STORE_KEY,
   refreshDebugLogsFromStore,
+  setClearLogsOnNavigate,
   replaceDebugLogs,
   subscribeDebugData,
 } from './store';
@@ -78,5 +80,6 @@ export type {
   DebugLogStoreConfig,
   DebugLogStoreKind,
   DebugLogStoreOptions,
+  LiveInstanceRecord,
   LogDebugStore,
 } from './store';

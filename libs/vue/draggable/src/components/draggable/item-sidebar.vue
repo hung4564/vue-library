@@ -8,8 +8,9 @@ import type { LocationSideBar } from '@hungpvq/draggable';
 import { computed, inject, Ref, ref, toRef } from 'vue';
 
 import { trackLiveEventAction } from '@hungpvq/shared-log';
-import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
+import { useLiveHookDebug } from '@hungpvq/vue-shared-log';
 import {
+  useHighlight,
   useInitAction,
   useShow,
   withExpandEmit,
@@ -20,7 +21,7 @@ import {
 } from '../../hook';
 import { useInitSidebar } from '../../hook/useInitSidebar';
 import SidebarModule from './sidebar/sidebar-module.vue';
-useLiveHookDebug('DraggableItemSideBar');
+const liveId = useLiveHookDebug('DraggableItemSideBar');
 const props = defineProps({
   ...withShowProps,
   ...withShareComponent,
@@ -41,7 +42,7 @@ if (!containerId.value) {
 const { show, open, close } = useShow(
   props,
   emit,
-  trackLiveEventAction('DraggableItemSideBar'),
+  trackLiveEventAction('DraggableItemSideBar', liveId),
 );
 const c_location = computed<LocationSideBar>(() =>
   props.location != null
@@ -60,9 +61,11 @@ const { location, itemId } = useInitSidebar(
   },
   props.id,
 );
+const { isHighlight, setHighLight } = useHighlight();
 useInitAction(containerId.value, itemId.value, {
   open,
   close,
+  setHighLight,
 });
 </script>
 
@@ -71,6 +74,7 @@ useInitAction(containerId.value, itemId.value, {
     :container-id="containerId"
     :location="location"
     :item-id="itemId"
+    :highlight="isHighlight"
   >
     <template #title>
       <slot name="title">

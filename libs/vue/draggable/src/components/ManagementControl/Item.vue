@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import { useDragContainer } from '../../store';
+import { useDragContainer } from '@hungpvq/draggable';
 
 const TYPE_LABELS: Record<string, string> = {
   'item-popup': 'Popup',

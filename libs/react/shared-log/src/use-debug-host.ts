@@ -1,13 +1,14 @@
 import {
   ensureHungpvqDebugHost,
-  getDebugErrors,
-  getDebugLogs,
   subscribeDebugData,
-  type DebugErrorRecord,
-  type HungpvqDebugHost,
-  type LogRecord,
 } from '@hungpvq/shared-log';
 import { useSyncExternalStore } from 'react';
+
+import {
+  ensureReactLogUiStore,
+  readDebugHostSnapshot,
+  type ReactDebugHostSnapshot,
+} from './store';
 
 function subscribe(cb: () => void) {
   const host = ensureHungpvqDebugHost();
@@ -19,25 +20,35 @@ function subscribe(cb: () => void) {
   };
 }
 
-function getSnapshot() {
-  const host = ensureHungpvqDebugHost();
-  return {
-    host,
-    isOpen: host.isOpen(),
-    activeTab: host.getActiveTab(),
-    tabs: host.listTabs('react'),
-    logs: getDebugLogs(),
-    errors: getDebugErrors(),
-  };
+function sameTabs(
+  a: ReactDebugHostSnapshot['tabs'],
+  b: ReactDebugHostSnapshot['tabs'],
+): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  return a.every((tab, i) => tab === b[i]);
 }
 
-export function useDebugHost(): {
-  host: HungpvqDebugHost;
-  isOpen: boolean;
-  activeTab: string;
-  tabs: ReturnType<HungpvqDebugHost['listTabs']>;
-  logs: LogRecord[];
-  errors: DebugErrorRecord[];
-} {
+function getSnapshot(): ReactDebugHostSnapshot {
+  const ui = ensureReactLogUiStore();
+  const next = readDebugHostSnapshot();
+  const cached = ui.debugHostSnapshot;
+  if (
+    cached &&
+    cached.host === next.host &&
+    cached.isOpen === next.isOpen &&
+    cached.activeTab === next.activeTab &&
+    cached.logs === next.logs &&
+    cached.errors === next.errors &&
+    cached.clearOnNavigate === next.clearOnNavigate &&
+    sameTabs(cached.tabs, next.tabs)
+  ) {
+    return cached;
+  }
+  ui.debugHostSnapshot = next;
+  return next;
+}
+
+export function useDebugHost(): ReactDebugHostSnapshot {
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }

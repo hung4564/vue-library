@@ -3,11 +3,16 @@ import { describe, expect, it } from 'vitest';
 import * as api from './index';
 
 export const VUE_SHARED_LOG_RUNTIME_EXPORTS = [
-  'Devtools',
+  'DevtoolPanelCard',
+  'DevtoolPanelContainer',
+  'DevtoolPanelSplit',
+  'DevtoolPanelToolbar',
   'DevtoolsShell',
   'registerBuiltinDebugTabs',
   'registerDebugTab',
   'TreeItem',
+  'useDebugHost',
+  'useLiveHookDebug',
 ] as const;
 
 describe('public API surface', () => {

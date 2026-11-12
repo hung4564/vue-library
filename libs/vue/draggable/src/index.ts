@@ -62,27 +62,15 @@ export {
   useManagement,
 } from './hook/useInitItem';
 
-// --- Stable: store (after Vue configureDragStore) ---
-export {
-  useBottomItem,
-  useDragCommands,
-  useDragComponent,
-  useDragContainer,
-  useDragIsMobile,
-  useDragItem,
-  useDragLayout,
-  useDragStore,
-  useDrawerItem,
-  useSidebarItem,
-} from './store';
-
 // --- Experimental (also available as named imports; may change in a minor) ---
 export {
   ContextMenu,
   ContextMenuItem,
+  DragDebugViewer,
   Item,
   ItemList,
   ManagementControl,
+  registerDragDebugTab,
   ShowStatusDragItem,
   ShowStatusDrawer,
   ShowStatusSideBar,

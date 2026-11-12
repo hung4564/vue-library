@@ -165,7 +165,6 @@ import { mdiDelete, mdiLayersOutline, mdiPlus } from '@mdi/js';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 import { Icon } from '@hungpvq/vue-ui-core';
-import { defineProps, withDefaults } from 'vue';
 import MapCard from '../../../components/MapCard.vue';
 import MapControlButton from '../../../components/MapControlButton.vue';
 import MapImage from '../../../components/MapImage.vue';

@@ -1,4 +1,5 @@
 import type { LocationSideBar } from '@hungpvq/draggable';
+import { useLiveHookDebug } from '@hungpvq/react-shared-log';
 import { type ReactNode, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -10,6 +11,7 @@ export interface SidebarModuleProps {
   location: LocationSideBar;
   title?: ReactNode;
   afterTitle?: ReactNode;
+  highlight?: boolean;
   children?: ReactNode;
 }
 
@@ -19,8 +21,10 @@ export function SidebarModule({
   location,
   title,
   afterTitle,
+  highlight = false,
   children,
 }: SidebarModuleProps) {
+  useLiveHookDebug('sidebar-module');
   useContainerReactive(containerId);
   const { getShowForLocation } = useSideBarContainer(containerId);
   const titleTo = useMemo(
@@ -74,6 +78,14 @@ export function SidebarModule({
       return () => cancelAnimationFrame(frameId);
     }
   }, [isCurrentShow, titleTo, afterTitleTo, contentTo]);
+
+  useLayoutEffect(() => {
+    const card = document
+      .getElementById(contentTo)
+      ?.closest('.hungpvq-draggable-card');
+    card?.classList.toggle('highlight', highlight);
+    return () => card?.classList.remove('highlight');
+  }, [highlight, contentTo, isCurrentShow]);
 
   if (!isCurrentShow) return null;
 

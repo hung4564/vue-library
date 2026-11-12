@@ -21,8 +21,9 @@ import {
 } from 'vue';
 import VueDraggableResizable from 'vue-draggable-resizable';
 
+import { useDragLayout } from '@hungpvq/draggable';
 import { trackLiveEventAction } from '@hungpvq/shared-log';
-import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
+import { useLiveHookDebug } from '@hungpvq/vue-shared-log';
 import {
   useComponent,
   useContainerOrder,
@@ -35,9 +36,8 @@ import {
   withShowEmit,
   withShowProps,
 } from '../../hook';
-import { useDragLayout } from '../../store';
 import DragButton from '../parts/DragButton.vue';
-useLiveHookDebug('DraggableItemModal');
+const liveId = useLiveHookDebug('DraggableItemModal');
 
 const MODAL_Z_INDEX = 10000;
 
@@ -83,7 +83,7 @@ if (!containerId.value) {
 const { show, open, close } = useShow(
   props,
   emit,
-  trackLiveEventAction('DraggableItemModal'),
+  trackLiveEventAction('DraggableItemModal', liveId),
 );
 const { itemId, zIndex } = useInitItem(
   containerId.value,

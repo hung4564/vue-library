@@ -17,7 +17,7 @@ import {
   useMapControl,
   useShow,
 } from '@hungpvq/vue-map-core';
-import { defineEmits, defineProps, onMounted, Ref, ref, shallowRef } from 'vue';
+import { onMounted, Ref, ref, shallowRef } from 'vue';
 
 const emit = defineEmits(['close']);
 const props = defineProps<{ item: IDataset }>();

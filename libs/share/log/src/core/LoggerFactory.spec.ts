@@ -3,7 +3,9 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { runWithFunctionLog } from './function-log';
 import { packLogEvent, runWithLogEvent } from './log-event';
 import { LoggerFactory } from './LoggerFactory';
-import type { LogAdapter, LogRecord } from './types';
+import type { DebugRecord, LogAdapter, LogData } from './types';
+
+type Rec = DebugRecord<LogData>;
 import { useBrowserZoneStorageForTests } from './zone-context-storage';
 
 describe('LoggerFactory zone context', () => {
@@ -29,7 +31,7 @@ describe('LoggerFactory zone context', () => {
     });
 
     expect(factory.getContext()).toBeUndefined();
-    expect(records[0]?.header.mapId).toBe('m1');
+    expect(records[0]?.data.extra?.mapId).toBe('m1');
     expect(records[0]?.header.span).toBe('s1');
     expect(records[0]?.id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
@@ -127,10 +129,10 @@ describe('LoggerFactory zone context', () => {
     });
 
     const outerStart = records.find(
-      (r) => r.args[0] === 'START' && r.header.fn === 'outer',
+      (r) => r.data.args[0] === 'START' && r.header.fn === 'outer',
     );
     const innerStart = records.find(
-      (r) => r.args[0] === 'START' && r.header.fn === 'inner',
+      (r) => r.data.args[0] === 'START' && r.header.fn === 'inner',
     );
     expect(outerStart?.header.spanId).toBeTruthy();
     expect(outerStart?.header.parentSpanId).toBeUndefined();
@@ -138,10 +140,10 @@ describe('LoggerFactory zone context', () => {
     expect(innerStart?.header.actionId).toBe(outerStart?.header.actionId);
 
     const outerEnd = records.find(
-      (r) => r.args[0] === 'END' && r.header.fn === 'outer',
+      (r) => r.data.args[0] === 'END' && r.header.fn === 'outer',
     );
-    expect(outerEnd?.header.durationMs).toBeTypeOf('number');
-    expect(outerEnd?.header.outcome).toBe('ok');
+    expect(outerEnd?.data.extra?.durationMs).toBeTypeOf('number');
+    expect(outerEnd?.data.extra?.outcome).toBe('ok');
   });
 
   it('hierarchical index nests under runWithFunctionLog', () => {
@@ -218,11 +220,11 @@ describe('LoggerFactory zone context', () => {
 
     expect(httpReq).toBeTruthy();
     expect(httpReq).not.toBe(action);
-    const done = records.find((r) => r.args[0] === 'HTTP_DONE');
-    expect(done?.header.requestId).toBe(httpReq);
-    expect(done?.header.httpStatus).toBe(200);
-    expect(done?.header.durationMs).toBeTypeOf('number');
-    expect(done?.header.outcome).toBe('ok');
+    const done = records.find((r) => r.data.args[0] === 'HTTP_DONE');
+    expect(done?.data.extra?.requestId).toBe(httpReq);
+    expect(done?.data.extra?.httpStatus).toBe(200);
+    expect(done?.data.extra?.durationMs).toBeTypeOf('number');
+    expect(done?.data.extra?.outcome).toBe('ok');
   });
 
   it('orphan logger mints actionId not HTTP requestId', () => {
@@ -236,7 +238,7 @@ describe('LoggerFactory zone context', () => {
     const log = factory.createLogger().setNamespace('orphan', 0);
     log.info('outside');
     expect(records[0]?.header.actionId).toBeTruthy();
-    expect(records[0]?.header.requestId).toBeUndefined();
+    expect(records[0]?.data.extra?.requestId).toBeUndefined();
   });
 
   it('logger.with does not mutate parent namespaces', () => {
@@ -253,7 +255,7 @@ describe('LoggerFactory zone context', () => {
     log.with({ fn: 'p', span: 't' }).info('p');
 
     expect(records[0]?.header.namespaces).toEqual(['base', 'extra']);
-    expect(records[0]?.header.mapId).toBe('m');
+    expect(records[0]?.data.extra?.mapId).toBe('m');
     expect(records[1]?.header.namespaces).toEqual(['base']);
   });
 });
@@ -309,10 +311,10 @@ describe('LoggerFactory browser zone (sticky)', () => {
         ),
     );
 
-    const context = records.find((r) => r.args[0] === 'Context');
-    const executed = records.find((r) => r.args[0] === 'Handler executed');
-    const start = records.find((r) => r.args[0] === 'START');
-    const end = records.find((r) => r.args[0] === 'END');
+    const context = records.find((r) => r.data.args[0] === 'Context');
+    const executed = records.find((r) => r.data.args[0] === 'Handler executed');
+    const start = records.find((r) => r.data.args[0] === 'START');
+    const end = records.find((r) => r.data.args[0] === 'END');
     expect(start?.header.actionId).toBe('br-menu');
     expect(context?.header.actionId).toBe('br-menu');
     expect(executed?.header.actionId).toBe('br-menu');

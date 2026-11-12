@@ -1,7 +1,7 @@
 import type { ContainerStoreOtherAction } from '@hungpvq/draggable';
 import { onMounted } from 'vue';
 
-import { useDragItem } from '../store';
+import { useDragItem } from '@hungpvq/draggable';
 
 export function useInitAction(
   containerId: string,

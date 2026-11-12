@@ -24,7 +24,6 @@ import { InputSelect, InputText } from '@hungpvq/vue-ui-core';
 import { mdiPlus } from '@mdi/js';
 import { type Component, computed, onMounted, type Ref, ref, watch } from 'vue';
 
-import { defineEmits, defineOptions, defineProps } from 'vue';
 import { useMapDataset } from '../../store/dataset-api';
 import ConfigArchiveSettings from './config/archive-settings.vue';
 import ConfigFilegdbSettings from './config/filegdb-settings.vue';

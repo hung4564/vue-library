@@ -23,6 +23,7 @@ Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) Â
 | Store key         | `drag:core` (defineStore id / notify path prefix)                                                                                                                                                                                                                                        |
 | Layout            | `ContainerStore.layouts`, `useDragLayout` â†’ `setItemLayout` / `getItemLayout` / `getLayout` / `applyLayout`                                                                                                                                                                              |
 | Utils / a11y      | `checkIsFirst`, `checkIsLast`, `assertDefined`, `clampBounds`, `focusFirst`, `restoreFocus`, `trapTabKey`, `getFocusableElements`, `setModalSiblingsInert`, `getMenuItems`, `handleMenuKeydown`, `clearMenuTypeahead`                                                                    |
+| Debug protocol    | `listDragDebugItems`, `listDragDebugContainers`, `applyDragDebugAction`, `registerDragItemOrigin`, `captureDragOrigin`, `describeDragOrigin`, `formatDragOrigin`, `dragOriginKey`, `isInternalDragOriginName` (`DragDebugItem` / `DragItemOrigin`)                                       |
 | Package exports   | `.`, `./style.css`                                                                                                                                                                                                                                                                       |
 
 ## `@hungpvq/vue-draggable`
@@ -33,7 +34,7 @@ Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) Â
 | Items           | `DraggableItemPopup`, `DraggableItemFloat`, `DraggableItemBottom`, `DraggableItemModal`, `DraggableItemSideBar`, `DraggableItemDrawer`                                                                                                                                                                |
 | HOC             | `WithMobileHandle`                                                                                                                                                                                                                                                                                    |
 | Hooks           | `useInit*`, `useShow` / `useExpand` / `useHighlight`, `useSideBarContainer`, `useBottomContainer`, `useComponent`, `useContainerSize`, `useContainerOrder`, `useManagement`, `useIcon`, `withShow*` / `withExpand*` / `withShare*` helpers                                                            |
-| Store           | Re-exports of Stable core store APIs after Vue `configureDragStore` (includes `useDragCommands`, `useDragLayout`)                                                                                                                                                                                     |
+| Store           | Importing the adapter runs Vue `configureDragStore`. Store APIs (`useDragCommands`, `useDragLayout`, `useDragStore`, â€¦) stay on `@hungpvq/draggable`                                                                                                                                                  |
 | Props / events  | Documented `id` (stable item id), `show` / `v-model:show`, `containerId`, `title`, sidebar `titleNode` (React; Vue `#title` slot), `location`, `highlightMs`, size/position props; popup/modal `update:bounds` (also written to `layouts`); controlled `left`/`top`/`width`/`height` sync after mount |
 | Package exports | `.`, `./style.css`                                                                                                                                                                                                                                                                                    |
 
@@ -45,7 +46,7 @@ Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) Â
 | HOC             | `WithMobileHandle`                                                                                                                                                                            |
 | Hooks           | Same Stable hook set as Vue (plus React `useContainerSize` module)                                                                                                                            |
 | React-only      | `ContainerProvider` / `useContainerId`, `useStoreReactive`, `useContainerReactive`                                                                                                            |
-| Store           | Re-exports of Stable core store APIs after React `configureDragStore` (includes `useDragCommands`, `useDragLayout`)                                                                           |
+| Store           | Importing the adapter runs React `configureDragStore`. Store APIs (`useDragCommands`, `useDragLayout`, `useDragStore`, â€¦) stay on `@hungpvq/draggable`                                        |
 | Types           | Import from `@hungpvq/draggable` (adapters do **not** re-export core types/factories)                                                                                                         |
 | Props / events  | Documented `id`, `show` + `onUpdateShow`, `containerId`, `location`, `mobileBreakpoint`, `highlightMs`, size/position props; popup/modal `onBoundsChange`; controlled bounds sync after mount |
 | Package exports | `.`, `./style.css`                                                                                                                                                                            |
@@ -65,7 +66,7 @@ Each color/font token falls back to the matching `--map-*` token, then a hardcod
 ## Cookbook: persist layout
 
 ```ts
-import { useDragLayout, type PanelSnapshot } from '@hungpvq/draggable'; // or vue-/react-draggable store re-export
+import { useDragLayout, type PanelSnapshot } from '@hungpvq/draggable';
 
 const KEY = 'my-app:draggable-layout';
 const layout = useDragLayout(containerId);
@@ -84,10 +85,10 @@ Popup/modal drag-stop writes `layouts[id].bounds`; drawer writes `size` / `locat
 
 Still exported from the **root** barrel for 1.x compatibility; treat as unstable (may change in a **minor**). Source module: `experimental.ts` in each adapter.
 
-| Package | Experimental symbols                                                                                                 |
-| ------- | -------------------------------------------------------------------------------------------------------------------- |
-| Vue     | `ManagementControl`, `ContextMenu`, `ContextMenuItem`                                                                |
-| React   | `ManagementControl`, `Item`, `ItemList`, `ShowStatus*`, `ContextMenu`, `ContextMenuItem` (+ related props/ref types) |
+| Package | Experimental symbols                                                                                                                                            |
+| ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Vue     | `ManagementControl`, `ContextMenu`, `ContextMenuItem`, `DragDebugViewer`, `registerDragDebugTab`                                                                |
+| React   | `ManagementControl`, `Item`, `ItemList`, `ShowStatus*`, `ContextMenu`, `ContextMenuItem`, `DragDebugViewer`, `registerDragDebugTab` (+ related props/ref types) |
 
 **ContextMenu** keyboard/a11y: Esc close, Arrow/Home/End, Enter/Space, typeahead, focus restore. Prefer `ContextMenuItem` inside `<ul class="context-menu">`. Not a full WAI-ARIA menu yet (no submenu). See [context-menu.md](./context-menu.md), [a11y.md](./a11y.md), demo-draggable **Menu** (`#/menu`).
 

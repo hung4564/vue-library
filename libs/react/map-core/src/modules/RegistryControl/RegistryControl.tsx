@@ -12,17 +12,22 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import {
   DraggableItemPopup,
   useContainerReactive,
-  useDragStore,
 } from '@hungpvq/react-draggable';
 import { mdiConsole } from '@mdi/js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { useDragStore } from '@hungpvq/draggable';
+import {
+  InputCheckbox,
+  InputSelect,
+  InputText,
+  Tabs,
+  type TabItem,
+} from '@hungpvq/react-ui-core';
 import { MapControlButton } from '../../components/MapControlButton';
-import { type MapTabItem, MapTabs } from '../../components/MapTabs';
 import { useLang } from '../../extra/lang/hook';
 import { UniversalRegistry } from '../../extra/registry/plugin';
 import { useMapControl } from '../../extra/registry/useMapControl';
-import { InputCheckbox, InputSelect, InputText } from '@hungpvq/react-ui-core';
 import { defaultMapProps, useMap } from '../../hooks/useMap';
 import { useShow } from '../../hooks/useShow';
 import {
@@ -221,8 +226,8 @@ export function RegistryControl(props: RegistryControlProps) {
     };
   }, [layoutDraft.position]);
 
-  const detailTabItems = useMemo((): MapTabItem[] => {
-    const items: MapTabItem[] = [
+  const detailTabItems = useMemo((): TabItem[] => {
+    const items: TabItem[] = [
       {
         id: 'props',
         label: trans('map.registry-control.propsSection'),
@@ -514,7 +519,7 @@ export function RegistryControl(props: RegistryControlProps) {
               className="map-registry-control map-registry-control--detail"
               aria-label={detailTitle}
             >
-              <MapTabs
+              <Tabs
                 items={detailTabItems}
                 value={detailTab}
                 onChange={setDetailTab}

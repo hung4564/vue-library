@@ -32,11 +32,15 @@ import {
   LayerControl,
   useMapDataset,
 } from '@hungpvq/react-map-dataset';
-import { DevtoolsControl } from '@hungpvq/react-map-devtools';
+import {
+  DevtoolsControl,
+  installDatasetDebug,
+} from '@hungpvq/react-map-devtools';
 import { DrawControl, InspectControl } from '@hungpvq/react-map-draw';
 import { mdiPlus } from '@mdi/js';
 import { useEffect, useMemo, useState } from 'react';
 
+import { registerDragDebugTab } from '@hungpvq/react-draggable';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
@@ -81,6 +85,13 @@ export function AllMapView() {
   const [isMobile, setIsMobile] = useState(
     () => typeof window !== 'undefined' && window.matchMedia(MOBILE_MQ).matches,
   );
+  useEffect(() => {
+    installDatasetDebug();
+    const unregisterDatasetDebugTab = registerDragDebugTab();
+    return () => {
+      unregisterDatasetDebugTab();
+    };
+  }, []);
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_MQ);
     const onChange = () => {

@@ -16,8 +16,9 @@ import {
   watch,
 } from 'vue';
 
+import { useDragLayout, useDrawerItem } from '@hungpvq/draggable';
 import { trackLiveEventAction } from '@hungpvq/shared-log';
-import { useLiveHookDebug } from '@hungpvq/shared-log/vue';
+import { useLiveHookDebug } from '@hungpvq/vue-shared-log';
 import {
   useComponent,
   useContainerSize,
@@ -30,11 +31,10 @@ import {
   withShowProps,
 } from '../../hook';
 import { useInitDrawer } from '../../hook/useInitDrawer';
-import { useDragLayout, useDrawerItem } from '../../store';
 import ContextMenu from '../ContextMenu.vue';
 import ContextMenuItem from '../ContextMenuItem.vue';
 import DragButton from '../parts/DragButton.vue';
-useLiveHookDebug('DraggableItemDrawer');
+const liveId = useLiveHookDebug('DraggableItemDrawer');
 
 const { CloseIcon, SidebarOpenMenu } = useIcon();
 
@@ -67,25 +67,24 @@ if (!containerId.value) {
   throw new Error('Not set container id');
 }
 
-const location = computed(() => props.location as LocationSideBar);
-const isHorizontal = computed(
-  () => location.value === 'left' || location.value === 'right',
-);
-
+const propLocation = computed(() => props.location as LocationSideBar);
 const { show, open, close } = useShow(
   props,
   emit,
-  trackLiveEventAction('DraggableItemDrawer'),
+  trackLiveEventAction('DraggableItemDrawer', liveId),
 );
-const { itemId } = useInitDrawer(
+const { itemId, location } = useInitDrawer(
   containerId.value,
   show,
   {
     title: props.title,
     type: 'item-drawer',
-    location,
+    location: propLocation,
   },
   props.id,
+);
+const isHorizontal = computed(
+  () => location.value === 'left' || location.value === 'right',
 );
 const { isHighlight, setHighLight } = useHighlight(props.highlightMs);
 useInitAction(containerId.value, itemId.value, {

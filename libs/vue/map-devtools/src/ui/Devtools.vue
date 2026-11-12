@@ -6,7 +6,6 @@
 import type { WithMapPropType } from '@hungpvq/map-core';
 import type { WithShowProps } from '@hungpvq/vue-map-core';
 
-import { defineProps, withDefaults } from 'vue';
 import DevtoolsControl from './DevtoolsControl.vue';
 
 /**

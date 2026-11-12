@@ -7,6 +7,7 @@ export type MapDebugStore = {
   dataset?: unknown;
   installed: boolean;
   __cleanup__: Array<() => void>;
+  errorUnsub?: () => void;
 };
 
 export function getMapDebugStore(): MapDebugStore {
@@ -20,12 +21,6 @@ export function addClearFunctionLog(cleanup: () => void): void {
   const bag = getMapDebugStore();
   if (!bag.__cleanup__) bag.__cleanup__ = [];
   bag.__cleanup__.push(cleanup);
-}
-
-export function clearFunctionLog(): void {
-  const bag = getMapDebugStore();
-  bag.__cleanup__?.forEach((fn) => fn());
-  bag.__cleanup__ = [];
 }
 
 export function isMapDevtoolsInstalled(): boolean {

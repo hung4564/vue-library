@@ -514,7 +514,7 @@ const DEMO_PAGE_GUIDES: Record<string, BilingualDemoPageGuide> = {
         [
           'install',
           'Install pattern',
-          'App shell calls installDevtools() once; each <Map> mounts <Devtools /> / <DevtoolsControl />.',
+          'App shell calls installDevtools() once; each <Map> mounts <DevtoolsControl />.',
         ],
         [
           'multi',
@@ -534,7 +534,7 @@ const DEMO_PAGE_GUIDES: Record<string, BilingualDemoPageGuide> = {
         [
           'install',
           'Cách cài',
-          'App shell gọi installDevtools() một lần; mỗi <Map> mount <Devtools /> / <DevtoolsControl />.',
+          'App shell gọi installDevtools() một lần; mỗi <Map> mount <DevtoolsControl />.',
         ],
         [
           'multi',

@@ -1,13 +1,15 @@
 # Map Devtools
 
-Generic debug tabs (**Store**, **Live**, **Logs**, **Errors**) live in `@hungpvq/shared-log` + `@hungpvq/vue-shared-log` / `@hungpvq/react-shared-log`. Map packages only host the popup and add the **Dataset** tab.
+Generic debug tabs (**Store**, **Live**, **Logs**, **Errors**) live in `@hungpvq/shared-log` + `@hungpvq/vue-shared-log` / `@hungpvq/react-shared-log`. `useLiveHookDebug` / `LiveHookScope` are on those UI packages — `@hungpvq/shared-log` is vanilla JS only. Map packages host the popup, add the **Dataset** tab, and (when `*-draggable` is present) the **Draggable** tab declared in that package.
+
+Logs and Live share one envelope: `{ id, header, data }`. Case-specific log fields sit in `data.extra`; Live payload is `data` (`event`, `instanceId`, `component`, …). `uninstallDebug` / HMR does not wipe persisted IndexedDB logs — only Clear does.
 
 | Package                       | Bootstrap           | Panel                                   |
 | ----------------------------- | ------------------- | --------------------------------------- |
 | `@hungpvq/vue-map-devtools`   | `installDevtools()` | Mount `<Devtools />` **inside** `<Map>` |
 | `@hungpvq/react-map-devtools` | `installDevtools()` | Mount `<Devtools />` **inside** `<Map>` |
 
-`installDevtools()` calls `installDebug()` from `@hungpvq/shared-log` (default IndexedDB on `log:debug`), registers built-in tabs, wires `errorHandler.onError` → `reportDebugError`, and (when `map-dataset` is present) `installDatasetDebug()` + pin-registers the Dataset tab. F12: `window.__hungpvqDebug` (tabs) and `window.__hungpvqDatasetDebug` (dataset inspect).
+`installDevtools()` calls `installDebug()` from `@hungpvq/shared-log` (default IndexedDB on `log:debug`), registers built-in tabs, wires `errorHandler.onError` → `reportDebugError`, pin-registers the Dataset tab when `map-dataset` is present, and the **Draggable** tab when `*-draggable` is present (`registerDragDebugTab` is declared in that package). F12: `window.__hungpvqDebug` (tabs) and `window.__hungpvqDatasetDebug` (dataset inspect).
 
 Standalone (no map): mount `DevtoolsShell` from `*-shared-log` and register extra tabs on `globalThis.__hungpvqDebug` — see [`@hungpvq/shared-log` README](../../../share/log/README.md). Demo: `#/shared-log`.
 
@@ -22,6 +24,10 @@ Standalone (no map): mount `DevtoolsShell` from `*-shared-log` and register extr
 Menus without `id` show generated debug keys (`anon:…:<index>`, `idGenerated`). Shared dataset CSS is owned by `@hungpvq/map-debug` (`.dataset-viewer*`); generic chrome is `@hungpvq/shared-log/style.css`.
 
 See [`@hungpvq/map-debug` README](../../../map-debug/README.md) for the console API and the Debug-dataset menu item.
+
+## Draggable tab
+
+Declared in `@hungpvq/vue-draggable` / `@hungpvq/react-draggable` (`registerDragDebugTab`). Lists declared items, toggles show, moves sidebar/drawer location, and shows whether each item was created from a component or a function. Protocol: `listDragDebugItems` / `applyDragDebugAction` on `@hungpvq/draggable`.
 
 ## Mount (Map control only)
 
@@ -68,13 +74,12 @@ installDevtools();
 
 ## Stable API
 
-| Export                                          | Notes                                                     |
-| ----------------------------------------------- | --------------------------------------------------------- |
-| `Devtools`                                      | Map control + `DraggableItemPopup` (mount inside `<Map>`) |
-| `DevtoolsControl`                               | Explicit map-control popup (same as `Devtools`)           |
-| `DEVTOOLS_CONTROL`                              | `{ id: 'mapDevtools' }` (from `@hungpvq/map-debug`)       |
-| `installDevtools` / `uninstallDevtools`         | Bootstrap (`installDevtools({ logStore })` optional)      |
-| `openMapDevtoolsErrors`                         | `openDebugTab('errors')`                                  |
+| Export                                  | Notes                                                     |
+| --------------------------------------- | --------------------------------------------------------- |
+| `Devtools`                              | Map control + `DraggableItemPopup` (mount inside `<Map>`) |
+| `DevtoolsControl`                       | Explicit map-control popup (same as `Devtools`)           |
+| `DEVTOOLS_CONTROL`                      | `{ id: 'mapDevtools' }` (from `@hungpvq/map-debug`)       |
+| `installDevtools` / `uninstallDevtools` | Bootstrap (`installDevtools({ logStore })` optional)      |
 
 Generic helpers (`configureDebugLogStore`, `reportDebugError`, `openDebugTab`, `setDebugOpen`, …) come from `@hungpvq/shared-log`. Runtime lock: `public-api.spec.ts` in each adapter package.
 

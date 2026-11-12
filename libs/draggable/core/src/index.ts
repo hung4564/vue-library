@@ -6,7 +6,29 @@ import './style/index.css';
  * public-api lock test + Stable docs (or marked experimental in adapters).
  */
 
-export type { DragStoreMakeReactive, DragStoreNotify } from './store';
+export {
+  applyDragDebugAction,
+  canMove,
+  canStack,
+  captureDragOrigin,
+  describeDragOrigin,
+  detailRows,
+  dragOriginKey,
+  formatDragOrigin,
+  isInternalDragOriginName,
+  listDragDebugContainers,
+  listDragDebugItems,
+  LOCATION_ITEMS,
+  LOCATIONS,
+  registerDragItemOrigin,
+  rowKey,
+} from './debug';
+export type {
+  DragDebugAction,
+  DragDebugItem,
+  DragItemOrigin,
+  DragItemOriginKind,
+} from './debug';
 export {
   configureDragStore,
   useBottomItem,
@@ -20,6 +42,15 @@ export {
   useDrawerItem,
   useSidebarItem,
 } from './store';
+export type { DragStoreMakeReactive, DragStoreNotify } from './store';
+export {
+  createEmptyBottom,
+  createEmptyContainer,
+  createEmptyDrawer,
+  createEmptyItemGroup,
+  createEmptySideBar,
+  itemTypeToGroup,
+} from './types';
 export type {
   BottomConfig,
   ContainerStore,
@@ -36,15 +67,6 @@ export type {
   SidebarConfig,
 } from './types';
 export {
-  createEmptyBottom,
-  createEmptyContainer,
-  createEmptyDrawer,
-  createEmptyItemGroup,
-  createEmptySideBar,
-  itemTypeToGroup,
-} from './types';
-export type { Bounds } from './utils';
-export {
   assertDefined,
   checkIsFirst,
   checkIsLast,
@@ -58,3 +80,4 @@ export {
   setModalSiblingsInert,
   trapTabKey,
 } from './utils';
+export type { Bounds } from './utils';

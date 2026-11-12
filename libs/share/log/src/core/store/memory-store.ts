@@ -1,4 +1,4 @@
-import type { LogRecord } from '../types';
+import type { DebugRecord, LogData } from '../types';
 import { BaseLogDataStore } from './base-store';
 import { matchLogRecords } from './query';
 import type { LogFilterQuery } from './types';
@@ -15,10 +15,10 @@ export type MemoryLogDataStoreOptions = {
  */
 export interface MemoryLogDataStoreApi {
   readonly kind: 'memory';
-  append(record: LogRecord): void;
+  append(record: DebugRecord<LogData>): void;
   clear(): void;
-  getAll(): LogRecord[];
-  list(query?: LogFilterQuery): LogRecord[];
+  getAll(): DebugRecord<LogData>[];
+  list(query?: LogFilterQuery): DebugRecord<LogData>[];
   subscribe(listener: () => void): () => void;
 }
 
@@ -32,7 +32,7 @@ export class MemoryLogDataStore
 {
   readonly kind = 'memory' as const;
 
-  private records: LogRecord[] = [];
+  private records: DebugRecord<LogData>[] = [];
   private readonly limit: number;
 
   constructor(options: MemoryLogDataStoreOptions = {}) {
@@ -40,7 +40,7 @@ export class MemoryLogDataStore
     this.limit = Math.max(1, options.limit ?? 10_000);
   }
 
-  append(record: LogRecord): void {
+  append(record: DebugRecord<LogData>): void {
     this.records.unshift(record);
     if (this.records.length > this.limit) {
       this.records.length = this.limit;
@@ -54,11 +54,11 @@ export class MemoryLogDataStore
     this.notify();
   }
 
-  getAll(): LogRecord[] {
+  getAll(): DebugRecord<LogData>[] {
     return this.records;
   }
 
-  override list(query?: LogFilterQuery): LogRecord[] {
+  override list(query?: LogFilterQuery): DebugRecord<LogData>[] {
     return matchLogRecords(this.records, query);
   }
 }

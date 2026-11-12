@@ -19,9 +19,8 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiTools } from '@mdi/js';
 import { watch } from 'vue';
 
-import { defineProps, withDefaults } from 'vue';
+import { DevtoolsShell } from '@hungpvq/vue-shared-log';
 import { useDevtoolState } from '../store';
-import DevtoolsPanelBody from './DevtoolsPanelBody.vue';
 
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,
@@ -112,7 +111,7 @@ function onClose() {
         @update:show="onUpdateShow"
       >
         <div class="devtools-popup-body">
-          <DevtoolsPanelBody />
+          <DevtoolsShell />
         </div>
       </DraggableItemPopup>
     </template>

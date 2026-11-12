@@ -3,7 +3,12 @@ import { checkIsFirst, checkIsLast, itemTypeToGroup } from '@hungpvq/draggable';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { computed, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
 
-import { useDragContainer, useDragItem, useDragStore } from '../store';
+import {
+  useDragContainer,
+  useDragItem,
+  useDragStore,
+} from '@hungpvq/draggable';
+import { recordDragItemOrigin } from '../debug/origin';
 
 export function useInitItem(
   containerId: string,
@@ -29,6 +34,7 @@ export function useInitItem(
       setZIndex,
       setShow,
     });
+    recordDragItemOrigin(containerId, itemId.value, 'useInitItem');
     if (show.value) {
       store.registerItemShow(itemId.value, show.value);
     }

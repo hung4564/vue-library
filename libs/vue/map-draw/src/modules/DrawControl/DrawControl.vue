@@ -35,7 +35,6 @@ import {
 import type { Feature, FeatureCollection } from 'geojson';
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 
-import { defineProps, withDefaults } from 'vue';
 import { useEnsureDrawBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
 import DrawDraftList from './components/DrawDraftList.vue';
 import DrawToolbar from './components/DrawToolbar.vue';

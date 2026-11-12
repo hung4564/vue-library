@@ -16,11 +16,10 @@ import {
 import { saveAs } from 'file-saver';
 import { onBeforeUnmount, ref, watch } from 'vue';
 
-import { defineProps, withDefaults } from 'vue';
+import { InputSelect, InputText } from '@hungpvq/vue-ui-core';
 import MapControlButton from '../../../components/MapControlButton.vue';
 import { useLang } from '../../../extra/lang/hook';
 import { useMapControl } from '../../../extra/registry/useMapControl';
-import { InputSelect, InputText } from '@hungpvq/vue-ui-core';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';
 import { useMapPrint } from '../store';

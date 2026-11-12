@@ -22,4 +22,5 @@ export {
   withShowEmit,
   withShowProps,
 } from './useShow';
+export type { UseShowLogEvent, UseShowLogger } from './useShow';
 export { useSideBarContainer } from './useSideBarContainer';

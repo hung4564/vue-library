@@ -1,7 +1,7 @@
 import type { DrawerConfig, LocationSideBar } from '@hungpvq/draggable';
 
+import { useDragContainer } from '@hungpvq/draggable';
 import { useIcon } from '../../hook';
-import { useDragContainer } from '../../store';
 import { DragButton } from '../parts/DragButton';
 import { ItemList } from './ItemList';
 

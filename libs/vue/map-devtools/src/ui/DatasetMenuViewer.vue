@@ -1,36 +1,34 @@
 <template>
-  <div class="dataset-viewer">
-    <p
-      v-if="!ready"
-      class="dataset-viewer__empty"
+  <DevtoolPanelContainer class="dataset-viewer">
+    <template
+      #title
+      v-if="ready"
     >
-      Cần <code>@hungpvq/map-dataset</code> + <code>installDevtools()</code>.
-      F12: <code>__hungpvqDatasetDebug.help()</code>
-    </p>
-    <template v-else>
-      <div class="dataset-viewer__toolbar">
-        <div
-          v-if="snapshot"
-          class="dataset-viewer__current"
-          :title="snapshot.identity.id"
-        >
-          <span
-            class="dataset-viewer__kind"
-            :data-kind="snapshot.identity.kind"
-            >{{ snapshot.identity.kind }}</span
+      <DevtoolPanelToolbar>
+        <template #title>
+          <div
+            v-if="snapshot"
+            class="dataset-viewer__current"
+            :title="snapshot.identity.id"
           >
-          <span class="dataset-viewer__muted">{{
-            snapshot.identity.type
-          }}</span>
-          <strong>{{ snapshot.identity.name }}</strong>
-        </div>
-        <p
-          v-else
-          class="dataset-viewer__current dataset-viewer__muted"
-        >
-          No dataset selected
-        </p>
-        <div class="dataset-viewer__actions">
+            <span
+              class="dataset-viewer__kind"
+              :data-kind="snapshot.identity.kind"
+              >{{ snapshot.identity.kind }}</span
+            >
+            <span class="dataset-viewer__muted">{{
+              snapshot.identity.type
+            }}</span>
+            <strong>{{ snapshot.identity.name }}</strong>
+          </div>
+          <p
+            v-else
+            class="dataset-viewer__current dataset-viewer__muted"
+          >
+            No dataset selected
+          </p>
+        </template>
+        <template #actions>
           <MapControlButton
             v-if="hasDatasetSelection"
             variant="text"
@@ -49,27 +47,29 @@
             @click="pinDataset"
           >
             {{ actionLabel('dataset', 'Pin') }}
-          </MapControlButton>
-        </div>
-      </div>
-
+          </MapControlButton></template
+        >
+      </DevtoolPanelToolbar>
+    </template>
+    <p
+      v-if="!ready"
+      class="dataset-viewer__empty"
+    >
+      Cần <code>@hungpvq/map-dataset</code> + <code>installDevtools()</code>.
+      F12: <code>__hungpvqDatasetDebug.help()</code>
+    </p>
+    <template v-else>
       <div
         class="dataset-viewer__panes"
         role="tablist"
       >
         <div class="dataset-viewer__panes-tabs">
-          <MapControlButton
-            v-for="p in visiblePanes"
-            :key="p.id"
-            variant="text"
-            size="small"
-            :active="pane === p.id"
-            role="tab"
-            :aria-selected="pane === p.id"
-            @click="setPane(p.id)"
-          >
-            {{ p.label }}
-          </MapControlButton>
+          <Tabs
+            :model-value="pane"
+            @update:model-value="setPane"
+            :items="visiblePanes"
+            :with-panes="false"
+          />
         </div>
         <MapControlButton
           v-if="pane === 'roots'"
@@ -86,7 +86,7 @@
 
       <div class="dataset-viewer__body">
         <template v-if="pane === 'roots'">
-          <div
+          <DevtoolPanelCard
             class="dataset-viewer__roots"
             aria-label="Root datasets"
           >
@@ -96,23 +96,28 @@
             >
               No root datasets on this map.
             </p>
-            <ul
+            <List
               v-else
-              class="dataset-viewer__root-list"
+              dense
+              divided
             >
-              <li
+              <ListItem
                 v-for="r in rootOptions"
                 :key="r.id"
-                class="dataset-viewer__root-item"
-                :class="{ 'is-selected': r.id === activeRootId }"
-                :aria-selected="r.id === activeRootId"
-                role="button"
-                tabindex="0"
+                :selected="r.id === activeRootId"
+                interactive
+                dense
                 :title="`Inspect ${r.name}`"
                 @click="debugRoot(r.id)"
-                @keydown.enter.prevent="debugRoot(r.id)"
-                @keydown.space.prevent="debugRoot(r.id)"
               >
+                <template #prefix>
+                  <span
+                    class="dataset-viewer__kind"
+                    data-kind="root"
+                  >
+                    root
+                  </span>
+                </template>
                 <div
                   class="dataset-viewer__root-meta"
                   :title="r.id"
@@ -120,27 +125,29 @@
                   <strong>{{ r.name }}</strong>
                   <span class="dataset-viewer__muted">{{ r.type }}</span>
                 </div>
-                <div
-                  class="dataset-viewer__root-actions"
-                  @click.stop
-                >
-                  <MapControlButton
-                    variant="text"
-                    size="small"
-                    :title="
-                      actionLabel('dataset', 'Pin dataset to vars.dataset')
-                    "
-                    :disabled="
-                      actionPhase === 'loading' && actionKey === 'dataset'
-                    "
-                    @click="pinRoot(r.id)"
+                <template #suffix>
+                  <div
+                    class="dataset-viewer__root-actions"
+                    @click.stop
                   >
-                    {{ actionLabel('dataset', 'Pin') }}
-                  </MapControlButton>
-                </div>
-              </li>
-            </ul>
-          </div>
+                    <MapControlButton
+                      variant="text"
+                      size="small"
+                      :title="
+                        actionLabel('dataset', 'Pin dataset to vars.dataset')
+                      "
+                      :disabled="
+                        actionPhase === 'loading' && actionKey === 'dataset'
+                      "
+                      @click="pinRoot(r.id)"
+                    >
+                      {{ actionLabel('dataset', 'Pin') }}
+                    </MapControlButton>
+                  </div>
+                </template>
+              </ListItem>
+            </List>
+          </DevtoolPanelCard>
         </template>
 
         <template v-else-if="pane === 'inspect'">
@@ -237,47 +244,47 @@
                 <template v-if="snapshot">
                   <section class="dataset-viewer__section">
                     <h3 class="dataset-viewer__section-h">Identity</h3>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">Name</span>
-                      <div class="dataset-viewer__row-value">
+                    <div class="debug-list-item">
+                      <span class="debug-list-item-label">Name</span>
+                      <div class="debug-list-item-value">
                         <span>{{ snapshot.identity.name }}</span>
                       </div>
-                      <div class="dataset-viewer__row-copy">
+                      <div class="debug-list-item-copy">
                         <CopyButton
                           title="Copy Name"
                           :value="snapshot.identity.name"
                         />
                       </div>
                     </div>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">ID</span>
-                      <div class="dataset-viewer__row-value">
+                    <div class="debug-list-item">
+                      <span class="debug-list-item-label">ID</span>
+                      <div class="debug-list-item-value">
                         <code class="dataset-viewer__mono">{{
                           snapshot.identity.id
                         }}</code>
                       </div>
-                      <div class="dataset-viewer__row-copy">
+                      <div class="debug-list-item-copy">
                         <CopyButton
                           title="Copy ID"
                           :value="snapshot.identity.id"
                         />
                       </div>
                     </div>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">Type</span>
-                      <div class="dataset-viewer__row-value">
+                    <div class="debug-list-item">
+                      <span class="debug-list-item-label">Type</span>
+                      <div class="debug-list-item-value">
                         <span>{{ snapshot.identity.type }}</span>
                       </div>
-                      <div class="dataset-viewer__row-copy">
+                      <div class="debug-list-item-copy">
                         <CopyButton
                           title="Copy Type"
                           :value="snapshot.identity.type"
                         />
                       </div>
                     </div>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">Kind</span>
-                      <div class="dataset-viewer__row-value">
+                    <div class="debug-list-item">
+                      <span class="debug-list-item-label">Kind</span>
+                      <div class="debug-list-item-value">
                         <span
                           class="dataset-viewer__kind"
                           :data-kind="snapshot.identity.kind"
@@ -288,75 +295,110 @@
                   </section>
 
                   <section class="dataset-viewer__section">
-                    <h3 class="dataset-viewer__section-h">Hierarchy</h3>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">Root</span>
-                      <div class="dataset-viewer__row-value">
-                        <MapControlButton
-                          variant="text"
-                          size="small"
-                          :title="snapshot.hierarchy.rootId"
-                          @click="selectDataset(snapshot.hierarchy.rootId)"
+                    <h3 class="dataset-viewer__section-h">Hierarchy Flow</h3>
+
+                    <div class="dataset-flow">
+                      <!-- Stepper path from Root to Current -->
+                      <div class="dataset-flow__trail">
+                        <template
+                          v-for="step in ancestorSteps"
+                          :key="step.id"
                         >
-                          {{ snapshot.hierarchy.rootName }}
-                        </MapControlButton>
-                      </div>
-                    </div>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">Parent</span>
-                      <div class="dataset-viewer__row-value">
-                        <MapControlButton
-                          v-if="snapshot.hierarchy.parentId"
-                          variant="text"
-                          size="small"
-                          :title="snapshot.hierarchy.parentId"
-                          @click="selectDataset(snapshot.hierarchy.parentId!)"
+                          <button
+                            type="button"
+                            class="dataset-flow__step"
+                            :title="`Inspect ${step.name} (${step.id})`"
+                            @click="selectDataset(step.id)"
+                          >
+                            <span>{{ step.name }}</span>
+                          </button>
+                          <span class="dataset-flow__arrow">➔</span>
+                        </template>
+
+                        <!-- Current active dataset -->
+                        <span
+                          class="dataset-flow__step is-current"
+                          :title="snapshot.identity.id"
                         >
-                          {{ snapshot.hierarchy.parentName || '—' }}
-                        </MapControlButton>
-                        <span v-else>(none — this is a root)</span>
+                          <span
+                            class="dataset-viewer__kind"
+                            :data-kind="snapshot.identity.kind"
+                            style="margin-right: 4px;"
+                          >
+                            {{ snapshot.identity.kind }}
+                          </span>
+                          <strong>{{ snapshot.identity.name }}</strong>
+                          <span
+                            class="dataset-viewer__muted"
+                            style="margin-left: 4px;"
+                          >
+                            ({{ snapshot.identity.type }})
+                          </span>
+                        </span>
                       </div>
-                    </div>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">Children</span>
-                      <div class="dataset-viewer__row-value">
-                        {{ snapshot.hierarchy.childCount }}
-                      </div>
-                    </div>
-                    <ul
-                      v-if="snapshot.hierarchy.children.length"
-                      class="dataset-viewer__child-list"
-                    >
-                      <li
-                        v-for="c in snapshot.hierarchy.children"
-                        :key="c.id"
+
+                      <!-- Children branch (if any) -->
+                      <div
+                        v-if="snapshot.hierarchy.children && snapshot.hierarchy.children.length > 0"
+                        class="dataset-flow__branch"
                       >
-                        <MapControlButton
-                          variant="text"
-                          size="small"
-                          @click="selectDataset(c.id)"
+                        <span class="dataset-flow__branch-title">
+                          ↳ Children ({{ snapshot.hierarchy.children.length }})
+                        </span>
+                        <div class="dataset-flow__children">
+                          <button
+                            v-for="child in snapshot.hierarchy.children"
+                            :key="child.id"
+                            type="button"
+                            class="dataset-flow__child-chip"
+                            :title="`Inspect ${child.name} (${child.id})`"
+                            @click="selectDataset(child.id)"
+                          >
+                            <span
+                              class="dataset-viewer__kind"
+                              data-kind="leaf"
+                              style="font-size: 8px; padding: 0 3px;"
+                            >
+                              L
+                            </span>
+                            <span>{{ child.name }}</span>
+                            <span class="dataset-viewer__muted">{{ child.type }}</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Dependency pipeline (dependsOn) -->
+                      <div
+                        v-if="snapshot.dependsOn && snapshot.dependsOn.length > 0"
+                        class="dataset-flow__depends"
+                      >
+                        <span style="font-weight: 600;">⚡ Depends on:</span>
+                        <code
+                          v-for="dep in snapshot.dependsOn"
+                          :key="dep"
+                          class="dataset-viewer__mono"
+                          style="background: #fff; padding: 1px 4px; border-radius: 3px;"
                         >
-                          {{ c.name }}
-                          <span class="dataset-viewer__muted">{{
-                            c.type
-                          }}</span>
-                        </MapControlButton>
-                      </li>
-                    </ul>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">Depth</span>
-                      <div class="dataset-viewer__row-value">
+                          {{ dep }}
+                        </code>
+                      </div>
+                    </div>
+
+                    <!-- Metadata details -->
+                    <div class="debug-list-item">
+                      <span class="debug-list-item-label">Depth</span>
+                      <div class="debug-list-item-value">
                         {{ snapshot.hierarchy.depth }}
                       </div>
                     </div>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">Path</span>
-                      <div class="dataset-viewer__row-value">
+                    <div class="debug-list-item">
+                      <span class="debug-list-item-label">Path</span>
+                      <div class="debug-list-item-value">
                         <code class="dataset-viewer__mono">{{
                           snapshot.hierarchy.pathLabel
                         }}</code>
                       </div>
-                      <div class="dataset-viewer__row-copy">
+                      <div class="debug-list-item-copy">
                         <CopyButton
                           title="Copy Path"
                           :value="snapshot.hierarchy.pathLabel"
@@ -367,62 +409,60 @@
 
                   <section class="dataset-viewer__section">
                     <h3 class="dataset-viewer__section-h">Runtime</h3>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">isComposite</span>
-                      <div class="dataset-viewer__row-value">
+                    <div class="debug-list-item">
+                      <span class="debug-list-item-label">isComposite</span>
+                      <div class="debug-list-item-value">
                         {{ snapshot.runtime.isComposite }}
                       </div>
                     </div>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">addToMap</span>
-                      <div class="dataset-viewer__row-value">
+                    <div class="debug-list-item">
+                      <span class="debug-list-item-label">addToMap</span>
+                      <div class="debug-list-item-value">
                         {{ flag(snapshot.runtime.hasAddToMap) }}
                       </div>
                     </div>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label"
-                        >removeFromMap</span
-                      >
-                      <div class="dataset-viewer__row-value">
+                    <div class="debug-list-item">
+                      <span class="debug-list-item-label">removeFromMap</span>
+                      <div class="debug-list-item-value">
                         {{ flag(snapshot.runtime.hasRemoveFromMap) }}
                       </div>
                     </div>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">getData</span>
-                      <div class="dataset-viewer__row-value">
+                    <div class="debug-list-item">
+                      <span class="debug-list-item-label">getData</span>
+                      <div class="debug-list-item-value">
                         {{ flag(snapshot.runtime.hasGetData) }}
                       </div>
                     </div>
-                    <div class="dataset-viewer__row">
-                      <span class="dataset-viewer__row-label">getMenus</span>
-                      <div class="dataset-viewer__row-value">
+                    <div class="debug-list-item">
+                      <span class="debug-list-item-label">getMenus</span>
+                      <div class="debug-list-item-value">
                         {{ flag(snapshot.runtime.hasGetMenus) }}
                       </div>
                     </div>
                     <div
                       v-if="snapshot.runtime.show !== undefined"
-                      class="dataset-viewer__row"
+                      class="debug-list-item"
                     >
-                      <span class="dataset-viewer__row-label">show</span>
-                      <div class="dataset-viewer__row-value">
+                      <span class="debug-list-item-label">show</span>
+                      <div class="debug-list-item-value">
                         {{ snapshot.runtime.show }}
                       </div>
                     </div>
                     <div
                       v-if="snapshot.runtime.opacity !== undefined"
-                      class="dataset-viewer__row"
+                      class="debug-list-item"
                     >
-                      <span class="dataset-viewer__row-label">opacity</span>
-                      <div class="dataset-viewer__row-value">
+                      <span class="debug-list-item-label">opacity</span>
+                      <div class="debug-list-item-value">
                         {{ snapshot.runtime.opacity }}
                       </div>
                     </div>
                     <div
                       v-if="snapshot.runtime.selected !== undefined"
-                      class="dataset-viewer__row"
+                      class="debug-list-item"
                     >
-                      <span class="dataset-viewer__row-label">selected</span>
-                      <div class="dataset-viewer__row-value">
+                      <span class="debug-list-item-label">selected</span>
+                      <div class="debug-list-item-value">
                         {{ snapshot.runtime.selected }}
                       </div>
                     </div>
@@ -513,25 +553,21 @@
                       (menuBuckets[bucket] || []).length
                     }}</span>
                   </div>
-                  <ul>
-                    <li
+                  <List dense divided>
+                    <ListItem
                       v-for="m in menuBuckets[bucket]"
                       :key="
                         m.id || m.key || `${bucket}-${m.type}-${m.name || ''}`
                       "
-                      class="dataset-viewer__menu-item"
-                      :class="{
-                        'is-muted': m.hidden || m.disabled,
-                        'is-selected':
-                          (m.id || m.key || m.name || m.type) ===
-                          selectedMenuId,
-                      }"
-                      role="button"
-                      tabindex="0"
+                      :selected="
+                        (m.id || m.key || m.name || m.type) ===
+                        selectedMenuId
+                      "
+                      :disabled="m.disabled"
+                      interactive
+                      dense
                       :title="m.name || m.id || bucket"
                       @click="selectMenu(m)"
-                      @keydown.enter.prevent="selectMenu(m)"
-                      @keydown.space.prevent="selectMenu(m)"
                     >
                       <span class="dataset-viewer__menu-name">{{
                         m.name || m.id || `(${m.type || 'unnamed'})`
@@ -541,31 +577,33 @@
                         class="dataset-viewer__menu-id"
                         >{{ m.id }}</span
                       >
-                      <span class="dataset-viewer__flags">
-                        <span
-                          class="dataset-viewer__chip"
-                          :data-source="m.source"
-                          >{{ m.source }}</span
-                        >
-                        <span
-                          v-if="m.idGenerated"
-                          class="dataset-viewer__chip"
-                          data-source="generated"
-                          >anon</span
-                        >
-                        <span
-                          v-if="m.hidden"
-                          class="dataset-viewer__chip"
-                          >hidden</span
-                        >
-                        <span
-                          v-if="m.disabled"
-                          class="dataset-viewer__chip"
-                          >disabled</span
-                        >
-                      </span>
-                    </li>
-                  </ul>
+                      <template #suffix>
+                        <span class="dataset-viewer__flags">
+                          <span
+                            class="dataset-viewer__chip"
+                            :data-source="m.source"
+                            >{{ m.source }}</span
+                          >
+                          <span
+                            v-if="m.idGenerated"
+                            class="dataset-viewer__chip"
+                            data-source="generated"
+                            >anon</span
+                          >
+                          <span
+                            v-if="m.hidden"
+                            class="dataset-viewer__chip"
+                            >hidden</span
+                          >
+                          <span
+                            v-if="m.disabled"
+                            class="dataset-viewer__chip"
+                            >disabled</span
+                          >
+                        </span>
+                      </template>
+                    </ListItem>
+                  </List>
                 </div>
               </div>
 
@@ -584,21 +622,21 @@
                       :value="menuDetailJson"
                     />
                   </div>
-                  <div class="dataset-viewer__row">
-                    <span class="dataset-viewer__row-label">Name</span>
-                    <div class="dataset-viewer__row-value">
+                  <div class="debug-list-item">
+                    <span class="debug-list-item-label">Name</span>
+                    <div class="debug-list-item-value">
                       {{ menuDetail.name || '—' }}
                     </div>
-                    <div class="dataset-viewer__row-copy">
+                    <div class="debug-list-item-copy">
                       <CopyButton
                         title="Copy name"
                         :value="menuDetail.name || ''"
                       />
                     </div>
                   </div>
-                  <div class="dataset-viewer__row">
-                    <span class="dataset-viewer__row-label">ID</span>
-                    <div class="dataset-viewer__row-value">
+                  <div class="debug-list-item">
+                    <span class="debug-list-item-label">ID</span>
+                    <div class="debug-list-item-value">
                       <code class="dataset-viewer__mono">{{
                         menuDetail.id || '—'
                       }}</code>
@@ -609,22 +647,22 @@
                         >anon</span
                       >
                     </div>
-                    <div class="dataset-viewer__row-copy">
+                    <div class="debug-list-item-copy">
                       <CopyButton
                         title="Copy id"
                         :value="menuDetail.id || ''"
                       />
                     </div>
                   </div>
-                  <div class="dataset-viewer__row">
-                    <span class="dataset-viewer__row-label">Type</span>
-                    <div class="dataset-viewer__row-value">
+                  <div class="debug-list-item">
+                    <span class="debug-list-item-label">Type</span>
+                    <div class="debug-list-item-value">
                       {{ menuDetail.type }}
                     </div>
                   </div>
-                  <div class="dataset-viewer__row">
-                    <span class="dataset-viewer__row-label">Source</span>
-                    <div class="dataset-viewer__row-value">
+                  <div class="debug-list-item">
+                    <span class="debug-list-item-label">Source</span>
+                    <div class="debug-list-item-value">
                       <span
                         class="dataset-viewer__chip"
                         :data-source="menuDetail.source"
@@ -635,9 +673,9 @@
                       }}</span>
                     </div>
                   </div>
-                  <div class="dataset-viewer__row">
-                    <span class="dataset-viewer__row-label">Host</span>
-                    <div class="dataset-viewer__row-value">
+                  <div class="debug-list-item">
+                    <span class="debug-list-item-label">Host</span>
+                    <div class="debug-list-item-value">
                       {{ menuDetail.hostType || '—' }}
                       <code
                         v-if="menuDetail.hostId"
@@ -646,41 +684,41 @@
                       >
                     </div>
                   </div>
-                  <div class="dataset-viewer__row">
-                    <span class="dataset-viewer__row-label">Dataset</span>
-                    <div class="dataset-viewer__row-value">
+                  <div class="debug-list-item">
+                    <span class="debug-list-item-label">Dataset</span>
+                    <div class="debug-list-item-value">
                       {{ menuDetail.datasetName || '—' }}
                       <span class="dataset-viewer__muted">{{
                         menuDetail.datasetType
                       }}</span>
                     </div>
                   </div>
-                  <div class="dataset-viewer__row">
-                    <span class="dataset-viewer__row-label">Target</span>
-                    <div class="dataset-viewer__row-value">
+                  <div class="debug-list-item">
+                    <span class="debug-list-item-label">Target</span>
+                    <div class="debug-list-item-value">
                       {{ menuDetail.target || target }}
                     </div>
                   </div>
-                  <div class="dataset-viewer__row">
-                    <span class="dataset-viewer__row-label">Control</span>
-                    <div class="dataset-viewer__row-value">
+                  <div class="debug-list-item">
+                    <span class="debug-list-item-label">Control</span>
+                    <div class="debug-list-item-value">
                       <code class="dataset-viewer__mono">{{
                         menuDetail.control || control
                       }}</code>
                     </div>
                   </div>
-                  <div class="dataset-viewer__row">
-                    <span class="dataset-viewer__row-label">Location</span>
-                    <div class="dataset-viewer__row-value">
+                  <div class="debug-list-item">
+                    <span class="debug-list-item-label">Location</span>
+                    <div class="debug-list-item-value">
                       {{ menuDetail.location || '—' }}
                       <span class="dataset-viewer__muted"
                         >→ {{ menuDetail.effectiveLocation }}</span
                       >
                     </div>
                   </div>
-                  <div class="dataset-viewer__row">
-                    <span class="dataset-viewer__row-label">byControl</span>
-                    <div class="dataset-viewer__row-value">
+                  <div class="debug-list-item">
+                    <span class="debug-list-item-label">byControl</span>
+                    <div class="debug-list-item-value">
                       {{
                         menuDetail.byControlKeys.length
                           ? menuDetail.byControlKeys.join(', ')
@@ -688,9 +726,9 @@
                       }}
                     </div>
                   </div>
-                  <div class="dataset-viewer__row">
-                    <span class="dataset-viewer__row-label">Flags</span>
-                    <div class="dataset-viewer__row-value">
+                  <div class="debug-list-item">
+                    <span class="debug-list-item-label">Flags</span>
+                    <div class="debug-list-item-value">
                       <span
                         v-if="menuDetail.summary.hidden"
                         class="dataset-viewer__chip"
@@ -752,7 +790,7 @@
         F12 · <code>__hungpvqDatasetDebug.help()</code>
       </p>
     </template>
-  </div>
+  </DevtoolPanelContainer>
 </template>
 
 <script setup lang="ts">
@@ -771,8 +809,20 @@ import {
   type PartitionedMenuSummary,
 } from '@hungpvq/map-debug/dataset';
 import { MapControlButton } from '@hungpvq/vue-map-core';
-import { TreeItem } from '@hungpvq/vue-shared-log';
-import { CopyButton, InputActionRow, InputSelect } from '@hungpvq/vue-ui-core';
+import {
+  DevtoolPanelCard,
+  DevtoolPanelContainer,
+  DevtoolPanelToolbar,
+} from '@hungpvq/vue-shared-log';
+import {
+  CopyButton,
+  InputActionRow,
+  InputSelect,
+  List,
+  ListItem,
+  Tabs,
+  TreeItem,
+} from '@hungpvq/vue-ui-core';
 import {
   computed,
   nextTick,
@@ -780,10 +830,8 @@ import {
   onMounted,
   ref,
   shallowRef,
-  watch,
 } from 'vue';
 
-import { useDevtoolState } from '../store';
 import DatasetTreeNav from './DatasetTreeNav.vue';
 
 type PaneId = 'roots' | 'inspect' | 'menus';
@@ -819,7 +867,7 @@ const targetItems: SelectItem[] = [
 
 const ready = ref(false);
 const api = shallowRef<DatasetDebugApi | null>(null);
-const pane = ref<PaneId>('roots');
+const pane = ref<string>('roots');
 const mapId = ref('');
 const datasetId = ref('');
 const target = ref<'layer' | 'item'>('layer');
@@ -830,6 +878,15 @@ const forest = shallowRef<DatasetTreeNode[]>([]);
 const searchable = shallowRef<DatasetSearchHit[]>([]);
 const rootOptions = ref<DatasetNodeSummary[]>([]);
 const snapshot = shallowRef<DatasetInspectSnapshot | null>(null);
+const ancestorSteps = computed(() => {
+  if (!snapshot.value?.hierarchy) return [];
+  const { pathIds, pathNames } = snapshot.value.hierarchy;
+  if (!pathIds || !pathNames) return [];
+  return pathIds.slice(0, -1).map((id, index) => ({
+    id,
+    name: pathNames[index] || id,
+  }));
+});
 const rootTypes = ref<string[]>([]);
 const findType = ref('');
 const findMiss = ref(false);
@@ -1093,7 +1150,7 @@ function syncSession() {
     datasetId: datasetId.value || undefined,
     control: control.value,
     target: target.value,
-    pane: pane.value,
+    pane: pane.value as PaneId,
   });
   refreshSnapshot();
   previewMenus();
@@ -1124,7 +1181,7 @@ function hydrateFromSession() {
   syncSession();
 }
 
-function setPane(next: PaneId) {
+function setPane(next: string) {
   if (!datasetId.value && next !== 'roots') return;
   pane.value = next;
   syncSession();
@@ -1169,33 +1226,6 @@ function clearSelection() {
   highlightIds.value = [];
   findExpandIds.value = [];
   pane.value = 'roots';
-  syncSession();
-}
-
-function applyGlobalMapFilter(filter: string) {
-  const next =
-    filter !== 'all' && mapIds.value.includes(filter)
-      ? filter
-      : mapId.value && mapIds.value.includes(mapId.value)
-        ? mapId.value
-        : mapIds.value[0] || '';
-  if (next === mapId.value) return;
-  mapId.value = next;
-  onMapChange();
-}
-
-function onMapChange() {
-  datasetId.value = '';
-  findType.value = '';
-  findMiss.value = false;
-  if (highlightClearTimer.value) {
-    clearTimeout(highlightClearTimer.value);
-    highlightClearTimer.value = null;
-  }
-  highlightIds.value = [];
-  findExpandIds.value = [];
-  pane.value = 'roots';
-  refreshLists();
   syncSession();
 }
 

@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, inject, nextTick, type Ref } from 'vue';
 
+import { useDragStore } from '@hungpvq/draggable';
 import ContextMenu from '../components/ContextMenu.vue';
 import ContextMenuItem from '../components/ContextMenuItem.vue';
 import DraggableContainer from '../components/draggable/draggable-container.vue';
@@ -11,7 +12,6 @@ import DragButton from '../components/parts/DragButton.vue';
 import DragCard from '../components/parts/DragCard.vue';
 import DragHeader from '../components/parts/DragHeader.vue';
 import DragSidebarToggle from '../components/parts/DragSidebarToggle.vue';
-import { useDragStore } from '../store';
 
 beforeAll(() => {
   class ResizeObserverStub {

@@ -17,3 +17,8 @@ export { default as InputSlider } from './field/input-slider.vue';
 export { default as InputText } from './field/input-text.vue';
 export { default as InputTextArea } from './field/input-textarea.vue';
 export { default as InputTextarea } from './field/input-textarea.vue';
+export { default as List } from './List.vue';
+export { default as ListItem } from './ListItem.vue';
+export { default as TreeItem } from './TreeItem.vue';
+export type { TreeItemProps, TreeValueType } from './tree-item';
+

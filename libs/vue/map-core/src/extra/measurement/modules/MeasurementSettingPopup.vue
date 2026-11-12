@@ -116,7 +116,6 @@ import { DraggableItemPopup } from '@hungpvq/vue-draggable';
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { computed, ref, watch } from 'vue';
 
-import { defineEmits, defineModel, defineProps, withDefaults } from 'vue';
 import { InputCheckbox, InputSelect } from '@hungpvq/vue-ui-core';
 import { defaultMapProps, useMap } from '../../../hooks/useMap';
 import ModuleContainer from '../../../modules/ModuleContainer/ModuleContainer.vue';

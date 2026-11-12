@@ -28,3 +28,5 @@ export {
   ShowStatusSideBar,
   type ShowStatusSideBarProps,
 } from './components/ManagementControl';
+export { DragDebugViewer } from './debug/DragDebugViewer';
+export { registerDragDebugTab } from './debug/register';

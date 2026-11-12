@@ -24,10 +24,10 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
-
+/*
 .highlight {
   background-color: red;
-}
+} */
 
 #btn-highlight {
   height: 10px;

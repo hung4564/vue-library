@@ -3,7 +3,8 @@ import { checkIsFirst, checkIsLast, itemTypeToGroup } from '@hungpvq/draggable';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { useDragItem, useDragStore } from '../store';
+import { useDragItem, useDragStore } from '@hungpvq/draggable';
+import { recordDragItemOrigin } from '../debug/origin';
 import {
   useContainerReactive,
   useStoreReactive,
@@ -28,6 +29,8 @@ export function useInitItem(
   const store = useDragItem(containerId);
   const storeRef = useRef(store);
   storeRef.current = store;
+  const originStack = useRef<string | undefined>(undefined);
+  if (!originStack.current) originStack.current = new Error().stack;
   const optionDefaultRef = useRef(optionDefault);
   optionDefaultRef.current = optionDefault;
   const setShowRef = useRef(setShow);
@@ -41,10 +44,16 @@ export function useInitItem(
       setZIndex,
       setShow: (value: boolean) => setShowRef.current(value),
     });
+    recordDragItemOrigin(
+      containerId,
+      itemId,
+      'useInitItem',
+      originStack.current,
+    );
     return () => {
       currentStore.unRegisterItem(itemId);
     };
-  }, [itemId]);
+  }, [itemId, containerId]);
 
   useEffect(() => {
     storeRef.current.registerItemShow(itemId, show);

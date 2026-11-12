@@ -29,8 +29,6 @@ import {
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiDatabaseOutline, mdiDelete, mdiInformation } from '@mdi/js';
 import { shallowRef, watch } from 'vue';
-
-import { defineProps, defineSlots, withDefaults } from 'vue';
 import { useMapDataset } from '../../store/dataset-api';
 const props = withDefaults(defineProps<WithMapPropType & WithShowProps>(), {
   ...defaultMapProps,

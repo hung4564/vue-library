@@ -43,6 +43,9 @@ afterEach(() => {
   store.componentCard = undefined;
   store.componentCardHeader = undefined;
   store.componentCardSidebarToggle = undefined;
+  for (const key of Object.keys(store.debugOrigins)) {
+    delete store.debugOrigins[key];
+  }
   configureDragStore({
     notify: () => undefined,
     makeReactive: (value) => value,

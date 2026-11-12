@@ -9,7 +9,6 @@ import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiWeb } from '@mdi/js';
 import { ref } from 'vue';
 
-import { defineProps, withDefaults } from 'vue';
 import { useLang } from '../../extra/lang/hook';
 import { useMapControl } from '../../extra/registry/useMapControl';
 import { defaultMapProps, useMap } from '../../hooks/useMap';

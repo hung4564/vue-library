@@ -1516,12 +1516,12 @@
   overflow: hidden;
 }
 
-.map-registry-control--detail > .map-tabs-root {
+.map-registry-control--detail > .ui-tabs-root {
   flex: 1 1 auto;
   min-height: 0;
 }
 
-.map-registry-control--detail .map-tabs__pane > .map-registry-control__layout {
+.map-registry-control--detail .ui-tabs__pane > .map-registry-control__layout {
   flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
@@ -1596,54 +1596,6 @@
   padding-top: var(--map-space-xs, 4px);
 }
 
-/* Shared tab strip (RegistryControl, Devtools, …) */
-.map-tabs-root {
-  display: flex;
-  flex-direction: column;
-  gap: var(--map-space-md, 8px);
-  min-height: 0;
-  flex: 1 1 auto;
-}
-
-.map-tabs-root--bar-only {
-  flex: 0 0 auto;
-}
-
-.map-tabs {
-  display: flex;
-  gap: 2px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.map-tabs .map-control-button.map-control-button-active {
-  background: color-mix(
-    in srgb,
-    var(--map-primary-color, #004e98) 12%,
-    transparent
-  );
-  color: var(--map-button-active-color, var(--map-primary-color, #004e98));
-  font-weight: 600;
-}
-
-.map-tabs__panes {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  flex: 1 1 auto;
-}
-
-.map-tabs__pane {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  min-width: 0;
-  flex: 1 1 auto;
-}
-
-.map-tabs__pane[hidden] {
-  display: none !important;
-}
 
 .map-registry-control__run {
   width: 100%;

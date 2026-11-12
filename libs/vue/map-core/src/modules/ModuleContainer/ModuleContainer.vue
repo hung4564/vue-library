@@ -53,7 +53,6 @@ import {
 } from '@hungpvq/map-core';
 import { computed, inject, onUnmounted, ref, useSlots } from 'vue';
 
-import { defineProps } from 'vue';
 import MapAutoHostButtons from '../../components/MapAutoHostButtons.vue';
 import { useLiveHookDebug } from '../../hooks/useLiveHookDebug.js';
 useLiveHookDebug('ModuleContainer');

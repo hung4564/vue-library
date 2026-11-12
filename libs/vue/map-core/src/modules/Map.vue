@@ -14,7 +14,6 @@ import { DraggableContainer } from '@hungpvq/vue-draggable';
 import { MapOptions } from 'maplibre-gl';
 import { computed, onMounted, onUnmounted, provide, reactive, ref } from 'vue';
 
-import { defineEmits, defineProps, withDefaults } from 'vue';
 import ActionControl from '../extra/event/modules/ActionControl.vue';
 import { useBreakpoints } from '../hooks/useBreakpoints';
 import { useMapInstance } from '../hooks/useMapInstance';
