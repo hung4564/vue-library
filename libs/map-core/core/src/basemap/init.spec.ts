@@ -30,7 +30,9 @@ describe('INIT_BASEMAPS', () => {
       expect(item.type).toBeTruthy();
       expect(typeof item.thumbnail).toBe('string');
       expect(item.thumbnail.length).toBeGreaterThan(0);
-      expect(item.thumbnail).toMatch(/assets\/basemap\/.+\.(svg|png|jpe?g)/);
+      expect(item.thumbnail).toMatch(
+        /^(data:image\/(png|jpeg);base64,|assets\/basemap\/.+\.(svg|png|jpe?g))/,
+      );
     }
   });
 });

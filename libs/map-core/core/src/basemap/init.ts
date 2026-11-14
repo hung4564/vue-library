@@ -1,17 +1,16 @@
+import {
+  THUMB_ARCGIS_SATELLITE_JPG,
+  THUMB_CARTO_DARK_JPG,
+  THUMB_GOOGLE_SATELLITE_JPG,
+  THUMB_NONE_PNG,
+  THUMB_OSM_JPG,
+} from './default-thumbnails';
 import { BaseMapItem } from './types';
-
-/** Thumbnail URL from published package assets (see vite rewrite → `./assets/basemap/*`). */
-function basemapThumb(file: string): string {
-  return new URL(
-    /* @vite-ignore */ `../../assets/basemap/${file}`,
-    import.meta.url,
-  ).href;
-}
 
 export const INIT_BASEMAPS: BaseMapItem[] = [
   {
     link: '',
-    thumbnail: basemapThumb('none.png'),
+    thumbnail: THUMB_NONE_PNG,
     type: 'no-basemap',
     title: 'None',
     id: 'null',
@@ -20,7 +19,7 @@ export const INIT_BASEMAPS: BaseMapItem[] = [
     id: '2',
     title: 'ArcGIS Satellite',
     type: 'raster',
-    thumbnail: basemapThumb('arcgis-satellite.jpg'),
+    thumbnail: THUMB_ARCGIS_SATELLITE_JPG,
     attribution: 'Esri, Maxar, Earthstar Geographics',
     links: [
       'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -31,7 +30,7 @@ export const INIT_BASEMAPS: BaseMapItem[] = [
     id: '3',
     title: 'Dark',
     type: 'raster',
-    thumbnail: basemapThumb('carto-dark.jpg'),
+    thumbnail: THUMB_CARTO_DARK_JPG,
     attribution: '© CARTO, © OpenStreetMap contributors',
     links: [
       'https://cartodb-basemaps-1.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
@@ -43,7 +42,7 @@ export const INIT_BASEMAPS: BaseMapItem[] = [
     id: '4',
     title: 'Open Street Map',
     type: 'raster',
-    thumbnail: basemapThumb('osm.jpg'),
+    thumbnail: THUMB_OSM_JPG,
     attribution: '© OpenStreetMap contributors',
     links: [
       'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -55,7 +54,7 @@ export const INIT_BASEMAPS: BaseMapItem[] = [
     id: '5',
     title: 'Google Satellite',
     type: 'raster',
-    thumbnail: basemapThumb('google-satellite.jpg'),
+    thumbnail: THUMB_GOOGLE_SATELLITE_JPG,
     attribution: 'Google',
     links: [
       'https://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
