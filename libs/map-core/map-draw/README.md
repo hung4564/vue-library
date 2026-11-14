@@ -1,28 +1,22 @@
-# `@hungpvq/map-draw`
+# Map Draw Library
 
-Draw session protocol (`DrawService`, `MapDrawOption`), styles, id helpers, inspect helpers, and a re-export of **`@mapbox/mapbox-gl-draw`** as `MapDraw`.
+The **Map Draw** library provides drawing and editing capabilities on top of the Map Core. It includes a `DrawService` for managing draw modes, an `InspectController` for feature inspection, and UI components for user interaction.
 
-- Docs: VitePress `/map/draw/` · source [`docs/`](./docs/)
-- Vue UI: `@hungpvq/vue-map-draw` (UI/hooks only — import protocol from this package)
-- React UI: `@hungpvq/react-map-draw` (shared InspectController: style + popup/hover)
+## Packages
+- `@hungpvq/map-draw` – Core drawing service and utilities (framework‑agnostic).
+- Vue and React adapters are exposed via `@hungpvq/vue-map-draw` and `@hungpvq/react-map-draw`.
 
+## Documentation
+- API reference: `libs/map-core/map-draw/docs/api.md`
+- Usage guide: `libs/map-core/map-draw/docs/quick-start.md`
+- Component reference: `libs/map-core/map-draw/docs/components/*.md`
+
+## Development
 ```bash
-npm install @hungpvq/map-draw @mapbox/mapbox-gl-draw
+npm run map:lint        # lint + type‑check map‑draw
+npm run map:test        # run Vitest unit tests for map‑draw
+npm run map:dev-vue     # serve Vue demo with draw features
+npm run map:dev-react   # serve React demo with draw features
 ```
 
-Peers: `@mapbox/mapbox-gl-draw`, `maplibre-gl`, `@hungpvq/map-core` (optional `randomcolor` for inspect colors).
-
-```ts
-import { MapDraw, StaticMode, getDrawStyles, getFeatureId, sameFeature } from '@hungpvq/map-draw';
-
-const draw = new MapDraw({
-  displayControlsDefault: false,
-  styles: getDrawStyles(),
-  modes: { ...MapDraw.modes, static: StaticMode },
-});
-map.addControl(draw);
-draw.changeMode('draw_polygon');
-```
-
-**Stable mount pieces:** `MapDraw`, `StaticMode`, `getDrawStyles`.  
-**Stable ids:** `getFeatureId` / `sameFeature` (+ `promoteId: 'id'` on result sources). See [protocol](./docs/protocol.md).
+Add or update documentation as needed.

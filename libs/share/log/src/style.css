@@ -1234,12 +1234,14 @@
 .live-viewer__event-component {
   font-size: 12px;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .live-viewer__event-render {
   font-size: 11px;
   color: #1a73e8;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .live-viewer__changes-badge {
