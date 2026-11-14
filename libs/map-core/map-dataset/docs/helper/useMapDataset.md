@@ -38,7 +38,7 @@ const { addDataset, removeDataset, removeComponent, getDatasets, getDatasetIds, 
 | --------------------------------- | -------------------------------------------------------------------- |
 | `addDataset(dataset)`             | Add tree to the map (respects `dependsOn`); notifies listeners       |
 | `removeDataset(dataset)`          | Remove tree from the map; notifies listeners                         |
-| `removeComponent(node)`           | Remove one node (e.g. a list row); notifies listeners                |
+| `removeComponent(node)`           | Remove one node (e.g. a list row); respects component's `deletePolicy` (see [DeletePolicy](./delete-policy.md)); notifies listeners |
 | `getDatasets()`                   | Root datasets (snapshot)                                             |
 | `getDatasetIds()`                 | Plain `{ value: string[] }` box of root ids (not framework-reactive) |
 | `getAllComponentsByType<T>(type)` | e.g. `'list'`, `'identify'`                                          |

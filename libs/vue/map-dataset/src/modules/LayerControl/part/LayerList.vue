@@ -2,6 +2,7 @@
 import type { MapSimple, WithMapPropType } from '@hungpvq/map-core';
 import {
   type GlobalVisibilityMode,
+  type IDataset,
   type IListViewUI,
   type LayerListGroupTree,
   type LayerListItem,
@@ -19,7 +20,14 @@ import {
 } from '@hungpvq/vue-map-core';
 import { InputText } from '@hungpvq/vue-ui-core';
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
+import {
+  mdiClose,
+  mdiDelete,
+  mdiDeleteOutline,
+  mdiGroup,
+  mdiLayers,
+  mdiPlus,
+} from '@mdi/js';
 import { computed, nextTick, onUnmounted, ref, VNode, watch } from 'vue';
 
 import { provideMenuConditionContext } from '../../../extra/menu/condition-context';
@@ -73,12 +81,16 @@ const path = {
   icon: mdiLayers,
   group: { create: mdiGroup },
   deleteAll: mdiDelete,
+  deleteSelected: mdiDeleteOutline,
   layer: { create: mdiPlus },
 };
 const { callMap, mapId } = useMap(props);
 const { trans } = useLang(mapId.value);
-const { getAllComponentsByType, removeComponent, datasetVersion } =
-  useMapDataset(mapId);
+const {
+  getAllComponentsByType,
+  removeComponent,
+  datasetVersion,
+} = useMapDataset(mapId);
 const views = ref<Array<LayerListItem>>([]);
 const layerSearch = ref('');
 const debouncedSearch = ref('');
@@ -117,12 +129,32 @@ function onRemoveGroupLayer(group: LayerListGroupTree) {
     return;
   }
   group.children.forEach((view: LayerListItem) => {
-    removeComponent(view);
+    onRemoveLayer(view);
   });
+  updateList();
 }
 function onRemoveLayer(view: IListViewUI) {
   if (!view) return;
   removeComponent(view);
+  layers_select.value = layers_select.value.filter((sel) =>
+    typeof sel === 'string' ? sel !== view.id : (sel as any).id !== view.id,
+  );
+  updateList();
+}
+function onRemoveSelectedLayers() {
+  if (!layers_select.value || layers_select.value.length === 0) {
+    return;
+  }
+  const selectedIds = new Set(
+    layers_select.value.map((sel) =>
+      typeof sel === 'string' ? sel : (sel as any).id,
+    ),
+  );
+  const toRemove = views.value.filter((v) => selectedIds.has(v.id));
+  toRemove.forEach((view) => {
+    onRemoveLayer(view);
+  });
+  layers_select.value = [];
   updateList();
 }
 function updateList() {
@@ -148,6 +180,7 @@ function onRemoveAllLayer() {
   views.value.forEach((view) => {
     removeComponent(view);
   });
+  layers_select.value = [];
   updateList();
 }
 function getMenuGroups() {
@@ -262,9 +295,21 @@ function onTreeKeydown(event: KeyboardEvent) {
         />
       </MapControlButton>
       <MapControlButton
+        v-if="layers_select.length > 0 && !disabledDeleteAll"
+        @click="onRemoveSelectedLayers"
+        :title="trans('map.layer-control.delete-selected', { count: layers_select.length })"
+        variant="plain"
+      >
+        <SvgIcon
+          size="16"
+          type="mdi"
+          :path="path.deleteSelected"
+        />
+      </MapControlButton>
+      <MapControlButton
         @click="onRemoveAllLayer"
         v-if="!disabledDeleteAll"
-        title="Delete all layers"
+        :title="trans('map.layer-control.delete-all')"
         variant="plain"
       >
         <SvgIcon

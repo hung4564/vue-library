@@ -1,4 +1,8 @@
-import type { IDataset, WithChildren } from '../interfaces/dataset.base';
+import type {
+  DeletePolicy,
+  IDataset,
+  WithChildren,
+} from '../interfaces/dataset.base';
 import { createBase } from './base';
 
 function addDependsOnImpl(this: IDataset, input: string | IDataset): void {
@@ -15,11 +19,20 @@ function removeDependsOnImpl(this: IDataset, input: string | IDataset): void {
 
 export function createDatasetComponent(name: string): IDataset {
   let parent: ReturnType<typeof createDatasetComponent> | undefined;
+  let customDeletePolicy: DeletePolicy | undefined;
 
   const base = createBase();
   return {
     ...base,
     type: 'base',
+
+    get deletePolicy(): DeletePolicy {
+      if (customDeletePolicy) return customDeletePolicy;
+      return parent ? 'self' : 'cascade';
+    },
+    set deletePolicy(value: DeletePolicy) {
+      customDeletePolicy = value;
+    },
 
     getName(): string {
       return name;

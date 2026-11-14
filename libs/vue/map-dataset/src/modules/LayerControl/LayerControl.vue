@@ -123,7 +123,7 @@ const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
 });
 watch(show, () => control.sync());
 
-const { addDataset, getDatasets, datasetVersion } = useMapDataset(mapId.value);
+const { addDataset, getDatasets, datasetVersion } = useMapDataset(mapId);
 onUnmounted(
   registerAddGeojsonHereForMap(mapId.value, (dataset) => {
     void addDataset(dataset);

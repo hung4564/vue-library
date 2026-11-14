@@ -69,6 +69,11 @@ function onShowDetail(view: IDataset) {
 function onRemove(view: IDataset) {
   removeDataset(view);
 }
+function onRemoveAll() {
+  views.value.forEach((view) => {
+    removeDataset(view);
+  });
+}
 defineSlots<{
   item(props: { item: IDataset }): any;
   default(): any;
@@ -114,7 +119,38 @@ watch(show, () => control.sync());
         :title="trans('map.dataset-control.title')"
         :location="panelPosition.location || 'left'"
       >
+        <template #title>
+          <div class="dataset-control__title-bar">
+            <span>{{ trans('map.dataset-control.title') }}</span>
+            <div class="v-spacer"></div>
+            <MapControlButton
+              v-if="views.length"
+              @click.stop="onRemoveAll"
+              :title="trans('map.dataset-control.delete-all')"
+              variant="plain"
+            >
+              <SvgIcon
+                size="16"
+                type="mdi"
+                :path="path.delete"
+              />
+            </MapControlButton>
+          </div>
+        </template>
         <div class="dataset-control">
+          <div
+            v-if="!views.length"
+            class="dataset-control__empty"
+          >
+            <SvgIcon
+              size="36"
+              type="mdi"
+              :path="path.icon"
+            />
+            <div class="dataset-control__empty-text">
+              {{ trans('map.dataset-control.empty') || 'No datasets available' }}
+            </div>
+          </div>
           <template
             v-for="view in views"
             :key="view.id"

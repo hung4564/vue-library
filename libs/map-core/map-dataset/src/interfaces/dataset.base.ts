@@ -1,3 +1,11 @@
+export type DeletePolicy =
+  | 'self'
+  | 'children'
+  | 'subtree'
+  | 'root-on-empty'
+  | 'cascade'
+  | 'root';
+
 /**
  * Base interface for the Dataset Composite pattern
  * This interface defines the common operations for both leaf and composite nodes
@@ -5,6 +13,14 @@
 export interface IDataset {
   get type(): string;
   get id(): string;
+  /**
+   * Policy to apply when this component or its items are deleted:
+   * - 'self': chỉ xóa bản thân component đó (không xóa con, không xóa root).
+   * - 'children' (hoặc 'subtree'): xóa component này thì xóa cả các con nữa (nhưng không xóa root).
+   * - 'root-on-empty': nếu toàn bộ các dataset cùng loại trong root đó bị xóa thì xóa cả root (mặc định của list/list-item).
+   * - 'cascade' (hoặc 'root'): xóa dataset này thì xóa toàn bộ root và tất cả con (mặc định của root).
+   */
+  get deletePolicy(): DeletePolicy;
   /**
    * Get the name of the dataset
    */

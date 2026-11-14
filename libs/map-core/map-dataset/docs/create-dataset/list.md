@@ -54,6 +54,10 @@ Each `configDisabled*(true)` is the default when called with no arg. Pass `false
 
 List items (`type: 'list'`) automatically get **Move up**, **Move down**, and **Add to group** unless those flags are set. Sub-items (`list-item`) do not.
 
+### Deletion Policy
+
+List items support `deletePolicy` (`'self' | 'root-on-empty' | 'cascade' | 'root'`), defaulting to `'root-on-empty'`. When the user deletes the last remaining item of a dataset, the root dataset is automatically cleaned up. See [DeletePolicy](../helper/delete-policy.md) for details.
+
 **Export** and **Attribute table** are **not** auto-added by the list builder. Add them yourself, or use [`createGeoJsonDataset`](../helper/QuickDatasetCreation.md) which attaches both. See [Export](./export.md) and [Attribute table](./attribute-table.md).
 
 ## Types for custom list / drag UIs

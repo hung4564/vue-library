@@ -1,7 +1,7 @@
 import type { Color } from '@hungpvq/map-core';
 
 import type { WithEventHelper } from '../../extra/event/types';
-import type { IDataset } from '../../interfaces/dataset.base';
+import type { DeletePolicy, IDataset } from '../../interfaces/dataset.base';
 import type {
   WithOpacity,
   WithSetOpacity,
@@ -19,6 +19,7 @@ export type IListViewUI = IDataset &
   WithSetOpacity &
   WithEventHelper<EventIListViewUI> &
   WithMenuHelper & {
+    deletePolicy?: DeletePolicy;
     selected?: boolean;
     color?: Color;
     config: {
@@ -26,6 +27,8 @@ export type IListViewUI = IDataset &
       disabled_opacity?: boolean;
       disabled_move?: boolean;
       disabled_add_to_group?: boolean;
+      deletePolicy?: DeletePolicy;
+      deleteGroup?: string;
       componentKey?: string;
       init_show_legend?: boolean;
       init_show_children?: boolean;

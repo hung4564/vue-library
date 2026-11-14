@@ -4,7 +4,9 @@ import { loggerFactory, runWithFunctionLog } from '@hungpvq/shared-log';
 import { DatasetError } from '../errors';
 import type { IDataset } from '../interfaces/dataset.base';
 import type { IListViewUI } from '../model/list/types';
-import { findAllComponentsByType } from '../model/visitors/helpers';
+import {
+  findAllComponentsByType,
+} from '../model/visitors/helpers';
 import { traverseTree } from '../model/visitors/traverse';
 import {
   isComposite,
@@ -214,7 +216,7 @@ export class DatasetService {
   }
 
   static removeComponent(map: MapSimple, component: IDataset) {
-    const parent = component.getParent() || component;
+    const parent = component.getParent();
     const log = datasetLogger.with({
       fn: 'removeComponent',
       span: 'dataset.remove',
@@ -224,12 +226,23 @@ export class DatasetService {
     });
     log.debug(
       'Removing component map layers (RTL traverse; parent composite update if needed).',
-      { parentId: parent.id },
+      { parentId: parent?.id },
     );
+
+    // If parent is a composite and component was its only item component, remove parent's layers.
+    // Otherwise, remove only component's own subtree to prevent destroying sibling layers.
+    const siblingItems =
+      parent && isComposite(parent)
+        ? findAllComponentsByType(parent, 'list')
+        : [];
+    const target =
+      parent && isComposite(parent) && siblingItems.length <= 1
+        ? parent
+        : component;
 
     // RTL only: avoid calling removeFromMap twice (component then traverse).
     traverseTree(
-      parent,
+      target,
       (node) => {
         if (isComposite(node)) return;
         if (isDatasetMapHasRemoveFromMap(node)) {
@@ -241,6 +254,14 @@ export class DatasetService {
 
     if (parent && isComposite(parent)) {
       parent.remove(component);
+      const grandParent = parent.getParent?.();
+      if (
+        grandParent &&
+        isComposite(grandParent) &&
+        parent.getChildren().length === 0
+      ) {
+        grandParent.remove(parent);
+      }
       log.debug('Component detached from composite parent.', {
         parentId: parent.id,
       });

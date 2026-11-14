@@ -101,6 +101,7 @@ export { createDatasetPartBoundComponent } from './model/part-bound.model';
 export { createDatasetPartMetadataComponent } from './model/part-metadata.model';
 export { createDatasetPartMapboxSourceComponent } from './model/source/base';
 export {
+  findAllComponentsByDeletePolicy,
   findAllComponentsByType,
   findPartByType,
   findRoot,
@@ -122,6 +123,11 @@ export {
   removeDatasetComponent,
   upsertDatasetComponent,
 } from './store/component-crud';
+export type { MapDatasetController } from './store/dataset-controller';
+export {
+  createMapDatasetController,
+  removeDatasetComponentWithPolicy,
+} from './store/dataset-controller';
 export type { MapDatasetStoreKey } from './store-key';
 export { MAP_DATASET_STORE_KEY } from './store-key';
 export { resolveDatasetBbox } from './utils/bbox';
@@ -165,7 +171,7 @@ export type {
   PageResult,
 } from './data-management';
 export type { FieldFeaturesDef } from './extra/field';
-export type { IDataset } from './interfaces/dataset.base';
+export type { DeletePolicy, IDataset } from './interfaces/dataset.base';
 export type { WithSetOpacity } from './interfaces/dataset.extra';
 export type {
   IdentifyFeatureRow,

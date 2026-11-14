@@ -149,15 +149,16 @@
       class="layer-item__children"
     >
       <LayerSubItem
-        v-for="item in children"
-        :key="item.id"
-        :item="item"
+        v-for="sub in children"
+        :key="sub.id"
+        :item="sub"
         :mapId="mapId"
         :readonly="readonly"
         :disabledMove="disabledMove"
         :disabledCreateGroup="disabledCreateGroup"
         :menuContext="menuContext"
         :getGroups="getGroups"
+        @click:remove="emit('click:remove', $event)"
       ></LayerSubItem>
     </div>
   </div>

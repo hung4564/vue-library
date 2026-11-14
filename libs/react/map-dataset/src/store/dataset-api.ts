@@ -1,21 +1,17 @@
-import { getMap, isUsableMapId, type MapSimple } from '@hungpvq/map-core';
+import { isUsableMapId } from '@hungpvq/map-core';
 import type { IDataset } from '@hungpvq/map-dataset';
-import { DatasetService } from '@hungpvq/map-dataset';
-import { useCallback, useEffect, useRef, useState } from 'react';
-
-import {
-  getMapDatasetStore,
-  notify,
-  useMapDatasetStore,
-} from './dataset-store';
-
-const EMPTY_DATASET_IDS = { value: [] as string[] };
+import { createMapDatasetController } from '@hungpvq/map-dataset';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export function useMapDataset(initialMapId?: string) {
   const mapIdRef = useRef(initialMapId ?? '');
   const [mapId, setMapIdState] = useState(initialMapId ?? '');
   const [version, setVersion] = useState(0);
-  const store = useMapDatasetStore(mapId);
+
+  const controller = useMemo(
+    () => createMapDatasetController(() => mapIdRef.current),
+    [],
+  );
 
   const bump = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -28,72 +24,15 @@ export function useMapDataset(initialMapId?: string) {
 
   useEffect(() => {
     if (!isUsableMapId(mapId)) return;
-    const listener = () => bump();
-    store.listeners.add(listener);
+    const unsub = controller.subscribe(bump);
     return () => {
-      store.listeners.delete(listener);
+      unsub();
     };
-  }, [mapId, store, bump]);
+  }, [mapId, controller, bump]);
 
   const setMapId = useCallback((pMapId: string) => {
     mapIdRef.current = pMapId;
     setMapIdState(pMapId);
-  }, []);
-
-  const addDataset = useCallback(async (layer: IDataset) => {
-    const id = mapIdRef.current;
-    if (!isUsableMapId(id)) return;
-    const layerStore = getMapDatasetStore(id);
-    getMap(id, async (map: MapSimple) => {
-      await DatasetService.addDataset(layerStore, map, layer);
-      notify(layerStore);
-    });
-  }, []);
-
-  const removeDataset = useCallback(async (layer: IDataset) => {
-    const id = mapIdRef.current;
-    if (!isUsableMapId(id)) return;
-    const layerStore = getMapDatasetStore(id);
-    getMap(id, async (map: MapSimple) => {
-      await DatasetService.removeDataset(layerStore, map, layer);
-      notify(layerStore);
-    });
-  }, []);
-
-  const removeComponent = useCallback((component: IDataset) => {
-    const id = mapIdRef.current;
-    if (!isUsableMapId(id)) return;
-    getMap(id, async (map: MapSimple) => {
-      DatasetService.removeComponent(map, component);
-      notify(getMapDatasetStore(id));
-    });
-  }, []);
-
-  const getAllComponentsByType = useCallback(
-    <T extends IDataset>(targetType: string) => {
-      const id = mapIdRef.current;
-      if (!isUsableMapId(id)) return [];
-      return DatasetService.getAllComponentsByType<T>(
-        getMapDatasetStore(id),
-        targetType,
-      );
-    },
-    [],
-  );
-
-  const getDatasetIds = useCallback(() => {
-    const id = mapIdRef.current;
-    if (!isUsableMapId(id)) return EMPTY_DATASET_IDS;
-    return getMapDatasetStore(id).datasetIds;
-  }, []);
-
-  const getDatasets = useCallback(() => {
-    const id = mapIdRef.current;
-    if (!isUsableMapId(id)) return [];
-    const layerStore = getMapDatasetStore(id);
-    return layerStore.datasetIds.value.map(
-      (did: string) => layerStore.datasets[did],
-    );
   }, []);
 
   useEffect(() => {
@@ -102,16 +41,13 @@ export function useMapDataset(initialMapId?: string) {
 
   return {
     setMapId,
-    getDatasets,
-    addDataset,
-    getDatasetIds,
-    removeComponent,
-    removeDataset,
-    getStoreDataset: () =>
-      isUsableMapId(mapIdRef.current)
-        ? getMapDatasetStore(mapIdRef.current)
-        : undefined,
-    getAllComponentsByType,
+    getDatasets: controller.getDatasets,
+    addDataset: controller.addDataset,
+    getDatasetIds: controller.getDatasetIds,
+    removeComponent: controller.removeComponent,
+    removeDataset: controller.removeDataset,
+    getStoreDataset: controller.getStore,
+    getAllComponentsByType: controller.getAllComponentsByType,
     datasetVersion: version,
   };
 }

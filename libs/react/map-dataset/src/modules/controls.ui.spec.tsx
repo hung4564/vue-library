@@ -76,10 +76,12 @@ describe('LayerControl + IdentifyControl UI smoke', () => {
         UniversalRegistry.getControl(IDENTIFY_CONTROL.id, MAP_ID),
       ).toBeTruthy(),
     );
+    await waitFor(() =>
+      expect(
+        document.querySelector('.mapLayerControl-btn-module-container'),
+      ).toBeTruthy(),
+    );
     expect(document.getElementById(`top-left-${MAP_ID}`)).toBeTruthy();
-    expect(
-      document.querySelector('.mapLayerControl-btn-module-container'),
-    ).toBeTruthy();
     const leaf = document.querySelector(
       `[role="${DOM_PARITY.layerLeaf.role}"]`,
     );

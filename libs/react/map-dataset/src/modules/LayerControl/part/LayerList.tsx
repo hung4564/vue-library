@@ -1,6 +1,7 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import type {
   GlobalVisibilityMode,
+  IDataset,
   IListViewUI,
   LayerListGroupTree,
   LayerListItem,
@@ -13,7 +14,14 @@ import {
 import { MENU_CONTROL_ID } from '@hungpvq/map-dataset/menu';
 import { MapControlButton, useLang, useMap } from '@hungpvq/react-map-core';
 import { InputText } from '@hungpvq/react-ui-core';
-import { mdiClose, mdiDelete, mdiGroup, mdiLayers, mdiPlus } from '@mdi/js';
+import {
+  mdiClose,
+  mdiDelete,
+  mdiDeleteOutline,
+  mdiGroup,
+  mdiLayers,
+  mdiPlus,
+} from '@mdi/js';
 import { Icon } from '@mdi/react';
 import {
   type KeyboardEvent as ReactKeyboardEvent,
@@ -58,8 +66,11 @@ export function LayerList({
 }) {
   const { callMap } = useMap({ mapId });
   const { trans } = useLang(mapId);
-  const { getAllComponentsByType, removeComponent, datasetVersion } =
-    useMapDataset(mapId);
+  const {
+    getAllComponentsByType,
+    removeComponent,
+    datasetVersion,
+  } = useMapDataset(mapId);
   const [views, setViews] = useState<LayerListItem[]>([]);
   const [layerSearch, setLayerSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -97,11 +108,28 @@ export function LayerList({
   }
   function onRemoveGroupLayer(group: LayerListGroupTree) {
     if (!group?.children?.length) return;
-    group.children.forEach((view) => removeComponent(view));
+    group.children.forEach((view) => {
+      removeComponent(view);
+      setSelected((prev) => prev.filter((id) => id !== view.id));
+    });
+    refresh();
+  }
+  function onRemoveSelectedLayers() {
+    if (!selected.length) return;
+    const selectedIds = new Set(selected);
+    const toRemove = views.filter((v) => selectedIds.has(v.id));
+    toRemove.forEach((view) => {
+      removeComponent(view);
+    });
+    setSelected([]);
+    refresh();
   }
   function onRemoveAllLayer() {
     if (!views.length) return;
-    views.forEach((view) => removeComponent(view));
+    views.forEach((view) => {
+      removeComponent(view);
+    });
+    setSelected([]);
     refresh();
   }
   function addNewGroup() {
@@ -227,10 +255,24 @@ export function LayerList({
                 />
               </MapControlButton>
             )}
+            {!disabledDeleteAll && selected.length > 0 && (
+              <MapControlButton
+                onClick={onRemoveSelectedLayers}
+                title={trans('map.layer-control.delete-selected', {
+                  count: selected.length,
+                })}
+                variant="plain"
+              >
+                <Icon
+                  path={mdiDeleteOutline}
+                  size={HEADER_ICON}
+                />
+              </MapControlButton>
+            )}
             {!disabledDeleteAll && (
               <MapControlButton
                 onClick={onRemoveAllLayer}
-                title="Delete all layers"
+                title={trans('map.layer-control.delete-all')}
                 variant="plain"
               >
                 <Icon
@@ -315,6 +357,7 @@ export function LayerList({
                   onTitleClick={toggleSelect}
                   onRemove={(layer) => {
                     removeComponent(layer);
+                    setSelected((prev) => prev.filter((id) => id !== layer.id));
                     refresh();
                   }}
                 />

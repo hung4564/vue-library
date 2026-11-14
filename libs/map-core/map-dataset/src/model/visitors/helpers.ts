@@ -1,4 +1,4 @@
-import type { IDataset } from '../../interfaces/dataset.base';
+import type { DeletePolicy, IDataset } from '../../interfaces/dataset.base';
 import { isComposite } from '../../utils/check';
 import { traverseTree } from './traverse';
 
@@ -109,6 +109,26 @@ export function findAllComponentsByType<T extends IDataset = IDataset>(
     rootDataset,
     (node) => node.type === targetType,
   );
+}
+
+export function findAllComponentsByDeletePolicy<T extends IDataset = IDataset>(
+  rootDataset: IDataset,
+  policy: DeletePolicy,
+  deleteGroup?: string,
+): T[] {
+  return findAllDatasetsMatching<T>(rootDataset, (node) => {
+    if (node === rootDataset) return false;
+    const nodePolicy =
+      node.deletePolicy ??
+      (node as any).config?.deletePolicy ??
+      (node.getParent() ? 'self' : 'cascade');
+    if (nodePolicy !== policy) return false;
+    if (deleteGroup !== undefined) {
+      const nodeGroup = (node as any).config?.deleteGroup;
+      if (nodeGroup !== deleteGroup) return false;
+    }
+    return true;
+  });
 }
 
 export function runAllComponentsWithCheck<

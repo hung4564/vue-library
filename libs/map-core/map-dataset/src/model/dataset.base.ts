@@ -1,4 +1,8 @@
-import type { IDataset, WithChildren } from '../interfaces/dataset.base';
+import type {
+  DeletePolicy,
+  IDataset,
+  WithChildren,
+} from '../interfaces/dataset.base';
 import type { IDatasetVisitor } from '../interfaces/dataset.visitor';
 import { Base } from './base';
 
@@ -12,6 +16,15 @@ abstract class DatasetComponent<T = unknown> extends Base implements IDataset {
   protected data?: T;
   abstract type: string;
   dependsOn?: string[] = [];
+  protected _deletePolicy?: DeletePolicy;
+
+  get deletePolicy(): DeletePolicy {
+    if (this._deletePolicy) return this._deletePolicy;
+    return this.parent ? 'self' : 'cascade';
+  }
+  set deletePolicy(value: DeletePolicy) {
+    this._deletePolicy = value;
+  }
 
   constructor(name: string, data?: T) {
     super();

@@ -1,7 +1,10 @@
 import type { MapSimple } from '@hungpvq/map-core';
 
 import { createWithEventHelper } from '../../extra/event/model';
-import type { WithChildren } from '../../interfaces/dataset.base';
+import type {
+  DeletePolicy,
+  WithChildren,
+} from '../../interfaces/dataset.base';
 import { setOpacity, toggleShow } from '../../interfaces/dataset.extra';
 import { addMenuBuilder } from '../../menu/builder';
 import {
@@ -31,6 +34,7 @@ export interface ListViewUIBuilder {
   configDisabledMove(disabled?: boolean): this;
   configDisabledAddToGroup(disabled?: boolean): this;
   configInitShowLegend(initShow?: boolean): this;
+  configDeleteGroup(group?: string): this;
   build(): IListViewUI;
 }
 interface GroupSubBuilder extends ListViewUIBuilder {
@@ -95,6 +99,10 @@ function createBaseListViewUiBuilder(
       state.config!.init_show_legend = initShow ?? true;
       return this;
     },
+    configDeleteGroup(group) {
+      state.config!.deleteGroup = group;
+      return this;
+    },
     build(): IListViewUI {
       const base = createDatasetLeaf(name);
       const menu = createWithMenuHelper();
@@ -106,6 +114,16 @@ function createBaseListViewUiBuilder(
         ...event,
         get type(): string {
           return 'list';
+        },
+        get deletePolicy(): DeletePolicy {
+          return (
+            state.deletePolicy ??
+            state.config?.deletePolicy ??
+            'root-on-empty'
+          );
+        },
+        set deletePolicy(value: DeletePolicy) {
+          state.deletePolicy = value;
         },
         opacity: state.opacity ?? 1,
         selected: state.selected ?? false,
@@ -237,6 +255,7 @@ export function createDatasetPartSubListViewUiComponentBuilder(
     },
   });
   base.configDisabledOpacity();
+  base.configDisabledDelete();
   const originBuild = base.build.bind(base);
 
   const extended = {

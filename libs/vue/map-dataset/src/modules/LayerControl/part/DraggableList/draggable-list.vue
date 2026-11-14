@@ -101,7 +101,7 @@ import {
   type LayerListTreeNode,
   mergeEmptyGroups,
 } from '@hungpvq/map-dataset';
-import { computed, nextTick, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import draggable from 'vuedraggable';
 
 import DraggableListGroupItem from './draggable-list-group.vue';
@@ -157,11 +157,20 @@ const checkMove = (evt: any) => {
 onMounted(() => {
   update(props.items as LayerListItem[]);
 });
-function update(items: LayerListItem[] = []) {
-  if (items == null || items.length === 0) {
-    items = props.items as LayerListItem[];
-  }
-  treeLayer.value = mergeEmptyGroups(convertListToTree(items), treeLayer.value);
+watch(
+  () => props.items,
+  (newItems) => {
+    update(newItems as LayerListItem[]);
+  },
+  { deep: true },
+);
+function update(items?: LayerListItem[]) {
+  const targetItems =
+    items !== undefined ? items : (props.items as LayerListItem[]) || [];
+  treeLayer.value = mergeEmptyGroups(
+    convertListToTree(targetItems),
+    treeLayer.value,
+  );
 }
 function toggleSelect(layer: LayerListItem) {
   if (props.disabledSelect) return;

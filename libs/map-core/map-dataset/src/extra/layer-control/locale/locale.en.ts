@@ -93,6 +93,8 @@ export const LAYER_CONTROL_LOCALE = {
       empty: 'No layers yet',
       'empty-hint': 'Create a layer to get started',
       'create-btn': 'Create Layer',
+      'delete-all': 'Delete all layers',
+      'delete-selected': 'Delete selected ({count})',
       toggle: LAYER_CONTROL_TOGGLE_LOCALE,
       create: LAYER_CONTROL_CREATE_LOCALE,
       field: LAYER_CONTROL_FIELD_LOCALE,

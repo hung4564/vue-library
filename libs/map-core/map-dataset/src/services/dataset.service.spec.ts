@@ -25,6 +25,9 @@ function createLeafDataset(
   return {
     id,
     type: 'leaf',
+    get deletePolicy() {
+      return 'self';
+    },
     dependsOn: options.dependsOn,
     getName: () => id,
     setName: () => undefined,
@@ -168,6 +171,55 @@ describe('DatasetService', () => {
     expect(parent.remove).toHaveBeenCalledWith(list);
   });
 
+  it('removeComponent does not remove sibling layers when multiple list items share composite parent', () => {
+    const order: string[] = [];
+    const children: ReturnType<typeof createLeafDataset>[] = [];
+    const parent = {
+      id: 'composite-parent',
+      type: 'composite',
+      getName: () => 'parent',
+      setName: () => undefined,
+      getParent: () => undefined,
+      setParent: () => undefined,
+      addDependsOn: () => undefined,
+      removeDependsOn: () => undefined,
+      getChildren: () => children,
+      add: () => undefined,
+      remove: vi.fn((c) => {
+        const idx = children.indexOf(c);
+        if (idx >= 0) children.splice(idx, 1);
+      }),
+    } as unknown as IDataset & {
+      getChildren: () => IDataset[];
+      remove: ReturnType<typeof vi.fn>;
+    };
+
+    const layer1 = createLeafDataset('layer-1', { order });
+    const list1 = createLeafDataset('list-1', { order });
+    list1.type = 'list';
+    delete (list1 as { removeFromMap?: unknown }).removeFromMap;
+
+    const layer2 = createLeafDataset('layer-2', { order });
+    const list2 = createLeafDataset('list-2', { order });
+    list2.type = 'list';
+    delete (list2 as { removeFromMap?: unknown }).removeFromMap;
+
+    layer1.getParent = () => parent;
+    list1.getParent = () => parent;
+    layer2.getParent = () => parent;
+    list2.getParent = () => parent;
+
+    children.push(layer1, list1, layer2, list2);
+
+    DatasetService.removeComponent(map, list1);
+
+    // Only list1 should be detached, sibling layer-2 and list-2 remain intact
+    expect(order).toEqual([]);
+    expect(parent.remove).toHaveBeenCalledWith(list1);
+    expect(children).toContain(layer2);
+    expect(children).toContain(list2);
+  });
+
   it('assigns list indexes after existing lists', async () => {
     const store = createStore();
     const first = createLeafDataset('list-1') as IDataset & {
@@ -186,5 +238,42 @@ describe('DatasetService', () => {
 
     expect(first.index).toBe(1);
     expect(second.index).toBe(2);
+  });
+
+  it('cleans up parent layer when the only list item of parent composite is removed', () => {
+    const order: string[] = [];
+    const children: IDataset[] = [];
+    const parent = {
+      id: 'root-composite',
+      type: 'composite',
+      getParent: () => undefined,
+      getChildren: () => children,
+      remove: vi.fn((child: IDataset) => {
+        const idx = children.indexOf(child);
+        if (idx !== -1) children.splice(idx, 1);
+      }),
+    } as unknown as IDataset & {
+      getChildren: () => IDataset[];
+      remove: ReturnType<typeof vi.fn>;
+    };
+
+    const mapLayer = createLeafDataset('map-layer-1', { order });
+    mapLayer.getParent = () => parent;
+
+    const listItem = createLeafDataset('list-item-1', { order });
+    listItem.type = 'list';
+    delete (listItem as { removeFromMap?: unknown }).removeFromMap;
+    listItem.getParent = () => parent;
+
+    children.push(mapLayer, listItem);
+
+    DatasetService.removeComponent(map, listItem);
+
+    // Because listItem was the only list item of parent, target was parent
+    // so the associated mapLayer was cleaned up too.
+    expect(order).toEqual(['remove:map-layer-1']);
+    expect(parent.remove).toHaveBeenCalledWith(listItem);
+    expect(children).toContain(mapLayer);
+    expect(children).not.toContain(listItem);
   });
 });

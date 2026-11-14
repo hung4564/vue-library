@@ -247,6 +247,7 @@ export function LayerItem({
               disabledCreateGroup={disabledCreateGroup}
               getGroups={getGroups}
               menuContext={menuContext}
+              onRemove={onRemove}
             />
           ))}
         </div>

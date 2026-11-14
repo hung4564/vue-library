@@ -98,6 +98,10 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
     [mapId],
   );
 
+  const onRemoveAll = useCallback(() => {
+    views.forEach((v) => removeDataset(v));
+  }, [views, removeDataset]);
+
   const renderDraggable = useCallback<
     NonNullable<ModuleContainerProps['draggable']>
   >(
@@ -110,6 +114,34 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
         location={panelPosition.location || 'left'}
       >
         <div className="dataset-control">
+          {views.length > 0 && (
+            <div className="dataset-control__toolbar">
+              <MapControlButton
+                variant="plain"
+                title={trans('map.dataset-control.delete-all')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveAll();
+                }}
+              >
+                <Icon
+                  path={mdiDelete}
+                  size={ICON_SIZE}
+                />
+              </MapControlButton>
+            </div>
+          )}
+          {views.length === 0 && (
+            <div className="dataset-control__empty">
+              <Icon
+                path={mdiDatabaseOutline}
+                size="36px"
+              />
+              <div className="dataset-control__empty-text">
+                {trans('map.dataset-control.empty') || 'No datasets available'}
+              </div>
+            </div>
+          )}
           {views.map((view) => (
             <div
               key={view.id}
@@ -148,6 +180,7 @@ export function DatasetControl(props: WithMapPropType & { show?: boolean }) {
       </DraggableItemSideBar>
     ),
     [
+      onRemoveAll,
       onShowDetail,
       panelPosition.location,
       removeDataset,

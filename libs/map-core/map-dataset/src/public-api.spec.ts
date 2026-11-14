@@ -80,11 +80,13 @@ export const MAP_DATASET_STABLE_RUNTIME_EXPORTS = [
   'createDatasetPartSubListViewUiComponent',
   'createDatasetPartSubListViewUiComponentBuilder',
   'createGroupDataset',
+  'createMapDatasetController',
   'createMultiMapboxLayerComponent',
   'createNamedComponent',
   'createRootDataset',
   'createWithDataHelper',
   'createWithEventHelper',
+  'findAllComponentsByDeletePolicy',
   'findAllComponentsByType',
   'findPartByType',
   'findRoot',
@@ -138,6 +140,7 @@ export const MAP_DATASET_EXPERIMENTAL_RUNTIME_EXPORTS = [
   'loggerHighlight',
   'loggerIdentify',
   'removeDatasetComponent',
+  'removeDatasetComponentWithPolicy',
   'upsertDatasetComponent',
 ] as const;
 

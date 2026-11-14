@@ -6,6 +6,31 @@
   height: 100%;
 }
 
+.dataset-control__title-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.dataset-control__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--map-space-xs, 4px) var(--map-space-md, 8px);
+}
+
+.dataset-control__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--map-space-xl, 24px);
+  opacity: 0.6;
+  text-align: center;
+}
+
+.dataset-control__empty-text {
+  margin-top: var(--map-space-md, 8px);
+}
+
 .dataset-item {
   display: flex;
   min-height: 30px;

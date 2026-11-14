@@ -29,6 +29,18 @@
           :getGroups="getGroups"
           :menuContext="rowMenuContexts"
         />
+        <MapControlButton
+          v-if="showDelete"
+          @click.stop="onRemove"
+          variant="plain"
+          size="small"
+        >
+          <SvgIcon
+            size="14"
+            type="mdi"
+            :path="mdiDelete"
+          />
+        </MapControlButton>
       </div>
     </div>
   </div>
@@ -41,7 +53,9 @@ import type {
   MenuContextSource,
 } from '@hungpvq/map-dataset/menu';
 import { getResolvedMenus } from '@hungpvq/map-dataset/menu';
-import { RegistryItem } from '@hungpvq/vue-map-core';
+import { MapControlButton, RegistryItem } from '@hungpvq/vue-map-core';
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiDelete } from '@mdi/js';
 import { computed } from 'vue';
 
 import DatasetMenus from '../../../../extra/menu/dataset-menus.vue';
@@ -55,6 +69,16 @@ const props = defineProps<{
   menuContext?: MenuContextSource;
   getGroups?: () => ListViewGroupOption[];
 }>();
+const emit = defineEmits<{
+  (e: 'click:remove', item: IListViewUI): void;
+}>();
+const onRemove = () => {
+  emit('click:remove', props.item);
+};
+const showDelete = computed(() => {
+  if (props.readonly) return false;
+  return props.item?.config?.disabled_delete === false;
+});
 const isHasIcon = computed(() => props.item && props.item.icon);
 const rowMenuContexts = computed(() => [
   {

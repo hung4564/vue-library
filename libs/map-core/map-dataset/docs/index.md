@@ -225,6 +225,7 @@ Import builders, identify, menu protocol, create-control GIS APIs from `@hungpvq
 
 - [GIS worker](./worker.md) — npm app vs Nx monorepo setup so parse + CRS stay off the main thread
 - [Create a dataset](./create-dataset/) — tree, source, layer, list UI
+- [DeletePolicy](./helper/delete-policy.md) — dataset tree deletion policies (`'root-on-empty'`, `'self'`, `'cascade'`)
 - [Components](./module/) — LayerControl, Identify, Highlight, DatasetControl, props / events
 - [Menus](./create-dataset/with-helper-menu.md) — `createMenuBuilder`, `setHidden` / `setDisabled`, custom menu component
 - [Events](./create-dataset/with-helper-event.md) — `toggleShow` / `changeOpacity` on list nodes
