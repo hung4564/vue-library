@@ -1,3 +1,7 @@
+## 1.3.0 (2026-11-22)
+
+This was a version bump only for @hungpvq/map-dataset to align it with other projects, there were no code changes.
+
 ## 1.2.0 (2026-09-22)
 
 ### 🚀 Features

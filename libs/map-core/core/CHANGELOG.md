@@ -1,3 +1,21 @@
+## 1.3.0 (2026-11-22)
+
+### 🚀 Features
+
+- **ui-core:** add List and ListItem components with tests ([0dee7218](https://github.com/hung4564/vue-library/commit/0dee7218))
+- fix show in mobile, add useCallback for memo render ([0ba1c8db](https://github.com/hung4564/vue-library/commit/0ba1c8db))
+- add toolbar module-expandable ([b88242c5](https://github.com/hung4564/vue-library/commit/b88242c5))
+- enhance popup and float panel management in map controls ([7551475d](https://github.com/hung4564/vue-library/commit/7551475d))
+
+### 🩹 Fixes
+
+- style, active button in identifyResult ([31184b80](https://github.com/hung4564/vue-library/commit/31184b80))
+- lint ([4f48f90e](https://github.com/hung4564/vue-library/commit/4f48f90e))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 1.2.0 (2026-09-22)
 
 ### 🚀 Features

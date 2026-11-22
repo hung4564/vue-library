@@ -1,6 +1,6 @@
 {
   "name": "@hungpvq/map-debug",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": {
     "name": "hung.pv"
   },
@@ -42,7 +42,7 @@
     "@hungpvq/shared-store": "^0.3.1"
   },
   "peerDependencies": {
-    "@hungpvq/map-dataset": "^1.2.0"
+    "@hungpvq/map-dataset": "^1.3.0"
   },
   "peerDependenciesMeta": {
     "@hungpvq/map-dataset": {
@@ -50,6 +50,6 @@
     }
   },
   "devDependencies": {
-    "@hungpvq/map-dataset": "^1.2.0"
+    "@hungpvq/map-dataset": "^1.3.0"
   }
 }
