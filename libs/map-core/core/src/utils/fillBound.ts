@@ -1,6 +1,6 @@
-import type { LngLatBoundsLike, PaddingOptions } from 'maplibre-gl';
 import turfBbox from '@turf/bbox';
-import { isValidBbox } from './bbox';
+import type { LngLatBoundsLike, PaddingOptions } from 'maplibre-gl';
+
 import type {
   CoordinatesNumber,
   Feature,
@@ -8,6 +8,7 @@ import type {
   Geometry,
   MapSimple,
 } from '../types';
+import { isValidBbox } from './bbox';
 
 /**
  * Fit bounds value type
@@ -83,22 +84,20 @@ export function getMapFitBoundsPadding(
   let left = 0;
   let right = 0;
 
-  shell
-    .querySelectorAll('.sidebar-container.show.expand')
-    .forEach((node) => {
-      if (!(node instanceof HTMLElement)) return;
-      const style = getComputedStyle(node);
-      if (style.display === 'none' || style.visibility === 'hidden') return;
-      if (style.opacity === '0') return;
+  shell.querySelectorAll('.sidebar-container.show.expand').forEach((node) => {
+    if (!(node instanceof HTMLElement)) return;
+    const style = getComputedStyle(node);
+    if (style.display === 'none' || style.visibility === 'hidden') return;
+    if (style.opacity === '0') return;
 
-      const w = sidebarWidth(node, mapRect);
-      if (!w) return;
-      if (node.classList.contains('right-sidebar-container')) {
-        right = Math.max(right, w);
-      } else if (node.classList.contains('left-sidebar-container')) {
-        left = Math.max(left, w);
-      }
-    });
+    const w = sidebarWidth(node, mapRect);
+    if (!w) return;
+    if (node.classList.contains('right-sidebar-container')) {
+      right = Math.max(right, w);
+    } else if (node.classList.contains('left-sidebar-container')) {
+      left = Math.max(left, w);
+    }
+  });
 
   return {
     top: inset,

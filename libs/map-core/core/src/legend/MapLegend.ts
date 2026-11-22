@@ -5,12 +5,13 @@ import {
   Map,
   SymbolLayerSpecification,
 } from 'maplibre-gl';
+
 import { styleImageToDataURL } from '../image/utils';
-import type { LegendElement, PropsLegendOption } from './types';
 import Circle from './part/Circle';
 import Fill from './part/Fill';
 import Line from './part/Line';
 import Symbol from './part/Symbol';
+import type { LegendElement, PropsLegendOption } from './types';
 import { exprHandler } from './util';
 
 type Layer =
@@ -43,14 +44,19 @@ export function MapLegend({
   const handler = TYPE_MAP[layer.type];
   const expr = exprHandler({ zoom });
   const image = (id: string) => {
-    if (!id) {
+    if (!id || !map) {
       return '';
     }
-    const imageData = map.getImage(id);
-    if (!imageData) {
+    try {
+      // Map.getImage → this.style.getImage; style is null mid-swap / before load
+      const imageData = map.getImage(id);
+      if (!imageData) {
+        return '';
+      }
+      return styleImageToDataURL(id, imageData);
+    } catch {
       return '';
     }
-    return styleImageToDataURL(id, imageData);
   };
 
   if (handler) {

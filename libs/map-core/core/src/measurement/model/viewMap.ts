@@ -1,11 +1,12 @@
-import type { MapSimple } from '../../types';
-import { getMapUUIDv4 } from '../../utils/uuid';
-import type { IViewProps } from '../types';
+import { getUUIDv4 } from '@hungpvq/shared';
 import {
   GeoJSONSource,
   GeoJSONSourceSpecification,
   LayerSpecification,
 } from 'maplibre-gl';
+
+import type { MapSimple } from '../../types';
+import type { IViewProps } from '../types';
 import { View } from './view';
 
 export class MapView extends View {
@@ -29,12 +30,12 @@ export class MapView extends View {
     },
   ) {
     if (!source.id) {
-      source.id = `measurment-control-${getMapUUIDv4()}`;
+      source.id = `measurment-control-${getUUIDv4()}`;
     }
     this.map.addSource(source.id, source.data);
     layers.forEach((layer) => {
       if (!layer['id']) {
-        layer['id'] = `measurment-control-${getMapUUIDv4()}`;
+        layer['id'] = `measurment-control-${getUUIDv4()}`;
       }
       if (!layer['metadata']) {
         layer['metadata'] = {};

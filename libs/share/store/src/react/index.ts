@@ -3,7 +3,8 @@
  * Provides hooks and utilities to use the store with React
  */
 
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
 import { GlobalStoreService } from '../store';
 
 /**

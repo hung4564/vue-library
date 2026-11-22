@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { groupEventsByMapType, isEventActive } from './event-view';
 import type { IEvent } from './model/Event';
 

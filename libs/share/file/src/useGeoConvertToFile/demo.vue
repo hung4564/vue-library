@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FeatureCollection } from 'geojson';
 import { ref } from 'vue';
+
 import { SupportedFormat, useGeoConvertToFile } from '.';
 
 const { convert } = useGeoConvertToFile();
@@ -97,7 +98,10 @@ const downloadFile = async () => {
 
     <div>
       <label for="formatSelect">Choose export format:</label>
-      <select id="formatSelect" v-model="fileFormat">
+      <select
+        id="formatSelect"
+        v-model="fileFormat"
+      >
         <option value="geojson">GeoJSON</option>
         <option value="shapefile">Shapefile</option>
         <option value="kml">KML</option>

@@ -1,3 +1,17 @@
+## 1.4.0 (2026-09-22)
+
+### 🚀 Features
+
+- enhance layer control and worker management with new features ([9d74d4aa](https://github.com/hung4564/vue-library/commit/9d74d4aa))
+
+### 🩹 Fixes
+
+- update event naming for map component in Vue and React ([a4be5363](https://github.com/hung4564/vue-library/commit/a4be5363))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 1.3.1 (2026-09-18)
 
 This was a version bump only for @hungpvq/draggable to align it with other projects, there were no code changes.

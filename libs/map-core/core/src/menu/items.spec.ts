@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { createDefaultMapContextMenuItems } from './items';
 import { MAP_CONTEXT_MENU_ID } from './types';
 

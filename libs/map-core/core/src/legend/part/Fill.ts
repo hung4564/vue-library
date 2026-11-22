@@ -1,4 +1,5 @@
 import { FillLayerSpecification } from 'maplibre-gl';
+
 import type { LegendElement, PropsLegendOption } from '../types';
 
 export default function Fill(

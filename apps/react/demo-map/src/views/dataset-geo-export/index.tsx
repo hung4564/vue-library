@@ -6,21 +6,21 @@ import {
   Map,
   WorkerControl,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
   ExportGeoForm,
-  HighlightPointer,
   type ExportGeoFormProps,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useState } from 'react';
+
+import { DemoHelpPanel } from '../../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../../components/DemoLanguageControl';
 import { MapPageShell } from '../../components/MapPageShell';
 import { loadGeoExportDemoDatasets } from '../../data/loaders';
 import { useDatasetRegistry } from '../../hooks/useDatasetRegistry';
 import { AsideControl } from '../../layout/AsideControl';
-import { DemoHelpPanel } from '../../components/DemoHelpPanel';
 
 /** Passed as dataset `formComponent` (like AT cellComponent). */
 function DemoExportForm(props: ExportGeoFormProps) {
@@ -96,7 +96,11 @@ export function DatasetGeoExportPage() {
 
   return (
     <MapPageShell>
-      <Map mapId={mapId} onMapLoaded={onMapLoaded}>
+      <Map
+        mapId={mapId}
+        onMapLoaded={onMapLoaded}
+      >
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />
@@ -122,7 +126,6 @@ export function DatasetGeoExportPage() {
           }
           endList={({ mapId: mid }) => <BaseMapCard mapId={mid} />}
         />
-        <HighlightPointer enableClick />
         <ComponentManagementControl />
         <DemoHelpPanel />
       </Map>

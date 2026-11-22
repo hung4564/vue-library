@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
-import {
-  getMap,
-  type MapSimple } from '@hungpvq/map-core';
+import './story-telling.css';
+
+import { getMap, type MapSimple } from '@hungpvq/map-core';
+import { loggerFactory } from '@hungpvq/shared-log';
 import {
   BaseMapControl,
   CrsControl,
@@ -14,18 +14,24 @@ import {
   MeasurementControl,
   MouseCoordinatesControl,
   SettingControl,
-  ZoomControl
+  ZoomControl,
 } from '@hungpvq/vue-map-core';
-import {
-  MapCard
-} from '@hungpvq/vue-map-core/fields';
+import { MapCard } from '@hungpvq/vue-map-core/fields';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import * as turf from '@turf/turf';
 import { GeoJSONSource, Marker } from 'maplibre-gl';
 import { ref } from 'vue';
+
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../../layout/aside-control.vue';
 import { createZoomAction } from './helper-action';
 import { withMapReady } from './helper-global';
 import { Chapter, useMapStorytelling } from './useStorytelling';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+
+const storyGpsLog = loggerFactory
+  .createLogger()
+  .setNamespace('demo:story-gps', 0);
 
 const mapRef = ref();
 const mapId = ref('');
@@ -135,7 +141,9 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
       }) => ({
         add: () => {
           if (!segment || !segment.start || !segment.end || !segment.duration) {
-            console.error('Invalid segment data', segment);
+            storyGpsLog
+              .with({ fn: 'animateSegment', span: 'story.segment' })
+              .error('Invalid segment data', segment);
             return;
           }
 
@@ -146,16 +154,16 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
           const endCoord: [number, number] = [segment.end.lng, segment.end.lat];
 
           if (isSameCoord(startCoord, endCoord)) {
-            console.warn('Skipping segment: start and end are identical');
+            storyGpsLog
+              .with({ fn: 'animateSegment', span: 'story.segment' })
+              .warn('Skipping segment: start and end are identical');
             onFinish?.(); // Call finish so the next chapter can continue
             return;
           }
           if (!isValidCoordinate(startCoord) || !isValidCoordinate(endCoord)) {
-            console.error(
-              'Invalid coordinates for segment',
-              startCoord,
-              endCoord,
-            );
+            storyGpsLog
+              .with({ fn: 'animateSegment', span: 'story.segment' })
+              .error('Invalid coordinates for segment', startCoord, endCoord);
             return;
           }
 
@@ -217,8 +225,13 @@ const isSameCoord = (a: [number, number], b: [number, number]) =>
 </script>
 
 <template>
-  <Map ref="mapRef" @map-loaded="onMapLoaded">
+  <Map
+    ref="mapRef"
+    @mapLoaded="onMapLoaded"
+  >
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
+    <AsideControl position="top-left" />
     <MeasurementControl position="top-right" />
     <GotoControl position="top-right" />
     <CrsControl />
@@ -229,57 +242,43 @@ const isSameCoord = (a: [number, number], b: [number, number]) =>
     <HomeControl />
     <MouseCoordinatesControl />
     <BaseMapControl position="bottom-left" />
-    <div class="buttons-container">
-      <MapCard>
-        <button @click="play">Play</button>
-        <button @click="pause">Pause</button>
-        <button @click="prev">Prev</button>
-        <button @click="next">Next</button>
-        <div style="padding: 8px">
-          <div>Current: {{ currentIndex }}</div>
-          <div v-if="isPlaying">Playing</div>
-          <div id="btn-highlight"></div>
-        </div>
-      </MapCard>
-    </div>
     <DemoHelpPanel />
   </Map>
+  <div class="buttons-container">
+    <MapCard>
+      <button
+        type="button"
+        :disabled="!mapId"
+        @click="play"
+      >
+        Play
+      </button>
+      <button
+        type="button"
+        :disabled="!mapId"
+        @click="pause"
+      >
+        Pause
+      </button>
+      <button
+        type="button"
+        :disabled="!mapId"
+        @click="prev"
+      >
+        Prev
+      </button>
+      <button
+        type="button"
+        :disabled="!mapId"
+        @click="next"
+      >
+        Next
+      </button>
+      <div style="padding: 8px">
+        <div>Current: {{ currentIndex }}</div>
+        <div v-if="isPlaying">Playing</div>
+        <div id="btn-highlight"></div>
+      </div>
+    </MapCard>
+  </div>
 </template>
-
-<style></style>
-
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-.buttons-container {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 99;
-  display: flex;
-  gap: 8px;
-  padding: 8px;
-}
-.buttons-container button {
-  background-color: transparent;
-  padding: 8px;
-}
-.buttons-container button:hover {
-  background-color: blue;
-}
-.highlight {
-  background-color: red;
-}
-#btn-highlight {
-  height: 10px;
-  width: 100%;
-}
-</style>

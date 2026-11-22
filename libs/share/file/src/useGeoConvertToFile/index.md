@@ -91,9 +91,7 @@ const { convert } = useGeoConvertToFile();
 // Convert GeoJSON to Shapefile
 const geojsonData = {
   type: 'FeatureCollection',
-  features: [
-    /* your features here */
-  ],
+  features: [/* your features here */],
 };
 
 const blob = await convert(geojsonData, { format: 'shapefile' });

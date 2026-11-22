@@ -1,7 +1,6 @@
-<script setup lang="ts">
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
-import type { MapSimple } from '@hungpvq/map-core';
+﻿<script setup lang="ts">
 import { GEO_EXPORT_DEMO_LEGEND } from '@hungpvq/demo-map-datasets';
+import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
   BaseMapCard,
@@ -12,13 +11,15 @@ import {
 import {
   ComponentManagementControl,
   ExportGeoForm,
-  HighlightPointer,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { defineComponent, h, ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
-import { loadGeoExportDemoDatasets } from '../../data/loaders';
+
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import { loadGeoExportDemoDatasets } from '../../data/loaders';
+import AsideControl from '../../layout/aside-control.vue';
 
 const mapId = ref(getUUIDv4());
 
@@ -64,12 +65,19 @@ function onMapLoaded(map: MapSimple) {
 }
 </script>
 <template>
-  <Map @map-loaded="onMapLoaded" :mapId="mapId">
+  <Map
+    @mapLoaded="onMapLoaded"
+    :mapId="mapId"
+  >
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <WorkerControl position="top-left" />
-    <LayerControl position="top-left" show>
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #titleList>
         <pre class="geo-export-demo-legend">{{ GEO_EXPORT_DEMO_LEGEND }}</pre>
       </template>
@@ -77,22 +85,12 @@ function onMapLoaded(map: MapSimple) {
         <BaseMapCard :mapId="mid" />
       </template>
     </LayerControl>
-    <HighlightPointer enableClick />
     <ComponentManagementControl />
     <DemoHelpPanel />
   </Map>
 </template>
 
 <style>
-* {
-  padding: 0;
-  margin: 0;
-}
-body,
-html,
-#root {
-  height: 100%;
-}
 .geo-export-demo-legend {
   margin: 0;
   padding: 4px 0;

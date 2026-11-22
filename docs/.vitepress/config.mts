@@ -44,7 +44,10 @@ const sharedVite = {
     preserveSymlinks: true,
     alias: {
       '@hungpvq/shared': path.resolve(__dirname, '../../libs/share/shared/src'),
-      '@hungpvq/shared-core': path.resolve(__dirname, '../../libs/share/core/src'),
+      '@hungpvq/shared-core': path.resolve(
+        __dirname,
+        '../../libs/share/core/src',
+      ),
     },
   },
 };
@@ -71,6 +74,11 @@ const mainDocsConfig: UserConfig = {
         activeMatch: '/^shared/',
       },
       {
+        text: navLabel('Shared Log', '@hungpvq/shared-log'),
+        link: '/shared-log/',
+        activeMatch: '/^shared-log/',
+      },
+      {
         text: navLabel('Draggable', '@hungpvq/draggable'),
         link: `${demoSiteOrigin}/demo-draggable/`,
         target: '_self',
@@ -86,6 +94,19 @@ const mainDocsConfig: UserConfig = {
     sidebar: {
       '/shared': SharedFunctionsSideBar,
       '/shared-core': SharedFunctionsSideBar,
+      '/shared-log': [
+        {
+          text: 'Shared Log',
+          items: [
+            { text: 'Tổng quan (Overview)', link: '/shared-log/' },
+            { text: 'Logger & Storage', link: '/shared-log/logger' },
+            { text: 'Live Hook Tracing', link: '/shared-log/live-hook' },
+            { text: 'Devtools Shell', link: '/shared-log/devtools' },
+            { text: 'Ví dụ thực tế (Examples)', link: '/shared-log/examples' },
+            { text: 'Stable API', link: '/shared-log/stable-api' },
+          ],
+        },
+      ],
       '/draggable': [
         {
           text: 'Demo Vue',
@@ -133,7 +154,7 @@ const mainDocsConfig: UserConfig = {
 const demoDraggableConfig: UserConfig = {
   title: `@hungpvq/draggable ${packageVersions['@hungpvq/draggable']}`,
   description: 'Draggable docs and demos',
-  srcDir: path.resolve(__dirname, '../../libs/draggable/core/docs'),
+  srcDir: path.resolve(__dirname, '../../libs/draggable/docs'),
   base: '/demo-draggable/',
   outDir: path.resolve(__dirname, '../../deploy/demo-draggable'),
   lastUpdated: true,
@@ -204,7 +225,7 @@ const demoDraggableConfig: UserConfig = {
 const demoMapConfig: UserConfig = {
   title: `@hungpvq/vue-map-core ${packageVersions['@hungpvq/vue-map-core']}`,
   description: 'Map docs and demos',
-  srcDir: path.resolve(__dirname, '../../libs/map-core/core/docs'),
+  srcDir: path.resolve(__dirname, '../../libs/map-core/docs'),
   base: '/demo-map/',
   outDir: path.resolve(__dirname, '../../deploy/demo-map'),
   lastUpdated: true,
@@ -272,9 +293,8 @@ const demoMapConfig: UserConfig = {
         target: '_self',
         rel: 'noopener',
       },
-      ...rewriteSidebar(
-        getMapSideBar() as DefaultTheme.SidebarItem[],
-        (link) => rewritePrefixLink('map', link),
+      ...rewriteSidebar(getMapSideBar() as DefaultTheme.SidebarItem[], (link) =>
+        rewritePrefixLink('map', link),
       ),
     ],
     socialLinks: [

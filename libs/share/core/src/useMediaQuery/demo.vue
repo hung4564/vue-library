@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue';
 import YAML from 'js-yaml';
+import { computed, reactive } from 'vue';
+
 import { useMediaQuery } from '.';
 
 const isLargeScreen = useMediaQuery('(min-width: 1024px)');

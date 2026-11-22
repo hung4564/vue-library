@@ -119,10 +119,7 @@ export function createGeoExportMenuFormatsDataset(): IDataset {
   return buildManualDataset(
     GEO_EXPORT_MENU_FORMATS_NAME,
     '#9b59b6',
-    [
-      createMenuItemToggleShow(),
-      createMenuItemExportGeo({ uiMode: 'menu' }),
-    ],
+    [createMenuItemToggleShow(), createMenuItemExportGeo({ uiMode: 'menu' })],
     [
       createDatasetPartGeoExport('export', {
         formats: ['geojson', 'csv', 'kml'],
@@ -181,10 +178,12 @@ export function createGeoExportAtScopesDataset(): IDataset {
  * (6) Local UI via `formComponent` / `loadingComponent`.
  * Demo pages pass Vue/React components; view-source may call with no args.
  */
-export function createGeoExportOverrideUiDataset(ui: {
-  formComponent?: unknown;
-  loadingComponent?: unknown;
-} = {}): IDataset {
+export function createGeoExportOverrideUiDataset(
+  ui: {
+    formComponent?: unknown;
+    loadingComponent?: unknown;
+  } = {},
+): IDataset {
   return buildManualDataset(
     GEO_EXPORT_OVERRIDE_UI_NAME,
     '#f39c12',

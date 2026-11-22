@@ -1,6 +1,7 @@
-/* Global styles — keep in sync with Vue demo + map themes.css */
+/* Demo shell — map/draggable packages self-contain border-box on UI roots. */
 html {
   -webkit-text-size-adjust: 100%;
+  box-sizing: border-box;
   font-family: var(
     --map-font-family,
     system-ui,
@@ -19,6 +20,12 @@ html {
   height: 100%;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
 body {
   font-family: inherit;
   font-size: inherit;
@@ -28,15 +35,6 @@ body {
   height: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-*,
-::before,
-::after {
-  box-sizing: border-box;
-  border-width: 0;
-  border-style: solid;
-  border-color: currentColor;
 }
 
 h1,

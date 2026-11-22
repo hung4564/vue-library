@@ -1,10 +1,11 @@
 import {
   Fn,
-  MaybeElementRef,
   isIOS,
+  MaybeElementRef,
   noop,
   unrefElement,
 } from '@hungpvq/shared';
+
 import { ConfigurableWindow, defaultWindow } from '../_configurable';
 import { useEventListener } from '../useEventListener';
 

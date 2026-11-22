@@ -4,7 +4,7 @@ const EN: DemoHelpSection[] = [
   {
     id: 'pointer-both',
     title: 'Pointer both (default)',
-    body: 'Hover → paint only. Click → paint + MapLibre popup (`presentation.clickAction: \'popup\'`). Try both on the blue layer. Fill bound zooms to the layer.',
+    body: "Hover → paint only. Click → paint + MapLibre popup (`presentation.clickAction: 'popup'`). Try both on the blue layer. Fill bound zooms to the layer.",
   },
   {
     id: 'pointer-hover',
@@ -14,17 +14,17 @@ const EN: DemoHelpSection[] = [
   {
     id: 'pointer-click',
     title: 'Pointer click → detail',
-    body: '`pointer: { click: true, hover: false }` + `clickAction: \'detail\'`. Try: click opens LayerDetail (coral); hover does not pick. Layer also has Fill bound.',
+    body: "`pointer: { click: true, hover: false }` + `clickAction: 'detail'`. Try: click opens LayerDetail (coral); hover does not pick. Layer also has Fill bound.",
   },
   {
     id: 'presentation',
     title: 'Presentation onShow / onHide',
-    body: '`presentation.onShow` / `onHide` with `popup: { kind: \'none\' }` and `clickAction: \'none\'`. Try: hover / click — check `demo:highlight` logs (no MapLibre popup).',
+    body: "`presentation.onShow` / `onHide` with `popup: { kind: 'none' }` and `clickAction: 'none'`. Try: hover / click — check `demo:highlight` logs (no MapLibre popup).",
   },
   {
     id: 'replace-scope-all',
     title: 'Selection replaceScope all (multiple)',
-    body: '`selection: { policy: \'multiple\', replaceScope: \'all\' }` — a new show clears every highlight source. Try: click several features and compare with other layers that use replaceScope source.',
+    body: "`selection: { policy: 'multiple', replaceScope: 'all' }` — a new show clears every highlight source. Try: click several features and compare with other layers that use replaceScope source.",
   },
   {
     id: 'feature-state-group',
@@ -74,17 +74,17 @@ const EN: DemoHelpSection[] = [
   {
     id: 'custom',
     title: 'Custom animate highlight',
-    body: 'Custom animated highlight (`mode: \'custom\'`). Try: hover / click to see the custom animation.',
+    body: "Custom animated highlight (`mode: 'custom'`). Try: hover / click to see the custom animation.",
   },
   {
     id: 'change-color',
     title: 'Change color highlight',
-    body: 'Highlight by swapping feature color (`mode: \'changeColor\'`). Try: hover / click and watch fill/stroke color change.',
+    body: "Highlight by swapping feature color (`mode: 'changeColor'`). Try: hover / click and watch fill/stroke color change.",
   },
   {
     id: 'shadow',
     title: 'Shadow highlight (static glow)',
-    body: 'Outline / shadow highlight (`mode: \'outline\'`). Try: hover / click — compare to the blink default.',
+    body: "Outline / shadow highlight (`mode: 'outline'`). Try: hover / click — compare to the blink default.",
   },
   {
     id: 'default',
@@ -97,7 +97,7 @@ const VI: DemoHelpSection[] = [
   {
     id: 'pointer-both',
     title: 'Pointer cả hai (mặc định)',
-    body: 'Hover → chỉ tô. Click → tô + popup MapLibre (`presentation.clickAction: \'popup\'`). Thử trên lớp xanh. Fill bound zoom lớp.',
+    body: "Hover → chỉ tô. Click → tô + popup MapLibre (`presentation.clickAction: 'popup'`). Thử trên lớp xanh. Fill bound zoom lớp.",
   },
   {
     id: 'pointer-hover',
@@ -107,7 +107,7 @@ const VI: DemoHelpSection[] = [
   {
     id: 'pointer-click',
     title: 'Pointer click → detail',
-    body: '`pointer: { click: true, hover: false }` + `clickAction: \'detail\'`. Thử: click mở LayerDetail; hover không chọn. Có Fill bound.',
+    body: "`pointer: { click: true, hover: false }` + `clickAction: 'detail'`. Thử: click mở LayerDetail; hover không chọn. Có Fill bound.",
   },
   {
     id: 'presentation',
@@ -117,7 +117,7 @@ const VI: DemoHelpSection[] = [
   {
     id: 'replace-scope-all',
     title: 'Selection replaceScope all (multiple)',
-    body: '`selection: { policy: \'multiple\', replaceScope: \'all\' }` — show mới xóa mọi nguồn highlight. Thử: click nhiều đối tượng và so với lớp replaceScope source.',
+    body: "`selection: { policy: 'multiple', replaceScope: 'all' }` — show mới xóa mọi nguồn highlight. Thử: click nhiều đối tượng và so với lớp replaceScope source.",
   },
   {
     id: 'feature-state-group',
@@ -167,17 +167,17 @@ const VI: DemoHelpSection[] = [
   {
     id: 'custom',
     title: 'Highlight animate tùy chỉnh',
-    body: '`mode: \'custom\'`. Thử: hover / click xem animation.',
+    body: "`mode: 'custom'`. Thử: hover / click xem animation.",
   },
   {
     id: 'change-color',
     title: 'Highlight đổi màu',
-    body: '`mode: \'changeColor\'`. Thử: hover / click — fill/stroke đổi màu.',
+    body: "`mode: 'changeColor'`. Thử: hover / click — fill/stroke đổi màu.",
   },
   {
     id: 'shadow',
     title: 'Highlight shadow (glow tĩnh)',
-    body: '`mode: \'outline\'`. Thử: hover / click — so với blink mặc định.',
+    body: "`mode: 'outline'`. Thử: hover / click — so với blink mặc định.",
   },
   {
     id: 'default',

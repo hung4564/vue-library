@@ -60,4 +60,3 @@ export const DATA_MANAGEMENT_DEMO_HELP = helpI18n(
     },
   ],
 );
-

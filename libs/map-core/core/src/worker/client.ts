@@ -1,12 +1,7 @@
 import { applyWorkerMonitorMessage } from './message';
 import { WorkerMonitor } from './monitor';
-import {
-  createWorkerMonitorAbortMessage,
-} from './protocol';
-import {
-  runMonitoredTask,
-  type MonitoredTaskRun,
-} from './run-task';
+import { createWorkerMonitorAbortMessage } from './protocol';
+import { type MonitoredTaskRun, runMonitoredTask } from './run-task';
 import type { WorkerHandle, WorkerRegisterOptions } from './types';
 
 export type WorkerTaskRequestBase = {
@@ -61,7 +56,10 @@ export type WorkerMonitorClient<
   terminate(reason?: string): void;
 };
 
-const abortHooks = new Map<string, (taskId: string, reason?: string) => boolean>();
+const abortHooks = new Map<
+  string,
+  (taskId: string, reason?: string) => boolean
+>();
 
 function defaultMapError(raw?: string): Error {
   return new Error(raw?.trim() || 'Worker failed');

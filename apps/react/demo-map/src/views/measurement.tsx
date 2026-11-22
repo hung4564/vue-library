@@ -1,17 +1,47 @@
-import { BaseMapControl, Map, MeasurementControl } from '@hungpvq/react-map-core';
+import type { MeasureActionItem } from '@hungpvq/map-core/measurement';
+import {
+  BaseMapControl,
+  Map,
+  MeasurementControl,
+} from '@hungpvq/react-map-core';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
+import { loggerFactory } from '@hungpvq/shared-log';
+import { mdiPlus } from '@mdi/js';
 
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
+
+const logger = loggerFactory.createLogger().setNamespace('demo:measurement');
+
+const actions: MeasureActionItem[] = [
+  {
+    title: 'add to layer',
+    icon: mdiPlus,
+    type: 'add-to-layer',
+    handle: (data) => {
+      logger
+        .with({ fn: 'onAddToLayer', span: 'measurement.event' })
+        .info('add to layer', data);
+    },
+    disabled: (ctx) => !ctx.coordinates || ctx.coordinates.length < 1,
+    index: 0,
+    show: (ctx) => ctx.status === 'handle',
+  },
+];
 
 export function MeasurementPage() {
   return (
     <MapPageShell>
       <Map>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
-        <MeasurementControl position="top-left" />
+        <MeasurementControl
+          position="top-left"
+          actions={actions}
+        />
         <BaseMapControl position="bottom-left" />
         <DemoHelpPanel />
       </Map>

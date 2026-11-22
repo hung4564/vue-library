@@ -2,6 +2,7 @@ import type { MaybeRefOrGetter } from '@hungpvq/shared';
 import { increaseWithUnit, toValue } from '@hungpvq/shared';
 import type { ComputedRef, Ref } from 'vue';
 import { computed } from 'vue';
+
 import type { ConfigurableWindow } from '../_configurable';
 import { defaultWindow } from '../_configurable';
 import { useMediaQuery } from '../useMediaQuery';

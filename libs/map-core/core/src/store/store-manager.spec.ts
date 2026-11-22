@@ -1,6 +1,7 @@
+import { getOrCreateStore } from '@hungpvq/shared-store';
 import mitt from 'mitt';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getOrCreateStore } from '@hungpvq/shared-store';
+
 import { MapInitializationError } from '../errors';
 import { UniversalRegistry } from '../registry/universal-registry';
 import type { IMapStoreAdapter } from './interface';
@@ -22,6 +23,8 @@ function createAdapter(): IMapStoreAdapter & { root: Record<string, any> } {
 function clearSharedTombstones() {
   getOrCreateStore('map:core:meta', () => ({
     removedMapIds: new Set<string>(),
+    errorCapture: { installed: false, uninstall: undefined },
+    registries: new Map(),
   })).removedMapIds.clear();
 }
 
@@ -126,11 +129,16 @@ describe('MapStoreManager', () => {
     const adapter = createAdapter();
     const manager = new MapStoreManager(adapter);
     const seen: unknown[] = [];
-    manager.addStore('m1', 'tmp', { a: 1 }, {
-      cleanup: () => {
-        seen.push(manager.peekStore('m1', 'tmp'));
+    manager.addStore(
+      'm1',
+      'tmp',
+      { a: 1 },
+      {
+        cleanup: () => {
+          seen.push(manager.peekStore('m1', 'tmp'));
+        },
       },
-    });
+    );
     manager.destroyScopedStore('m1', 'tmp');
     expect(seen).toEqual([{ a: 1 }]);
     expect(manager.peekStore('m1', 'tmp')).toBeUndefined();
@@ -236,5 +244,27 @@ describe('MapStoreManager', () => {
     expect(managerB.getMap('cross', cb)).toBeUndefined();
     expect(cb).not.toHaveBeenCalled();
     expect(getEmitter).not.toHaveBeenCalled();
+  });
+
+  it('does not create an empty-string map entry', () => {
+    const adapter = createAdapter();
+    const manager = new MapStoreManager(adapter);
+    adapter.root[''] = { leaked: true };
+
+    expect(manager.getMapStore('')).toBeUndefined();
+    expect(manager.peekStore('', 'mitt')).toBeUndefined();
+    expect(manager.getMap('', vi.fn())).toBeUndefined();
+    expect(manager.subscribeMapReady('', vi.fn())).toEqual(
+      expect.any(Function),
+    );
+    expect('' in adapter.root).toBe(false);
+
+    expect(() => manager.addStore('', 'mitt', () => ({}))).toThrow(
+      /mapId is required/,
+    );
+    expect(() => manager.initMap('', { id: 'x' } as any)).toThrow(
+      /mapId is required/,
+    );
+    expect('' in adapter.root).toBe(false);
   });
 });

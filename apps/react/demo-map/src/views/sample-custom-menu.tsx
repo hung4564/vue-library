@@ -2,10 +2,10 @@ import type { IListViewUI } from '@hungpvq/map-dataset';
 import type { MenuAction } from '@hungpvq/map-dataset/menu';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { mdiChevronRight, mdiClose, mdiInformation, mdiStar } from '@mdi/js';
-import Icon from '@mdi/react';
+import { Icon } from '@mdi/react';
 import { useState } from 'react';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:list-menu', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:list-menu');
 
 export function SampleCustomMenu({
   item,
@@ -36,26 +36,37 @@ export function SampleCustomMenu({
       }}
     >
       <div className="layer-context-menu__item-icon">
-        <Icon path={mdiStar} size="16px" />
+        <Icon
+          path={mdiStar}
+          size="16px"
+        />
       </div>
       <span>{name}</span>
       <div className="layer-context-menu__chevron">
-        <Icon path={mdiChevronRight} size="16px" />
+        <Icon
+          path={mdiChevronRight}
+          size="16px"
+        />
       </div>
       <ul className="context-menu layer-context-menu layer-context-menu--submenu">
         <li
           className="layer-context-menu__item"
           onClick={(event) => {
             event.stopPropagation();
-            logger.info('layer menu', {
-              mapId,
-              layerId: data?.id,
-              layerName: data?.getName?.(),
-            });
+            logger
+              .with({ fn: 'onLog', span: 'menu.action' })
+              .info('layer menu', {
+                mapId,
+                layerId: data?.id,
+                layerName: data?.getName?.(),
+              });
           }}
         >
           <div className="layer-context-menu__item-icon">
-            <Icon path={mdiInformation} size="16px" />
+            <Icon
+              path={mdiInformation}
+              size="16px"
+            />
           </div>
           <span>Log layer (keep open)</span>
         </li>
@@ -67,7 +78,10 @@ export function SampleCustomMenu({
           }}
         >
           <div className="layer-context-menu__item-icon">
-            <Icon path={mdiClose} size="16px" />
+            <Icon
+              path={mdiClose}
+              size="16px"
+            />
           </div>
           <span>Done (close menu)</span>
         </li>

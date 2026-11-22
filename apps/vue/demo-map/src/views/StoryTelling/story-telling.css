@@ -1,0 +1,35 @@
+.buttons-container {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 99;
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+}
+
+.buttons-container button {
+  background-color: transparent;
+  padding: 8px;
+  cursor: pointer;
+  border: none;
+}
+
+.buttons-container button:hover:not(:disabled) {
+  background-color: blue;
+  color: #fff;
+}
+
+.buttons-container button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.highlight {
+  background-color: red;
+}
+
+#btn-highlight {
+  height: 10px;
+  width: 100%;
+}

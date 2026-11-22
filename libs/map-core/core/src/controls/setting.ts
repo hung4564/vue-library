@@ -1,4 +1,5 @@
 import type { SpriteSpecification } from 'maplibre-gl';
+
 import type { MapSimple } from '../types';
 
 export type MapStyleSetting = {
@@ -13,9 +14,7 @@ export function spriteToInput(sprite?: SpriteSpecification): string {
   return typeof sprite === 'string' ? sprite : JSON.stringify(sprite);
 }
 
-export function inputToSprite(
-  value?: string,
-): SpriteSpecification | undefined {
+export function inputToSprite(value?: string): SpriteSpecification | undefined {
   if (!value?.trim()) return undefined;
   try {
     const parsed = JSON.parse(value);
@@ -32,10 +31,7 @@ export function readMapStyleSettings(map: MapSimple): MapStyleSetting {
   const style = map.getStyle();
   return {
     zoom: map.getZoom(),
-    center: [
-      +map.getCenter().lng.toFixed(6),
-      +map.getCenter().lat.toFixed(6),
-    ],
+    center: [+map.getCenter().lng.toFixed(6), +map.getCenter().lat.toFixed(6)],
     sprite: style.sprite,
     glyphs: style.glyphs,
   };

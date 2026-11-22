@@ -2,6 +2,7 @@
  * @vitest-environment jsdom
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import {
   bboxFromGeojson,
   convertGeometry,
@@ -108,8 +109,7 @@ describe('fillBound', () => {
       }),
     });
     const sidebar = document.createElement('div');
-    sidebar.className =
-      'sidebar-container show expand right-sidebar-container';
+    sidebar.className = 'sidebar-container show expand right-sidebar-container';
     Object.defineProperty(sidebar, 'getBoundingClientRect', {
       value: () => ({
         left: 700,
@@ -146,8 +146,7 @@ describe('fillBound', () => {
       }),
     });
     const sidebar = document.createElement('div');
-    sidebar.className =
-      'sidebar-container show expand left-sidebar-container';
+    sidebar.className = 'sidebar-container show expand left-sidebar-container';
     Object.defineProperty(sidebar, 'getBoundingClientRect', {
       value: () => ({
         left: 0,
@@ -162,13 +161,10 @@ describe('fillBound', () => {
     document.body.append(shell);
 
     const map = { fitBounds: vi.fn(), getContainer: () => mapEl };
-    fitBounds(
-      map as never,
-      [
-        [0, 0],
-        [1, 1],
-      ],
-    );
+    fitBounds(map as never, [
+      [0, 0],
+      [1, 1],
+    ]);
     expect(map.fitBounds.mock.calls[0][1].padding.left).toBe(450);
   });
 

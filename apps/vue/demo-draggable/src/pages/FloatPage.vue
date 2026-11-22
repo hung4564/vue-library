@@ -8,8 +8,15 @@ import {
 </script>
 
 <template>
-  <DraggableContainer containerId="demo-float" class="demo-page">
-    <DraggableItemSideBar show title="Controls" location="left">
+  <DraggableContainer
+    containerId="demo-float"
+    class="demo-page"
+  >
+    <DraggableItemSideBar
+      show
+      title="Controls"
+      location="left"
+    >
       <div class="panel">
         <h2>Float demo</h2>
         <p>Floating panels with optional bottom header and order controls.</p>

@@ -1,57 +1,43 @@
 import { defineStore } from '@hungpvq/shared-store';
+
+import type { DragItemOrigin } from '../debug/origin';
 import {
   ContainerStore,
   ContainerStoreAction,
   ContainerStoreOtherAction,
-  ItemGroupKey,
-  ItemLayoutState,
-  LocationSideBar,
-  PanelSnapshot,
   createEmptyContainer,
   createEmptyDrawer,
+  ItemGroupKey,
+  ItemLayoutState,
   itemTypeToGroup,
+  LocationSideBar,
+  PanelSnapshot,
 } from '../types';
 
 export type DragStoreNotify = (path?: string | string[]) => void;
 /** Framework may wrap the object (e.g. Vue `reactive`); return type is intentionally loose. */
 export type DragStoreMakeReactive = <T extends object>(value: T) => T | object;
 
+/** Adapter wiring on `drag:core` (not domain state). Shared via GlobalStoreService. */
 type DragStoreRuntimeConfig = {
   notify: DragStoreNotify;
   makeReactive: DragStoreMakeReactive;
 };
 
-const DRAG_STORE_CONFIG_KEY = '__hungpvq_drag_store_config__';
-
-/**
- * Keep runtime config on `globalThis` so Vite optimizeDeps / duplicate
- * `@hungpvq/draggable` module instances still share one configureDragStore.
- */
-function getDragStoreConfig(): DragStoreRuntimeConfig {
-  const g = globalThis as typeof globalThis & {
-    [DRAG_STORE_CONFIG_KEY]?: DragStoreRuntimeConfig;
+function createDefaultDragStoreConfig(): DragStoreRuntimeConfig {
+  return {
+    notify: () => undefined,
+    makeReactive: (value) => value,
   };
-  let config = g[DRAG_STORE_CONFIG_KEY];
-  if (!config) {
-    config = {
-      notify: () => undefined,
-      makeReactive: (value) => value,
-    };
-    g[DRAG_STORE_CONFIG_KEY] = config;
-  }
-  return config;
 }
 
 function notify(path?: string | string[]) {
-  getDragStoreConfig().notify(path);
-}
-
-function makeReactive<T extends object>(value: T): T | object {
-  return getDragStoreConfig().makeReactive(value);
+  useDragStore().__config.notify(path);
 }
 
 /**
- * Configure framework-specific store behavior before first use.
+ * Configure framework-specific store behavior on `drag:core.__config`.
+ * Creates the store if needed; late `makeReactive` re-wraps `container`.
  * - Vue: `configureDragStore({ makeReactive: reactive })`
  * - React: `configureDragStore({ notify: notifyStoreChange })`
  */
@@ -59,13 +45,22 @@ export function configureDragStore(options: {
   notify?: DragStoreNotify;
   makeReactive?: DragStoreMakeReactive;
 }) {
-  const cfg = getDragStoreConfig();
-  if (options.notify) cfg.notify = options.notify;
-  if (options.makeReactive) cfg.makeReactive = options.makeReactive;
+  const store = useDragStore();
+  if (options.notify) store.__config.notify = options.notify;
+  if (options.makeReactive) {
+    store.__config.makeReactive = options.makeReactive;
+    store.container = store.__config.makeReactive(
+      store.container,
+    ) as typeof store.container;
+    store.debugOrigins = store.__config.makeReactive(
+      store.debugOrigins,
+    ) as typeof store.debugOrigins;
+  }
 }
 
 export const useDragStore = defineStore('drag:core', () => {
-  const container = makeReactive(
+  const __config = createDefaultDragStoreConfig();
+  const container = __config.makeReactive(
     {} as Record<string, ContainerStore>,
   ) as Record<string, ContainerStore>;
   return {
@@ -73,8 +68,16 @@ export const useDragStore = defineStore('drag:core', () => {
     componentCard: undefined as unknown,
     componentCardHeader: undefined as unknown,
     componentCardSidebarToggle: undefined as unknown,
+    /** Origin metadata for Devtools (component vs hook/function). */
+    debugOrigins: {} as Record<string, DragItemOrigin>,
+    /** @internal Adapter notify / makeReactive — do not treat as app state. */
+    __config,
   };
 });
+
+function clearDebugOrigin(containerId: string, id: string) {
+  delete useDragStore().debugOrigins[`${containerId}::${id}`];
+}
 
 function getStoreContainer(id: string) {
   const store = useDragStore();
@@ -145,6 +148,7 @@ export const useSidebarItem = (containerId: string) => {
       ].items.filter((x) => x !== id);
       container.sideBar[location].show = undefined;
       delete container.actions[id];
+      clearDebugOrigin(containerId, id);
       notify(['drag:core', 'container', containerId]);
     },
     registerAction(id: string, action: ContainerStoreAction) {
@@ -213,6 +217,7 @@ export const useBottomItem = (containerId: string) => {
         container.bottom.show = undefined;
       }
       delete container.actions[id];
+      clearDebugOrigin(containerId, id);
       notify(['drag:core', 'container', containerId]);
     },
     registerAction(id: string, action: ContainerStoreAction) {
@@ -362,6 +367,7 @@ export const useDrawerItem = (containerId: string) => {
         }
       });
       delete container.actions[id];
+      clearDebugOrigin(containerId, id);
       notify(['drag:core', 'container', containerId]);
     },
   };
@@ -431,6 +437,7 @@ export const useDragItem = (containerId: string) => {
       p_store[group].items = p_store[group].items.filter((x) => x !== id);
       p_store[group].show = p_store[group].show.filter((x) => x !== id);
       delete p_store.actions[id];
+      clearDebugOrigin(containerId, id);
       notify(['drag:core', 'container', containerId]);
     },
     registerItemShow(id: string, show: boolean) {
@@ -578,6 +585,10 @@ export const useDragContainer = (containerId: string) => {
     },
     initContainer,
     removeContainer() {
+      const prefix = `${containerId}::`;
+      for (const key of Object.keys(store.debugOrigins)) {
+        if (key.startsWith(prefix)) delete store.debugOrigins[key];
+      }
       delete store.container[containerId];
       notify(['drag:core', 'container', containerId]);
     },

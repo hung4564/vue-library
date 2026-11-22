@@ -1,4 +1,5 @@
 import { createHashRouter, Navigate } from 'react-router';
+
 import { DemoLayout } from '../app/layout/DemoLayout';
 import { BottomPage } from '../pages/BottomPage';
 import { CustomCardPage } from '../pages/CustomCardPage';
@@ -24,7 +25,15 @@ export const router = createHashRouter([
       { path: 'modal', element: <ModalPage /> },
       { path: 'menu', element: <MenuPage /> },
       { path: 'custom-card', element: <CustomCardPage /> },
-      { path: '*', element: <Navigate to="/" replace /> },
+      {
+        path: '*',
+        element: (
+          <Navigate
+            to="/"
+            replace
+          />
+        ),
+      },
     ],
   },
 ]);

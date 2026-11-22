@@ -1,0 +1,21 @@
+import type { LocationSideBar } from '@hungpvq/draggable';
+import { computed, Ref } from 'vue';
+
+export function useSidebarTransition(
+  props: { location: LocationSideBar },
+  containerId: Ref<string>,
+) {
+  const isVertical = computed(
+    () => props.location === 'top' || props.location === 'bottom',
+  );
+  const titleTo = computed(
+    () => `sidebar-title-${containerId.value}-${props.location}`,
+  );
+  const afterTitleTo = computed(
+    () => `sidebar-after-title-${containerId.value}-${props.location}`,
+  );
+  const contentTo = computed(
+    () => `sidebar-content-${containerId.value}-${props.location}`,
+  );
+  return { isVertical, titleTo, afterTitleTo, contentTo };
+}

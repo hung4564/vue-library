@@ -17,7 +17,11 @@ export function PopupPage() {
         className="demo-page"
         onInit={setContainerId}
       >
-        <DraggableItemSideBar show title="Controls" location="left">
+        <DraggableItemSideBar
+          show
+          title="Controls"
+          location="left"
+        >
           <div className="panel">
             <h2>Popup demo</h2>
             <p>

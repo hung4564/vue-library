@@ -1,5 +1,6 @@
-<template>
+﻿<template>
   <Map ref="mapRef">
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <GotoControl position="top-right" />
@@ -21,7 +22,6 @@
   </Map>
 </template>
 <script setup lang="ts">
-import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
 import {
   CrsControl,
@@ -40,18 +40,9 @@ import {
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
-import AsideControl from '../layout/aside-control.vue';
-import DemoHelpPanel from '../components/DemoHelpPanel.vue';
-</script>
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 
-body,
-html,
-#root {
-  height: 100%;
-}
-</style>
+import DemoHelpPanel from '../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
+import AsideControl from '../layout/aside-control.vue';
+</script>

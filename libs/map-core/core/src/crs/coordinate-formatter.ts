@@ -2,8 +2,7 @@ import {
   formatCoordinate,
   type FormattedCoordinate,
 } from '../utils/coordinate';
-
-import { INITIAL_MAP_CRS_ITEMS, type CrsItem } from './types';
+import { type CrsItem, INITIAL_MAP_CRS_ITEMS } from './types';
 
 export type CoordinateFormatter = (
   coords: { longitude: number; latitude: number },

@@ -7,6 +7,11 @@ const { ready, start } = useTimeout(1000, { controls: true });
 <template>
   <div>
     <p>Ready: {{ ready.toString() }}</p>
-    <button :disabled="!ready" @click="start()">Start Again</button>
+    <button
+      :disabled="!ready"
+      @click="start()"
+    >
+      Start Again
+    </button>
   </div>
 </template>

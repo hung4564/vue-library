@@ -2,6 +2,17 @@
  * Framework-agnostic types for map core
  */
 
+import type { MapPopupProps } from './panel';
+
+export type {
+  MapControlPanelPosition,
+  MapPopupPanelPosition,
+  MapPopupProps,
+  MapSidebarDock,
+  MapSidebarPanelPosition,
+  MapSidebarProps,
+} from './panel';
+
 /**
  * Map control position type
  */
@@ -22,7 +33,6 @@ export type ControlLayout = 'standalone' | 'toolbar' | 'button';
  */
 export type ButtonInMobile = 'button' | 'toolbar' | 'menu';
 
-
 /**
  * Base interface for map-related props
  */
@@ -34,6 +44,16 @@ export interface WithMapPropType {
   controlVisible?: boolean;
   controlOrder?: number | string;
   controlLayout?: ControlLayout;
+  /**
+   * Per-control override of Map `buttonInMobile`.
+   * `undefined` = inherit Map-level value.
+   */
+  buttonInMobile?: ButtonInMobile;
+  /**
+   * Per-control popup/float panel overrides (after Map
+   * `popupPositionDefaults` for this control’s `position`).
+   */
+  popupProps?: MapPopupProps;
   /** Control id for ModuleContainer btn class (`{controlId}-btn-module-container`) */
   controlId?: string;
 }
@@ -82,16 +102,6 @@ export type CoordinatesNumber = [number, number];
 export type DraftCoordinatesNumber = CoordinatesNumber | [null, null];
 
 export { MAP_STORE_KEY } from './constants';
-
-export {
-  MittTypeMapLangEventKey,
-  createDefaultLangStore,
-  createMapLocaleApi,
-  deepMergeLocale,
-  diffLocaleKeys,
-  flattenLocaleMessages,
-  unflattenLocaleMessages,
-} from './lang';
 export type {
   MapLangFlatMessages,
   MapLangLocale,
@@ -104,6 +114,15 @@ export type {
   MapTranslateFunction,
   MittTypeMapLang,
 } from './lang';
-
-export { MittTypeMapEventKey, hasMapInstance } from './store';
+export {
+  createDefaultLangStore,
+  createMapLocaleApi,
+  deepMergeLocale,
+  diffLocaleKeys,
+  flattenLocaleMessages,
+  localeTreesEqual,
+  MittTypeMapLangEventKey,
+  unflattenLocaleMessages,
+} from './lang';
 export type { MittTypeMap } from './store';
+export { hasMapInstance, MittTypeMapEventKey } from './store';

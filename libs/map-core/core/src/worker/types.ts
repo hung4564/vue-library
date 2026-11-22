@@ -1,9 +1,5 @@
 export type WorkerRuntimeStatus =
-  | 'not-started'
-  | 'idle'
-  | 'busy'
-  | 'unavailable'
-  | 'terminated';
+  'not-started' | 'idle' | 'busy' | 'unavailable' | 'terminated';
 
 export type WorkerEngine = 'worker' | 'main';
 

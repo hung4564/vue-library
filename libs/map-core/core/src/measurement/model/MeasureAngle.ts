@@ -8,9 +8,10 @@ import distance from '@turf/distance';
 import { lineString, point } from '@turf/helpers';
 import lineArc from '@turf/line-arc';
 import type { Feature, LineString, Point } from 'geojson';
+
 import type { CoordinatesNumber } from '../../types';
-import { getMeasurementLabelPrefs } from '../utils';
 import type { IViewSetting } from '../types';
+import { getMeasurementLabelPrefs } from '../utils';
 import { Measure } from './Measure';
 
 /** Smaller interior angle at B between points A–B–C (degrees, 0–180). */

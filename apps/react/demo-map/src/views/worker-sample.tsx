@@ -1,3 +1,5 @@
+import './worker-sample.css';
+
 import {
   BaseMapControl,
   HomeControl,
@@ -5,17 +7,17 @@ import {
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useEffect, useState } from 'react';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
 import {
   runSampleSumRange,
   terminateSampleWorker,
 } from '../workers/sample-worker.client';
-import './worker-sample.css';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 export function WorkerSamplePage() {
   const [from, setFrom] = useState(1);
@@ -46,6 +48,7 @@ export function WorkerSamplePage() {
   return (
     <MapPageShell>
       <Map>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <WorkerControl position="top-left" />
@@ -77,7 +80,11 @@ export function WorkerSamplePage() {
             onChange={(e) => setTo(Number(e.target.value))}
           />
         </label>
-        <button type="button" disabled={running} onClick={() => void onRun()}>
+        <button
+          type="button"
+          disabled={running}
+          onClick={() => void onRun()}
+        >
           {running ? 'Runningâ€¦' : 'Run sum-range'}
         </button>
         {result != null ? (

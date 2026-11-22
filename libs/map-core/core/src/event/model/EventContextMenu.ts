@@ -3,6 +3,7 @@
  */
 
 import type { MapMouseEvent } from 'maplibre-gl';
+
 import type { MapSimple } from '../../types';
 import type { EventClickOption } from '../types';
 import { Event } from './Event';

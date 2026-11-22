@@ -45,5 +45,16 @@ test.describe('vue-demo-map attribute-table smoke', () => {
     await expect(
       page.locator('.attribute-table [role="status"]').first(),
     ).toBeAttached();
+
+    // Soft: column / toolbar filter — type a letter and keep table visible
+    const filterInput = page
+      .locator(
+        '.attribute-table__filter-row input, .attribute-table__toolbar-row--column-filter input, .attribute-table__toolbar input[type="search"], .attribute-table__toolbar input:not([type="hidden"])',
+      )
+      .first();
+    if (await filterInput.count()) {
+      await filterInput.fill('a');
+      await expect(page.locator('.attribute-table__table')).toBeVisible();
+    }
   });
 });

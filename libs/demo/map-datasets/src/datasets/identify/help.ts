@@ -87,4 +87,3 @@ export const IDENTIFY_DEMO_HELP = helpI18n(
     },
   ],
 );
-

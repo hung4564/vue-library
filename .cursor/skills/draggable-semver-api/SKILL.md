@@ -15,11 +15,11 @@ Packages are on **<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.
 ## Required reading before API edits
 
 1. `libs/draggable/README.md` — full SemVer / breaking checklist
-2. `libs/draggable/core/docs/stable-api.md` — Stable allowlist vs experimental
-3. `libs/draggable/core/docs/header-slots.md` — header slot layout (`pre-title` / `title` / `after-title` / `extra-btn`)
-4. `libs/draggable/core/docs/a11y.md` — when changing focus/ARIA/menu keyboard behavior
-5. `libs/draggable/core/docs/testing.md` — unit / public-api lock expectations
-6. `libs/draggable/core/docs/releases/v1.2.md` — next minor prep (when staging **1.2.0**)
+2. `libs/draggable/docs/stable-api.md` — Stable allowlist vs experimental
+3. `libs/draggable/docs/header-slots.md` — header slot layout (`pre-title` / `title` / `after-title` / `extra-btn`)
+4. `libs/draggable/docs/a11y.md` — when changing focus/ARIA/menu keyboard behavior
+5. `libs/draggable/docs/testing.md` — unit / public-api lock expectations
+6. `libs/draggable/docs/releases/v1.2.md` — next minor prep (when staging **1.2.0**)
 
 ## Release (docs site + git tag)
 
@@ -52,48 +52,48 @@ Can the change break an existing consumer (compile / runtime / CSS / store key)?
 
 ## Treat as public / breaking
 
-- Symbols on the [Stable API allowlist](../../libs/draggable/core/docs/stable-api.md) (root barrels are **named exports**, locked by `public-api.spec.ts`)
+- Symbols on the [Stable API allowlist](../../libs/draggable/docs/stable-api.md) (root barrels are **named exports**, locked by `public-api.spec.ts`)
 - Package `exports` paths: `.`, `./style.css`
 - Store id `drag:core` and documented notify path prefixes
 - `DraggableItemType` / `LocationSideBar` / `ItemGroupKey` string values
 - Documented props/events (`show`, `v-model:show`, `onUpdateShow`, `containerId`, `location`)
-- Documented **header slots** (`pre-title` / `title` / `after-title` / `extra-btn` and React `preTitle` / `title` / `afterTitle` / `extraBtn`) — see [header-slots.md](../../libs/draggable/core/docs/header-slots.md); rename = **major**
+- Documented **header slots** (`pre-title` / `title` / `after-title` / `extra-btn` and React `preTitle` / `title` / `afterTitle` / `extraBtn`) — see [header-slots.md](../../libs/draggable/docs/header-slots.md); rename = **major**
 - Documented a11y helpers (`focusFirst`, `restoreFocus`, `trapTabKey`, `handleMenuKeydown`, …) and panel contracts on `a11y.md`
 - **Escape-to-close** when focus is inside Stable shells (modal, popup, float, drawer, sidebar, bottom) — documented minor behavior; do not remove without a SemVer decision
-- Peer minimum raises; `@hungpvq/draggable` `<!-- docs-ver:draggable.peer -->^1.3.0<!-- /docs-ver:draggable.peer -->` pins on adapters
+- Peer minimum raises; `@hungpvq/draggable` `<!-- docs-ver:draggable.peer -->^1.4.0<!-- /docs-ver:draggable.peer -->` pins on adapters
 - Vue/React adapters share core store contracts — breaks propagate
 - Adapters must **not** re-export core types/factories (`createEmpty*`, `itemTypeToGroup`, …); import those from `@hungpvq/draggable`
 - Internal panel chrome (`DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`) is **not** public — renaming it is patch unless a documented prop/contract changes
 
 ## Header slots (Stable contract)
 
-Documented header slot / prop names are **Stable** (rename = **major**). Source of truth: `libs/draggable/core/docs/header-slots.md`.
+Documented header slot / prop names are **Stable** (rename = **major**). Source of truth: `libs/draggable/docs/header-slots.md`.
 
 ```
 [ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]
 ```
 
-| Vue | React | Notes |
-| --- | --- | --- |
-| `pre-title` | `preTitle` | Before title group |
-| `title` (prop) | `title` | Plain string for switcher store + default header |
-| `title` (slot) | `titleNode` | Custom header node on `DraggableItemSideBar` (falls back to `title`) |
-| `after-title` | `afterTitle` | Immediately after title; **`location: 'title'` maps here**, not `extra-btn` |
-| `extra-btn` | `extraBtn` | Trailing actions after spacer |
+| Vue            | React        | Notes                                                                       |
+| -------------- | ------------ | --------------------------------------------------------------------------- |
+| `pre-title`    | `preTitle`   | Before title group                                                          |
+| `title` (prop) | `title`      | Plain string for switcher store + default header                            |
+| `title` (slot) | `titleNode`  | Custom header node on `DraggableItemSideBar` (falls back to `title`)        |
+| `after-title`  | `afterTitle` | Immediately after title; **`location: 'title'` maps here**, not `extra-btn` |
+| `extra-btn`    | `extraBtn`   | Trailing actions after spacer                                               |
 
 When proposing a header-slot change, remind to update `header-slots.md`, `stable-api.md`, and the affected `draggable-*.md` Slots tables (and map-dataset menu docs if `location: 'title'` is involved — **edit both trees, do not cross-link**; see `map-docs-vitepress` Doc isolation). Explicitly list **`titleNode`** when touching `DraggableItemSideBar` props (Stable; rename = **major**).
 
-Experimental root exports (`ManagementControl`, `ContextMenu`, …) may change in a **minor**. Source: `experimental.ts` in each adapter (still re-exported from root for 1.x compat).
+Experimental root exports (`ContextMenu`, …) may change in a **minor**. Source: `experimental.ts` in each adapter (still re-exported from root for 1.x compat).
 
 ## Public API lock (required when touching barrels)
 
 Root `src/index.ts` must use **named exports only** — never reintroduce `export *`.
 
-| Package | Lock file |
-|---------|-----------|
-| `@hungpvq/draggable` | `libs/draggable/core/src/public-api.spec.ts` |
-| `@hungpvq/vue-draggable` | `libs/vue/draggable/src/public-api.spec.ts` |
-| `@hungpvq/react-draggable` | `libs/react/draggable/src/public-api.spec.ts` |
+| Package                    | Lock file                                     |
+| -------------------------- | --------------------------------------------- |
+| `@hungpvq/draggable`       | `libs/draggable/core/src/public-api.spec.ts`  |
+| `@hungpvq/vue-draggable`   | `libs/draggable/vue/src/public-api.spec.ts`   |
+| `@hungpvq/react-draggable` | `libs/draggable/react/src/public-api.spec.ts` |
 
 When adding/removing a **runtime** export:
 
@@ -121,7 +121,7 @@ Workspace apps resolve `@hungpvq/react-*` to **source under `libs/`**. `@vitejs/
 **Rule:** React Vite demos must exclude `libs/` from the React plugin:
 
 ```ts
-react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] })
+react({ exclude: [/node_modules/, /[\\/]libs[\\/]/] });
 ```
 
 Already applied on `apps/react/demo-draggable` and `apps/react/demo-map`. Apply the same pattern to any new React app that path-aliases into `libs/`.

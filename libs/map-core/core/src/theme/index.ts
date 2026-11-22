@@ -190,8 +190,7 @@ export function resolveMapThemeElement(mapId: string): HTMLElement | null {
   return (
     document.querySelector<HTMLElement>(
       `.map-container[data-map-id="${escaped}"]`,
-    ) ??
-    document.querySelector<HTMLElement>(`[data-map-id="${escaped}"]`)
+    ) ?? document.querySelector<HTMLElement>(`[data-map-id="${escaped}"]`)
   );
 }
 

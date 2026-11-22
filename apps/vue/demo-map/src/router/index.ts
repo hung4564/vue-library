@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
+
 import HomeView from '../views/AllMapView.vue';
 
 const router = createRouter({
@@ -20,6 +21,10 @@ const router = createRouter({
     {
       path: '/minimal/',
       component: () => import('../views/minimal.vue'),
+    },
+    {
+      path: '/map-dataset/',
+      component: () => import('../views/map-dataset.vue'),
     },
     {
       path: '/worker-sample/',
@@ -46,6 +51,10 @@ const router = createRouter({
       component: () => import('../views/BaseMapControl/example.vue'),
     },
     {
+      path: '/multi-map/',
+      component: () => import('../views/multi-map.vue'),
+    },
+    {
       path: '/dataset-highlight/',
       component: () => import('../views/dataset-highlight/example.vue'),
     },
@@ -55,8 +64,7 @@ const router = createRouter({
     },
     {
       path: '/dataset-identify-present/',
-      component: () =>
-        import('../views/dataset-identify-present/example.vue'),
+      component: () => import('../views/dataset-identify-present/example.vue'),
     },
     {
       path: '/dataset-menu/',
@@ -93,6 +101,30 @@ const router = createRouter({
     {
       path: '/story-telling-gps/',
       component: () => import('../views/StoryTelling/example-gps.vue'),
+    },
+    {
+      path: '/print/',
+      component: () => import('../views/print.vue'),
+    },
+    {
+      path: '/crs/',
+      component: () => import('../views/crs.vue'),
+    },
+    {
+      path: '/devtools/',
+      component: () => import('../views/devtools.vue'),
+    },
+    {
+      path: '/logging-cookbook/',
+      component: () => import('../views/logging-cookbook/example.vue'),
+    },
+    {
+      path: '/shared-log/',
+      component: () => import('../views/shared-log/example.vue'),
+    },
+    {
+      path: '/theme/',
+      component: () => import('../views/theme.vue'),
     },
   ],
 });

@@ -1,0 +1,196 @@
+<script setup lang="ts">
+import { getUUIDv4 } from '@hungpvq/shared';
+import {
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  provide,
+  ref,
+  watch,
+} from 'vue';
+
+import { useDragContainer, useDragStore } from '@hungpvq/draggable';
+import { useLiveHookDebug } from '@hungpvq/vue-shared-log';
+import BottomContainer from './bottom/bottom-container.vue';
+import SidebarContainer from './sidebar/sidebar-container.vue';
+
+useLiveHookDebug('draggable-container');
+/** Local debounce (avoids lodash CJS default-export issues in Vite consumers). */
+function debounce<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  waitMs: number,
+): (...args: TArgs) => void {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  return (...args: TArgs) => {
+    if (timer !== undefined) clearTimeout(timer);
+    timer = setTimeout(() => {
+      timer = undefined;
+      fn(...args);
+    }, waitMs);
+  };
+}
+
+type ResultShow = {
+  sidebar?: {
+    leftCount: number;
+    rightCount: number;
+  };
+  [key: string]: any;
+};
+
+const emit = defineEmits<{
+  init: [id: string];
+  destroy: [id: string];
+  changeShow: [options: { show: ResultShow; idsShow: string[] }];
+}>();
+const box = ref<HTMLDivElement>();
+const root = ref<HTMLDivElement>();
+const props = defineProps<{
+  containerId?: string;
+  mobileBreakpoint?: number;
+  /** `plain` drops map-heavy card chrome (transparent/inherit). */
+  variant?: 'default' | 'plain';
+}>();
+const p_container_id = ref(
+  props.containerId || `draggable-container-${getUUIDv4()}`,
+);
+const init_done = ref(false);
+const store = useDragContainer(p_container_id.value);
+const dragStore = useDragStore();
+let resizeObserver: ResizeObserver | undefined;
+
+/** Breakpoint for WithMobileHandle — must use root width, not center
+ *  (center shrinks when drawers open and would oscillate desktop ↔ mobile). */
+const mobileBreakpoint = computed(() => props.mobileBreakpoint ?? 600);
+
+const drawerStyle = computed(() => {
+  const drawer = dragStore.container[p_container_id.value]?.drawer;
+  if (!drawer) {
+    return {
+      '--drawer-left-size': '0px',
+      '--drawer-right-size': '0px',
+      '--drawer-top-size': '0px',
+      '--drawer-bottom-size': '0px',
+    };
+  }
+  return {
+    '--drawer-left-size': `${drawer.left.size || 0}px`,
+    '--drawer-right-size': `${drawer.right.size || 0}px`,
+    '--drawer-top-size': `${drawer.top.size || 0}px`,
+    '--drawer-bottom-size': `${drawer.bottom.size || 0}px`,
+  };
+});
+
+const handleResize = debounce(() => {
+  nextTick(() => {
+    onResize();
+  });
+}, 200);
+watch(
+  () => store.getItemShows(),
+  (options) => {
+    const show = options.reduce<ResultShow>((acc, id) => {
+      const item = store.getItemAction(id);
+      // Bỏ tiền tố 'item-'
+      const baseType = item.type.replace(/^item-/, '');
+
+      // Nếu có location → gom theo leftCount/rightCount
+      if ('location' in item && typeof item.location === 'string') {
+        const key = `${item.location}Count`;
+
+        // Khởi tạo nếu chưa có
+        acc[baseType] ??= {};
+        acc[baseType][key] = (acc[baseType][key] || 0) + 1;
+      } else {
+        const key = `${baseType}Count`;
+        acc[key] = (acc[key] || 0) + 1;
+      }
+
+      return acc;
+    }, {});
+    emit('changeShow', { show, idsShow: options });
+  },
+  { deep: true },
+);
+
+onMounted(() => {
+  store.initContainer();
+  window.addEventListener('resize', onResize);
+  nextTick(() => {
+    onResize();
+    init_done.value = true;
+    emit('init', p_container_id.value);
+  });
+  resizeObserver = new ResizeObserver(() => {
+    handleResize();
+  });
+  if (root.value) resizeObserver.observe(root.value);
+  if (box.value) resizeObserver.observe(box.value);
+});
+onUnmounted(() => {
+  store.removeContainer();
+  window.removeEventListener('resize', onResize);
+  emit('destroy', p_container_id.value);
+  if (resizeObserver) {
+    resizeObserver.disconnect();
+  }
+});
+provide('containerId', p_container_id);
+function onResize() {
+  const clientWidth = box.value?.clientWidth || 0;
+  const layoutWidth = root.value?.clientWidth || clientWidth;
+  store.setParentProps({
+    width: clientWidth,
+    height: box.value?.clientHeight || 0,
+    isMobile: layoutWidth < mobileBreakpoint.value,
+  });
+}
+</script>
+
+<template>
+  <div
+    class="draggable-root"
+    :class="{ 'draggable-variant-plain': variant === 'plain' }"
+    ref="root"
+    :style="drawerStyle"
+  >
+    <div
+      class="drawer-slot drawer-slot-top"
+      :id="`drawer-top-${p_container_id}`"
+    />
+    <div
+      class="drawer-slot drawer-slot-left"
+      :id="`drawer-left-${p_container_id}`"
+    />
+    <div
+      class="draggable-container"
+      ref="box"
+      :id="p_container_id"
+    >
+      <template v-if="p_container_id && init_done">
+        <SidebarContainer location="left" />
+        <SidebarContainer location="right" />
+        <SidebarContainer location="top" />
+        <SidebarContainer location="bottom" />
+        <BottomContainer />
+      </template>
+      <slot
+        v-if="p_container_id && init_done"
+        :containerId="p_container_id"
+      />
+    </div>
+    <div
+      class="drawer-slot drawer-slot-right"
+      :id="`drawer-right-${p_container_id}`"
+    />
+    <div
+      class="drawer-slot drawer-slot-bottom"
+      :id="`drawer-bottom-${p_container_id}`"
+    />
+    <div
+      class="draggable-modal-layer"
+      :id="`modal-layer-${p_container_id}`"
+    />
+  </div>
+</template>

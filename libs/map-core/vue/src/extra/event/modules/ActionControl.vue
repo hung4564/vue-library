@@ -1,0 +1,53 @@
+<script lang="ts">
+export default {
+  name: 'action-control',
+};
+</script>
+<script setup lang="ts">
+import type { WithMapPropType } from '@hungpvq/map-core';
+import { logHelper } from '@hungpvq/map-core';
+import {
+  createEventActionSync,
+  type IEvent,
+  MittTypeMapEvent,
+  MittTypeMapEventEventKey,
+} from '@hungpvq/map-core/event';
+import { logger } from '@hungpvq/map-core/event';
+import { onMounted } from 'vue';
+
+import { defaultMapProps, useMap } from '../../../hooks/useMap';
+import { useMapMittStore } from '../../../store/mitt-store';
+import { useEventMapItems } from '../hook/useEventMapItems';
+import { useMapEventStore } from '../store';
+const props = withDefaults(defineProps<WithMapPropType>(), {
+  ...defaultMapProps,
+});
+const { callMap, mapId } = useMap(props);
+const store = useMapEventStore(mapId.value);
+const emitter = useMapMittStore<MittTypeMapEvent>(mapId.value);
+
+function setCurrentEvent(event_map_type: string, event?: IEvent) {
+  logHelper(logger, mapId.value, 'store')
+    .with({ fn: 'setCurrentEvent', span: 'store.update' })
+    .debug('setCurrentEvent', event_map_type, event);
+  store.current[event_map_type] = event;
+  emitter.emit(MittTypeMapEventEventKey.setCurrent, event);
+}
+
+const { updateEventMap } = createEventActionSync({
+  callMap,
+  setCurrent: setCurrentEvent,
+});
+
+const { items } = useEventMapItems(mapId.value, {
+  onChange: (value) => {
+    updateEventMap(value);
+  },
+});
+onMounted(() => {
+  updateEventMap(items.value);
+});
+</script>
+<template>
+  <div></div>
+</template>

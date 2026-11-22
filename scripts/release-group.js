@@ -1,9 +1,9 @@
 /**
- * Thin wrapper around Nx Release for map / draggable / shared-store groups.
+ * Thin wrapper around Nx Release for map / draggable / shared-store / shared-log / ui-core groups.
  *
  * Tag pattern comes from nx.json:
  *   release.groups.<name>.releaseTagPattern
- *     = "draggable@{version}" | "map@{version}" | "shared-store@{version}"
+ *     = "draggable@{version}" | "map@{version}" | "shared-store@{version}" | "shared-log@{version}" | "ui-core@{version}"
  *
  * Extra steps Nx does not own:
  *   - sync SemVer markers in draggable docs
@@ -23,8 +23,10 @@
  *   node scripts/release-group.js draggable minor
  *   node scripts/release-group.js map --dry-run
  *   node scripts/release-group.js shared-store patch
+ *   node scripts/release-group.js shared-log patch
  *   node scripts/release-group.js draggable --skip-site --skip-push
  *   node scripts/release-group.js shared-store --local-publish --yes
+ *   node scripts/release-group.js shared-log --local-publish --yes
  */
 const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
@@ -49,6 +51,16 @@ const GROUPS = {
     site: null,
     syncDocs: false,
   },
+  'shared-log': {
+    leadPkg: 'libs/shared-log/core/package.json',
+    site: null,
+    syncDocs: false,
+  },
+  'ui-core': {
+    leadPkg: 'libs/ui-core/vue/package.json',
+    site: null,
+    syncDocs: false,
+  },
 };
 
 function parseArgs(argv) {
@@ -58,7 +70,7 @@ function parseArgs(argv) {
   const specifier = positional[1];
   if (!group || !GROUPS[group]) {
     console.error(
-      `Usage: node scripts/release-group.js <draggable|map|shared-store> [specifier] [flags]`,
+      `Usage: node scripts/release-group.js <${Object.keys(GROUPS).join('|')}> [specifier] [flags]`,
     );
     process.exit(1);
   }
@@ -112,7 +124,11 @@ function readChangelogSectionForVersion(relPkg, version) {
     const start = any.index;
     const rest = text.slice(start + any[0].length);
     const next = rest.search(/^## /m);
-    return (next === -1 ? text.slice(start) : text.slice(start, start + any[0].length + next)).trim();
+    return (
+      next === -1
+        ? text.slice(start)
+        : text.slice(start, start + any[0].length + next)
+    ).trim();
   }
   const start = match.index;
   const heading = match[0];
@@ -191,7 +207,9 @@ async function createOrUpdateGroupGithubRelease(tag, body) {
       body: JSON.stringify({ name: payload.name, body: payload.body }),
     });
     if (!upd.ok) {
-      throw new Error(`GitHub update release failed: ${upd.status} ${await upd.text()}`);
+      throw new Error(
+        `GitHub update release failed: ${upd.status} ${await upd.text()}`,
+      );
     }
     const data = await upd.json();
     console.log(`Updated ${data.html_url}`);
@@ -208,7 +226,9 @@ async function createOrUpdateGroupGithubRelease(tag, body) {
     body: JSON.stringify(payload),
   });
   if (!created.ok) {
-    throw new Error(`GitHub create release failed: ${created.status} ${await created.text()}`);
+    throw new Error(
+      `GitHub create release failed: ${created.status} ${await created.text()}`,
+    );
   }
   const data = await created.json();
   console.log(`Created ${data.html_url}`);

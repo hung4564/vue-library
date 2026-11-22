@@ -1,7 +1,8 @@
 import proj4 from 'proj4';
+
 import {
-  WGS84_LONGLAT,
   ensureRegisteredProjection,
+  WGS84_LONGLAT,
 } from '../crs/proj4-crs-catalog';
 import type { CrsItem } from '../crs/types';
 import { MapError } from '../errors';

@@ -10,8 +10,16 @@ import {
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
 import {
   createHighlightPart,
+  getHighlightController,
   type IHighlightPart,
 } from '@hungpvq/map-dataset/highlight';
+import {
+  createDatasetPartIdentifyComponentBuilder,
+  createDefaultHighlightResolver,
+  highlightResolver,
+  setGlobalHighlightResolver,
+  type HighlightContext,
+} from '@hungpvq/map-dataset/identify';
 import {
   createMenuItemShowDetailForItem,
   createMenuItemToBoundActionForList,
@@ -24,9 +32,7 @@ import { demoLine, demoPoint, demoPolygon } from '../../fixtures/geojson';
 import { registerFactoryViewSource } from '../data-management/view-source-registry';
 import { createDatasetCustomHighlightComponent } from './helper';
 
-const logger = loggerFactory
-  .createLogger()
-  .setNamespace('demo:highlight', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:highlight');
 
 const DEMO_DETAIL_FIELDS = [
   { text: 'Id', value: 'id' },
@@ -88,7 +94,17 @@ function createHighlightDemoDataset(config: {
   group.add(layer);
   group.add(config.highlight);
   group.add(list);
+  // Identify owns map click → HighlightResolver paints (see applyHighlightDemoGlobalResolver).
+  // Pointer click disabled so Identify + hover bind do not double-fire.
+  config.highlight.setHighlightPointer({ click: false });
+  const identify = createDatasetPartIdentifyComponentBuilder(config.listName)
+    .configFieldId('id')
+    .configFieldName('name')
+    .onSingle('result')
+    .onMultiple('result')
+    .build();
   dataset.add(source);
+  dataset.add(identify);
   dataset.add(group);
   return dataset;
 }
@@ -230,7 +246,10 @@ function createHighlightWithPropertyName() {
     name: 'Highlight with Property Name',
     listName: 'Default + filterCreator "code"',
     features: [
-      demoPoint([105.8892014954, 20.743262715], { code: 'P001', name: 'Point 1' }),
+      demoPoint([105.8892014954, 20.743262715], {
+        code: 'P001',
+        name: 'Point 1',
+      }),
       demoLine(
         [
           [105.7804053203, 20.5274626545],
@@ -505,8 +524,16 @@ function createHighlightByClickedCategory() {
     listName: 'Default + filterCreator(feature)',
     color: '#2A9D8F',
     features: [
-      demoPoint([105.72, 21.05], { id: '1', category: 'A', name: 'Category A point' }),
-      demoPoint([105.8, 21.08], { id: '2', category: 'A', name: 'Category A point 2' }),
+      demoPoint([105.72, 21.05], {
+        id: '1',
+        category: 'A',
+        name: 'Category A point',
+      }),
+      demoPoint([105.8, 21.08], {
+        id: '2',
+        category: 'A',
+        name: 'Category A point 2',
+      }),
       demoLine(
         [
           [105.65, 21.0],
@@ -529,7 +556,8 @@ function createHighlightByClickedCategory() {
     ],
     highlight: createHighlightPart({
       filterCreator: (feature) => {
-        const category = feature?.properties?.category;
+        if (!feature || !('properties' in feature)) return undefined;
+        const category = feature.properties?.category;
         if (typeof category !== 'string') return undefined;
         return ['==', 'category', category];
       },
@@ -577,8 +605,16 @@ function createFeatureStateHighlightWithGroup() {
     color: '#9B5DE5',
     promoteId: 'id',
     features: [
-      demoPoint([106.22, 21.05], { id: 'g-1', group: 'alpha', name: 'Group A point' }),
-      demoPoint([106.28, 21.08], { id: 'g-2', group: 'alpha', name: 'Group A point 2' }),
+      demoPoint([106.22, 21.05], {
+        id: 'g-1',
+        group: 'alpha',
+        name: 'Group A point',
+      }),
+      demoPoint([106.28, 21.08], {
+        id: 'g-2',
+        group: 'alpha',
+        name: 'Group A point 2',
+      }),
       demoLine(
         [
           [106.18, 20.98],
@@ -674,16 +710,20 @@ function createPresentationLifecycleHighlight() {
         popup: { kind: 'none' },
         clickAction: 'none',
         onShow: (entry) => {
-          logger.info('highlight onShow', {
-            id: entry.id,
-            source: entry.source,
-          });
+          logger
+            .with({ fn: 'onShow', span: 'highlight.show' })
+            .info('highlight onShow', {
+              id: entry.id,
+              source: entry.source,
+            });
         },
         onHide: (entry) => {
-          logger.info('highlight onHide', {
-            id: entry.id,
-            source: entry.source,
-          });
+          logger
+            .with({ fn: 'onHide', span: 'highlight.hide' })
+            .info('highlight onHide', {
+              id: entry.id,
+              source: entry.source,
+            });
         },
       },
     }),
@@ -893,6 +933,56 @@ const HIGHLIGHT_DEMO_ENTRIES = [
 export const HIGHLIGHT_DEMO_DATASET_FACTORIES = HIGHLIGHT_DEMO_ENTRIES.map(
   (entry) => entry.factory,
 );
+
+/**
+ * Demo override: paint first hit even when multi (default clears on count ≠ 1).
+ * Call from dataset-highlight page; restore on leave.
+ */
+export function createHighlightDemoGlobalResolver() {
+  const resolver = createDefaultHighlightResolver();
+  resolver.clear();
+  resolver.add({
+    when: (ctx: HighlightContext) =>
+      (ctx.count ?? 0) >= 1 && !!ctx.features?.[0],
+    execute: async (ctx: HighlightContext) => {
+      if (ctx.signal?.aborted) return;
+      const feature = ctx.features![0]!;
+      const sources = ctx.sources?.length ? ctx.sources : ['identify'];
+      await getHighlightController(ctx.mapId).show(feature, {
+        source: sources[0]!,
+        dataset: ctx.dataset,
+      });
+    },
+  });
+  resolver.add({
+    always: true as const,
+    when: (ctx: HighlightContext) =>
+      !((ctx.count ?? 0) >= 1 && !!ctx.features?.[0]),
+    execute: (ctx: HighlightContext) => {
+      if (ctx.signal?.aborted) return;
+      const sources = ctx.sources?.length ? ctx.sources : ['identify'];
+      const hl = getHighlightController(ctx.mapId);
+      for (const source of sources) {
+        hl.hideIfSource(source);
+      }
+    },
+  });
+  return resolver;
+}
+
+export function applyHighlightDemoGlobalResolver(): void {
+  setGlobalHighlightResolver(createHighlightDemoGlobalResolver());
+  logger
+    .with({ fn: 'applyHighlightDemoGlobalResolver', span: 'highlight.init' })
+    .info('setGlobalHighlightResolver → demo (paint first when count ≥ 1)');
+}
+
+export function restoreHighlightDemoGlobalResolver(): void {
+  setGlobalHighlightResolver(highlightResolver);
+  logger
+    .with({ fn: 'restoreHighlightDemoGlobalResolver', span: 'highlight.init' })
+    .info('setGlobalHighlightResolver → highlightResolver (default)');
+}
 
 export { HIGHLIGHT_DEMO_HELP } from './help';
 

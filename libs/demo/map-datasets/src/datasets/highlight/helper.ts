@@ -6,11 +6,9 @@ import {
   type IHighlightPart,
 } from '@hungpvq/map-dataset/highlight';
 
-export function createDatasetCustomHighlightComponent(
-  options?: {
-    filterCreator?: HighlightFilterCreator;
-  },
-): IHighlightPart {
+export function createDatasetCustomHighlightComponent(options?: {
+  filterCreator?: HighlightFilterCreator;
+}): IHighlightPart {
   function animate({
     layerIds,
     map,

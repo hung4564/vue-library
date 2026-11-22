@@ -1,4 +1,5 @@
-import { Ref, getCurrentInstance } from 'vue';
+import { getCurrentInstance, Ref } from 'vue';
+
 import { Fn } from './types';
 
 export * from './compatibility';

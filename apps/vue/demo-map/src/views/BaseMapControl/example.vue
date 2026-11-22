@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
@@ -8,48 +7,49 @@ import {
   Map,
 } from '@hungpvq/vue-map-core';
 import { MapCard } from '@hungpvq/vue-map-core/fields';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
+
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../../layout/aside-control.vue';
 const mapId = ref('');
 function onMapLoaded(map: MapSimple) {
   mapId.value = map.id;
 }
 </script>
 <template>
-  <Map @map-loaded="onMapLoaded">
+  <Map @mapLoaded="onMapLoaded">
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
-    <BaseMapControl position="bottom-left" />
+    <BaseMapControl
+      position="bottom-left"
+      show-opacity
+    />
     <BaseMapTagControl position="bottom-left" />
-    <div class="base-map-card" v-if="mapId">
+    <div
+      class="demo-basemap-card-panel"
+      v-if="mapId"
+    >
       <MapCard>
-        <BaseMapCard :mapId="mapId" />
+        <BaseMapCard
+          :mapId="mapId"
+          show-opacity
+          allow-add-basemap
+        />
       </MapCard>
     </div>
     <DemoHelpPanel />
   </Map>
 </template>
 
-<style></style>
-
 <style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-.base-map-card {
+.demo-basemap-card-panel {
   position: fixed;
   top: 10px;
   right: 10px;
-  width: 300px;
-  height: 90px;
+  width: 320px;
   z-index: 5;
 }
 </style>

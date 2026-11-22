@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useClipboard } from '.';
+
 import { usePermission } from '../usePermission';
+import { useClipboard } from '.';
 const input = ref('');
 
 const { text, isSupported, copy } = useClipboard();
@@ -18,7 +19,10 @@ const permissionWrite = usePermission('clipboard-write');
     <p>
       Current copied: <code>{{ text || 'none' }}</code>
     </p>
-    <input v-model="input" type="text" />
+    <input
+      v-model="input"
+      type="text"
+    />
     <button @click="copy(input)">Copy</button>
   </div>
   <p v-else>Your browser does not support Clipboard API</p>

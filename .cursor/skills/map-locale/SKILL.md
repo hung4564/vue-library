@@ -13,13 +13,13 @@ description: >-
 Fixed (built-in) language catalogs always live **inside a `locale/` directory**
 (`map-core`, `map-dataset`, `map-draw`):
 
-| Layer | Path | Export example |
-|-------|------|----------------|
-| **Aggregate pack** | `src/locale/locale.<lang>.ts` | `MAP_CORE_LOCALE_EN`, `MAP_CORE_LOCALE_VI` |
-| **Domain slice** | `<domain>/locale/locale.<lang>.ts` | `BASEMAP_CONTROL_LOCALE`, `BASEMAP_CONTROL_LOCALE_VI` |
-| **Shell slices** | `src/locale/shell.<lang>.ts` | `HOME_CONTROL_LOCALE`, `MAP_ACTION_LOCALE_VI` |
-| **Draw slices** | `src/locale/draw.<lang>.ts` | `DRAW_CONTROL_LOCALE`, `DRAW_CONTROL_LOCALE_VI` |
-| **EN compat** | `<domain>/locale/index.ts` → `export * from './locale.en'` | keep `from '.../locale'` imports |
+| Layer              | Path                                                       | Export example                                        |
+| ------------------ | ---------------------------------------------------------- | ----------------------------------------------------- |
+| **Aggregate pack** | `src/locale/locale.<lang>.ts`                              | `MAP_CORE_LOCALE_EN`, `MAP_CORE_LOCALE_VI`            |
+| **Domain slice**   | `<domain>/locale/locale.<lang>.ts`                         | `BASEMAP_CONTROL_LOCALE`, `BASEMAP_CONTROL_LOCALE_VI` |
+| **Shell slices**   | `src/locale/shell.<lang>.ts`                               | `HOME_CONTROL_LOCALE`, `MAP_ACTION_LOCALE_VI`         |
+| **Draw slices**    | `src/locale/draw.<lang>.ts`                                | `DRAW_CONTROL_LOCALE`, `DRAW_CONTROL_LOCALE_VI`       |
+| **EN compat**      | `<domain>/locale/index.ts` → `export * from './locale.en'` | keep `from '.../locale'` imports                      |
 
 **Never** put `locale.<lang>.ts` (or `locale.ts`) as a sibling file outside a `locale/` folder.
 
@@ -35,11 +35,11 @@ libs/map-core/core/src/
     locale.en.ts / locale.vi.ts
     index.ts                      # → locale.en
 
-libs/map-core/map-dataset/src/
+libs/map-dataset/core/src/
   locale/locale.en.ts             # MAP_DATASET_LOCALE_EN
   attribute-table/locale/locale.en.ts
 
-libs/map-core/map-draw/src/locale/
+libs/map-draw/core/src/locale/
   draw.en.ts / draw.vi.ts         # control slices
   locale.en.ts / locale.vi.ts     # MAP_DRAW_LOCALE_*
   index.ts                        # → draw.en
@@ -64,11 +64,16 @@ Do **not** put a new language’s strings only inside a Vue/React component.
 
 ## Runtime vs fixed packs
 
-| Concern | API |
-|---------|-----|
-| Built-in catalogs | `locale/locale.<lang>.ts` → `registerLocale` / LanguageControl `locales` |
-| App override / extra lang | `registerLocale`, `loadLocale`, `setLanguage`, `setTranslate` |
-| Key helpers | `deepMergeLocale`, `flattenLocaleMessages`, `diffLocaleKeys` |
+| Concern                           | API                                                                                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Built-in **default** catalog (EN) | Each package once per `mapId`: `registerMapCoreBuiltinLocales` / `registerMapDatasetBuiltinLocales` / `registerMapDrawBuiltinLocales` |
+| Extra languages (VI, FR, …)       | LanguageControl `locales[code]` for each code in `languages` / `loadLocale` / `registerLocale`                                        |
+| Batching                          | `registerLocale` debounces emit (`MAP_LOCALE_REGISTER_DEBOUNCE_MS`); `whenLocaleIdle()` before `setLanguage`                          |
+| Key helpers                       | `deepMergeLocale`, `flattenLocaleMessages`, `diffLocaleKeys`, `localeTreesEqual`                                                      |
+
+`MAP_DEFAULT_CATALOG_LANGUAGE` (`en`) is the catalog language for library packs. Apps choose UI language via `setLanguage` / LanguageControl.
+
+`registerLocale` merges immediately but **emits once per debounce flush** — LanguageControl should `await whenLocaleIdle()` before the first `setLanguage`.
 
 Apps may load extra languages at runtime; **library-owned** strings still land in
 `locale/locale.<lang>.ts` (+ `<domain>/locale/locale.<lang>.ts`) first.
@@ -85,7 +90,7 @@ Apps may load extra languages at runtime; **library-owned** strings still land i
 ## Docs / demos
 
 - Stable API / `extra-lang` docs list `MAP_*_LOCALE_EN` / `MAP_*_LOCALE_VI`.
-- Demo LanguageControl: pass dataset/draw packs via `locales.en` / `locales.vi`.
+- Demo LanguageControl: pass packs via `locales.vi` (`MAP_CORE_LOCALE_VI` + dataset/draw).
 - See also: `map-dual-framework`, `map-semver-api`, `map-testing`.
 
 ## Demo apps (required)

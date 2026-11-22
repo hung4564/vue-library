@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
 import { breakpointsTailwind, useBreakpoints } from '.';
 
 const breakpoints = useBreakpoints(breakpointsTailwind);

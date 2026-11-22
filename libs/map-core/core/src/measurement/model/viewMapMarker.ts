@@ -1,6 +1,7 @@
-import type { Color, CoordinatesNumber, MapSimple } from '../../types';
-import type { IViewSetting, IViewProps } from '../types';
 import { Marker } from 'maplibre-gl';
+
+import type { Color, CoordinatesNumber, MapSimple } from '../../types';
+import type { IViewProps, IViewSetting } from '../types';
 import { View } from './view';
 
 type onDragMarker = (

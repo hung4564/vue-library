@@ -6,13 +6,14 @@ import circle from '@turf/circle';
 import distance from '@turf/distance';
 import { lineString, point } from '@turf/helpers';
 import type { Feature } from 'geojson';
+
 import type { CoordinatesNumber } from '../../types';
+import type { IViewSetting } from '../types';
 import {
   edgeLabelRotation,
   formatDistanceText,
   getMeasurementLabelPrefs,
 } from '../utils';
-import type { IViewSetting } from '../types';
 import { Measure } from './Measure';
 
 /**

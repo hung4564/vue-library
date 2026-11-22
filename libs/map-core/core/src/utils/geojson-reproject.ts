@@ -1,9 +1,10 @@
 import type { Feature, GeoJSON, Geometry, Position } from 'geojson';
 import proj4 from 'proj4';
-import { MapError } from '../errors';
-import { errorHandler } from '../services/error-handler.service';
+
 import { normalizeEpsgCode, resolveCrsProjection } from '../crs/crs-catalog';
 import { WGS84_LONGLAT } from '../crs/proj4-crs-catalog';
+import { MapError } from '../errors';
+import { errorHandler } from '../services/error-handler.service';
 
 const COORDINATE_MAX_DEPTH = 6;
 const GEOMETRY_MAX_DEPTH = 16;
@@ -568,8 +569,7 @@ export function reprojectGeojson(
   if (fromEpsg === toEpsg) return geojson;
 
   const from = resolveCrsProjection(fromEpsg);
-  const to =
-    toEpsg === '4326' ? WGS84_LONGLAT : resolveCrsProjection(toEpsg);
+  const to = toEpsg === '4326' ? WGS84_LONGLAT : resolveCrsProjection(toEpsg);
 
   try {
     const clone = toPlainJson(geojson);

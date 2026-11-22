@@ -53,7 +53,7 @@
     max-width: 21px;
     max-height: 21px;
   }
-  &-active {
+  &#{&}-active {
     color: var(--map-button-active-color, var(--map-primary-color, #004e98));
   }
   &-disabled {
@@ -262,6 +262,49 @@
 .button-group-hover-expand.button-group-row-container:focus-within {
   width: max-content;
   overflow: visible;
+}
+
+/* Click-to-expand (touch / Theme / Language): same clip as hover until .is-expanded */
+.button-group-click-expand.button-group-column-container {
+  height: var(--map-control-button-size, 32px);
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: all;
+  transition: height 0.15s ease;
+}
+.button-group-click-expand.button-group-column-container.is-expanded {
+  height: auto;
+  overflow: visible;
+}
+
+.button-group-click-expand.button-group-row-container {
+  width: var(--map-control-button-size, 32px);
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: all;
+  transition: width 0.15s ease;
+}
+.button-group-click-expand.button-group-row-container .button-group-sheet {
+  width: max-content;
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+.button-group-click-expand.button-group-row-container.is-expanded {
+  width: max-content;
+  overflow: visible;
+}
+
+.right-top-container,
+.right-bottom-container {
+  .button-group-click-expand.button-group-row-container {
+    direction: rtl;
+  }
+  .button-group-click-expand.button-group-row-container .button-group-sheet {
+    direction: rtl;
+  }
+  .button-group-click-expand.button-group-row-container .map-control-button {
+    direction: ltr;
+  }
 }
 
 /* Right corners: keep toggle on the outer edge; menu opens inward.

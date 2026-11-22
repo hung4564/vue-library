@@ -1,20 +1,20 @@
+import './basemap.css';
+
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
   BaseMapControl,
   BaseMapTagControl,
-  Map
+  Map,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
-import {
-  MapCard
-} from '@hungpvq/react-map-core/fields';
+import { MapCard } from '@hungpvq/react-map-core/fields';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useState } from 'react';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import './basemap.css';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 export function BasemapPage() {
   const [mapId, setMapId] = useState('');
@@ -26,16 +26,24 @@ export function BasemapPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
-        <BaseMapControl position="bottom-left" />
+        <BaseMapControl
+          position="bottom-left"
+          showOpacity
+        />
         <BaseMapTagControl position="bottom-left" />
         <DemoHelpPanel />
       </Map>
       {mapId ? (
         <div className="base-map-card-demo">
           <MapCard>
-            <BaseMapCard mapId={mapId} />
+            <BaseMapCard
+              mapId={mapId}
+              showOpacity
+              allowAddBasemap
+            />
           </MapCard>
         </div>
       ) : null}

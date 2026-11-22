@@ -1,3 +1,14 @@
+## 0.4.0 (2026-09-22)
+
+### 🚀 Features
+
+- replace LayerHighlight with HighlightPointer component in demo applications ([dd2c03f6](https://github.com/hung4564/vue-library/commit/dd2c03f6))
+- enhance ESLint rules and improve package configurations ([6a30edfc](https://github.com/hung4564/vue-library/commit/6a30edfc))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.3.0 (2026-09-05)
 
 ### 🚀 Features

@@ -8,8 +8,7 @@ export type GeoLocateFitBoundsOptions = {
   maxZoom?: number;
   minZoom?: number;
   padding?:
-    | number
-    | { top?: number; bottom?: number; left?: number; right?: number };
+    number | { top?: number; bottom?: number; left?: number; right?: number };
   offset?: [number, number];
   duration?: number;
   essential?: boolean;
@@ -30,10 +29,7 @@ export type GeoLocateWatchState =
   | 'BACKGROUND_ERROR';
 
 export type GeoLocateClickAction =
-  | 'request-once'
-  | 'start-watch'
-  | 'stop'
-  | 're-lock';
+  'request-once' | 'start-watch' | 'stop' | 're-lock';
 
 /**
  * Click state machine matching mapboxgl / MapLibre GeolocateControl
@@ -60,9 +56,7 @@ export function resolveGeolocateClick(
 export function isGeolocateErrorState(
   watchState: GeoLocateWatchState,
 ): boolean {
-  return (
-    watchState === 'ACTIVE_ERROR' || watchState === 'BACKGROUND_ERROR'
-  );
+  return watchState === 'ACTIVE_ERROR' || watchState === 'BACKGROUND_ERROR';
 }
 
 export function accuracyCircleDiameterPx(
@@ -88,7 +82,9 @@ export function lngLatAccuracyBounds(
   lat: number,
   accuracyMeters: number,
 ): [[number, number], [number, number]] {
-  const radius = Number.isFinite(accuracyMeters) ? Math.max(accuracyMeters, 1) : 1;
+  const radius = Number.isFinite(accuracyMeters)
+    ? Math.max(accuracyMeters, 1)
+    : 1;
   const metersPerDegLat = 111319.9;
   const latDelta = radius / metersPerDegLat;
   const cos = Math.cos((lat * Math.PI) / 180);

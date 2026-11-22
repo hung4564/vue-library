@@ -36,7 +36,11 @@ export function LocalCard({
     .join(' ');
 
   return (
-    <div className={classes} style={cardStyle} {...props}>
+    <div
+      className={classes}
+      style={cardStyle}
+      {...props}
+    >
       <div className="custom-card__badge">Local</div>
       <div className="custom-card__body">{children}</div>
     </div>

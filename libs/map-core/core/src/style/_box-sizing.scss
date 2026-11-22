@@ -1,0 +1,23 @@
+/* Self-contained box model for map UI roots / portals.
+ * Host apps often lack a global border-box reset; without it,
+ * width:100% + padding overflows scroll parents. Do not set
+ * border-width:0 here — that fights intentional borders. */
+
+.map-container,
+.map-container *,
+.map-container *::before,
+.map-container *::after,
+.module__container,
+.module__container *,
+.module__container *::before,
+.module__container *::after,
+.map-context-menu,
+.map-context-menu *,
+.map-context-menu *::before,
+.map-context-menu *::after,
+.map-error-toast,
+.map-error-toast *,
+.map-error-toast *::before,
+.map-error-toast *::after {
+  box-sizing: border-box;
+}

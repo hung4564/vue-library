@@ -1,3 +1,5 @@
+import type { MapSimple } from '@hungpvq/map-core';
+import type { MeasureActionItem } from '@hungpvq/map-core/measurement';
 import {
   BaseMapCard,
   BaseMapControl,
@@ -26,33 +28,109 @@ import {
 import {
   ComponentManagementControl,
   DatasetControl,
-  HighlightPointer,
   IdentifyControl,
-  IdentifyShowFirstControl,
   LayerControl,
+  useMapDataset,
 } from '@hungpvq/react-map-dataset';
+import {
+  DevtoolsControl,
+  installDatasetDebug,
+} from '@hungpvq/react-map-devtools';
 import { DrawControl, InspectControl } from '@hungpvq/react-map-draw';
+import { mdiPlus } from '@mdi/js';
+import { useEffect, useMemo, useState } from 'react';
+
+import { registerDragDebugTab } from '@hungpvq/react-draggable';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
+import { createDatasetMeasure } from './all-map-view-measure';
 
+const MOBILE_MQ = '(max-width: 640px)';
 export function AllMapView() {
   useDatasetRegistry();
+  const { addDataset, setMapId } = useMapDataset();
 
+  function onMapLoaded(map: MapSimple) {
+    setMapId(map.id);
+  }
+
+  const actionMeasures: MeasureActionItem[] = useMemo(
+    () => [
+      {
+        title: 'add to layer',
+        icon: mdiPlus,
+        type: 'add-to-layer',
+        show: (ctx) => !!ctx.measurementType,
+        handle: (ctx) => {
+          const coordinates = ctx.coordinates;
+          if (!coordinates || coordinates.length < 1) {
+            return;
+          }
+          const dataset = createDatasetMeasure(
+            ctx.handler,
+            ctx.measurementType || '',
+          );
+          void addDataset(dataset);
+          ctx.clear();
+        },
+        disabled: (ctx) => !ctx.coordinates || ctx.coordinates.length < 1,
+        index: 0,
+      },
+    ],
+    [addDataset],
+  );
+
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(MOBILE_MQ).matches,
+  );
+  useEffect(() => {
+    installDatasetDebug();
+    const unregisterDatasetDebugTab = registerDragDebugTab();
+    return () => {
+      unregisterDatasetDebugTab();
+    };
+  }, []);
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_MQ);
+    const onChange = () => {
+      const next = mq.matches;
+      setIsMobile(() => {
+        return next;
+      });
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
   return (
     <MapPageShell>
-      <Map buttonInMobile="toolbar">
+      <Map
+        buttonInMobile="toolbar"
+        onMapLoaded={onMapLoaded}
+      >
+        <DevtoolsControl position="bottom-right" />
         <AsideControl position="top-left" />
         <ToolbarControl position="top-left" />
         <ComponentManagementControl />
-        <MeasurementControl position="top-right" />
+        <MeasurementControl
+          position="top-right"
+          actions={actionMeasures}
+        />
         <IdentifyControl position="top-right" />
         <DrawControl position="top-right" />
         <LayerControl
           position="top-left"
           show
-          endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
+          endList={({ mapId }) =>
+            !isMobile && (
+              <BaseMapCard
+                mapId={mapId}
+                showOpacity
+                allowAddBasemap
+              />
+            )
+          }
         />
         <InspectControl position="top-right" />
         <PrintAdvancedControl />
@@ -73,9 +151,10 @@ export function AllMapView() {
         <HomeControl />
         <MouseCoordinatesControl />
         <MapContextMenuControl />
-        <BaseMapControl position="bottom-left" />
-        <IdentifyShowFirstControl />
-        <HighlightPointer enableClick />
+        <BaseMapControl
+          position="bottom-left"
+          allowAddBasemap
+        />
         <DatasetControl position="top-left" />
         <EventManagementControl position="top-left" />
       </Map>

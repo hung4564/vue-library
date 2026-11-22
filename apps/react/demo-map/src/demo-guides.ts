@@ -1,6 +1,6 @@
 import {
-  getDemoPageGuide as getSharedDemoPageGuide,
   type DemoPageGuide,
+  getDemoPageGuide as getSharedDemoPageGuide,
 } from '@hungpvq/demo-map-datasets';
 
 export type { DemoPageGuide };

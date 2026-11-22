@@ -3,20 +3,23 @@ import { getMap } from '@hungpvq/map-core';
 import {
   DrawingType,
   getFirstFeatureByMap,
-  sameFeature,
   type MapDrawOption,
+  sameFeature,
 } from '@hungpvq/map-draw';
 import { BaseMapControl, Map } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { DrawControl, useMapDraw } from '@hungpvq/react-map-draw';
+import { loggerFactory } from '@hungpvq/shared-log';
 import type { Feature, FeatureCollection } from 'geojson';
 import type { GeoJSONSource } from 'maplibre-gl';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
-const MAP_ID = 'react-draw-demo';
+const logger = loggerFactory.createLogger().setNamespace('demo:draw');
+const MAP_ID = 'draw-demo';
 const RESULT_SOURCE = 'demo-draw-result';
 const RESULT_LAYERS = [
   'demo-draw-result-fill',
@@ -47,11 +50,7 @@ function ensureResultLayers(map: MapSimple) {
     id: RESULT_LAYERS[1],
     type: 'line',
     source: RESULT_SOURCE,
-    filter: [
-      'any',
-      ['==', '$type', 'LineString'],
-      ['==', '$type', 'Polygon'],
-    ],
+    filter: ['any', ['==', '$type', 'LineString'], ['==', '$type', 'Polygon']],
     paint: { 'line-color': '#3bb2d0', 'line-width': 2 },
   });
   map.addLayer({
@@ -121,7 +120,9 @@ export function DrawPage() {
       },
       redraw: (mapId) => paintResult(mapId),
       callback(result) {
-        console.info('draw save', result);
+        logger
+          .with({ fn: 'onDrawSave', span: 'draw.save' })
+          .info('draw save', result);
       },
     };
     start(config);
@@ -129,7 +130,11 @@ export function DrawPage() {
 
   return (
     <MapPageShell>
-      <Map mapId={MAP_ID} onMapLoaded={onMapLoaded}>
+      <Map
+        mapId={MAP_ID}
+        onMapLoaded={onMapLoaded}
+      >
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />

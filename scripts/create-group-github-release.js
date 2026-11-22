@@ -5,6 +5,7 @@
  *   node scripts/create-group-github-release.js draggable@1.3.1
  *   node scripts/create-group-github-release.js map@1.1.0
  *   node scripts/create-group-github-release.js shared-store@0.3.0
+ *   node scripts/create-group-github-release.js shared-log@0.2.0
  *
  * Needs GH_TOKEN or GITHUB_TOKEN (env or root `.env` / `.env.local`).
  * Body is taken from the lead package CHANGELOG.md section for that version.
@@ -18,6 +19,8 @@ const LEAD = {
   draggable: 'libs/draggable/core/package.json',
   map: 'libs/map-core/core/package.json',
   'shared-store': 'libs/share/store/package.json',
+  'shared-log': 'libs/shared-log/core/package.json',
+  'ui-core': 'libs/ui-core/vue/package.json',
 };
 
 function resolveGithubRepo() {
@@ -85,7 +88,9 @@ async function main() {
       `No CHANGELOG section for ${version} in ${path.dirname(lead)}/CHANGELOG.md`,
     );
   } else {
-    console.log(`Using CHANGELOG section (${body.split(/\r?\n/).length} lines)`);
+    console.log(
+      `Using CHANGELOG section (${body.split(/\r?\n/).length} lines)`,
+    );
   }
 
   const repo = resolveGithubRepo();

@@ -1,15 +1,36 @@
 import type { MapSimple } from '../types';
 
 /** Local debounce (avoids lodash dependency). */
+export interface DebouncedFn<TArgs extends unknown[]> {
+  (...args: TArgs): void;
+  cancel: () => void;
+}
+
 export function debounce<TArgs extends unknown[]>(
   fn: (...args: TArgs) => void,
   waitMs: number,
-): (...args: TArgs) => void {
+): DebouncedFn<TArgs> {
   let timer: ReturnType<typeof setTimeout> | undefined;
-  return (...args: TArgs) => {
-    if (timer != null) clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), waitMs);
+
+  const debounced = (...args: TArgs) => {
+    if (timer != null) {
+      clearTimeout(timer);
+    }
+
+    timer = setTimeout(() => {
+      timer = undefined;
+      fn(...args);
+    }, waitMs);
   };
+
+  debounced.cancel = () => {
+    if (timer != null) {
+      clearTimeout(timer);
+      timer = undefined;
+    }
+  };
+
+  return debounced;
 }
 
 function getDecimalRoundNum(d: number): number {

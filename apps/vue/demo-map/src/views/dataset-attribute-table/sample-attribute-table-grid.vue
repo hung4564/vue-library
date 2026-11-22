@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ATTRIBUTE_TABLE_COMPONENT_KEY } from '@hungpvq/map-dataset/attribute-table';
 import type { AttributeTableGridProps } from '@hungpvq/map-dataset/attribute-table';
+import { ATTRIBUTE_TABLE_COMPONENT_KEY } from '@hungpvq/map-dataset/attribute-table';
 import { AttributeTableGrid } from '@hungpvq/vue-map-dataset';
 
 defineOptions({ name: 'SampleAttributeTableGrid' });

@@ -20,10 +20,7 @@ export type WorkerTaskResponse = {
 
 export type WorkerTaskContext = {
   readonly taskId: string;
-  log: (
-    message: string,
-    options?: { level?: WorkerLogLevel },
-  ) => void;
+  log: (message: string, options?: { level?: WorkerLogLevel }) => void;
   /** Throttled progress (~80ms, always sends when current >= total). */
   report: (current: number, total?: number, message?: string) => void;
   /** Throws AbortError when this task was cancelled from the main thread. */
@@ -34,10 +31,10 @@ export type WorkerTaskContext = {
 export type WorkerMonitorHandler<TRequest extends WorkerTaskRequest> = (
   message: TRequest,
   ctx: WorkerTaskContext,
-) => Promise<Omit<WorkerTaskResponse, 'id' | 'ok' | 'error'> | void> | Omit<
-  WorkerTaskResponse,
-  'id' | 'ok' | 'error'
-> | void;
+) =>
+  | Promise<Omit<WorkerTaskResponse, 'id' | 'ok' | 'error'> | void>
+  | Omit<WorkerTaskResponse, 'id' | 'ok' | 'error'>
+  | void;
 
 export type RunWorkerMonitorOptions = {
   readyMessage?: string;
@@ -80,13 +77,7 @@ function installConsoleForwarding() {
     warn: 'warn',
     error: 'error',
   };
-  for (const method of [
-    'debug',
-    'info',
-    'log',
-    'warn',
-    'error',
-  ] as const) {
+  for (const method of ['debug', 'info', 'log', 'warn', 'error'] as const) {
     const original = console[method].bind(console);
     console[method] = (...args: unknown[]) => {
       original(...args);
@@ -166,12 +157,7 @@ export function runWorkerMonitor<TRequest extends WorkerTaskRequest>(
       abortedIds.add(event.data.taskId);
       return;
     }
-    void handleMessage(
-      event.data as TRequest,
-      handler,
-      throttleMs,
-      abortedIds,
-    );
+    void handleMessage(event.data as TRequest, handler, throttleMs, abortedIds);
   };
 }
 

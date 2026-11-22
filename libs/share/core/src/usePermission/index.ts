@@ -1,6 +1,7 @@
 import { createSingletonPromise } from '@hungpvq/shared';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
+
 import type { ConfigurableNavigator } from '../_configurable';
 import { defaultNavigator } from '../_configurable';
 import { useEventListener } from '../useEventListener';
@@ -24,8 +25,7 @@ type DescriptorNamePolyfill =
   | 'speaker';
 
 export type GeneralPermissionDescriptor =
-  | PermissionDescriptor
-  | { name: DescriptorNamePolyfill };
+  PermissionDescriptor | { name: DescriptorNamePolyfill };
 
 export interface UsePermissionOptions<
   Controls extends boolean,
@@ -47,20 +47,17 @@ export interface UsePermissionReturnWithControls {
 
 export function usePermission(
   permissionDesc:
-    | GeneralPermissionDescriptor
-    | GeneralPermissionDescriptor['name'],
+    GeneralPermissionDescriptor | GeneralPermissionDescriptor['name'],
   options?: UsePermissionOptions<false>,
 ): UsePermissionReturn;
 export function usePermission(
   permissionDesc:
-    | GeneralPermissionDescriptor
-    | GeneralPermissionDescriptor['name'],
+    GeneralPermissionDescriptor | GeneralPermissionDescriptor['name'],
   options: UsePermissionOptions<true>,
 ): UsePermissionReturnWithControls;
 export function usePermission(
   permissionDesc:
-    | GeneralPermissionDescriptor
-    | GeneralPermissionDescriptor['name'],
+    GeneralPermissionDescriptor | GeneralPermissionDescriptor['name'],
   options: UsePermissionOptions<boolean> = {},
 ): UsePermissionReturn | UsePermissionReturnWithControls {
   const { controls = false, navigator = defaultNavigator } = options;

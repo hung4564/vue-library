@@ -1,4 +1,5 @@
 import type { LayerSpecification } from 'maplibre-gl';
+
 import type { LegendLayerSpecification } from './types';
 
 export function isDisabledLegendLayer(layer: LegendLayerSpecification) {

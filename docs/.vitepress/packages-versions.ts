@@ -68,7 +68,11 @@ function buildDocVersionGroups(
       match: (path, base) =>
         path.startsWith('/map/core') ||
         (isDemoMap(base) && path.startsWith('/core')),
-      packages: pkgs(versions, '@hungpvq/vue-map-core', '@hungpvq/react-map-core'),
+      packages: pkgs(
+        versions,
+        '@hungpvq/vue-map-core',
+        '@hungpvq/react-map-core',
+      ),
     },
     {
       id: 'map-dataset',

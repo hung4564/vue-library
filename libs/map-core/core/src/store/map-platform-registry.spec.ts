@@ -1,10 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { UniversalRegistry } from '../registry/universal-registry';
 import { MAP_PLATFORM_REGISTRY_METHOD } from './map-platform-keys';
 import {
-  MAP_PLATFORM_HOST,
   getMap,
   listMapPlatformHosts,
+  MAP_PLATFORM_HOST,
   registerMapAccessor,
   registerMapReadySubscriber,
   registerMapStoreCleanup,
@@ -67,14 +68,12 @@ describe('map platform registry wiring', () => {
   it('two hosts coexist — getMap finds map on either host', () => {
     const mapVue = { id: 'vue-map' } as any;
     const mapReact = { id: 'react-map' } as any;
-    registerMapAccessor(
-      (id) => (id === 'vue' ? mapVue : undefined),
-      { hostId: MAP_PLATFORM_HOST.VUE_MAP_CORE },
-    );
-    registerMapAccessor(
-      (id) => (id === 'react' ? mapReact : undefined),
-      { hostId: MAP_PLATFORM_HOST.REACT_MAP_CORE },
-    );
+    registerMapAccessor((id) => (id === 'vue' ? mapVue : undefined), {
+      hostId: MAP_PLATFORM_HOST.VUE_MAP_CORE,
+    });
+    registerMapAccessor((id) => (id === 'react' ? mapReact : undefined), {
+      hostId: MAP_PLATFORM_HOST.REACT_MAP_CORE,
+    });
 
     expect(getMap('vue')).toBe(mapVue);
     expect(getMap('react')).toBe(mapReact);
@@ -112,10 +111,9 @@ describe('map platform registry wiring', () => {
       },
       { hostId: MAP_PLATFORM_HOST.VUE_MAP_CORE },
     );
-    registerMapReadySubscriber(
-      () => () => undefined,
-      { hostId: MAP_PLATFORM_HOST.REACT_MAP_CORE },
-    );
+    registerMapReadySubscriber(() => () => undefined, {
+      hostId: MAP_PLATFORM_HOST.REACT_MAP_CORE,
+    });
 
     const unsub = subscribeMapReady('m', (m) => seen.push(m.id));
     vueReady?.({ id: 'from-vue' });

@@ -1,7 +1,4 @@
-import {
-  findAllComponentsByType,
-  type IDataset,
-} from '@hungpvq/map-dataset';
+import { findAllComponentsByType, type IDataset } from '@hungpvq/map-dataset';
 import type { WithMenuHelper } from '@hungpvq/map-dataset/menu';
 import { createMenuItemViewDatasetSource } from './source-snippets';
 

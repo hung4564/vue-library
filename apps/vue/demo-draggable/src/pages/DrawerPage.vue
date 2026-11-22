@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   DraggableContainer,
-  DraggableDrawer,
+  DraggableItemDrawer,
   DraggableItemSideBar,
   ManagementControl,
 } from '@hungpvq/vue-draggable';
@@ -11,18 +11,26 @@ const drawerSize = ref(300);
 </script>
 
 <template>
-  <DraggableContainer containerId="demo-drawer" class="demo-page">
-    <DraggableItemSideBar show title="Controls" location="left">
+  <DraggableContainer
+    containerId="demo-drawer"
+    class="demo-page"
+  >
+    <DraggableItemSideBar
+      show
+      title="Controls"
+      location="left"
+    >
       <div class="panel">
         <h2>Drawer demo</h2>
         <p>
-          Two drawers on the same edge share size and switch via the drawer menu.
+          Two drawers on the same edge share size and switch via the drawer
+          menu.
         </p>
         <ManagementControl />
       </div>
     </DraggableItemSideBar>
 
-    <DraggableDrawer
+    <DraggableItemDrawer
       show
       title="Drawer Right 1"
       location="right"
@@ -33,9 +41,9 @@ const drawerSize = ref(300);
       <div class="panel">
         Right drawer 1 — {{ drawerSize }}px. Use menu to open Drawer 2.
       </div>
-    </DraggableDrawer>
+    </DraggableItemDrawer>
 
-    <DraggableDrawer
+    <DraggableItemDrawer
       :show="false"
       title="Drawer Right 2"
       location="right"
@@ -44,9 +52,9 @@ const drawerSize = ref(300);
       :max-size="520"
     >
       <div class="panel">Right drawer 2 on the same edge.</div>
-    </DraggableDrawer>
+    </DraggableItemDrawer>
 
-    <DraggableDrawer
+    <DraggableItemDrawer
       :show="false"
       title="Drawer Left"
       location="left"
@@ -55,6 +63,6 @@ const drawerSize = ref(300);
       :max-size="400"
     >
       <div class="panel">Left edge drawer — open via ManagementControl.</div>
-    </DraggableDrawer>
+    </DraggableItemDrawer>
   </DraggableContainer>
 </template>

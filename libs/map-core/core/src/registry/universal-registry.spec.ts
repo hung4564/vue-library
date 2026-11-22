@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import type { MapControlHandle } from './control';
 import { runMapControlAction } from './control-action';
 import { UniversalRegistry } from './universal-registry';
@@ -149,7 +150,9 @@ describe('UniversalRegistry', () => {
       fakeControl('mapGotoControl', undefined, { open, close }),
     );
     UniversalRegistry.registerMethodForMap(mapId, 'spec-tool', () => 1);
-    UniversalRegistry.registerComponentForMap(mapId, 'spec-comp', { name: 'X' });
+    UniversalRegistry.registerComponentForMap(mapId, 'spec-comp', {
+      name: 'X',
+    });
 
     expect(UniversalRegistry.getKeysForMap(mapId, 'control')).toEqual([
       'mapGotoControl',
@@ -191,6 +194,18 @@ describe('UniversalRegistry', () => {
       right: 20,
     });
     expect(setPanelPosition).toHaveBeenCalledWith({ top: 10, right: 20 });
+    UniversalRegistry.clearMap(mapId);
+  });
+
+  it('unregister then register replaces a control without leaving duplicates', () => {
+    const mapId = 'spec-replace-control';
+    const first = fakeControl('mapHomeControl');
+    const second = fakeControl('mapHomeControl', (t) => t);
+    UniversalRegistry.registerControl(mapId, 'mapHomeControl', first);
+    UniversalRegistry.unregisterControl(mapId, 'mapHomeControl');
+    UniversalRegistry.registerControl(mapId, 'mapHomeControl', second);
+    expect(UniversalRegistry.getControl('mapHomeControl', mapId)).toBe(second);
+    expect(UniversalRegistry.listControls(mapId)).toHaveLength(1);
     UniversalRegistry.clearMap(mapId);
   });
 });

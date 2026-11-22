@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
 import { useRafFn } from '.';
 
 const fpsLimit = 60;

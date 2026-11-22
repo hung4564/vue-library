@@ -34,6 +34,13 @@
       "order": 1.2
     },
     {
+      "name": "Stable change notes",
+      "package": "Map - Core",
+      "docs": "/map/core/stable-change-notes",
+      "category": "Core",
+      "order": 1.25
+    },
+    {
       "name": "Devtools",
       "package": "Map - Core",
       "docs": "/map/core/devtools",
@@ -53,6 +60,13 @@
       "docs": "/map/core/map-store",
       "category": "Core",
       "order": 1.5
+    },
+    {
+      "name": "Toolbar",
+      "package": "Map - Core",
+      "docs": "/map/core/toolbar",
+      "category": "Core",
+      "order": 1.55
     },
 
     {
@@ -298,13 +312,6 @@
       "name": "LayerControl",
       "package": "Map - Dataset",
       "docs": "/map/dataset/module/LayerControl",
-      "category": "Component",
-      "order": 5.21
-    },
-    {
-      "name": "LayerInfoControl",
-      "package": "Map - Dataset",
-      "docs": "/map/dataset/module/LayerInfoControl",
       "category": "Component",
       "order": 5.21
     },

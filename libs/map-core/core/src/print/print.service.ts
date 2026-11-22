@@ -2,11 +2,10 @@
  * Framework-agnostic print service
  */
 
-import type { MapSimple } from '../types';
-
-import type { PrintOptions } from './types';
 import { MapError } from '../errors';
 import { errorHandler } from '../services/error-handler.service';
+import type { MapSimple } from '../types';
+import type { PrintOptions } from './types';
 import { exportMapbox, exportMapboxWithOptions } from './utils';
 
 /**

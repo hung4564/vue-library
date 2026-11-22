@@ -1,0 +1,110 @@
+<script setup lang="ts">
+import { MapSimple } from '@hungpvq/map-core';
+import {
+  ComponentType,
+  findSiblingOrNearestLeaf,
+  IDataset,
+  IMapboxLayerView,
+  isMapboxLayerView,
+} from '@hungpvq/map-dataset';
+import { copyByJson } from '@hungpvq/shared';
+import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
+import {
+  ModuleContainer,
+  RegistryItem,
+  useLang,
+  useMap,
+  useMapControl,
+  useShow,
+} from '@hungpvq/vue-map-core';
+import { onMounted, Ref, ref, shallowRef } from 'vue';
+
+const emit = defineEmits(['close']);
+const props = defineProps<{ item: IDataset }>();
+const { mapId, callMap } = useMap();
+const { trans } = useLang(mapId.value);
+const [show, toggleShow] = useShow(false);
+const { panelPosition, moduleContainerProps } = useMapControl(mapId, {
+  id: 'mapStyleControl',
+  panelKind: 'sidebar',
+  title: () => trans.value('map.style-control.title'),
+  show,
+  setShow: toggleShow,
+  actions: [
+    {
+      type: 'mapStyleControl',
+      run: () => toggleShow(),
+    },
+  ],
+});
+const layer = ref<unknown>();
+const layer_map = ref<IMapboxLayerView | undefined>(undefined);
+const layer_map_component: Ref<ComponentType> = shallowRef({
+  componentKey: '',
+});
+
+onMounted(() => {
+  toggleShow(true);
+  layer_map.value = undefined;
+  updateValue();
+});
+
+const onClose = () => {
+  layer_map.value = undefined;
+  layer.value = undefined;
+  emit('close');
+};
+
+const onUpdateStyle = (value: unknown) => {
+  callMap((map: MapSimple) => {
+    if (!layer_map.value) {
+      return;
+    }
+    layer_map.value.updateValue(map, value);
+  });
+  updateValue();
+};
+
+const updateValue = () => {
+  const layerView = findSiblingOrNearestLeaf<IMapboxLayerView & IDataset>(
+    props.item,
+    (dataset) => isMapboxLayerView(dataset),
+  );
+  if (layerView) {
+    if (isMapboxLayerView(layerView)) {
+      layer_map.value = layerView || undefined;
+      layer_map_component.value = layerView.getComponentUpdate();
+      layer.value = copyByJson(layerView.getData());
+    }
+  }
+};
+</script>
+<template>
+  <ModuleContainer v-bind="moduleContainerProps">
+    <template #draggable="p">
+      <DraggableItemSideBar
+        :containerId="p.containerId"
+        v-model:show="show"
+        v-if="layer_map_component.componentKey"
+        @close="onClose"
+        :title="trans('map.style-control.title')"
+        :location="panelPosition.location || 'right'"
+      >
+        <template #title>
+          <span class="layer-control__title">
+            {{ trans('map.style-control.title') }}
+          </span>
+        </template>
+        <div class="style-control">
+          <RegistryItem
+            :componentKey="layer_map_component.componentKey"
+            v-model="layer"
+            @update-style="onUpdateStyle"
+            :trans="trans"
+            :map-id="mapId"
+          />
+        </div>
+      </DraggableItemSideBar>
+    </template>
+  </ModuleContainer>
+</template>

@@ -21,10 +21,19 @@ export default defineConfig((env) => {
 
     plugins: [vue(), nxViteTsPaths()],
 
-    // GIS parse + CRS reproject (CreateControl). See libs/map-core/map-dataset/docs/worker.md
+    // GIS parse + CRS reproject (CreateControl). See libs/map-dataset/docs/worker.md
     worker: {
       plugins: () => [nxViteTsPaths()],
       format: 'es' as const,
+      rollupOptions: {
+        // FileGDB loads gdal UMD from CDN on the main thread — never bundle it.
+        external: ['gdal3.js'],
+      },
+    },
+
+    // gdal3.js / sql.js Emscripten factories break when Vite prebundles them.
+    optimizeDeps: {
+      exclude: ['gdal3.js', 'sql.js'],
     },
 
     build: {

@@ -1,14 +1,8 @@
-<template lang="">
-  <ModuleContainer v-bind="moduleContainerProps" :active="show">
-    <template #btn>
-      <MapCommonButton
-        v-if="state"
-        :option="state"
-        @click.stop="control.onAction"
-      >
-      </MapCommonButton>
-    </template>
-
+<template>
+  <ModuleContainer
+    v-bind="moduleContainerProps"
+    :active="show"
+  >
     <template #draggable="props">
       <DraggableItemSideBar
         :containerId="props.containerId"
@@ -20,118 +14,47 @@
             {{ trans('map.aside-control.title') }}
           </span>
         </template>
-        <v-list>
-          <v-list-item>
-            <RouterLink to="/">Home </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/map-core">Map - Core </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/language">Language </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/minimal">Minimal starter </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/worker-sample">Worker - Sample </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/toolbar">Map - Toolbar </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/mobile-menu">Map - Mobile menu </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/legend">Legend </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/story-telling">Story telling </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/story-telling-gps">Story telling GPS </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/basemap">BaseMap </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/measurement">Measurement </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-highlight"
-              >Dataset - Highlight
-            </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-identify">Dataset - Identify </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-identify-present"
-              >Dataset - Identify present
-            </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-menu">Dataset - Menu </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-list">Dataset - List </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/registry-control"
-              >UniversalRegistry - Controls
-            </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-data-management"
-              >Dataset - Data management
-            </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-attribute-table"
-              >Dataset - Attribute table
-            </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/dataset-geo-export"
-              >Dataset - Geo export
-            </RouterLink>
-          </v-list-item>
-          <v-list-item>
-            <RouterLink to="/draw">Draw </RouterLink>
-          </v-list-item>
-        </v-list>
+        <ul class="aside-control__nav">
+          <li
+            v-for="item in navItems"
+            :key="item.to"
+            class="aside-control__item"
+          >
+            <RouterLink
+              :to="item.to"
+              @click="toggleShow(false)"
+              >{{ item.label }}</RouterLink
+            >
+          </li>
+        </ul>
       </DraggableItemSideBar>
     </template>
   </ModuleContainer>
 </template>
-<script>
-import { VList, VListItem } from '@hungpvq/ui-core';
+<script lang="ts">
+import { getDemoAsideNavItems } from '@hungpvq/demo-map-datasets';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
 import {
   makeShowProps,
-  MapCommonButton,
   ModuleContainer,
   useLang,
   useMap,
+  useMapControl,
   useShow,
-  useToolbarControl,
   withMapProps,
 } from '@hungpvq/vue-map-core';
-import { mdiButtonState } from '@hungpvq/map-core/toolbar';
 import { mdiMenu } from '@mdi/js';
 import { RouterLink } from 'vue-router';
 export default {
   name: 'AsideControl',
   components: {
-    VList,
     DraggableItemSideBar,
     ModuleContainer,
-    VListItem,
     RouterLink,
-    MapCommonButton,
   },
   props: {
-    ...withMapProps,
+    ...withMapProps({ position: 'top-left' }),
     ...makeShowProps({ show: false }),
   },
   setup(props) {
@@ -139,7 +62,7 @@ export default {
       icon: mdiMenu,
     };
     const [show, toggleShow] = useShow(props.show);
-    const { mapId, moduleContainerProps } = useMap({
+    const { mapId, order } = useMap({
       ...props,
       controlId: 'asideControl',
     });
@@ -152,29 +75,85 @@ export default {
         },
       },
     });
-
-    const { state, control } = useToolbarControl(mapId.value, props, {
-      id: 'asideControl',
+    const singleButton = {
+      kind: 'single',
       getState() {
         return mdiButtonState(path.icon, {
           visible: true,
+          active: show.value,
           title: trans.value('map.aside-control.title'),
+          order: order.value,
         });
       },
       onClick() {
         toggleShow();
       },
+    };
+    const { moduleContainerProps, control } = useMapControl(mapId, {
+      id: 'asideControl',
+      panelKind: 'sidebar',
+      title: () => trans.value('map.aside-control.title'),
+      from: props,
+      order,
+      show,
+      setShow: (value) => toggleShow(value),
+      actions: [
+        {
+          type: 'asideControl',
+          run: () => toggleShow(),
+        },
+      ],
+      host: { button: singleButton },
+      toolbar: singleButton,
     });
+
     return {
-      state,
       control,
       show,
       toggleShow,
       moduleContainerProps,
       trans,
       path,
+      navItems: getDemoAsideNavItems('vue'),
     };
   },
 };
 </script>
-<style lang=""></style>
+<style>
+/* Teleported into the sidebar — keep unscoped so chrome CSS cannot drop the nav. */
+.aside-control__title {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aside-control__nav {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0.25rem 0;
+  list-style: none;
+}
+
+.aside-control__item {
+  margin: 0;
+  padding: 0.75rem 1rem !important;
+  cursor: pointer;
+}
+
+.aside-control__item > a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.aside-control__item:hover {
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.aside-control__item:active,
+.aside-control__item:has(a.router-link-active) {
+  background-color: color-mix(in srgb, currentColor 18%, transparent);
+}
+</style>

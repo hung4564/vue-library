@@ -1,0 +1,150 @@
+import {
+  debounce,
+  logHelper,
+  MapSimple,
+  subscribeMapReady,
+} from '@hungpvq/map-core';
+import {
+  type AnyIEvent,
+  EventManager,
+  logger,
+  MittTypeMapEvent,
+  MittTypeMapEventEventKey,
+} from '@hungpvq/map-core/event';
+import { MapEventType } from 'maplibre-gl';
+import {
+  getCurrentInstance,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  shallowRef,
+} from 'vue';
+
+import { useMapMittStore } from '../../../store/mitt-store';
+import { getMap } from '../../../store/store';
+import { useMapEventStore } from '../store';
+
+export function useComponentName() {
+  const instance = getCurrentInstance();
+  const name = instance?.type.name || 'unknown-component';
+  return name;
+}
+
+export function useEventMap(
+  mapId: string,
+  event: AnyIEvent,
+  immediate = false,
+) {
+  const store = useMapEventStore(mapId);
+  const emitter = useMapMittStore<MittTypeMapEvent>(mapId);
+  const componentName = useComponentName();
+
+  // Create EventManager instance (core is single source of truth)
+  const manager = new EventManager(
+    mapId,
+    store,
+    emitter,
+    (mapIdParam, level, message, data) => {
+      logHelper(logger, mapIdParam, 'hook', 'useEventMap')
+        .with({
+          fn: 'useEventMap',
+          span: 'hook.add',
+        })
+        [level](message, data);
+    },
+  );
+
+  // Vue reactive state - mirror from core state
+  const current = shallowRef<AnyIEvent | undefined | null>(
+    manager.getCurrent(event.id),
+  );
+  const isActive = shallowRef(manager.isActive(event));
+  // Subscribe to events and mirror state
+  const updateCurrentHandler = debounce(
+    (value: AnyIEvent | undefined | null) => {
+      current.value = value;
+      isActive.value = manager.isActive(event);
+    },
+    200,
+  );
+
+  onMounted(() => {
+    emitter.on(MittTypeMapEventEventKey.setCurrent, updateCurrentHandler);
+  });
+
+  onUnmounted(() => {
+    emitter.off(MittTypeMapEventEventKey.setCurrent, updateCurrentHandler);
+  });
+
+  // Methods that delegate to core manager
+  const add = () => {
+    manager.add(event, componentName);
+  };
+
+  const remove = () => {
+    manager.remove(event);
+  };
+
+  onBeforeUnmount(() => {
+    remove();
+  });
+
+  if (immediate) {
+    onMounted(() => {
+      add();
+    });
+  }
+
+  return { add, remove, isActive };
+}
+
+type KnownMapEvent = keyof MapEventType;
+export function useEventListener<K extends KnownMapEvent>(
+  mapId: string,
+  event: K,
+  cb: (map: MapSimple, ev: MapEventType[K] & object) => void,
+  immediate = true,
+): { add: () => void; remove: () => void } {
+  const wrappedCb: Record<string, ((ev: MapEventType[K]) => void) | undefined> =
+    {};
+  let unsubscribeReady: (() => void) | undefined;
+  let cancelled = false;
+
+  const add = () => {
+    logHelper(logger, mapId, 'hook', 'useEventListener')
+      .with({ fn: 'add', span: 'hook.add' })
+      .debug(`add map listener: ${event}`, { event });
+    cancelled = false;
+    unsubscribeReady?.();
+    unsubscribeReady = subscribeMapReady(mapId, (map) => {
+      if (cancelled) return;
+      const eventHandle = (ev: MapEventType[K]) => cb(map, ev);
+      wrappedCb[map.id] = eventHandle;
+      map.on(event, eventHandle);
+    });
+  };
+  const remove = () => {
+    logHelper(logger, mapId, 'hook', 'useEventListener')
+      .with({ fn: 'remove', span: 'hook.remove' })
+      .debug(`remove map listener: ${event}`, { event });
+    cancelled = true;
+    unsubscribeReady?.();
+    unsubscribeReady = undefined;
+    const map = getMap(mapId);
+    if (!map) return;
+    const eventHandle = wrappedCb[map.id];
+    if (eventHandle) {
+      map.off(event, eventHandle);
+      delete wrappedCb[map.id];
+    }
+  };
+  onMounted(() => {
+    if (immediate) {
+      add();
+    }
+  });
+  onBeforeUnmount(() => {
+    remove();
+  });
+  return { add, remove };
+}

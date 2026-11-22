@@ -1,7 +1,8 @@
-<template>
+﻿<template>
   <div class="map-page worker-sample-page">
     <Map>
-    <DemoLanguageControl />
+      <DevtoolsControl position="bottom-right" />
+      <DemoLanguageControl />
       <AsideControl position="top-left" />
       <WorkerControl position="top-left" />
       <BaseMapControl position="bottom-left" />
@@ -18,25 +19,42 @@
       </p>
       <label>
         From
-        <input v-model.number="from" type="number" />
+        <input
+          v-model.number="from"
+          type="number"
+        />
       </label>
       <label>
         To
-        <input v-model.number="to" type="number" />
+        <input
+          v-model.number="to"
+          type="number"
+        />
       </label>
-      <button type="button" :disabled="running" @click="onRun">
+      <button
+        type="button"
+        :disabled="running"
+        @click="onRun"
+      >
         {{ running ? 'Runningâ€¦' : 'Run sum-range' }}
       </button>
-      <p v-if="result != null" class="sample-worker-panel__result">
+      <p
+        v-if="result != null"
+        class="sample-worker-panel__result"
+      >
         Result: {{ result }}
       </p>
-      <p v-if="error" class="sample-worker-panel__error">{{ error }}</p>
+      <p
+        v-if="error"
+        class="sample-worker-panel__error"
+      >
+        {{ error }}
+      </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import {
   BaseMapControl,
   HomeControl,
@@ -44,9 +62,12 @@ import {
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { onBeforeUnmount, ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
+
 import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../../layout/aside-control.vue';
 import {
   runSampleSumRange,
   terminateSampleWorker,
@@ -144,17 +165,6 @@ onBeforeUnmount(() => {
 
 .sample-worker-panel__error {
   color: #c62828;
-}
-
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
 }
 
 .map-page {

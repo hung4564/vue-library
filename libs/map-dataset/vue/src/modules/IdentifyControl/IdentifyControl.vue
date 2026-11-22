@@ -1,0 +1,301 @@
+<script lang="ts">
+export default {
+  name: 'IdentifyControl',
+};
+</script>
+
+<script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
+import { EventBboxRanger, EventClick } from '@hungpvq/map-core/event';
+import {
+  MAP_CONTEXT_MENU_ID,
+  type MapMenuItemProps,
+} from '@hungpvq/map-core/menu';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import {
+  bindHighlightMittBridge,
+  emitHighlightIdentifyClose,
+} from '@hungpvq/map-dataset/highlight';
+import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
+import {
+  createIdentifySession,
+  IDENTIFY_CONTROL,
+  IDENTIFY_RESULT_CONTROL,
+  type IdentifyLayerFilterPayload,
+  type IdentifyResultUpdatePayload,
+  type IdentifyScopeToggleResult,
+  type IdentifySession,
+  syncIdentifyPointerPick,
+} from '@hungpvq/map-dataset/identify';
+import {
+  defaultMapProps,
+  ModuleContainer,
+  UniversalRegistry,
+  useEventMap,
+  useLang,
+  useMap,
+  useMapControl,
+  type WithShowProps,
+} from '@hungpvq/vue-map-core';
+import { mdiHandPointingUp } from '@mdi/js';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+
+import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
+import { useMapDataset } from '../../store/dataset-api';
+import IdentifyResultControl from './IdentifyResultControl.vue';
+
+const path = {
+  icon: mdiHandPointingUp,
+};
+const props = withDefaults(
+  defineProps<
+    WithMapPropType &
+      WithShowProps & {
+        immediately?: boolean;
+      }
+  >(),
+  { ...defaultMapProps },
+);
+const { mapId, order, callMap } = useMap(props);
+const { getAllComponentsByType, datasetVersion } = useMapDataset(mapId);
+const { trans } = useLang(mapId.value);
+watch(
+  mapId,
+  (id, _prev, onCleanup) => {
+    const unbind = bindHighlightMittBridge(id);
+    onCleanup(unbind);
+  },
+  { immediate: true },
+);
+useEnsureDatasetBuiltinLocales(mapId.value);
+const views = ref<Array<IIdentifyView>>([]);
+const show = ref(!!props.show);
+const loading = ref(false);
+
+let session!: IdentifySession;
+let syncResultPanelRef: (extra?: IdentifyResultUpdatePayload) => void = () =>
+  undefined;
+let controlSyncRef: () => void = () => undefined;
+
+const {
+  add: addEventClick,
+  remove: removeEventClick,
+  isActive: isEventClickActive,
+} = useEventMap(
+  mapId.value,
+  new EventClick().setHandler((e) => session.onMapClick(e)),
+);
+const {
+  add: addEventBbox,
+  remove: removeEventBbox,
+  isActive: isEventClickBox,
+} = useEventMap(
+  mapId.value,
+  new EventBboxRanger().setHandler((bbox) => session.onBboxSelected(bbox)),
+);
+watch([isEventClickActive, isEventClickBox], ([clickActive, boxActive]) => {
+  updateResultPanel({
+    isEventClickActive: clickActive,
+    isEventClickBox: boxActive,
+  });
+});
+
+function updateResultPanel(payload: IdentifyResultUpdatePayload) {
+  UniversalRegistry.runControlAction(
+    mapId.value,
+    IDENTIFY_RESULT_CONTROL.id,
+    IDENTIFY_RESULT_CONTROL.actionUpdate,
+    payload,
+  );
+}
+
+session = createIdentifySession({
+  mapId: mapId.value,
+  getIdentifies: () => views.value,
+  immediately: () => !!props.immediately,
+  callMap,
+  translateAllLayers: () => trans.value('map.identify.all_layers'),
+  onStateChange: () => {
+    syncFromModel();
+    controlSyncRef();
+  },
+  setCursor: (cursor) => {
+    callMap((map) => {
+      map.getCanvas().style.cursor = cursor;
+    });
+  },
+  syncResultPanel: (extra) => syncResultPanelRef(extra),
+  onEventClickActive: (active) => {
+    syncIdentifyPointerPick(mapId.value, active);
+    if (active) addEventClick();
+    else removeEventClick();
+  },
+  onEventBoxSelectActive: (active) => {
+    if (active) addEventBbox();
+    else removeEventBbox();
+  },
+  getEventClickActive: () => isEventClickActive.value,
+  getEventBoxSelectActive: () => isEventClickBox.value,
+  onCloseSideEffects: () => {
+    const filterId = session.getState().filterIdentifyId;
+    const dataset = filterId
+      ? views.value.find((view) => view.id === filterId)
+      : undefined;
+    emitHighlightIdentifyClose(mapId.value, {
+      ...(dataset ? { dataset } : {}),
+    });
+    syncIdentifyPointerPick(mapId.value, false);
+  },
+});
+
+if (props.show) session.setShow(true);
+
+function syncFromModel() {
+  const s = session.getState();
+  show.value = s.show;
+  loading.value = s.loading;
+}
+
+function syncResultPanel(extra?: IdentifyResultUpdatePayload) {
+  updateResultPanel(session.buildResultPanelPayload(extra));
+}
+syncResultPanelRef = syncResultPanel;
+
+function refreshViews() {
+  views.value = (
+    getAllComponentsByType<IIdentifyView>('identify') || []
+  ).reverse();
+}
+watch([datasetVersion, mapId], refreshViews, { immediate: true });
+
+const hasViews = computed(() => views.value.length > 0);
+watch(hasViews, () => {
+  control.sync();
+});
+
+function onIdentifyHere(menuProps: MapMenuItemProps) {
+  const { lng, lat } = menuProps.layer.lngLat;
+  const point = menuProps.layer.point;
+  session.onIdentifyHere(lng, lat, point ? [point.x, point.y] : undefined);
+}
+
+onMounted(() => {
+  if (props.immediately) session.toggleMapClickMode();
+  syncResultPanel();
+});
+onUnmounted(() => {
+  session.teardownInputModes({ immediate: true });
+  session.destroy();
+  UniversalRegistry.unregisterMenuHandlerForMap(
+    mapId.value,
+    MAP_CONTEXT_MENU_ID.identifyHere,
+  );
+});
+UniversalRegistry.registerMenuHandlerForMap(
+  mapId.value,
+  MAP_CONTEXT_MENU_ID.identifyHere,
+  onIdentifyHere,
+);
+
+watch(views, () => syncResultPanel(), { deep: true });
+
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
+    return mdiButtonState(path.icon, {
+      visible: hasViews.value,
+      active: show.value,
+      loading: loading.value,
+      title: trans.value('map.identify.title'),
+      order: order.value,
+    });
+  },
+  onClick() {
+    session.toggleShowAndApply();
+    syncFromModel();
+  },
+};
+const { moduleContainerProps, control } = useMapControl(mapId, {
+  id: IDENTIFY_CONTROL.id,
+  panelKind: 'button',
+  title: () => trans.value('map.identify.title'),
+  from: props,
+  order,
+  show,
+  setShow: (value) => {
+    session.setShow(value);
+    syncFromModel();
+    updateResultPanel({ show: value });
+  },
+  actions: [
+    {
+      type: IDENTIFY_CONTROL.id,
+      run: () => {
+        session.toggleShowAndApply();
+        syncFromModel();
+      },
+    },
+    {
+      type: IDENTIFY_CONTROL.actionSetScoped,
+      run: (event) => {
+        session.applyScopedAndFinish(
+          event as IdentifyScopeToggleResult | undefined,
+        );
+        syncFromModel();
+      },
+    },
+    {
+      type: IDENTIFY_CONTROL.actionUseMapClick,
+      run: () => session.toggleMapClickMode(),
+    },
+    {
+      type: IDENTIFY_CONTROL.actionUseBoxSelect,
+      run: () => session.toggleBoxSelectMode(),
+    },
+    {
+      type: IDENTIFY_CONTROL.actionSetLayerFilter,
+      run: (event) => {
+        const payload = event as IdentifyLayerFilterPayload | undefined;
+        void session.applyLayerFilter(payload?.identifyId ?? '');
+      },
+    },
+    {
+      type: IDENTIFY_CONTROL.actionClose,
+      run: () => {
+        session.closeAndCleanup();
+        syncFromModel();
+      },
+    },
+    {
+      type: IDENTIFY_CONTROL.actionSetLoading,
+      run: (event) => {
+        session.setLoading(!!event);
+        syncFromModel();
+        control.sync();
+      },
+    },
+    {
+      type: IDENTIFY_CONTROL.actionSyncToolbarShow,
+      run: (event) => {
+        const next = !!event;
+        if (session.getState().show === next) return;
+        session.setShow(next);
+        syncFromModel();
+        control.sync();
+      },
+    },
+  ],
+  host: { button: singleButton },
+  toolbar: singleButton,
+});
+controlSyncRef = () => control.sync();
+watch([show, loading], () => control.sync());
+</script>
+
+<template>
+  <ModuleContainer v-bind="moduleContainerProps" />
+  <IdentifyResultControl
+    :position="props.position"
+    :control-layout="props.controlLayout"
+  />
+</template>

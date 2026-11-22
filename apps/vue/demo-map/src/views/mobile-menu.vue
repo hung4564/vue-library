@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="mobile-menu-demo">
     <div class="mobile-menu-demo__bar">
       <span class="mobile-menu-demo__label">buttonInMobile</span>
@@ -17,6 +17,7 @@
       </span>
     </div>
     <Map :button-in-mobile="buttonInMobile">
+      <DevtoolsControl position="bottom-right" />
       <DemoLanguageControl />
       <AsideControl position="top-left" />
       <ToolbarControl />
@@ -51,7 +52,9 @@ import {
   ToolbarControl,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { ref } from 'vue';
+
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
 import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import AsideControl from '../layout/aside-control.vue';
@@ -61,17 +64,6 @@ const buttonInMobile = ref<ButtonInMobile>('menu');
 </script>
 
 <style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-
 .mobile-menu-demo {
   display: flex;
   flex-direction: column;

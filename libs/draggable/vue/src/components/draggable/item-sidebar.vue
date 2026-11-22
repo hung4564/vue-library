@@ -1,0 +1,89 @@
+<script lang="ts">
+export default {
+  name: 'DraggableItemSideBar',
+};
+</script>
+<script setup lang="ts">
+import type { LocationSideBar } from '@hungpvq/draggable';
+import { computed, inject, Ref, ref, toRef } from 'vue';
+
+import { trackLiveEventAction } from '@hungpvq/shared-log';
+import { useLiveHookDebug } from '@hungpvq/vue-shared-log';
+import {
+  useHighlight,
+  useInitAction,
+  useShow,
+  withExpandEmit,
+  withShareComponent,
+  withShareProps,
+  withShowEmit,
+  withShowProps,
+} from '../../hook';
+import { useInitSidebar } from '../../hook/useInitSidebar';
+import SidebarModule from './sidebar/sidebar-module.vue';
+const liveId = useLiveHookDebug('DraggableItemSideBar');
+const props = defineProps({
+  ...withShowProps,
+  ...withShareComponent,
+  ...withShareProps,
+  componentSidebarToggle: { type: [String, Object] },
+  width: { type: [Number, String], default: 'auto' },
+  right: Boolean,
+  location: { type: [String] },
+});
+const emit = defineEmits({ ...withShowEmit, ...withExpandEmit });
+const containerId = inject<Ref<string>>(
+  'containerId',
+  ref(props.containerId || ''),
+);
+if (!containerId.value) {
+  throw new Error('Not set container id');
+}
+const { show, open, close } = useShow(
+  props,
+  emit,
+  trackLiveEventAction('DraggableItemSideBar', liveId),
+);
+const c_location = computed<LocationSideBar>(() =>
+  props.location != null
+    ? (props.location as LocationSideBar)
+    : props.right
+      ? 'right'
+      : 'left',
+);
+const { location, itemId } = useInitSidebar(
+  containerId.value,
+  show,
+  {
+    title: toRef(props, 'title'),
+    type: 'item-sidebar',
+    location: c_location,
+  },
+  props.id,
+);
+const { isHighlight, setHighLight } = useHighlight();
+useInitAction(containerId.value, itemId.value, {
+  open,
+  close,
+  setHighLight,
+});
+</script>
+
+<template>
+  <SidebarModule
+    :container-id="containerId"
+    :location="location"
+    :item-id="itemId"
+    :highlight="isHighlight"
+  >
+    <template #title>
+      <slot name="title">
+        {{ title }}
+      </slot>
+    </template>
+    <template #after-title>
+      <slot name="after-title"></slot>
+    </template>
+    <slot></slot>
+  </SidebarModule>
+</template>

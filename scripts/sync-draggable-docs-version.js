@@ -32,12 +32,12 @@ const values = {
 /** @type {string[]} */
 const files = [
   'libs/draggable/README.md',
-  'libs/draggable/core/docs/index.md',
-  'libs/draggable/core/docs/stable-api.md',
-  'libs/draggable/core/docs/testing.md',
-  'libs/draggable/core/docs/releases/index.md',
-  'libs/vue/draggable/README.md',
-  'libs/react/draggable/README.md',
+  'libs/draggable/docs/index.md',
+  'libs/draggable/docs/stable-api.md',
+  'libs/draggable/docs/testing.md',
+  'libs/draggable/docs/releases/index.md',
+  'libs/draggable/vue/README.md',
+  'libs/draggable/react/README.md',
   'libs/draggable/core/src/public-api.spec.ts',
   '.cursor/skills/draggable-semver-api/SKILL.md',
   '.cursor/skills/vue-library-overview/SKILL.md',

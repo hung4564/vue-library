@@ -1,0 +1,81 @@
+/**
+ * Locks `@hungpvq/vue-draggable` root runtime exports.
+ * Stable vs experimental sets are documented on
+ * `libs/draggable/docs/stable-api.md`.
+ */
+import { describe, expect, it } from 'vitest';
+
+import * as api from './index';
+
+export const VUE_DRAGGABLE_STABLE_RUNTIME_EXPORTS = [
+  'DraggableContainer',
+  'DraggableItemDrawer',
+  'DraggableItemBottom',
+  'DraggableItemFloat',
+  'DraggableItemPopup',
+  'DraggableItemSideBar',
+  'DraggableItemModal',
+  'WithMobileHandle',
+  'useBottomContainer',
+  'useComponent',
+  'useContainerOrder',
+  'useContainerSize',
+  'useExpand',
+  'useHighlight',
+  'useIcon',
+  'useInitAction',
+  'useInitBottom',
+  'useInitDrawer',
+  'useInitItem',
+  'useInitSidebar',
+  'useManagement',
+  'useShow',
+  'useSideBarContainer',
+  'withExpandEmit',
+  'withExpandProps',
+  'withShareComponent',
+  'withShareProps',
+  'withShowEmit',
+  'withShowProps',
+] as const;
+
+/** @experimental — may change in a minor. */
+export const VUE_DRAGGABLE_EXPERIMENTAL_RUNTIME_EXPORTS = [
+  'ContextMenu',
+  'ContextMenuItem',
+  'DragDebugViewer',
+  'Item',
+  'ItemList',
+  'ManagementControl',
+  'registerDragDebugTab',
+  'ShowStatusDragItem',
+  'ShowStatusDrawer',
+  'ShowStatusSideBar',
+] as const;
+
+describe('public API surface', () => {
+  it('root runtime exports match Stable + Experimental allowlists', () => {
+    const keys = Object.keys(api).sort();
+    const expected = [
+      ...VUE_DRAGGABLE_STABLE_RUNTIME_EXPORTS,
+      ...VUE_DRAGGABLE_EXPERIMENTAL_RUNTIME_EXPORTS,
+    ].sort();
+    expect(keys).toEqual(expected);
+  });
+
+  it('does not export internal Drag*/legacy Map* chrome', () => {
+    const keys = new Set(Object.keys(api));
+    for (const name of [
+      'DragButton',
+      'DragCard',
+      'DragHeader',
+      'DragSidebarToggle',
+      'MapButton',
+      'MapCard',
+      'MapHeader',
+      'MapSidebarToggle',
+    ]) {
+      expect(keys.has(name)).toBe(false);
+    }
+  });
+});

@@ -1,23 +1,26 @@
 /**
  * Public entry for `@hungpvq/map-core/toolbar`.
- * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
+ * Named exports only — see libs/map-core/docs/core/stable-api.md.
  */
 export {
-  createDefaultToolbarStore,
-  createLiveToolbarStrategy,
-  createSubscribable,
-  createToolbarControl,
-  createToolbarModule,
-  createToolbarModuleApi,
-  createToolbarStoreApi,
-  createToolbarStrategy,
-  TOOLBAR_STRATEGIES,
-} from './toolbar';
-
+  createHostStrategy,
+  resolveHostButtonOptions,
+  resolveToolbarSpecOptions,
+} from './host-strategy';
+export type { HostStrategyConfig } from './host-strategy';
+export { TOOLBAR_CONTROL_LOCALE } from './locale';
+export { logger } from './logger';
 export {
-  BUTTON_GROUP_OVERFLOW_FRACTION,
-  TOOLBAR_EDGE_INSET_PX,
-  TOOLBAR_STACK_GAP_PX,
+  flatToolbarShortKey,
+  mapToolbarOptions,
+  withLayoutToolbarOptions,
+} from './normalize';
+export type {
+  FlatToolbarButton,
+  NormalizeToolbarContext,
+  ToolbarButtonLayoutFields,
+} from './normalize';
+export {
   cornerVerticalMenuBudgetsPx,
   elementOuterSize,
   groupToolbarButtons,
@@ -31,20 +34,37 @@ export {
   toolbarGroupHeightCost,
   toolbarOverflowPanelClassName,
 } from './overflow';
-
-export { planToolbarLayout } from './plan';
-
-export { TOOLBAR_CONTROL_LOCALE } from './locale';
-
-export { compassIcon, mdiButtonState, mdiIcon, textButtonState } from './types';
-
-export type { Listener, MapToolbarStore, ToolbarKind } from './toolbar';
 export type { ToolbarButtonGroup, ToolbarOverflowPrefer } from './overflow';
+export {
+  handleToolbarButtonClick,
+  planToolbarExpansion,
+  planToolbarLayout,
+  shouldCloseExpandedOnOutsideClick,
+  TOOLBAR_EXPAND_OUTSIDE_IGNORE_SELECTOR,
+} from './plan';
 export type {
   PlanToolbarCorner,
+  PlanToolbarExpansionResult,
   PlanToolbarLayoutInput,
   PlanToolbarLayoutResult,
 } from './plan';
+export {
+  ensureMapToolbarApi,
+  ensureMapToolbarStore,
+} from './register-domain-store';
+export {
+  createDefaultToolbarStore,
+  createLiveToolbarStrategy,
+  createSubscribable,
+  createToolbarModuleApi,
+  createToolbarStoreApi,
+} from './toolbar';
+export type {
+  Listener,
+  LiveToolbarStrategyContext,
+  MapToolbarStore,
+} from './toolbar';
+export { compassIcon, mdiButtonState, mdiIcon, textButtonState } from './types';
 export type {
   AnyToolbarOptions,
   AnyToolbarStrategy,
@@ -54,13 +74,12 @@ export type {
   MapControlCompassIcon,
   MapControlIcon,
   MapControlMdiIcon,
-  ModuleStrategy,
   Subscribable,
   Toolbar,
   ToolbarButtonConfig,
-  ToolbarModuleOptions,
-  ToolbarSingleOptions,
+  ToolbarOptionsModule,
+  ToolbarOptionsModuleExpandable,
+  ToolbarOptionsSingle,
   ToolbarStrategy,
-  ToolbarStrategyDef,
   WithToolbar,
 } from './types';

@@ -1,30 +1,35 @@
 import { loggerFactory } from '@hungpvq/shared-log';
-import { getOrCreateStore } from '@hungpvq/shared-store';
+
 import { MapError } from '../errors';
+import {
+  getMapCoreMetaStore,
+  getMapCoreMetaStoreEvent,
+} from '../store/map-core-meta';
 import { logHelper } from '../utils/log';
 
-const errorLogger = loggerFactory.createLogger().setNamespace('map:core', 2);
+const errorLogger = loggerFactory.createLogger().setNamespace('map:core');
 
 function defaultLogError(error: MapError): void {
-  logHelper(errorLogger, 'global', 'ErrorHandler').error('Error occurred', {
-    code: error.code,
-    message: error.message,
-    context: error.context,
-    stack: error.stack,
-  });
-}
-
-function defaultLogToService(error: MapError): void {
-  // Still surface the error when no external sink is wired (avoid silent prod failures).
-  logHelper(errorLogger, 'global', 'ErrorHandler').error(
-    'Error occurred (logToService not configured)',
-    {
+  logHelper(errorLogger, 'global', 'ErrorHandler')
+    .with({ fn: 'defaultLogError', span: 'error' })
+    .error('Map error handled.', {
       code: error.code,
       message: error.message,
       context: error.context,
       stack: error.stack,
-    },
-  );
+    });
+}
+
+function defaultLogToService(error: MapError): void {
+  // Still surface the error when no external sink is wired (avoid silent prod failures).
+  logHelper(errorLogger, 'global', 'ErrorHandler')
+    .with({ fn: 'defaultLogToService', span: 'error' })
+    .error('Map error handled (logToService sink not configured).', {
+      code: error.code,
+      message: error.message,
+      context: error.context,
+      stack: error.stack,
+    });
 }
 
 function isDevEnvironment(): boolean {
@@ -72,7 +77,6 @@ export interface ErrorHandlerOptions {
  * Handles logging, normalization, and notification of errors.
  */
 export class MapErrorHandler implements ErrorHandler {
-  private listeners: Set<(error: MapError) => void> = new Set();
   private options: ErrorHandlerOptions;
   private handledOnce = new WeakSet<object>();
 
@@ -90,7 +94,9 @@ export class MapErrorHandler implements ErrorHandler {
       ...options,
       logError: options.logError ?? this.options.logError ?? defaultLogError,
       logToService:
-        options.logToService ?? this.options.logToService ?? defaultLogToService,
+        options.logToService ??
+        this.options.logToService ??
+        defaultLogToService,
     };
   }
 
@@ -114,7 +120,7 @@ export class MapErrorHandler implements ErrorHandler {
    * @param context - Additional context about the error
    */
   handle(error: Error, context?: Record<string, unknown>): void {
-    const mapError = this.normalizeError(error, context);
+    const mapError = normalizeError(error, context);
     this.handledOnce.add(mapError);
 
     // Resolve env at call time — library build-time DEV must not freeze prod path forever.
@@ -128,18 +134,7 @@ export class MapErrorHandler implements ErrorHandler {
     } else {
       (this.options.logToService ?? defaultLogToService)(mapError);
     }
-
-    // Notify listeners
-    this.listeners.forEach((listener) => {
-      try {
-        listener(mapError);
-      } catch (listenerError) {
-        logHelper(errorLogger, 'global', 'ErrorHandler').error(
-          'Error in error listener',
-          { error: listenerError },
-        );
-      }
-    });
+    getMapCoreMetaStoreEvent().emit('error:update', mapError);
   }
 
   /**
@@ -148,38 +143,41 @@ export class MapErrorHandler implements ErrorHandler {
    * @returns A function to unregister the callback
    */
   onError(callback: (error: MapError) => void): () => void {
-    this.listeners.add(callback);
-    return () => this.listeners.delete(callback);
+    getMapCoreMetaStoreEvent().on('error:update', callback);
+    return () => getMapCoreMetaStoreEvent().off('error:update', callback);
   }
 
   /**
    * Normalize any error to a MapError.
    */
-  private normalizeError(
-    error: Error,
-    context?: Record<string, unknown>,
-  ): MapError {
-    if (error instanceof MapError) {
-      // Merge additional context if provided
-      if (context) {
-        error.setContext(context);
-      }
-      return error;
-    }
-
-    return new MapError(
-      error.message || 'An unknown error occurred',
-      'UNKNOWN_ERROR',
-      { context: { ...context }, cause: error },
-    );
-  }
 }
 
 /**
  * Default singleton instance of the error handler.
- * Backed by shared-store (`globalThis.$_hungpv_store`) so duplicate package copies share one handler.
+ * Lives on `map:core:meta.errorHandler` so duplicate package copies share one handler.
  */
-export const errorHandler = getOrCreateStore(
-  '__hungpvq_map_errorHandler__',
-  () => new MapErrorHandler(),
-);
+export const errorHandler: MapErrorHandler = (() => {
+  const meta = getMapCoreMetaStore();
+  if (!meta.errorHandler) {
+    meta.errorHandler = new MapErrorHandler();
+  }
+  return meta.errorHandler;
+})();
+function normalizeError(
+  error: Error,
+  context?: Record<string, unknown>,
+): MapError {
+  if (error instanceof MapError) {
+    // Merge additional context if provided
+    if (context) {
+      error.setContext(context);
+    }
+    return error;
+  }
+
+  return new MapError(
+    error.message || 'An unknown error occurred',
+    'UNKNOWN_ERROR',
+    { context: { ...context }, cause: error },
+  );
+}

@@ -5,22 +5,44 @@
     @click.stop="open = !open"
   >
     <div class="layer-context-menu__item-icon">
-      <SvgIcon size="16" type="mdi" :path="mdiStar" />
+      <SvgIcon
+        size="16"
+        type="mdi"
+        :path="mdiStar"
+      />
     </div>
     <span>{{ 'name' in item ? item.name : 'Sample custom menu' }}</span>
     <div class="layer-context-menu__chevron">
-      <SvgIcon size="16" type="mdi" :path="mdiChevronRight" />
+      <SvgIcon
+        size="16"
+        type="mdi"
+        :path="mdiChevronRight"
+      />
     </div>
     <ul class="context-menu layer-context-menu layer-context-menu--submenu">
-      <li class="layer-context-menu__item" @click.stop="onLog">
+      <li
+        class="layer-context-menu__item"
+        @click.stop="onLog"
+      >
         <div class="layer-context-menu__item-icon">
-          <SvgIcon size="16" type="mdi" :path="mdiInformation" />
+          <SvgIcon
+            size="16"
+            type="mdi"
+            :path="mdiInformation"
+          />
         </div>
         <span>Log layer (keep open)</span>
       </li>
-      <li class="layer-context-menu__item" @click.stop="onDone">
+      <li
+        class="layer-context-menu__item"
+        @click.stop="onDone"
+      >
         <div class="layer-context-menu__item-icon">
-          <SvgIcon size="16" type="mdi" :path="mdiClose" />
+          <SvgIcon
+            size="16"
+            type="mdi"
+            :path="mdiClose"
+          />
         </div>
         <span>Done (close menu)</span>
       </li>
@@ -37,7 +59,7 @@ import { ref } from 'vue';
 
 defineOptions({ name: 'SampleLayerMenu' });
 
-const logger = loggerFactory.createLogger().setNamespace('demo:list-menu', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:list-menu');
 
 const props = defineProps<{
   item: MenuAction<IListViewUI>;
@@ -52,7 +74,7 @@ const emit = defineEmits<{
 const open = ref(false);
 
 function onLog() {
-  logger.info('layer menu', {
+  logger.with({ fn: 'onLog', span: 'menu.action' }).info('layer menu', {
     mapId: props.mapId,
     layerId: props.data?.id,
     layerName: props.data?.getName?.(),

@@ -1,23 +1,18 @@
 import type { MapSimple } from '@hungpvq/map-core';
-import {
-  BaseMapCard,
-  BaseMapControl,
-  Map,
-  ZoomControl,
-} from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
+import { BaseMapCard, BaseMapControl, Map } from '@hungpvq/react-map-core';
 import {
   ComponentManagementControl,
-  HighlightPointer,
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { loadIdentifyPresentDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 export function DatasetIdentifyPresentPage() {
   useDatasetRegistry();
@@ -29,6 +24,7 @@ export function DatasetIdentifyPresentPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <ComponentManagementControl />
@@ -38,8 +34,6 @@ export function DatasetIdentifyPresentPage() {
           endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
         />
         <IdentifyControl position="top-right" />
-        <HighlightPointer enableClick />
-        <ZoomControl />
         <BaseMapControl position="bottom-left" />
         <DemoHelpPanel />
       </Map>

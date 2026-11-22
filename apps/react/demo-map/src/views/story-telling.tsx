@@ -1,3 +1,5 @@
+import './story-telling.css';
+
 import { getMap, type MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapControl,
@@ -12,27 +14,123 @@ import {
   SettingControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+import { MapCard } from '@hungpvq/react-map-core/fields';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
+import { loggerFactory } from '@hungpvq/shared-log';
+import { useRef, useState } from 'react';
 
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
-import { useCallback, useState } from 'react';
 import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import './story-telling.css';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import {
+  createCustomAction,
+  createDrawRouteAction,
+  createHighlightAction,
+  createOrbitAction,
+  createOrbitCurrentCenterAction,
+  createPanAction,
+  createRotateAction,
+  createZoomAction,
+} from './StoryTelling/helper-action';
+import { useMapStorytelling } from './StoryTelling/useStorytelling';
 
-const CHAPTERS = [
-  { id: '1', title: 'Zoom to Hanoi', duration: 3000 },
-  { id: '2', title: 'Zoom to HCMC', duration: 3000 },
-  { id: '3', title: 'Reset view', duration: 2000 },
+const storyLog = loggerFactory.createLogger().setNamespace('demo:story', 0);
+
+const chapters = [
+  {
+    id: '1',
+    duration: 3000,
+    actions: [createZoomAction([105.85, 21.03], 12)],
+  },
+  {
+    id: '2',
+    duration: 3000,
+    actions: [createPanAction([105.82, 21.07])],
+  },
+  {
+    id: '3',
+    duration: 3000,
+    actions: [createRotateAction(180)],
+  },
+  {
+    id: '4',
+    duration: 3000,
+    actions: [
+      createDrawRouteAction({
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [105.84, 21.03],
+                [105.85, 21.05],
+                [105.86, 21.07],
+              ],
+            },
+          },
+        ],
+      }),
+    ],
+  },
+  {
+    id: '5',
+    duration: 3000,
+    actions: [createHighlightAction('#btn-highlight')],
+  },
+  {
+    id: '6',
+    duration: 6000,
+    actions: [createOrbitAction([105.85, 21.0], 0.005, 6000)],
+  },
+  {
+    id: '8',
+    duration: 3000,
+    actions: [
+      createCustomAction(
+        'log',
+        () =>
+          storyLog
+            .with({ fn: 'chapter9', span: 'story.chapter' })
+            .info('Chapter 9 started'),
+        () =>
+          storyLog
+            .with({ fn: 'chapter9', span: 'story.chapter' })
+            .info('Chapter 9 ended'),
+      ),
+    ],
+  },
+  {
+    id: '9',
+    duration: 3000,
+    actions: [createZoomAction([105.86, 21.08], 15)],
+  },
+  {
+    id: '6b',
+    duration: 6000,
+    actions: [createOrbitCurrentCenterAction(0.005, 6000)],
+  },
 ];
 
 export function StoryTellingPage() {
   const [mapId, setMapId] = useState('');
-  const [current, setCurrent] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const mapIdRef = useRef('');
+  mapIdRef.current = mapId;
+
+  const { play, pause, next, prev, isPlaying, currentIndex } =
+    useMapStorytelling(mapIdRef, {
+      chapters,
+      autoPlay: false,
+      autoNext: true,
+      loop: false,
+    });
 
   function onMapLoaded(map: MapSimple) {
     setMapId(map.id);
+    mapIdRef.current = map.id;
     getMap(map.id, (m) => {
       m.addSource('route', {
         type: 'geojson',
@@ -51,92 +149,60 @@ export function StoryTellingPage() {
     });
   }
 
-  const runChapter = useCallback(
-    (index: number) => {
-      if (!mapId) return;
-      getMap(mapId, (map) => {
-        if (index === 0) {
-          map.flyTo({ center: [105.8342, 21.0278], zoom: 10, duration: 2000 });
-        } else if (index === 1) {
-          map.flyTo({ center: [106.6297, 10.8231], zoom: 10, duration: 2000 });
-        } else {
-          map.flyTo({ center: [105.85, 21.0], zoom: 5, duration: 2000 });
-        }
-      });
-    },
-    [mapId],
-  );
-
-  function play() {
-    setPlaying(true);
-    let i = current;
-    const tick = () => {
-      setCurrent(i);
-      runChapter(i);
-      i += 1;
-      if (i < CHAPTERS.length) {
-        window.setTimeout(tick, CHAPTERS[i - 1]?.duration ?? 2000);
-      } else {
-        setPlaying(false);
-      }
-    };
-    tick();
-  }
-
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
+        <MeasurementControl position="top-right" />
         <GotoControl position="top-right" />
         <CrsControl />
-        <FullScreenControl />
+        <SettingControl />
         <GeoLocateControl />
+        <FullScreenControl />
         <ZoomControl />
         <HomeControl />
-        <MeasurementControl />
         <MouseCoordinatesControl />
-        <SettingControl />
         <BaseMapControl position="bottom-left" />
         <DemoHelpPanel />
       </Map>
-      <div className="story-panel">
-        <h3>Story telling (React demo)</h3>
-        <p>Simplified chapter playback â€” full action engine is in Vue demo.</p>
-        <ul>
-          {CHAPTERS.map((ch, idx) => (
-            <li key={ch.id} className={idx === current ? 'active' : ''}>
-              {ch.title}
-            </li>
-          ))}
-        </ul>
-        <div className="story-panel__actions">
-          <button type="button" disabled={playing || !mapId} onClick={play}>
+      <div className="buttons-container">
+        <MapCard>
+          <button
+            type="button"
+            disabled={!mapId}
+            onClick={play}
+          >
             Play
           </button>
           <button
             type="button"
             disabled={!mapId}
-            onClick={() => {
-              const next = Math.max(0, current - 1);
-              setCurrent(next);
-              runChapter(next);
-            }}
+            onClick={pause}
+          >
+            Pause
+          </button>
+          <button
+            type="button"
+            disabled={!mapId}
+            onClick={prev}
           >
             Prev
           </button>
           <button
             type="button"
             disabled={!mapId}
-            onClick={() => {
-              const next = Math.min(CHAPTERS.length - 1, current + 1);
-              setCurrent(next);
-              runChapter(next);
-            }}
+            onClick={next}
           >
             Next
           </button>
-        </div>
+          <div style={{ padding: 8 }}>
+            <div>Current: {currentIndex}</div>
+            {isPlaying ? <div>Playing</div> : null}
+            <div id="btn-highlight" />
+          </div>
+        </MapCard>
       </div>
     </MapPageShell>
   );

@@ -1,9 +1,22 @@
 import { getChartRandomColor } from '@hungpvq/map-core';
-import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
+import {
+  createDatasetPartGroupSubListViewUiComponentBuilder,
+  createDatasetPartListViewUiComponentBuilder,
+  createDatasetPartMetadataComponent,
+  createDatasetPartSubListViewUiComponentBuilder,
+  createGroupDataset,
+  createMultiMapboxLayerComponent,
+  createRootDataset,
+} from '@hungpvq/map-dataset';
 import { createDatasetPartGeojsonSourceComponent } from '@hungpvq/map-dataset/geojson';
-import { createDatasetPartGroupSubListViewUiComponentBuilder, createDatasetPartListViewUiComponentBuilder, createDatasetPartMetadataComponent, createDatasetPartSubListViewUiComponentBuilder, createGroupDataset, createMultiMapboxLayerComponent, createRootDataset } from '@hungpvq/map-dataset';
+import {
+  createMenuBuilder,
+  createMenuItemShowDetailInfoSource,
+  createMenuItemToBoundActionForList,
+  createMenuItemToggleShow,
+  createMultiLegend,
+} from '@hungpvq/map-dataset/menu';
 import { createDatasetPartRasterSourceComponent } from '@hungpvq/map-dataset/raster';
-import { createMenuBuilder, createMenuItemShowDetailInfoSource, createMenuItemToBoundActionForList, createMenuItemToggleShow } from '@hungpvq/map-dataset/menu';
 import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { mdiPen, mdiStar } from '@mdi/js';
@@ -14,10 +27,10 @@ import {
   demoPolygon,
 } from '../../fixtures/geojson';
 import { createRasterSourceConfig } from '../../fixtures/raster';
-import { createMultiLegend } from '@hungpvq/map-dataset/menu';
+import { createGeoJsonListDataset } from '../../helpers/create-geojson-list-dataset';
 import { DEMO_SAMPLE_LAYER_MENU_KEY } from '../../registry/menu-handlers';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:list', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:list');
 
 /** List-only: bare row in LayerControl. */
 export function createListOnlyDefaultDataset() {
@@ -167,7 +180,9 @@ export function createListWithConditionMenusDataset() {
         .setIcon(mdiStar)
         .setHidden(({ context }) => context?.role !== 'admin')
         .setClick(() => {
-          logger.info('admin only menu');
+          logger
+            .with({ fn: 'onAdminOnly', span: 'menu.action' })
+            .info('admin only menu');
         })
         .build(),
       createMenuBuilder()
@@ -177,7 +192,9 @@ export function createListWithConditionMenusDataset() {
         .setIcon(mdiPen)
         .setDisabled(({ context }) => !context?.canUsePen)
         .setClick(() => {
-          logger.info('pen action');
+          logger
+            .with({ fn: 'onPenAction', span: 'menu.action' })
+            .info('pen action');
         })
         .build(),
       createMenuBuilder()
@@ -187,7 +204,9 @@ export function createListWithConditionMenusDataset() {
         .setIcon(mdiPen)
         .setDisabled(({ context }) => !context?.canUsePen)
         .setClick(() => {
-          logger.info('pen extra');
+          logger
+            .with({ fn: 'onPenExtra', span: 'menu.action' })
+            .info('pen extra');
         })
         .build(),
     ])
@@ -361,11 +380,11 @@ function buildSublistDataset(options: { withSublistMenus: boolean }) {
   groupLayer.add(list);
   dataset.add(groupLayer);
 
-  const subList1 = createDatasetPartSubListViewUiComponentBuilder('Sub list point')
+  const subList1 = createDatasetPartSubListViewUiComponentBuilder(
+    'Sub list point',
+  )
     .setColor(getChartRandomColor())
-    .addMenus(
-      options.withSublistMenus ? [createMenuItemToggleShow()] : [],
-    )
+    .addMenus(options.withSublistMenus ? [createMenuItemToggleShow()] : [])
     .build();
   const groupSubLayer1 = createGroupDataset('Group sub layer 1');
   groupSubLayer1.add(subList1);
@@ -378,11 +397,11 @@ function buildSublistDataset(options: { withSublistMenus: boolean }) {
     ]),
   );
 
-  const subList2 = createDatasetPartSubListViewUiComponentBuilder('Sub list line')
+  const subList2 = createDatasetPartSubListViewUiComponentBuilder(
+    'Sub list line',
+  )
     .setColor(getChartRandomColor())
-    .addMenus(
-      options.withSublistMenus ? [createMenuItemToggleShow()] : [],
-    )
+    .addMenus(options.withSublistMenus ? [createMenuItemToggleShow()] : [])
     .build();
   const groupSubLayer2 = createGroupDataset('Group sub layer 2');
   groupSubLayer2.add(subList2);

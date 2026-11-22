@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
+
 import {
-  MAP_THEME_CLASS,
-  MAP_THEME_STORAGE_KEY,
   applyMapTheme,
   applyMapThemeClass,
   applyMapThemeForMap,
@@ -13,6 +12,8 @@ import {
   getStoredMapThemeMode,
   isMapThemeId,
   isMapThemeMode,
+  MAP_THEME_CLASS,
+  MAP_THEME_STORAGE_KEY,
   normalizeMapThemeModes,
   resolveMapTheme,
   resolveMapThemeElement,

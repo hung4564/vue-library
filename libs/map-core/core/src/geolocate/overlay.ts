@@ -1,4 +1,5 @@
 import { Marker } from 'maplibre-gl';
+
 import type { MapSimple } from '../types';
 import { accuracyCircleDiameterPx } from './viewport';
 

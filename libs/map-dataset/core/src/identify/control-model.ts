@@ -1,0 +1,213 @@
+import { getMapPointerProfile } from '@hungpvq/map-core';
+
+import {
+  IDENTIFY_ALL_LAYERS_VALUE,
+  type IdentifyResultUpdatePayload,
+} from './result';
+import type { IdentifyScopeToggleResult } from './scope';
+
+export type IdentifyControlModelState = {
+  show: boolean;
+  loading: boolean;
+  filterIdentifyId?: string;
+  origin: { latitude: number; longitude: number };
+};
+
+const clearedOrigin = (): { latitude: number; longitude: number } => ({
+  latitude: 0,
+  longitude: 0,
+});
+
+/** Panel payload after IdentifyControl close. */
+export function buildIdentifyClosePanelPayload(): IdentifyResultUpdatePayload {
+  return {
+    show: false,
+    loading: false,
+    origin: clearedOrigin(),
+    selectedLayerId: IDENTIFY_ALL_LAYERS_VALUE,
+    items: [],
+  };
+}
+
+/** Coarse pointer → bind long-press for Identify map click mode. */
+export function shouldBindIdentifyLongPress(
+  profile: { coarse: boolean } = getMapPointerProfile(),
+): boolean {
+  return profile.coarse;
+}
+
+export type IdentifyScopedSessionResult =
+  | {
+      kind: 'activate';
+      filterIdentifyId: string;
+      startMapClick: boolean;
+      panel: IdentifyResultUpdatePayload;
+    }
+  | {
+      kind: 'clear-matching';
+      removeMapClickIfNotImmediate: true;
+      panel: IdentifyResultUpdatePayload;
+    }
+  | {
+      kind: 'noop';
+      removeMapClickIfNotImmediate: true;
+      panel?: undefined;
+    };
+
+/**
+ * Layer-item one-way scoped identify session (do not open result popup /
+ * do not light IdentifyControl toolbar — toolbar tracks result panel only).
+ * `eventClickActive` = EventClick currently on the map (host useEventMap.isActive).
+ */
+export function resolveIdentifyScopedSession(
+  result: IdentifyScopeToggleResult | undefined,
+  current: {
+    filterIdentifyId?: string;
+    eventClickActive: boolean;
+  },
+): IdentifyScopedSessionResult {
+  const origin = clearedOrigin();
+  if (result?.active && result.identifyId) {
+    return {
+      kind: 'activate',
+      filterIdentifyId: result.identifyId,
+      startMapClick: !current.eventClickActive,
+      panel: {
+        selectedLayerId: result.identifyId,
+        items: [],
+        loading: false,
+        origin,
+      },
+    };
+  }
+  if (
+    result?.identifyId &&
+    current.filterIdentifyId &&
+    current.filterIdentifyId === result.identifyId
+  ) {
+    return {
+      kind: 'clear-matching',
+      removeMapClickIfNotImmediate: true,
+      panel: {
+        selectedLayerId: IDENTIFY_ALL_LAYERS_VALUE,
+        items: [],
+        loading: false,
+        origin,
+      },
+    };
+  }
+  return { kind: 'noop', removeMapClickIfNotImmediate: true };
+}
+
+export type IdentifySessionToggleResult = {
+  show: boolean;
+  panel: IdentifyResultUpdatePayload;
+  startMapClick: boolean;
+  removeIdentify: boolean;
+};
+
+export function resolveIdentifySessionToggle(
+  show: boolean,
+  eventClickActive: boolean,
+): IdentifySessionToggleResult {
+  const next = !show;
+  return {
+    show: next,
+    panel: { show: next },
+    startMapClick: next && !eventClickActive,
+    removeIdentify: !next,
+  };
+}
+
+/**
+ * Mutable IdentifyControl session model (framework-agnostic).
+ * Input-mode active state lives on the host EventClick / EventBbox (useEventMap),
+ * not on this model.
+ */
+export function createIdentifyControlModel(
+  initial: Partial<IdentifyControlModelState> = {},
+) {
+  const state: IdentifyControlModelState = {
+    show: false,
+    loading: false,
+    filterIdentifyId: undefined,
+    origin: clearedOrigin(),
+    ...initial,
+  };
+
+  return {
+    getState(): IdentifyControlModelState {
+      return {
+        ...state,
+        origin: { ...state.origin },
+      };
+    },
+
+    setLoading(loading: boolean) {
+      state.loading = loading;
+    },
+
+    setOrigin(latitude: number, longitude: number) {
+      state.origin = { latitude, longitude };
+    },
+
+    setFilterIdentifyId(id: string | undefined) {
+      state.filterIdentifyId = id;
+    },
+
+    setShow(show: boolean) {
+      state.show = show;
+    },
+
+    applyScopedSession(
+      result: IdentifyScopeToggleResult | undefined,
+      eventClickActive: boolean,
+    ): IdentifyScopedSessionResult {
+      const resolved = resolveIdentifyScopedSession(result, {
+        filterIdentifyId: state.filterIdentifyId,
+        eventClickActive,
+      });
+      if (resolved.kind === 'activate') {
+        state.filterIdentifyId = resolved.filterIdentifyId;
+        // Keep toolbar inactive: scoped mode enables click/filter only.
+        // IdentifyControl `active` follows result-panel open state.
+        state.origin = clearedOrigin();
+      } else if (resolved.kind === 'clear-matching') {
+        state.filterIdentifyId = undefined;
+        state.origin = clearedOrigin();
+      }
+      return resolved;
+    },
+
+    toggleShow(eventClickActive: boolean): IdentifySessionToggleResult {
+      const resolved = resolveIdentifySessionToggle(
+        state.show,
+        eventClickActive,
+      );
+      state.show = resolved.show;
+      return resolved;
+    },
+
+    close(): {
+      clearScope: true;
+      hideHighlight: true;
+      removeIdentify: true;
+      panel: IdentifyResultUpdatePayload;
+    } {
+      state.filterIdentifyId = undefined;
+      state.show = false;
+      state.loading = false;
+      state.origin = clearedOrigin();
+      return {
+        clearScope: true,
+        hideHighlight: true,
+        removeIdentify: true,
+        panel: buildIdentifyClosePanelPayload(),
+      };
+    },
+  };
+}
+
+export type IdentifyControlModel = ReturnType<
+  typeof createIdentifyControlModel
+>;

@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
+
+import type { MapSimple } from '../types';
 import { createEventActionSync } from './event-action-sync';
 import type { IEvent } from './model/Event';
-import type { MapSimple } from '../types';
 
 function makeEvent(id: string, event_map_type: string): IEvent {
   return {

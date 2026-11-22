@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { exprHandler } from './util';
 
 describe('legend util exprHandler', () => {
@@ -18,7 +19,11 @@ describe('legend util exprHandler', () => {
     ).toBe('#ff0000');
 
     expect(
-      get({ id: 'roads', type: 'line', paint: {} } as any, 'paint', 'line-width'),
+      get(
+        { id: 'roads', type: 'line', paint: {} } as any,
+        'paint',
+        'line-width',
+      ),
     ).toBeTypeOf('number');
   });
 

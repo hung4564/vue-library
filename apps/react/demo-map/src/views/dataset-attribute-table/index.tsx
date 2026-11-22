@@ -6,11 +6,12 @@ import {
   DATA_MANAGEMENT_LOCAL_LIST_NAME,
   DATA_MANAGEMENT_MEMORY_LIST_NAME,
 } from '@hungpvq/demo-map-datasets';
-import { runMapControlAction, type MapSimple } from '@hungpvq/map-core';
+import { type MapSimple, runMapControlAction } from '@hungpvq/map-core';
 import { type IDataset } from '@hungpvq/map-dataset';
 import {
   ATTRIBUTE_TABLE_COMPONENT_KEY,
   ATTRIBUTE_TABLE_CONTROL,
+  attributeTableControlId,
   createAttributeTableStoreFromDataset,
   queueAttributeTableSelectRows,
 } from '@hungpvq/map-dataset/attribute-table';
@@ -23,8 +24,6 @@ import {
   UniversalRegistry,
   WorkerControl,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../../components/DemoLanguageControl';
 import {
   AttributeTableGrid,
   AttributeTablePager,
@@ -35,7 +34,11 @@ import {
   LayerControl,
   useMapDatasetComponent,
 } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useCallback, useEffect, useState } from 'react';
+
+import { DemoHelpPanel } from '../../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../../components/DemoLanguageControl';
 import { MapPageShell } from '../../components/MapPageShell';
 import { loadDataManagementDemoDatasets } from '../../data/loaders';
 import { useDatasetRegistry } from '../../hooks/useDatasetRegistry';
@@ -46,7 +49,6 @@ import { SampleAttributeTableHeader } from './sample-attribute-table-header';
 import { SampleAttributeTablePager } from './sample-attribute-table-pager';
 import { SampleAttributeTableToolbar } from './sample-attribute-table-toolbar';
 import { SampleAttributeTableView } from './sample-attribute-table-view';
-import { DemoHelpPanel } from '../../components/DemoHelpPanel';
 
 type LayerKey = 'http' | 'httpCustom' | 'localGeojson' | 'localList' | 'memory';
 type OverrideKey = 'default' | 'toolbar' | 'grid' | 'pager' | 'all' | 'view';
@@ -221,21 +223,23 @@ function AttributeTablePlayground({
     if (!selectedLayer) return;
     openAttributeTable();
     const ids = selectedKey === 'httpCustom' ? ['L1', 'L2'] : ['1', '2'];
-    queueAttributeTableSelectRows(mapId, ids);
+    queueAttributeTableSelectRows(mapId, ids, selectedLayer.id);
   }
 
   function selectRowsAction() {
+    if (!selectedLayer) return;
     const ids = selectedKey === 'httpCustom' ? ['L3'] : ['3'];
     runMapControlAction(
       mapId,
-      ATTRIBUTE_TABLE_CONTROL.id,
+      attributeTableControlId(selectedLayer.id),
       ATTRIBUTE_TABLE_CONTROL.actionSelectRows,
-      { ids },
+      { ids, layerId: selectedLayer.id },
     );
   }
 
   function toggleShow() {
-    runMapControlAction(mapId, ATTRIBUTE_TABLE_CONTROL.id);
+    if (!selectedLayer) return;
+    runMapControlAction(mapId, attributeTableControlId(selectedLayer.id));
   }
 
   async function loadPage() {
@@ -249,7 +253,9 @@ function AttributeTablePlayground({
       pageSize: 5,
     });
     setLastPageHint(`${page.rows.length}/${page.total} Â· intent:page`);
-    attributeTableDemoLogger.info('store.list page', page);
+    attributeTableDemoLogger
+      .with({ fn: 'loadPage', span: 'attribute-table.load' })
+      .info('store.list page', page);
   }
 
   return (
@@ -263,7 +269,10 @@ function AttributeTablePlayground({
           onChange={(e) => setSelectedKey(e.target.value as LayerKey)}
         >
           {LAYER_OPTIONS.map((opt) => (
-            <option key={opt.key} value={opt.key}>
+            <option
+              key={opt.key}
+              value={opt.key}
+            >
               {opt.label}
             </option>
           ))}
@@ -277,7 +286,10 @@ function AttributeTablePlayground({
           onChange={(e) => onOverrideKeyChange(e.target.value as OverrideKey)}
         >
           {OVERRIDE_OPTIONS.map((opt) => (
-            <option key={opt.key} value={opt.key}>
+            <option
+              key={opt.key}
+              value={opt.key}
+            >
               {opt.label}
             </option>
           ))}
@@ -348,7 +360,11 @@ function AttributeTablePlayground({
         >
           {ATTRIBUTE_TABLE_CONTROL.actionSelectRows}
         </MapControlButton>
-        <MapControlButton variant="outlined" size="small" onClick={toggleShow}>
+        <MapControlButton
+          variant="outlined"
+          size="small"
+          onClick={toggleShow}
+        >
           toggle show
         </MapControlButton>
       </div>
@@ -382,6 +398,7 @@ export function DatasetAttributeTablePage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl

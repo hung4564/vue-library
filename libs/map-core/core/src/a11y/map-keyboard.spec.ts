@@ -2,13 +2,14 @@
  * @vitest-environment jsdom
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
+import type { MapControlHandle } from '../registry/control';
+import { UniversalRegistry } from '../registry/universal-registry';
 import {
   bindMapKeyboardShortcuts,
   focusMapLayerSearch,
   mapLayerSearchSelector,
 } from './map-keyboard';
-import type { MapControlHandle } from '../registry/control';
-import { UniversalRegistry } from '../registry/universal-registry';
 
 function fakeControl(
   id: string,

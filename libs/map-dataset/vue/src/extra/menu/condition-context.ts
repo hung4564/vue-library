@@ -1,0 +1,22 @@
+import type { MenuContextSource } from '@hungpvq/map-dataset/menu';
+import { resolveMenuContextSource } from '@hungpvq/map-dataset/menu';
+import { inject, type InjectionKey, provide } from 'vue';
+
+export const MENU_CONDITION_CONTEXT_KEY: InjectionKey<MenuContextSource> =
+  Symbol('map-dataset-menu-condition-context');
+
+export function provideMenuConditionContext(source: MenuContextSource) {
+  const parent = inject(MENU_CONDITION_CONTEXT_KEY, undefined);
+  provide(MENU_CONDITION_CONTEXT_KEY, () => ({
+    ...resolveMenuContextSource(parent),
+    ...resolveMenuContextSource(source),
+  }));
+}
+
+export function useMenuConditionSource(): MenuContextSource {
+  return inject(MENU_CONDITION_CONTEXT_KEY, undefined);
+}
+
+export function useMenuConditionContext(): Record<string, unknown> {
+  return resolveMenuContextSource(useMenuConditionSource());
+}

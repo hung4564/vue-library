@@ -1,4 +1,4 @@
-import { getMapUUIDv4 } from '../utils/uuid';
+import { getUUIDv4 } from '@hungpvq/shared';
 
 /**
  * Base class for map-related entities.
@@ -19,6 +19,6 @@ export class Base {
   }
 
   private generateId(): string {
-    return getMapUUIDv4();
+    return getUUIDv4();
   }
 }

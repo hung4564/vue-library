@@ -1,13 +1,4 @@
-<script setup lang="ts">
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
-import { runMapControlAction, type MapSimple } from '@hungpvq/map-core';
-import { type IDataset } from '@hungpvq/map-dataset';
-import {
-  ATTRIBUTE_TABLE_COMPONENT_KEY,
-  ATTRIBUTE_TABLE_CONTROL,
-  createAttributeTableStoreFromDataset,
-  queueAttributeTableSelectRows,
-} from '@hungpvq/map-dataset/attribute-table';
+﻿<script setup lang="ts">
 import {
   attributeTableDemoLogger,
   DATA_MANAGEMENT_HTTP_CUSTOM_LIST_NAME,
@@ -16,6 +7,15 @@ import {
   DATA_MANAGEMENT_LOCAL_LIST_NAME,
   DATA_MANAGEMENT_MEMORY_LIST_NAME,
 } from '@hungpvq/demo-map-datasets';
+import { type MapSimple, runMapControlAction } from '@hungpvq/map-core';
+import { type IDataset } from '@hungpvq/map-dataset';
+import {
+  ATTRIBUTE_TABLE_COMPONENT_KEY,
+  ATTRIBUTE_TABLE_CONTROL,
+  attributeTableControlId,
+  createAttributeTableStoreFromDataset,
+  queueAttributeTableSelectRows,
+} from '@hungpvq/map-dataset/attribute-table';
 import { getUUIDv4 } from '@hungpvq/shared';
 import {
   BaseMapCard,
@@ -36,16 +36,19 @@ import {
   LayerControl,
   useMapDatasetComponent,
 } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { computed, markRaw, ref, watch } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
+
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { loadDataManagementDemoDatasets } from '../../data/loaders';
+import AsideControl from '../../layout/aside-control.vue';
+import SampleAttributeTableCell from './sample-attribute-table-cell.vue';
 import SampleAttributeTableGrid from './sample-attribute-table-grid.vue';
+import SampleAttributeTableHeader from './sample-attribute-table-header.vue';
 import SampleAttributeTablePager from './sample-attribute-table-pager.vue';
 import SampleAttributeTableToolbar from './sample-attribute-table-toolbar.vue';
 import SampleAttributeTableView from './sample-attribute-table-view.vue';
-import SampleAttributeTableCell from './sample-attribute-table-cell.vue';
-import SampleAttributeTableHeader from './sample-attribute-table-header.vue';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 const SampleCell = markRaw(SampleAttributeTableCell);
 const SampleHeader = markRaw(SampleAttributeTableHeader);
@@ -53,12 +56,7 @@ const SampleHeader = markRaw(SampleAttributeTableHeader);
 const mapId = ref(getUUIDv4());
 const { addComponent } = useMapDatasetComponent(mapId.value);
 
-type LayerKey =
-  | 'http'
-  | 'httpCustom'
-  | 'localGeojson'
-  | 'localList'
-  | 'memory';
+type LayerKey = 'http' | 'httpCustom' | 'localGeojson' | 'localList' | 'memory';
 /** `ATTRIBUTE_TABLE_COMPONENT_KEY` parts, or `all` = toolbar+grid+pager. */
 type OverrideKey = 'default' | 'toolbar' | 'grid' | 'pager' | 'all' | 'view';
 
@@ -212,23 +210,27 @@ function openAttributeTableWithCells() {
 function queueSelectRows() {
   if (!selectedLayer.value) return;
   openAttributeTable();
-  const ids =
-    selectedKey.value === 'httpCustom' ? ['L1', 'L2'] : ['1', '2'];
-  queueAttributeTableSelectRows(mapId.value, ids);
+  const ids = selectedKey.value === 'httpCustom' ? ['L1', 'L2'] : ['1', '2'];
+  queueAttributeTableSelectRows(mapId.value, ids, selectedLayer.value.id);
 }
 
 function selectRowsAction() {
+  if (!selectedLayer.value) return;
   const ids = selectedKey.value === 'httpCustom' ? ['L3'] : ['3'];
   runMapControlAction(
     mapId.value,
-    ATTRIBUTE_TABLE_CONTROL.id,
+    attributeTableControlId(selectedLayer.value.id),
     ATTRIBUTE_TABLE_CONTROL.actionSelectRows,
-    { ids },
+    { ids, layerId: selectedLayer.value.id },
   );
 }
 
 function toggleShow() {
-  runMapControlAction(mapId.value, ATTRIBUTE_TABLE_CONTROL.id);
+  if (!selectedLayer.value) return;
+  runMapControlAction(
+    mapId.value,
+    attributeTableControlId(selectedLayer.value.id),
+  );
 }
 
 async function loadPage() {
@@ -243,7 +245,9 @@ async function loadPage() {
     pageSize: 5,
   });
   lastPageHint.value = `${page.rows.length}/${page.total} Â· intent:page`;
-  attributeTableDemoLogger.info('store.list page', page);
+  attributeTableDemoLogger
+    .with({ fn: 'loadPage', span: 'attribute-table.load' })
+    .info('store.list page', page);
 }
 
 async function onMapLoaded(map: MapSimple) {
@@ -262,14 +266,21 @@ watch(overrideKey, (mode) => registerOverrides(mapId.value, mode));
 </script>
 
 <template>
-  <Map @map-loaded="onMapLoaded" :mapId="mapId">
+  <Map
+    @mapLoaded="onMapLoaded"
+    :mapId="mapId"
+  >
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl
       position="bottom-left"
       default-base-map="Google Satellite"
     />
-    <LayerControl position="top-left" show>
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId: mid }">
         <BaseMapCard :mapId="mid" />
       </template>
@@ -286,7 +297,11 @@ watch(overrideKey, (mode) => registerOverrides(mapId.value, mode));
         <label class="at-card__label">
           Layer
           <select v-model="selectedKey">
-            <option v-for="opt in layerOptions" :key="opt.key" :value="opt.key">
+            <option
+              v-for="opt in layerOptions"
+              :key="opt.key"
+              :value="opt.key"
+            >
               {{ opt.label }}
             </option>
           </select>
@@ -347,10 +362,14 @@ watch(overrideKey, (mode) => registerOverrides(mapId.value, mode));
           Open + cell/header: Name header calls <code>onSort</code> (Shift =
           multi-sort); ID header is not sortable. Layer
           <code>GeoJSON features</code> uses
-          <code>createDatasetPartAttributeTable</code> (wins over menu
-          columns).
+          <code>createDatasetPartAttributeTable</code> (wins over menu columns).
         </div>
-        <div v-if="lastPageHint" class="at-card__meta">{{ lastPageHint }}</div>
+        <div
+          v-if="lastPageHint"
+          class="at-card__meta"
+        >
+          {{ lastPageHint }}
+        </div>
 
         <div class="at-card__section">
           {{ ATTRIBUTE_TABLE_CONTROL.id }}

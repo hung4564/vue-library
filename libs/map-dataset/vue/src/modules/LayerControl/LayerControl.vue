@@ -1,0 +1,213 @@
+<script lang="ts">
+export default {
+  name: 'layer-control',
+};
+</script>
+
+<script setup lang="ts">
+import { type WithMapPropType } from '@hungpvq/map-core';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import {
+  getLayerControlTitleMenuState,
+  type GlobalVisibilityMode,
+  type IDataset,
+  registerAddGeojsonHereForMap,
+  warnIfDatasetRegistryMissing,
+} from '@hungpvq/map-dataset';
+import type { LayerType } from '@hungpvq/map-dataset/create-control';
+import {
+  MENU_CONTROL_ID,
+  type MenuContextSource,
+  resolveMenuContextSource,
+} from '@hungpvq/map-dataset/menu';
+import { DraggableItemSideBar } from '@hungpvq/vue-draggable';
+import {
+  defaultMapProps,
+  MapControlButton,
+  ModuleContainer,
+  UniversalRegistry,
+  useLang,
+  useMap,
+  useMapControl,
+  useShow,
+  type WithShowProps,
+} from '@hungpvq/vue-map-core';
+import SvgIcon from '@jamescoyle/vue-icon';
+import { mdiLayers, mdiPlus } from '@mdi/js';
+import { computed, onUnmounted, watch } from 'vue';
+import { useEnsureDatasetBuiltinLocales } from '../../extra/lang/ensure-builtin-locales';
+import { provideMenuConditionContext } from '../../extra/menu/condition-context';
+import DatasetMenus from '../../extra/menu/dataset-menus.vue';
+import { useMapDataset } from '../../store/dataset-api';
+import CreateControl from '../CreateControl/CreateControl.vue';
+import LayerMenuDefaultHandle from '../LayerMenuDefaultHandle.vue';
+import LayerList from './part/LayerList.vue';
+
+const props = withDefaults(
+  defineProps<
+    WithMapPropType &
+      WithShowProps & {
+        disabledCreate?: boolean;
+        disabledCreateGroup?: boolean;
+        disabledDeleteAll?: boolean;
+        disabledMove?: boolean;
+        menuContext?: MenuContextSource;
+        globalVisibilityMode?: GlobalVisibilityMode;
+        createLayerTypes?: LayerType[];
+      }
+  >(),
+  {
+    ...defaultMapProps,
+    disabledCreate: false,
+    disabledCreateGroup: false,
+    disabledDeleteAll: false,
+    disabledMove: false,
+    globalVisibilityMode: 'sync',
+  },
+);
+provideMenuConditionContext(() => ({
+  control: MENU_CONTROL_ID.layerControl,
+  ...resolveMenuContextSource(props.menuContext),
+}));
+defineSlots<{
+  titleList: (props: { mapId: string }) => any;
+  endList: (props: { mapId: string }) => any;
+  default(): any;
+}>();
+const { mapId, order } = useMap(props);
+const { trans } = useLang(mapId.value);
+useEnsureDatasetBuiltinLocales(mapId.value);
+warnIfDatasetRegistryMissing(
+  (key) => UniversalRegistry.getComponent(key),
+  'vue-map-dataset',
+);
+
+const path = {
+  icon: mdiLayers,
+  layer: { create: mdiPlus },
+};
+const [show, setShow] = useShow(props.show);
+const [showCreate, toggleShowCreate] = useShow();
+function openAddLayer() {
+  toggleShowCreate();
+}
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
+    return mdiButtonState(path.icon, {
+      active: show.value,
+      title: trans.value('map.layer-control.title'),
+      order: order.value,
+    });
+  },
+  onClick() {
+    setShow();
+  },
+};
+const { moduleContainerProps, panelPosition, control } = useMapControl(mapId, {
+  id: 'mapLayerControl',
+  panelKind: 'sidebar',
+  title: () => trans.value('map.layer-control.title'),
+  from: props,
+  order,
+  show,
+  setShow,
+  actions: [
+    {
+      type: 'mapLayerControl',
+      run: () => setShow(),
+    },
+  ],
+  host: { button: singleButton },
+  toolbar: singleButton,
+});
+watch(show, () => control.sync());
+
+const { addDataset, getDatasets, datasetVersion } = useMapDataset(mapId);
+onUnmounted(
+  registerAddGeojsonHereForMap(mapId.value, (dataset) => {
+    void addDataset(dataset);
+  }),
+);
+
+const titleMenuState = computed(() => {
+  void datasetVersion.value;
+  const roots = getDatasets().filter(Boolean) as IDataset[];
+  return getLayerControlTitleMenuState(roots);
+});
+</script>
+<template>
+  <ModuleContainer v-bind="moduleContainerProps">
+    <template #draggable="props">
+      <DraggableItemSideBar
+        :containerId="props.containerId"
+        v-model:show="show"
+        :title="trans('map.layer-control.title')"
+        :location="panelPosition.location || 'left'"
+      >
+        <template #title>
+          <span class="layer-control__title">
+            {{ trans('map.layer-control.title') }}
+          </span>
+        </template>
+        <template
+          v-if="titleMenuState.data"
+          #after-title
+        >
+          <DatasetMenus
+            :menus="titleMenuState.menus"
+            :data="titleMenuState.data"
+            :mapId="mapId"
+            :locations="['title']"
+            :menuContext="menuContext"
+          />
+        </template>
+        <div class="layer-control">
+          <LayerList
+            :mapId="mapId"
+            :disabledCreate="disabledCreate"
+            :disabledCreateGroup="disabledCreateGroup"
+            :disabledDeleteAll="disabledDeleteAll"
+            :disabledMove="disabledMove"
+            :globalVisibilityMode="globalVisibilityMode"
+            @create="openAddLayer"
+          >
+            <template #title>
+              <slot
+                name="titleList"
+                :mapId="mapId"
+              >
+                <MapControlButton
+                  data-testid="map-layer-create"
+                  @click.stop="openAddLayer()"
+                  v-if="!disabledCreate"
+                  variant="plain"
+                >
+                  <SvgIcon
+                    size="14"
+                    type="mdi"
+                    :path="path.layer.create"
+                  />
+                </MapControlButton>
+              </slot>
+            </template>
+          </LayerList>
+          <div class="base-map-card-container">
+            <slot
+              name="endList"
+              :mapId="mapId"
+            >
+            </slot>
+          </div>
+        </div>
+      </DraggableItemSideBar>
+    </template>
+    <CreateControl
+      v-model:show="showCreate"
+      :create-layer-types="createLayerTypes"
+      :control-visible="false"
+    />
+    <slot />
+    <LayerMenuDefaultHandle />
+  </ModuleContainer>
+</template>

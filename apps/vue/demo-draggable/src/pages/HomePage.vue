@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {
   DraggableContainer,
-  DraggableDrawer,
   DraggableItemBottom,
+  DraggableItemDrawer,
   DraggableItemFloat,
   DraggableItemPopup,
   DraggableItemSideBar,
@@ -25,11 +25,21 @@ const demos = [
 </script>
 
 <template>
-  <DraggableContainer containerId="demo-home" class="demo-page">
-    <DraggableItemSideBar show title="Controls" location="left">
+  <DraggableContainer
+    containerId="demo-home"
+    class="demo-page"
+  >
+    <DraggableItemSideBar
+      show
+      title="Controls"
+      location="left"
+    >
       <div class="panel">
         <h2>Home overview</h2>
-        <p>Samples of each type except modal. Use the links to open focused demos.</p>
+        <p>
+          Samples of each type except modal. Use the links to open focused
+          demos.
+        </p>
         <div class="demo-links">
           <RouterLink
             v-for="demo in demos"
@@ -45,7 +55,11 @@ const demos = [
       </div>
     </DraggableItemSideBar>
 
-    <DraggableItemSideBar show title="Right Sidebar" location="right">
+    <DraggableItemSideBar
+      show
+      title="Right Sidebar"
+      location="right"
+    >
       <div class="panel">
         <h2>Right Sidebar</h2>
         <p>Overview sample — open Sidebar demo for more.</p>
@@ -91,13 +105,16 @@ const demos = [
       </div>
     </DraggableItemFloat>
 
-    <DraggableItemBottom show title="Bottom">
+    <DraggableItemBottom
+      show
+      title="Bottom"
+    >
       <div class="panel">
         <p>Bottom panel overview sample.</p>
       </div>
     </DraggableItemBottom>
 
-    <DraggableDrawer
+    <DraggableItemDrawer
       show
       title="Drawer 1"
       location="right"
@@ -108,9 +125,9 @@ const demos = [
       <div class="panel">
         Resize me ({{ drawerSize }}px). Switch to Drawer 2 via menu.
       </div>
-    </DraggableDrawer>
+    </DraggableItemDrawer>
 
-    <DraggableDrawer
+    <DraggableItemDrawer
       :show="false"
       title="Drawer 2"
       location="right"
@@ -119,6 +136,6 @@ const demos = [
       :max-size="480"
     >
       <div class="panel">Second drawer on the same edge.</div>
-    </DraggableDrawer>
+    </DraggableItemDrawer>
   </DraggableContainer>
 </template>

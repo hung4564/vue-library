@@ -1,7 +1,7 @@
+import { attachViewSourceMenuToLists } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getMap } from '@hungpvq/map-core';
 import { DatasetService, type IDataset } from '@hungpvq/map-dataset';
-import { attachViewSourceMenuToLists } from '@hungpvq/demo-map-datasets';
 import {
   notifyMapDatasetStore,
   useMapDatasetStore,

@@ -5,9 +5,10 @@
 import area from '@turf/area';
 import length from '@turf/length';
 import type { Feature } from 'geojson';
+
 import { MapError } from '../errors';
-import { formatAreaText, formatDistanceText } from './utils';
 import { errorHandler } from '../services/error-handler.service';
+import { formatAreaText, formatDistanceText } from './utils';
 
 /**
  * Service for measurement operations

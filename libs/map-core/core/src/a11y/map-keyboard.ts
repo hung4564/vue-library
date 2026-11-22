@@ -104,7 +104,10 @@ export function focusMapLayerSearch(mapId: string): boolean {
     return finish(false);
   };
 
-  if (typeof MutationObserver === 'function' && typeof document !== 'undefined') {
+  if (
+    typeof MutationObserver === 'function' &&
+    typeof document !== 'undefined'
+  ) {
     observer = new MutationObserver(() => {
       if (tryFocusLayerSearch(mapId)) finish(true);
     });
@@ -139,7 +142,12 @@ export function bindMapKeyboardShortcuts(
   const slashSearch = options.slashSearch !== false;
 
   function onKeyDown(event: KeyboardEvent) {
-    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) {
+    if (
+      event.defaultPrevented ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey
+    ) {
       return;
     }
 

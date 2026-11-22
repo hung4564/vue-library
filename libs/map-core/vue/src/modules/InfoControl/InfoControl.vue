@@ -1,0 +1,291 @@
+<script lang="ts">
+export default {
+  name: 'InfoControl',
+};
+</script>
+<script setup lang="ts">
+import {
+  attachMapViewInfoListeners,
+  copyImageDataUrl,
+  downloadDataUrl,
+  EMPTY_MAP_VIEW_INFO,
+  latDMS,
+  lngDMS,
+  type MapSimple,
+  type MapViewInfo,
+  parseCoordinateText,
+  readMapViewInfo,
+  type WithMapPropType,
+} from '@hungpvq/map-core';
+import { exportMapbox } from '@hungpvq/map-core/print';
+import { mdiButtonState } from '@hungpvq/map-core/toolbar';
+import { DraggableItemPopup } from '@hungpvq/vue-draggable';
+import { CopyButton } from '@hungpvq/vue-ui-core';
+import SvgIcon from '@jamescoyle/vue-icon';
+import {
+  mdiCameraOutline,
+  mdiContentCopy,
+  mdiInformationOutline,
+} from '@mdi/js';
+import { computed, onUnmounted, ref, watch } from 'vue';
+import MapControlButton from '../../components/MapControlButton.vue';
+import { useLang } from '../../extra/lang/hook';
+import { useMapControl } from '../../extra/registry/useMapControl';
+import { defaultMapProps, useMap } from '../../hooks/useMap';
+import { useShow, WithShowProps } from '../../hooks/useShow';
+import ModuleContainer from '../ModuleContainer/ModuleContainer.vue';
+
+const props = withDefaults(
+  defineProps<
+    WithMapPropType &
+      WithShowProps & {
+        fileName?: string;
+      }
+  >(),
+  {
+    ...defaultMapProps,
+    fileName: 'map',
+  },
+);
+
+const [show, setShow] = useShow(props.show ?? false);
+const { callMap, mapId, order } = useMap(props);
+const { trans } = useLang(mapId.value);
+
+const info = ref<MapViewInfo>({ ...EMPTY_MAP_VIEW_INFO });
+const capturing = ref(false);
+const showDms = ref(false);
+const centerDms = ref('');
+let detachInfo: (() => void) | undefined;
+
+function syncInfo() {
+  callMap((map) => {
+    info.value = readMapViewInfo(map);
+    const c = map.getCenter();
+    centerDms.value = `${latDMS(c.lat)}, ${lngDMS(c.lng)}`;
+  });
+}
+
+function attachListeners(map: MapSimple) {
+  detachInfo?.();
+  detachInfo = attachMapViewInfoListeners(map, syncInfo);
+}
+
+function detachListeners() {
+  detachInfo?.();
+  detachInfo = undefined;
+}
+
+const rows = computed(() => [
+  {
+    key: 'center',
+    label: trans.value('map.info-control.center'),
+    value: showDms.value
+      ? centerDms.value || info.value.center
+      : info.value.center,
+  },
+  {
+    key: 'zoom',
+    label: trans.value('map.info-control.zoom'),
+    value: info.value.zoom,
+  },
+  {
+    key: 'pitch',
+    label: trans.value('map.info-control.pitch'),
+    value: info.value.pitch,
+  },
+  {
+    key: 'bearing',
+    label: trans.value('map.info-control.bearing'),
+    value: info.value.bearing,
+  },
+  {
+    key: 'projection',
+    label: trans.value('map.info-control.projection'),
+    value: info.value.projection,
+  },
+  {
+    key: 'bounds',
+    label: trans.value('map.info-control.bounds'),
+    value: info.value.bounds,
+  },
+]);
+
+const singleButton = {
+  kind: 'single' as const,
+  getState() {
+    return mdiButtonState(mdiInformationOutline, {
+      visible: true,
+      active: show.value,
+      title: trans.value('map.info-control.title'),
+      order: order.value,
+    });
+  },
+  onClick() {
+    onToggleShow();
+  },
+};
+const { moduleContainerProps, panelBind, control } = useMapControl(mapId, {
+  id: 'mapInfoControl',
+  panelKind: 'popup',
+  title: () => trans.value('map.info-control.title'),
+  from: props,
+  order,
+  show,
+  setShow,
+  defaultPanelSize: { width: 360, height: 380 },
+  actions: [
+    {
+      type: 'mapInfoControl',
+      run: () => onToggleShow(),
+    },
+  ],
+  host: { button: singleButton },
+  toolbar: singleButton,
+});
+
+watch(show, (visible) => {
+  if (visible) {
+    syncInfo();
+    callMap(attachListeners);
+  } else {
+    detachListeners();
+  }
+  control.sync();
+});
+
+onUnmounted(() => {
+  detachListeners();
+});
+
+function onToggleShow() {
+  setShow(!show.value);
+}
+
+function onScreenshot() {
+  callMap(async (map) => {
+    capturing.value = true;
+    try {
+      const image = await exportMapbox(map);
+      downloadDataUrl(image, `${props.fileName}.png`);
+    } finally {
+      capturing.value = false;
+    }
+  });
+}
+
+function onCopyImage() {
+  callMap(async (map) => {
+    capturing.value = true;
+    try {
+      const image = await exportMapbox(map);
+      await copyImageDataUrl(image);
+    } finally {
+      capturing.value = false;
+    }
+  });
+}
+
+function toggleDms() {
+  showDms.value = !showDms.value;
+}
+
+async function onPasteGoTo() {
+  try {
+    const text = await navigator.clipboard?.readText?.();
+    const parsed = parseCoordinateText(text || '');
+    if (!parsed) return;
+    callMap((map) => {
+      map.setCenter([parsed.lng, parsed.lat]);
+      if (parsed.zoom != null) map.setZoom(parsed.zoom);
+    });
+  } catch {
+    // Clipboard permission denied — ignore.
+  }
+}
+</script>
+
+<template>
+  <ModuleContainer v-bind="moduleContainerProps">
+    <template #draggable="slotProps">
+      <DraggableItemPopup
+        v-if="show"
+        v-bind="{ ...slotProps, ...panelBind }"
+        :show="show"
+        @update:show="setShow"
+        @close="setShow(false)"
+        :title="trans('map.info-control.title')"
+      >
+        <template #extra-btn>
+          <MapControlButton
+            :title="trans('map.info-control.screenshot')"
+            :disabled="capturing"
+            @click.stop="onScreenshot"
+            variant="plain"
+          >
+            <SvgIcon
+              :size="16"
+              type="mdi"
+              :path="mdiCameraOutline"
+            />
+          </MapControlButton>
+          <MapControlButton
+            :title="trans('map.info-control.copy-image')"
+            :disabled="capturing"
+            @click.stop="onCopyImage"
+            variant="plain"
+          >
+            <SvgIcon
+              :size="16"
+              type="mdi"
+              :path="mdiContentCopy"
+            />
+          </MapControlButton>
+        </template>
+        <div class="map-info-control">
+          <div class="map-info-control__actions">
+            <MapControlButton
+              variant="outlined"
+              :title="
+                showDms
+                  ? trans('map.info-control.decimal')
+                  : trans('map.info-control.dms')
+              "
+              @click.stop="toggleDms"
+            >
+              {{
+                showDms
+                  ? trans('map.info-control.decimal')
+                  : trans('map.info-control.dms')
+              }}
+            </MapControlButton>
+            <MapControlButton
+              variant="outlined"
+              :title="trans('map.info-control.paste')"
+              @click.stop="onPasteGoTo"
+            >
+              {{ trans('map.info-control.paste') }}
+            </MapControlButton>
+          </div>
+          <div class="map-info-control__rows">
+            <div
+              v-for="row in rows"
+              :key="row.key"
+              class="map-info-control__row"
+            >
+              <div class="map-info-control__label">{{ row.label }}</div>
+              <div class="map-info-control__value">{{ row.value }}</div>
+              <CopyButton
+                class="map-info-control__copy"
+                :value="row.value"
+                :title="trans('map.info-control.copy')"
+                :copied-title="trans('map.info-control.copied')"
+              />
+            </div>
+          </div>
+        </div>
+      </DraggableItemPopup>
+    </template>
+    <slot />
+  </ModuleContainer>
+</template>

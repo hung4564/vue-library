@@ -1,0 +1,133 @@
+import type {
+  ComponentType,
+  IDataset,
+  IMapboxLayerView,
+} from '@hungpvq/map-dataset';
+import {
+  findSiblingOrNearestLeaf,
+  isMapboxLayerView,
+} from '@hungpvq/map-dataset';
+import { DraggableItemSideBar } from '@hungpvq/react-draggable';
+import {
+  ModuleContainer,
+  ModuleContainerProps,
+  RegistryItem,
+  useLang,
+  useMap,
+  useMapControl,
+  useShow,
+} from '@hungpvq/react-map-core';
+import { copyByJson } from '@hungpvq/shared';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+export function StyleControl({
+  item,
+  onClose,
+}: {
+  item: IDataset;
+  onClose?: () => void;
+}) {
+  const { mapId, callMap } = useMap({
+    controlId: 'mapStyleControl',
+  });
+  const { trans } = useLang(mapId);
+  const [show, toggleShow] = useShow(false);
+  const { panelPosition, moduleContainerProps } = useMapControl(mapId, {
+    id: 'mapStyleControl',
+    panelKind: 'sidebar',
+    title: trans('map.style-control.title'),
+    show,
+    setShow: toggleShow,
+    initialPanelPosition: { location: 'right' },
+    actions: [{ type: 'mapStyleControl', run: () => toggleShow() }],
+  });
+  const [layer, setLayer] = useState<unknown>();
+  const [layerView, setLayerView] = useState<IMapboxLayerView | undefined>();
+  const [component, setComponent] = useState<ComponentType>({
+    componentKey: '',
+  });
+  const layerViewRef = useRef(layerView);
+  layerViewRef.current = layerView;
+
+  useEffect(() => {
+    toggleShow(true);
+    setLayerView(undefined);
+    updateValue();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item]);
+
+  function updateValue() {
+    const layerViewFound = findSiblingOrNearestLeaf<
+      IMapboxLayerView & IDataset
+    >(item, (dataset) => isMapboxLayerView(dataset));
+    if (layerViewFound && isMapboxLayerView(layerViewFound)) {
+      setLayerView(layerViewFound);
+      setComponent(layerViewFound.getComponentUpdate());
+      setLayer(copyByJson(layerViewFound.getData()));
+    }
+  }
+
+  function onUpdateStyle(value: unknown) {
+    callMap((map) => {
+      layerViewRef.current?.updateValue(map, value);
+    });
+    updateValue();
+  }
+
+  function handleClose() {
+    setLayerView(undefined);
+    setLayer(undefined);
+    onClose?.();
+  }
+
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) =>
+      component.componentKey ? (
+        <DraggableItemSideBar
+          containerId={bind.containerId}
+          location={panelPosition.location || 'right'}
+          show={show}
+          onUpdateShow={(v) => {
+            toggleShow(!!v);
+            if (!v) handleClose();
+          }}
+          onClose={handleClose}
+          title={trans('map.style-control.title')}
+          titleNode={
+            <span className="layer-control__title">
+              {trans('map.style-control.title')}
+            </span>
+          }
+        >
+          <div className="style-control">
+            <RegistryItem
+              componentKey={component.componentKey}
+              mapId={mapId}
+              value={layer}
+              trans={trans}
+              onUpdateStyle={onUpdateStyle}
+            />
+          </div>
+        </DraggableItemSideBar>
+      ) : null,
+    [
+      component.componentKey,
+      handleClose,
+      layer,
+      mapId,
+      onUpdateStyle,
+      panelPosition.location,
+      show,
+      toggleShow,
+      trans,
+    ],
+  );
+  return (
+    <ModuleContainer
+      {...moduleContainerProps}
+      draggable={renderDraggable}
+    />
+  );
+}

@@ -1,25 +1,28 @@
-<template>
-  <Map @map-loaded="onMapLoaded">
+﻿<template>
+  <Map @mapLoaded="onMapLoaded">
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
-    <LayerControl position="top-left" show />
+    <LayerControl
+      position="top-left"
+      show
+    />
     <DemoHelpPanel />
   </Map>
 </template>
 
 <script setup lang="ts">
-import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import type { MapSimple } from '@hungpvq/map-core';
-import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
-import {
-  LayerControl,
-  useMapDataset,
-} from '@hungpvq/vue-map-dataset';
 import { createGeoJsonDataset } from '@hungpvq/map-dataset/geojson';
+import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
+import { LayerControl, useMapDataset } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import type { FeatureCollection } from 'geojson';
-import AsideControl from '../layout/aside-control.vue';
+
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
+import AsideControl from '../layout/aside-control.vue';
 
 const SAMPLE: FeatureCollection = {
   type: 'FeatureCollection',
@@ -49,16 +52,3 @@ function onMapLoaded(map: MapSimple) {
   );
 }
 </script>
-
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-</style>

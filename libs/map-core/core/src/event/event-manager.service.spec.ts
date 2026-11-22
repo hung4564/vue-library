@@ -1,8 +1,9 @@
 import mitt from 'mitt';
 import { describe, expect, it, vi } from 'vitest';
+
+import { EventManager, normalizeEventFrom } from './event-manager.service';
 import type { MapEventStore } from './types';
 import { MittTypeMapEventEventKey as EventKey } from './types';
-import { EventManager, normalizeEventFrom } from './event-manager.service';
 
 describe('normalizeEventFrom', () => {
   it('converts camelCase / spaces / underscores to kebab-case', () => {
@@ -20,6 +21,13 @@ describe('EventManager', () => {
     return { store, emitter, manager };
   }
 
+  function fakeEvent(partial: Record<string, unknown> = {}) {
+    return {
+      setManager: vi.fn().mockReturnThis(),
+      ...partial,
+    } as any;
+  }
+
   it('add prepends item, normalizes from, and emits', () => {
     const { store, emitter, manager } = create();
     const onAdd = vi.fn();
@@ -27,28 +35,65 @@ describe('EventManager', () => {
     emitter.on(EventKey.add, onAdd);
     emitter.on(EventKey.setItems, onItems);
 
-    manager.add({ id: 'e1', from: 'MyComponent' } as any);
+    const event = fakeEvent({ id: 'e1', from: 'MyComponent' });
+    manager.add(event);
     expect(store.items[0].from).toBe('my-component');
+    expect(event.setManager).toHaveBeenCalledWith(manager);
     expect(onAdd).toHaveBeenCalled();
     expect(onItems).toHaveBeenCalledWith(store.items);
   });
 
   it('remove and setCurrent update store and emit', () => {
     const { store, emitter, manager } = create();
-    const event = { id: 'e1' } as any;
+    const event = fakeEvent({ id: 'e1', event_map_type: 'click' });
     manager.add(event);
     manager.setCurrent(event);
+    expect(manager.getCurrent('click')).toEqual(event);
     expect(manager.getCurrent()).toEqual(event);
-    expect(manager.isActive('e1')).toBe(true);
+    expect(manager.isActive(event)).toBe(true);
 
     const onRemove = vi.fn();
     emitter.on(EventKey.remove, onRemove);
     manager.remove(event);
     expect(store.items).toHaveLength(0);
     expect(onRemove).toHaveBeenCalledWith(event);
+    expect(event.setManager).toHaveBeenLastCalledWith(undefined);
 
-    manager.setCurrent(undefined, 'e1');
-    expect(manager.getCurrent('e1')).toBeUndefined();
+    manager.setCurrent(undefined, 'click');
+    expect(manager.getCurrent('click')).toBeUndefined();
     expect(manager.getCurrent()).toBeUndefined();
+  });
+
+  it('logs add/remove with event identity and remove outcome', () => {
+    const store: MapEventStore = { items: [], current: {} };
+    const emitter = mitt();
+    const log = vi.fn();
+    const manager = new EventManager('m1', store, emitter as any, log);
+    const event = fakeEvent({
+      id: 'e1',
+      event_map_type: 'click',
+      type_select: 'map',
+      from: 'IdentifyControl',
+      name: 'identify',
+    });
+
+    manager.add(event, 'IdentifyControl');
+    expect(log.mock.calls[0][2]).toContain('add click (map)');
+    expect(log.mock.calls[0][2]).toContain('from=identify-control');
+    expect(log.mock.calls[0][2]).toContain('id=e1');
+    expect(log.mock.calls[0][3].event).toMatchObject({
+      id: 'e1',
+      event_map_type: 'click',
+      from: 'identify-control',
+    });
+
+    manager.remove(event);
+    expect(log.mock.calls[1][2]).toContain('remove click (map)');
+    expect(log.mock.calls[1][2]).toContain('removed remaining=0');
+    expect(log.mock.calls[1][3]).toMatchObject({ removed: true, remaining: 0 });
+
+    manager.remove(event);
+    expect(log.mock.calls[2][2]).toContain('skipped (not in store)');
+    expect(log.mock.calls[2][3]).toMatchObject({ removed: false });
   });
 });

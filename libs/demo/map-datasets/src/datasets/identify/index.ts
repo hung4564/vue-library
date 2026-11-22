@@ -1,3 +1,4 @@
+import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import {
   createMenuItemIdentifyForList,
   createMenuItemShowDetailForItem,
@@ -6,7 +7,6 @@ import {
   createMenuItemToBoundActionForItem,
   createMenuItemToggleShow,
 } from '@hungpvq/map-dataset/menu';
-import type { IIdentifyView } from '@hungpvq/map-dataset/identify';
 import { loggerFactory } from '@hungpvq/shared-log';
 import { IDENTIFY_GROUP, NO_GROUP_IDENTIFY } from '../../fixtures/geojson';
 import {
@@ -14,7 +14,7 @@ import {
   createIdentifyDemoMultiDataset,
 } from './factory';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:identify', 2);
+const logger = loggerFactory.createLogger().setNamespace('demo:identify');
 
 const DEMO_ID_NAME_FIELDS = [
   { text: 'Id', value: 'id' },
@@ -63,10 +63,13 @@ export function createIdentifyWithMenuDataset() {
       createMenuItemStyleEdit(),
     ],
     configureIdentify: (b) =>
-      b.addMenus([
-        createMenuItemToBoundActionForItem(),
-        createMenuItemShowDetailForItem(DEMO_ID_NAME_FIELDS),
-      ]),
+      b
+        .onSingle('detail')
+        .onMultiple('result')
+        .addMenus([
+          createMenuItemToBoundActionForItem(),
+          createMenuItemShowDetailForItem(DEMO_ID_NAME_FIELDS),
+        ]),
   });
 }
 
@@ -208,10 +211,12 @@ async function fakeFetchIdentifyDetail(
   }>,
 ) {
   const startedAt = performance.now();
-  logger.info('getList:start', {
-    count: features.length,
-    delayMs: IDENTIFY_API_DELAY_MS,
-  });
+  logger
+    .with({ fn: 'fakeFetchIdentifyDetail', span: 'identify.query' })
+    .info('getList:start', {
+      count: features.length,
+      delayMs: IDENTIFY_API_DELAY_MS,
+    });
   await delay(IDENTIFY_API_DELAY_MS);
   const rows = features.map((feature, index) => {
     const props = feature.properties || {};
@@ -224,10 +229,12 @@ async function fakeFetchIdentifyDetail(
       geometry: feature.geometry,
     };
   });
-  logger.info('getList:done', {
-    count: rows.length,
-    durationMs: Math.round(performance.now() - startedAt),
-  });
+  logger
+    .with({ fn: 'fakeFetchIdentifyDetail', span: 'identify.query' })
+    .info('getList:done', {
+      count: rows.length,
+      durationMs: Math.round(performance.now() - startedAt),
+    });
   return rows;
 }
 
@@ -264,12 +271,19 @@ export function createIdentifyApiDetailDataset() {
     listMenus: [createMenuItemToggleShow(), createMenuItemIdentifyForList()],
     configureIdentify: (b) =>
       b
-        .preferResultControl()
+        .onSingle('result')
+        .onMultiple('result')
         .setConfigFields(DEMO_API_FIELDS)
         .addMenus([createMenuItemToBoundActionForItem()]),
     onIdentifyBuilt: (identify) => {
-      identify.getList = async (_mapId, features) =>
-        fakeFetchIdentifyDetail(features) as Promise<never[]>;
+      type IdentifyWithList = IIdentifyView & {
+        getList?: (
+          mapId: string,
+          features: Parameters<typeof fakeFetchIdentifyDetail>[0],
+        ) => ReturnType<typeof fakeFetchIdentifyDetail>;
+      };
+      (identify as IdentifyWithList).getList = async (_mapId, features) =>
+        fakeFetchIdentifyDetail(features);
     },
   });
 }
@@ -330,10 +344,12 @@ export function createIdentifyApiMergedDataset() {
       payload,
     ) => {
       const startedAt = performance.now();
-      logger.info('getMergedFeatures:start', {
-        identifyCount: idents.length,
-        delayMs: IDENTIFY_API_DELAY_MS,
-      });
+      logger
+        .with({ fn: 'getMergedFeatures', span: 'identify.process' })
+        .info('getMergedFeatures:start', {
+          identifyCount: idents.length,
+          delayMs: IDENTIFY_API_DELAY_MS,
+        });
       await delay(IDENTIFY_API_DELAY_MS);
       const results = (await originalGetMerged(idents, payload)) as Array<{
         feature: { data?: Record<string, unknown> };
@@ -350,10 +366,12 @@ export function createIdentifyApiMergedDataset() {
           },
         },
       }));
-      logger.info('getMergedFeatures:done', {
-        count: enriched.length,
-        durationMs: Math.round(performance.now() - startedAt),
-      });
+      logger
+        .with({ fn: 'getMergedFeatures', span: 'identify.process' })
+        .info('getMergedFeatures:done', {
+          count: enriched.length,
+          durationMs: Math.round(performance.now() - startedAt),
+        });
       return enriched;
     };
     identify1.getMergedFeatures = delayedGetMerged;

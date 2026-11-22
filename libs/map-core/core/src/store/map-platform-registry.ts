@@ -7,8 +7,8 @@
  * Re-registering the same `hostId` replaces that host (version bump).
  */
 import {
-  UniversalRegistry,
   type RegistryFn,
+  UniversalRegistry,
 } from '../registry/universal-registry';
 import type { MapFCOnUseMap, MapSimple } from '../types';
 import { MAP_PLATFORM_REGISTRY_METHOD } from './map-platform-keys';

@@ -1,3 +1,22 @@
+## 0.2.0 (2026-09-22)
+
+### 🚀 Features
+
+- replace LayerHighlight with HighlightPointer component in demo applications ([dd2c03f6](https://github.com/hung4564/vue-library/commit/dd2c03f6))
+- update TypeScript configuration and add orphan scan scripts ([d7674ea9](https://github.com/hung4564/vue-library/commit/d7674ea9))
+
+### 🩹 Fixes
+
+- version ([e426cf21](https://github.com/hung4564/vue-library/commit/e426cf21))
+
+### 🧱 Updated Dependencies
+
+- Updated shared to 0.4.0
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 0.1.0 (2026-09-05)
 
 ### 🚀 Features

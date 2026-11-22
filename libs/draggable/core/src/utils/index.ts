@@ -9,8 +9,4 @@ export {
   setModalSiblingsInert,
   trapTabKey,
 } from './focus';
-export {
-  clearMenuTypeahead,
-  getMenuItems,
-  handleMenuKeydown,
-} from './menu';
+export { clearMenuTypeahead, getMenuItems, handleMenuKeydown } from './menu';

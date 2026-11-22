@@ -1,6 +1,6 @@
 import {
   DraggableContainer,
-  DraggableDrawer,
+  DraggableItemDrawer,
   DraggableItemSideBar,
   ManagementControl,
 } from '@hungpvq/react-draggable';
@@ -10,8 +10,15 @@ export function DrawerPage() {
   const [drawerSize, setDrawerSize] = useState(300);
 
   return (
-    <DraggableContainer containerId="demo-drawer" className="demo-page">
-      <DraggableItemSideBar show title="Controls" location="left">
+    <DraggableContainer
+      containerId="demo-drawer"
+      className="demo-page"
+    >
+      <DraggableItemSideBar
+        show
+        title="Controls"
+        location="left"
+      >
         <div className="panel">
           <h2>Drawer demo</h2>
           <p>
@@ -22,7 +29,7 @@ export function DrawerPage() {
         </div>
       </DraggableItemSideBar>
 
-      <DraggableDrawer
+      <DraggableItemDrawer
         show
         title="Drawer Right 1"
         location="right"
@@ -34,9 +41,9 @@ export function DrawerPage() {
         <div className="panel">
           Right drawer 1 — {drawerSize}px. Use menu to open Drawer 2.
         </div>
-      </DraggableDrawer>
+      </DraggableItemDrawer>
 
-      <DraggableDrawer
+      <DraggableItemDrawer
         show={false}
         title="Drawer Right 2"
         location="right"
@@ -46,9 +53,9 @@ export function DrawerPage() {
         onUpdateSize={setDrawerSize}
       >
         <div className="panel">Right drawer 2 on the same edge.</div>
-      </DraggableDrawer>
+      </DraggableItemDrawer>
 
-      <DraggableDrawer
+      <DraggableItemDrawer
         show={false}
         title="Drawer Left"
         location="left"
@@ -59,7 +66,7 @@ export function DrawerPage() {
         <div className="panel">
           Left edge drawer — open via ManagementControl.
         </div>
-      </DraggableDrawer>
+      </DraggableItemDrawer>
     </DraggableContainer>
   );
 }

@@ -1,9 +1,10 @@
 import {
+  type MaybeElementRef,
   tryOnScopeDispose,
   unrefElement,
-  type MaybeElementRef,
 } from '@hungpvq/shared';
 import { computed, ref } from 'vue';
+
 import type { ConfigurableDocument } from '../_configurable';
 import { defaultDocument } from '../_configurable';
 import { useEventListener } from '../useEventListener';

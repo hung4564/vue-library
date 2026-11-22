@@ -1,0 +1,60 @@
+<template>
+  <div class="map-row create-control-settings">
+    <div class="map-col-6">
+      <input-text
+        v-model="form.minzoom"
+        :label="trans('map.layer-control.field.minzoom')"
+      />
+    </div>
+    <div class="map-col-6">
+      <input-text
+        v-model="form.maxzoom"
+        :label="trans('map.layer-control.field.maxzoom')"
+      />
+    </div>
+    <div
+      v-if="form.tileKind === 'vector'"
+      class="map-col-12"
+    >
+      <input-text
+        v-model="form.sourceLayer"
+        :label="trans('map.layer-control.field.source-layer')"
+      />
+    </div>
+    <template v-if="form.bounds">
+      <div class="map-col-6">
+        <input-text
+          v-model="form.bounds[0]"
+          :label="trans('map.layer-control.field.bound.minx')"
+        />
+      </div>
+      <div class="map-col-6">
+        <input-text
+          v-model="form.bounds[1]"
+          :label="trans('map.layer-control.field.bound.miny')"
+        />
+      </div>
+      <div class="map-col-6">
+        <input-text
+          v-model="form.bounds[2]"
+          :label="trans('map.layer-control.field.bound.maxx')"
+        />
+      </div>
+      <div class="map-col-6">
+        <input-text
+          v-model="form.bounds[3]"
+          :label="trans('map.layer-control.field.bound.maxy')"
+        />
+      </div>
+    </template>
+  </div>
+</template>
+
+<script setup>
+import { useLang, useMap } from '@hungpvq/vue-map-core';
+import { InputText } from '@hungpvq/vue-ui-core';
+
+const form = defineModel();
+const { mapId } = useMap();
+const { trans } = useLang(mapId.value);
+</script>

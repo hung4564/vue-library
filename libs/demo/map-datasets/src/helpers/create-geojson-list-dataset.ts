@@ -71,8 +71,9 @@ export function createGeoJsonListDataset(
     bound = createDatasetPartBoundComponent(name, bbox);
   }
 
-  const listBuilder = createDatasetPartListViewUiComponentBuilder(name)
-    .setColor(options.color ?? getChartRandomColor());
+  const listBuilder = createDatasetPartListViewUiComponentBuilder(
+    name,
+  ).setColor(options.color ?? getChartRandomColor());
   if (configDisabledDelete) {
     listBuilder.configDisabledDelete();
   }

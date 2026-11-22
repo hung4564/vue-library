@@ -13,8 +13,9 @@ import {
   ToolbarControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
-
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useState } from 'react';
+
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
@@ -76,6 +77,7 @@ export function MobileMenuPage() {
         </div>
         <div style={{ flex: 1, minHeight: 0 }}>
           <Map buttonInMobile={buttonInMobile}>
+            <DevtoolsControl position="bottom-right" />
             <DemoLanguageControl />
             <AsideControl position="top-left" />
             <ToolbarControl />

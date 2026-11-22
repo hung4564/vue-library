@@ -1,20 +1,20 @@
-import './styles.css';
-import 'maplibre-gl/dist/maplibre-gl.css';
 import '@hungpvq/map-core/style.css';
 import '@hungpvq/map-dataset/style.css';
+import '@hungpvq/vue-draggable/style.css';
 import '@hungpvq/vue-map-core/style.css';
 import '@hungpvq/vue-map-dataset/style.css';
-import '@hungpvq/vue-map-draw/style.css';
-import '@hungpvq/vue-draggable/style.css';
 import '@hungpvq/vue-map-devtools/style.css';
-
-import router from './router';
+import '@hungpvq/vue-map-draw/style.css';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import './styles.css';
 
 import { createStoreRegistryPlugin } from '@hungpvq/shared-store';
 import { installMapApp } from '@hungpvq/vue-map-dataset';
-import { installDevtools } from '@hungpvq/vue-map-devtools';
 import { createApp } from 'vue';
+
+import { installDevtools } from '@hungpvq/vue-map-devtools';
 import App from './app/App.vue';
+import router from './router';
 
 const app = createApp(App);
 

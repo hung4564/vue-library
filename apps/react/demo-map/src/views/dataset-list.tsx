@@ -1,3 +1,4 @@
+import { DEMO_SAMPLE_LAYER_MENU_KEY } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import {
   BaseMapCard,
@@ -6,23 +7,25 @@ import {
   UniversalRegistry,
   WorkerControl,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
-  HighlightPointer,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useState } from 'react';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { loadListDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
-import { DEMO_SAMPLE_LAYER_MENU_KEY } from '@hungpvq/demo-map-datasets';
 import { SampleCustomMenu } from './sample-custom-menu';
 
-UniversalRegistry.registerComponent(DEMO_SAMPLE_LAYER_MENU_KEY, SampleCustomMenu);
+UniversalRegistry.registerComponent(
+  DEMO_SAMPLE_LAYER_MENU_KEY,
+  SampleCustomMenu,
+);
 
 export function DatasetListPage() {
   useDatasetRegistry();
@@ -38,6 +41,7 @@ export function DatasetListPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl position="bottom-left" />
@@ -78,7 +82,6 @@ export function DatasetListPage() {
           }
           endList={({ mapId }) => <BaseMapCard mapId={mapId} />}
         />
-        <HighlightPointer enableClick />
         <ComponentManagementControl />
         <DemoHelpPanel />
       </Map>

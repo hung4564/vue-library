@@ -1,14 +1,15 @@
 import type { FitBoundsOptions } from 'maplibre-gl';
+
 import { MapError } from '../errors';
 import { errorHandler } from '../services/error-handler.service';
 import type { MapSimple } from '../types';
 import { UserLocationOverlay } from './overlay';
 import {
   GEOLOCATE_DEFAULT_FIT_BOUNDS_OPTIONS,
-  lngLatAccuracyBounds,
-  resolveGeolocateClick,
   type GeoLocateFitBoundsOptions,
   type GeoLocateWatchState,
+  lngLatAccuracyBounds,
+  resolveGeolocateClick,
 } from './viewport';
 
 const GEO_PERMISSION_DENIED = 1;
@@ -152,7 +153,8 @@ export class GeoLocateSession {
     const errorMessage = this.lastErrorMessage;
     const errorCode = this.lastErrorCode;
     const background =
-      this.watchState === 'BACKGROUND' || this.watchState === 'BACKGROUND_ERROR';
+      this.watchState === 'BACKGROUND' ||
+      this.watchState === 'BACKGROUND_ERROR';
     const tracking =
       this.watchState === 'ACTIVE_LOCK' ||
       this.watchState === 'WAITING_ACTIVE' ||
@@ -381,7 +383,8 @@ export class GeoLocateSession {
     }
   }
 
-  private headingEventName(): 'deviceorientationabsolute' | 'deviceorientation' {
+  private headingEventName():
+    'deviceorientationabsolute' | 'deviceorientation' {
     return typeof window !== 'undefined' &&
       'ondeviceorientationabsolute' in window
       ? 'deviceorientationabsolute'

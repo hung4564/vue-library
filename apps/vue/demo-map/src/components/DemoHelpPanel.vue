@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { DemoHelpSection } from '@hungpvq/demo-map-datasets';
 import {
-  getDemoHelpChrome,
   type DemoPageGuide,
+  getDemoHelpChrome,
 } from '@hungpvq/demo-map-datasets';
 import { getStoredMapLanguage } from '@hungpvq/map-core';
+import { useLang } from '@hungpvq/vue-map-core';
 import { computed, inject, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { useLang } from '@hungpvq/vue-map-core';
+
 import { getDemoPageGuide } from '../demo-guides';
 
 const props = defineProps<{
@@ -80,7 +81,12 @@ function toggle() {
 function offsetParentRect(el: HTMLElement) {
   const parent = el.offsetParent as HTMLElement | null;
   if (!parent) {
-    return { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+    return {
+      left: 0,
+      top: 0,
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
   }
   const r = parent.getBoundingClientRect();
   return { left: r.left, top: r.top, width: r.width, height: r.height };
@@ -129,11 +135,7 @@ function onPointerMove(e: PointerEvent) {
   dragMoved = true;
   dragging.value = true;
   e.preventDefault();
-  pos.value = clampPos(
-    dragStartLeft + dx,
-    dragStartTop + dy,
-    panelRef.value,
-  );
+  pos.value = clampPos(dragStartLeft + dx, dragStartTop + dy, panelRef.value);
 }
 
 function onPointerUp(e: PointerEvent) {
@@ -189,7 +191,10 @@ const panelStyle = computed(() => {
       <span class="demo-help__toggle-label">
         {{ open ? chrome.hide : chrome.show }}
       </span>
-      <span class="demo-help__toggle-icon" aria-hidden="true">
+      <span
+        class="demo-help__toggle-icon"
+        aria-hidden="true"
+      >
         {{ open ? '▾' : '▸' }}
       </span>
     </button>
@@ -201,7 +206,10 @@ const panelStyle = computed(() => {
       role="region"
       :aria-label="chrome.title"
     >
-      <p v-if="resolved.intro" class="demo-help__intro">
+      <p
+        v-if="resolved.intro"
+        class="demo-help__intro"
+      >
         {{ resolved.intro }}
       </p>
       <ul class="demo-help__list">

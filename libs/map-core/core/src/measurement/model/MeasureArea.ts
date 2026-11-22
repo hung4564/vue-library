@@ -8,13 +8,14 @@ import { lineString, point, polygon } from '@turf/helpers';
 import length from '@turf/length';
 import midpoint from '@turf/midpoint';
 import { Feature } from 'geojson';
+
+import type { IViewSetting } from '../types';
 import {
   edgeLabelRotation,
   formatAreaText,
   formatDistanceText,
   getMeasurementLabelPrefs,
 } from '../utils';
-import type { IViewSetting } from '../types';
 import { Measure } from './Measure';
 
 /**
@@ -74,9 +75,10 @@ export class MeasureArea extends Measure {
     if (prefs.showEdgeLabels) {
       for (let i = 0; i < this.coordinates.length; i++) {
         const start = this.coordinates[i] as [number, number];
-        const end = this.coordinates[
-          (i + 1) % this.coordinates.length
-        ] as [number, number];
+        const end = this.coordinates[(i + 1) % this.coordinates.length] as [
+          number,
+          number,
+        ];
         const edgeKm = Number(length(lineString([start, end])));
         const mid = midpoint(point(start), point(end));
         labels.push({

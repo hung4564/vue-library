@@ -49,15 +49,19 @@ import {
 import {
   ComponentManagementControl,
   DatasetControl,
-  HighlightPointer,
   IdentifyControl,
-  IdentifyShowFirstControl,
   LayerControl,
   useMapDataset,
 } from '@hungpvq/vue-map-dataset';
+import {
+  DevtoolsControl,
+  installDatasetDebug,
+} from '@hungpvq/vue-map-devtools';
 import { DrawControl, InspectControl } from '@hungpvq/vue-map-draw';
 import { mdiPlus } from '@mdi/js';
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
+
+import { registerDragDebugTab } from '@hungpvq/vue-draggable';
 import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import AsideControl from '../layout/aside-control.vue';
 
@@ -153,26 +157,62 @@ function createDatasetMeasure(
   dataset.add(groupLayer1);
   return dataset;
 }
+const isMobile = ref(false);
+const MOBILE_MQ = '(max-width: 640px)';
+let mq: MediaQueryList | undefined;
+onMounted(() => {
+  mq = window.matchMedia(MOBILE_MQ);
+  syncMobile();
+  mq.addEventListener('change', syncMobile);
+});
+const unregisterDragDebugTab = ref();
+onMounted(() => {
+  installDatasetDebug();
+  unregisterDragDebugTab.value = registerDragDebugTab();
+});
+onUnmounted(() => {
+  unregisterDragDebugTab.value?.();
+});
+function syncMobile() {
+  isMobile.value = !!mq?.matches;
+}
+onUnmounted(() => {
+  mq?.removeEventListener('change', syncMobile);
+});
 </script>
 <template>
   <Map
     ref="mapRef"
-    @map-loaded="onMapLoaded"
+    @mapLoaded="onMapLoaded"
     :mapId="mapId"
     button-in-mobile="toolbar"
   >
+    <DevtoolsControl position="bottom-right" />
     <AsideControl position="top-left" />
     <ToolbarControl position="top-left" />
     <ComponentManagementControl />
-    <MeasurementControl position="top-right" :actions="actionMeasures" />
+    <MeasurementControl
+      position="top-right"
+      :actions="actionMeasures"
+    />
+    <IdentifyControl position="top-right" />
     <DrawControl position="top-right" />
-    <InspectControl position="top-right" />
-    <LayerControl position="top-left" show>
-      <template #endList="{ mapId }">
-        <BaseMapCard :mapId="mapId" />
+    <LayerControl
+      position="top-left"
+      show
+    >
+      <template
+        #endList="{ mapId }"
+        v-if="!isMobile"
+      >
+        <BaseMapCard
+          :mapId="mapId"
+          showOpacity
+          allow-add-basemap
+        />
       </template>
     </LayerControl>
-    <IdentifyControl position="top-right" />
+    <InspectControl position="top-right" />
     <PrintAdvancedControl />
     <PrintControl />
     <GotoControl position="top-right" />
@@ -191,25 +231,11 @@ function createDatasetMeasure(
     <HomeControl />
     <MouseCoordinatesControl />
     <MapContextMenuControl />
-    <BaseMapControl position="bottom-left" />
-    <IdentifyShowFirstControl />
-    <HighlightPointer enableClick />
+    <BaseMapControl
+      position="bottom-left"
+      allow-add-basemap
+    />
     <DatasetControl position="top-left" />
     <EventManagementControl position="top-left" />
   </Map>
 </template>
-
-<style></style>
-
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-</style>

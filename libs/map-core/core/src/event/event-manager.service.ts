@@ -3,10 +3,11 @@
  * Handles event operations, state management, and events
  */
 
+import type { Emitter } from 'mitt';
+
+import type { LoggerFunction } from '../store/interface';
 import type { AnyIEvent, MapEventStore, MittTypeMapEvent } from './types';
 import { MittTypeMapEventEventKey as EventKey } from './types';
-import type { Emitter } from 'mitt';
-import type { LoggerFunction } from '../store/interface';
 
 /** Normalize event `from` to kebab-case (Vue/React parity). */
 export function normalizeEventFrom(name: string): string {
@@ -17,6 +18,46 @@ export function normalizeEventFrom(name: string): string {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
     .toLowerCase();
+}
+
+/** Compact fields for Devtools log message + payload. */
+function summarizeEvent(
+  event: AnyIEvent,
+  extra?: { componentName?: string },
+): {
+  id: string;
+  event_map_type: string;
+  type_select: string;
+  from?: string;
+  name?: string;
+  componentName?: string;
+} {
+  return {
+    id: event.id,
+    event_map_type: event.event_map_type,
+    type_select: event.type_select,
+    from: event.from,
+    name: event.name,
+    ...(extra?.componentName ? { componentName: extra.componentName } : {}),
+  };
+}
+
+function formatEventAction(
+  action: 'add' | 'remove',
+  event: AnyIEvent,
+  extra?: { componentName?: string; removed?: boolean; remaining?: number },
+): string {
+  const from = event.from || extra?.componentName || '?';
+  const name = event.name ? ` name=${event.name}` : '';
+  const type = event.event_map_type || '?';
+  const select = event.type_select || '?';
+  let msg = `${action} ${type} (${select}) from=${from} id=${event.id}${name}`;
+  if (action === 'remove' && extra?.removed !== undefined) {
+    msg += extra.removed
+      ? ` removed remaining=${extra.remaining ?? 0}`
+      : ' skipped (not in store)';
+  }
+  return msg;
 }
 
 /**
@@ -59,9 +100,9 @@ export class EventManager {
    * @param eventId - Event ID to check
    * @returns true if event is active
    */
-  isActive(eventId: string): boolean {
-    const current = this.getCurrent();
-    return !!current && current.id === eventId;
+  isActive(event: AnyIEvent): boolean {
+    const current = this.getCurrent(event.event_map_type);
+    return !!current && current.id === event.id;
   }
 
   /**
@@ -72,14 +113,20 @@ export class EventManager {
    * @param componentName - Component name (optional, for logging)
    */
   add(event: AnyIEvent, componentName?: string): void {
-    if (this.logger) {
-      this.logger(this.mapId, 'debug', 'add', { event, componentName });
-    }
-
     const rawFrom = event.from || componentName;
     if (rawFrom) {
       event.from = normalizeEventFrom(rawFrom);
     }
+    event.setManager(this);
+    this.logger?.(
+      this.mapId,
+      'debug',
+      formatEventAction('add', event, { componentName }),
+      {
+        event: summarizeEvent(event, { componentName }),
+        items: this.store.items.length + 1,
+      },
+    );
 
     // Update core state (single source of truth)
     this.store.items.unshift(event);
@@ -96,21 +143,41 @@ export class EventManager {
    * @param event - Event to remove
    */
   remove(event: AnyIEvent): void {
-    if (this.logger) {
-      this.logger(this.mapId, 'debug', 'remove', { event });
-    }
-
-    if (!this.store || !this.store.items || this.store.items.length < 1) {
+    event.setManager(undefined);
+    if (!this.store?.items?.length) {
+      this.logger?.(
+        this.mapId,
+        'debug',
+        formatEventAction('remove', event, { removed: false }),
+        { event: summarizeEvent(event), removed: false, remaining: 0 },
+      );
       return;
     }
 
     const eventIndex = this.store.items.findIndex((x) => x.id === event.id);
     if (eventIndex < 0) {
+      this.logger?.(
+        this.mapId,
+        'debug',
+        formatEventAction('remove', event, { removed: false }),
+        {
+          event: summarizeEvent(event),
+          removed: false,
+          remaining: this.store.items.length,
+        },
+      );
       return;
     }
 
-    // Update core state
     this.store.items.splice(eventIndex, 1);
+    const remaining = this.store.items.length;
+
+    this.logger?.(
+      this.mapId,
+      'debug',
+      formatEventAction('remove', event, { removed: true, remaining }),
+      { event: summarizeEvent(event), removed: true, remaining },
+    );
 
     // Emit events for subscribers
     this.emitter.emit(EventKey.remove, event);
@@ -125,7 +192,8 @@ export class EventManager {
    * @param key - Optional key for current event
    */
   setCurrent(event: AnyIEvent | undefined | null, key?: string): void {
-    const eventKey = key || event?.id || 'default';
+    // Current is keyed by event_map_type (one active listener per map event type).
+    const eventKey = key || event?.event_map_type || event?.id || 'default';
 
     // Update core state
     if (event) {

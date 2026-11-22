@@ -1,0 +1,339 @@
+import type {
+  ButtonInMobile,
+  ControlLayout,
+  MapPopupProps,
+  Position,
+} from '@hungpvq/map-core';
+
+import type { IDataset } from '../interfaces/dataset.base';
+import type { MenuAction } from '../interfaces/dataset.parts';
+import type { AttributeTableController } from './controller';
+import type {
+  AttributeTableColumn,
+  AttributeTableColumnsOption,
+  AttributeTableRow,
+} from './model';
+import type { AttributeTableSortState } from './sort';
+import type { AttributeTableStore } from './store';
+import type { VirtualRowWindow } from './virtual-rows';
+
+/**
+ * UniversalRegistry component keys for Attribute Table UI.
+ * Override with `registerComponent` / `registerComponentForMap`.
+ *
+ * Prefer {@link ATTRIBUTE_TABLE_COMPONENT_KEY.view} to replace the whole table
+ * body with another table library (AG Grid, TanStack Table, …).
+ */
+export const ATTRIBUTE_TABLE_COMPONENT_KEY = {
+  /** Full panel shell (popup + `useMapControl`). */
+  root: 'attribute-table',
+  /**
+   * Entire table body inside the popup (toolbar + grid + pager by default).
+   * Register a custom component here to swap in another table library.
+   */
+  view: 'attribute-table-view',
+  /** Search / zoom / filter / clear strip (default view only). */
+  toolbar: 'attribute-table-toolbar',
+  /** Page controls (default view only). */
+  pager: 'attribute-table-pager',
+  /** Virtualized table body (default view only). */
+  grid: 'attribute-table-grid',
+} as const;
+
+export type AttributeTableComponentKey =
+  (typeof ATTRIBUTE_TABLE_COMPONENT_KEY)[keyof typeof ATTRIBUTE_TABLE_COMPONENT_KEY];
+
+export type AttributeTableRowFilter = 'all' | 'selected';
+
+export type AttributeTableSelectItem = {
+  value: string | number;
+  text: string;
+};
+
+export type AttributeTableViewLabels = {
+  search: string;
+  zoomToSelection: string;
+  showAll: string;
+  showSelected: string;
+  clear: string;
+  loading: string;
+  empty: string;
+  page: string;
+  of: string;
+  prev: string;
+  next: string;
+  rowsPerPage: string;
+  /** Accessible name for the `<table>` / caption. */
+  table: string;
+  /** Accessible name for the scrollable rows region. */
+  gridRegion: string;
+  selectAll: string;
+  selectRow: string;
+  actionsColumn: string;
+  rowFilter: string;
+  /** Toolbar: column picker for text filter. */
+  columnFilter: string;
+  /** Placeholder for column filter text (contains). */
+  columnFilterQuery: string;
+  /** Placeholder when mode is equals. */
+  columnFilterQueryEquals: string;
+  /** Placeholder for numeric filter modes. */
+  columnFilterQueryNumber: string;
+  /** Placeholder for number_between (`1..10`). */
+  columnFilterQueryNumberBetween: string;
+  /** Placeholder for date filter modes. */
+  columnFilterQueryDate: string;
+  /** Clear all column text filters. */
+  clearColumnFilter: string;
+  /** Per-column filter input aria (template with `{column}`). */
+  columnFilterFor: string;
+  /** Toolbar: filter mode select aria. */
+  columnFilterMode: string;
+  columnFilterModeContains: string;
+  columnFilterModeEquals: string;
+  columnFilterModeNumberEq: string;
+  columnFilterModeNumberGte: string;
+  columnFilterModeNumberLte: string;
+  columnFilterModeNumberBetween: string;
+  columnFilterModeDateEq: string;
+  columnFilterModeDateGte: string;
+  columnFilterModeDateLte: string;
+  /** Toolbar: column visibility checklist. */
+  columnsVisibility: string;
+  columnsShowAll: string;
+  sortedAsc: string;
+  sortedDesc: string;
+  notSorted: string;
+  /** Template with `{selected}` and `{total}` placeholders. */
+  selectionStatus: string;
+  /** Toolbar Export button label. */
+  export: string;
+};
+
+/** Show/hide built-in controls. Component override stays on Registry. */
+export type AttributeTableUiOptions = {
+  search?: boolean;
+  zoomToSelection?: boolean;
+  clearSelection?: boolean;
+  rowFilter?: boolean;
+  /** Column text contains filter (toolbar + grid). Default true. */
+  columnFilter?: boolean;
+  /** Column visibility checklist in toolbar. Default true. */
+  columnVisibility?: boolean;
+  pager?: boolean;
+  checkbox?: boolean;
+  rowMenus?: boolean;
+  /** When false, disable sorting for the whole table (default true). */
+  sort?: boolean;
+  /**
+   * Toolbar Export button (uses `@hungpvq/map-dataset/geo-export`).
+   * Default true.
+   */
+  export?: boolean;
+};
+
+export const ATTRIBUTE_TABLE_UI_DEFAULTS: Required<AttributeTableUiOptions> = {
+  search: true,
+  zoomToSelection: true,
+  clearSelection: true,
+  rowFilter: true,
+  columnFilter: true,
+  columnVisibility: true,
+  pager: true,
+  checkbox: true,
+  rowMenus: true,
+  sort: true,
+  export: true,
+};
+
+export function resolveAttributeTableUi(
+  ui?: AttributeTableUiOptions,
+): Required<AttributeTableUiOptions> {
+  return { ...ATTRIBUTE_TABLE_UI_DEFAULTS, ...ui };
+}
+
+/**
+ * Props for the Attribute Table shell registered as
+ * {@link ATTRIBUTE_TABLE_COMPONENT_KEY.root}.
+ * Match attrs from `createMenuItemAttributeTable` / `addComponent`.
+ */
+export type AttributeTableProps = {
+  layer: IDataset;
+  columns?: AttributeTableColumnsOption;
+  /** Inject store; default is DM sibling or local GeoJSON. */
+  store?: AttributeTableStore;
+  ui?: AttributeTableUiOptions;
+  /**
+   * Initial row filter when the table opens.
+   * `'selected'` shows only selected rows (empty until user selects).
+   */
+  rowFilter?: AttributeTableRowFilter;
+  mapId?: string;
+  dragId?: string;
+  position?: Position;
+  controlLayout?: ControlLayout;
+  controlVisible?: boolean;
+  /** Per-control override of Map `buttonInMobile`; `undefined` = inherit. */
+  buttonInMobile?: ButtonInMobile;
+  controlOrder?: number | string;
+  btnWidth?: number;
+  /** Per-control popup offset overrides (after Map `popupPositionDefaults`). */
+  popupProps?: MapPopupProps;
+  /**
+   * Bumped by ComponentManagement on each `addComponent` upsert.
+   * AttributeTable watches this to set `show=true` when re-opened while hidden.
+   */
+  revision?: number;
+  /** Vue: emitted on dismiss. React: use `onClose`. */
+  onClose?: () => void;
+};
+
+/**
+ * Full body contract for {@link ATTRIBUTE_TABLE_COMPONENT_KEY.view}.
+ * Read rows/columns from `controller.getState()`; call controller methods for
+ * paging / search / sort / selection.
+ */
+export type AttributeTableViewProps = {
+  mapId?: string;
+  layer: IDataset;
+  controller: AttributeTableController;
+  pageSizeItems: AttributeTableSelectItem[];
+  labels: AttributeTableViewLabels;
+  ui?: AttributeTableUiOptions;
+
+  itemMenus: MenuAction[];
+  itemMenuHost: IDataset;
+  isMenuDisabled: (menu: MenuAction) => boolean;
+  onRowMenuAction: (
+    row: AttributeTableRow,
+    menu: MenuAction,
+    event: MouseEvent,
+  ) => void;
+  /** Fit the map to the current attribute-table selection. */
+  onZoomToSelection?: () => void;
+  /** Open ExportGeo modal (when geo-export `uiMode` is modal). */
+  onExport?: (event: MouseEvent) => void;
+  /**
+   * Format submenu when geo-export `uiMode` is `menu`.
+   * When set, toolbar shows a format dropdown instead of opening the modal.
+   */
+  exportFormats?: string[];
+  onExportFormat?: (format: string, event: MouseEvent) => void;
+};
+
+export type AttributeTableToolbarProps = {
+  mapId?: string;
+  query: string;
+  searchPlaceholder: string;
+  /** Explicit accessible name for the search field (not placeholder-only). */
+  searchLabel: string;
+  /** Disable Zoom to selection when nothing is selected. */
+  zoomDisabled: boolean;
+  zoomLabel: string;
+  rowFilter: AttributeTableRowFilter;
+  filterItems: AttributeTableSelectItem[];
+  rowFilterLabel: string;
+  /** Column keys available for the toolbar column text filter. */
+  columnFilterItems: AttributeTableSelectItem[];
+  columnFilterKey: string;
+  columnFilterQuery: string;
+  columnFilterLabel: string;
+  columnFilterQueryPlaceholder: string;
+  clearColumnFilterLabel: string;
+  /** Filter mode for the active toolbar column. */
+  columnFilterMode: string;
+  columnFilterModeItems: AttributeTableSelectItem[];
+  columnFilterModeLabel: string;
+  /** All columns for the visibility checklist. */
+  columnVisibilityItems: AttributeTableSelectItem[];
+  /** Currently visible keys; empty / all means show-all when `columnVisibilityAll`. */
+  visibleColumnKeys: string[];
+  columnVisibilityAll: boolean;
+  columnVisibilityLabel: string;
+  columnsShowAllLabel: string;
+  clearLabel: string;
+  clearDisabled: boolean;
+  exportLabel?: string;
+  exportFormats?: string[];
+  ui?: AttributeTableUiOptions;
+  onQueryChange: (value: string) => void;
+  /** Fit the map to the current row selection. */
+  onZoomToSelection: () => void;
+  onRowFilterChange: (value: AttributeTableRowFilter) => void;
+  onColumnFilterKeyChange: (key: string) => void;
+  onColumnFilterQueryChange: (value: string) => void;
+  onColumnFilterModeChange: (mode: string) => void;
+  onClearColumnFilters: () => void;
+  onVisibleColumnKeysChange: (keys: string[] | null) => void;
+  onShowAllColumns: () => void;
+  onClearSelection: () => void;
+  onExport?: (event: MouseEvent) => void;
+  onExportFormat?: (format: string, event: MouseEvent) => void;
+};
+
+export type AttributeTablePagerProps = {
+  mapId?: string;
+  page: number;
+  totalPages: number;
+  pageSize: number;
+  total: number;
+  loading: boolean;
+  canPrev: boolean;
+  canNext: boolean;
+  onPrev: () => void;
+  onNext: () => void;
+  onPageSizeChange: (size: number | string) => void;
+  pageSizeItems?: AttributeTableSelectItem[];
+  pageLabel: string;
+  ofLabel: string;
+  prevLabel: string;
+  nextLabel: string;
+  rowsPerPageLabel: string;
+};
+
+export type AttributeTableGridProps = {
+  mapId?: string;
+  loading: boolean;
+  empty: boolean;
+  loadingLabel: string;
+  emptyLabel: string;
+  /** Accessible name for the table (caption / aria-label). */
+  tableLabel: string;
+  gridRegionLabel: string;
+  selectAllLabel: string;
+  selectRowLabel: string;
+  actionsColumnLabel: string;
+  sortedAscLabel: string;
+  sortedDescLabel: string;
+  notSortedLabel: string;
+  /** Aria template with `{column}` for per-column filter inputs. */
+  columnFilterForLabel: string;
+  columns: AttributeTableColumn[];
+  windowedRows: AttributeTableRow[];
+  sortStates: AttributeTableSortState[];
+  /** Active per-column contains queries. */
+  columnFilters: Record<string, string>;
+  selectedIds: ReadonlySet<string>;
+  allVisibleSelected: boolean;
+  checkbox?: boolean;
+  /** When false, hide per-column filter row. Default true. */
+  columnFilter?: boolean;
+  /** When false, no column headers are sortable (from `ui.sort`). Default true. */
+  sort?: boolean;
+  rowHeight: number;
+  virtualWindow: VirtualRowWindow;
+  bottomSpacerHeight: number;
+  itemMenus: MenuAction[];
+  itemMenuHost: IDataset;
+  isMenuDisabled: (menu: MenuAction) => boolean;
+  onScrollMetrics: (scrollTop: number, viewportHeight: number) => void;
+  onSortColumn: (key: string, shiftKey: boolean) => void;
+  onColumnFilterChange: (key: string, query: string) => void;
+  onToggleSelectAll: () => void;
+  onToggleRow: (row: AttributeTableRow) => void;
+  onRowMenuAction: (
+    row: AttributeTableRow,
+    menu: MenuAction,
+    event: MouseEvent,
+  ) => void;
+};

@@ -5,8 +5,8 @@
 import bearing from '@turf/bearing';
 import { bearingToAzimuth, lineString, point } from '@turf/helpers';
 import type { Feature } from 'geojson';
-import type { CoordinatesNumber } from '../../types';
 
+import type { CoordinatesNumber } from '../../types';
 import { IViewSetting } from '../types';
 import { getMeasurementLabelPrefs } from '../utils';
 import { Measure } from './Measure';

@@ -1,15 +1,16 @@
 import {
   DraggableContainer,
-  DraggableDrawer,
   DraggableItemBottom,
+  DraggableItemDrawer,
   DraggableItemFloat,
+  DraggableItemModal,
   DraggableItemPopup,
   DraggableItemSideBar,
-  DraggableModal,
   ManagementControl,
-  useDragComponent,
 } from '@hungpvq/react-draggable';
 import { useLayoutEffect, useState } from 'react';
+
+import { useDragComponent } from '@hungpvq/draggable';
 import { GlobalCard } from '../components/custom-cards/GlobalCard';
 import { GlobalHeader } from '../components/custom-cards/GlobalHeader';
 import { LocalCard } from '../components/custom-cards/LocalCard';
@@ -35,8 +36,15 @@ export function CustomCardPage() {
   if (!ready) return null;
 
   return (
-    <DraggableContainer containerId="demo-custom-card" className="demo-page">
-      <DraggableItemSideBar show title="Controls" location="left">
+    <DraggableContainer
+      containerId="demo-custom-card"
+      className="demo-page"
+    >
+      <DraggableItemSideBar
+        show
+        title="Controls"
+        location="left"
+      >
         <div className="panel">
           <h2>Custom card</h2>
           <p>
@@ -47,7 +55,11 @@ export function CustomCardPage() {
         </div>
       </DraggableItemSideBar>
 
-      <DraggableItemSideBar show title="Sidebar (global)" location="right">
+      <DraggableItemSideBar
+        show
+        title="Sidebar (global)"
+        location="right"
+      >
         <div className="panel">
           <p>
             Sidebar uses global card (store) — no local override API on shell.
@@ -101,7 +113,7 @@ export function CustomCardPage() {
         <div className="panel">Local override on float.</div>
       </DraggableItemFloat>
 
-      <DraggableDrawer
+      <DraggableItemDrawer
         show
         title="Drawer (global)"
         location="bottom"
@@ -111,7 +123,7 @@ export function CustomCardPage() {
         onUpdateSize={setDrawerSize}
       >
         <div className="panel">Drawer with global card.</div>
-      </DraggableDrawer>
+      </DraggableItemDrawer>
 
       <DraggableItemBottom
         show
@@ -124,7 +136,7 @@ export function CustomCardPage() {
         </div>
       </DraggableItemBottom>
 
-      <DraggableModal
+      <DraggableItemModal
         show={showModal}
         title="Modal (local)"
         width={360}
@@ -134,7 +146,7 @@ export function CustomCardPage() {
         onUpdateShow={setShowModal}
       >
         <div className="panel">Modal with local custom card.</div>
-      </DraggableModal>
+      </DraggableItemModal>
     </DraggableContainer>
   );
 }

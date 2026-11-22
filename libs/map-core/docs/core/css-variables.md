@@ -1,0 +1,249 @@
+# CSS Variables Reference
+
+All CSS variables in the map library use the `--map-` prefix for consistent scoping and to prevent naming conflicts. The variables follow a hierarchical structure: **Global Theme** -> **Component Specific Mapping**.
+
+## 🎨 Global Theme (Common Colors)
+
+Use these variables to customize the look and feel of the entire map library.
+
+```css
+:root {
+  /* Brand / Primary — chrome, active icons, navigation emphasis */
+  --map-primary-color: #004e98;
+  --map-primary-hover-color: #003a72;
+  --map-on-primary-color: #ffffff;
+
+  /* Accent — CTA fills (`filled` / `tonal`), status-active, card highlights */
+  --map-accent-color: #1a73e8;
+
+  /* Surfaces & Backgrounds */
+  --map-surface-color: #ffffff;
+  --map-surface-variant-color: #f5f5f5;
+  --map-background-color: #ffffff;
+
+  /* Text Colors */
+  --map-text-primary: #333333;
+  --map-text-secondary: #666666;
+  --map-text-inverse: #ffffff;
+
+  /* Borders & Outlines */
+  --map-border-color: #cccccc;
+  --map-divider-color: #eeeeee;
+
+  /* States */
+  --map-disabled-color: rgba(0, 0, 0, 0.25);
+  --map-hover-color: #f5f5f5;
+  --map-status-active-color: var(--map-accent-color);
+  --map-status-inactive-color: var(--map-text-secondary);
+}
+```
+
+### Primary vs accent
+
+| Token                       | Role                                                                                                               | Light default |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------- |
+| `--map-primary-color`       | Brand / chrome: active toolbar icons (`--map-button-active-color`), nav emphasis                                   | `#004e98`     |
+| `--map-primary-hover-color` | Hover for primary surfaces                                                                                         | `#003a72`     |
+| `--map-on-primary-color`    | Foreground on solid primary/accent fills (e.g. `variant="filled"` label)                                           | `#ffffff`     |
+| `--map-accent-color`        | CTA and interactive accent: `MapControlButton` `filled`/`tonal`, `--map-status-active-color`, card highlight tints | `#1a73e8`     |
+
+Override both when rebranding; overriding only `--map-primary-color` leaves CTA buttons on the default accent. Themes set both in [`themes.css`](../../core/src/style/themes.css) (e.g. `.map-theme-light`).
+
+GeoLocateControl also uses `--map-geolocate-dot-color` and `--map-geolocate-accuracy-color` (per theme).
+
+```css
+:root {
+  --map-primary-color: #0b3d91;
+  --map-accent-color: #2563eb;
+}
+```
+
+## 🧩 Component Specific Mapping
+
+Below is the list of specific variables for each component and their default values (which usually point back to the Global Theme).
+
+### Core - MapControlButton
+
+Stable root: `MapControlButton` (Vue/React map-core), composed from `@hungpvq/*-ui-core` `BaseButton` + `Icon`.
+
+**`variant`:** `icon` (default, circular toolbar) · `plain` (transparent icon) · `text` · `tonal` · `outlined` · `filled` (primary CTA; label uses `--map-on-primary-color`).
+
+**`size`:** `small` (24px) · `medium` (32px, default) · `large` (40px), or a numeric px value. Applies to **every** variant (`icon`/`plain` → square hit box; label variants → `min-height` + horizontal padding + font).
+
+```vue
+<MapControlButton variant="plain" size="small" />
+<MapControlButton variant="filled" size="large">Save</MapControlButton>
+```
+
+CSS classes: `map-control-button--{variant}`, `map-control-button--size-{small|medium|large}`.
+
+| Token / class                 | Role                                        | Default                                       |
+| ----------------------------- | ------------------------------------------- | --------------------------------------------- |
+| `--map-button-size`           | Label-variant min-height; set by size class | `32px` (`medium`)                             |
+| `--map-button-pad-x`          | Label-variant horizontal padding            | `12px`                                        |
+| `--map-button-font-size`      | Label-variant font size                     | `12px`                                        |
+| `--map-button-bg`             | Icon chrome background                      | `var(--map-surface-color, #ffffff)`           |
+| `--map-button-active-color`   | Active icon color                           | `var(--map-primary-color, #004e98)`           |
+| `--map-button-hover-bg`       | Default hover fill                          | `var(--map-hover-color, #f5f5f5)`             |
+| `--map-button-disabled-color` | Disabled icon color                         | `var(--map-disabled-color, rgba(0,0,0,0.25))` |
+| `--map-on-primary-color`      | `filled` label on accent                    | `var(--map-text-inverse, #fff)`               |
+
+Guidance: dense lists (layer rows) → `size="small"`; header / toolbar beside draggable chrome → `medium` (matches 32×32 `hungpvq-draggable-button`). Size/variant helpers: `@hungpvq/map-core` (`resolveMapButtonSizePx`, `MAP_BUTTON_VARIANTS`, …).
+
+### Core - CopyButton
+
+`CopyButton` lives on `@hungpvq/vue-ui-core` / `@hungpvq/react-ui-core` (not map-core). Clipboard copy with short icon/title feedback — **no toast**.
+
+Success: `mdiContentCopy` → `mdiCheck`, title → `copiedTitle` (“Copied”), then revert (~1.5s).
+
+| Prop          | Default             | Notes                          |
+| ------------- | ------------------- | ------------------------------ |
+| `value`       | `''`                | Text written to clipboard      |
+| `title`       | `'Copy'`            | Idle tooltip / aria-label      |
+| `copiedTitle` | `'Copied'`          | Feedback tooltip / aria-label  |
+| `variant`     | `'plain'`           | Same tokens as `BaseButton`    |
+| `size`        | `'small'`           | Same tokens as `BaseButton`    |
+| `iconSize`    | `14`                | SvgIcon / @mdi/react size (px) |
+| `labeled`     | `false`             | Also show title text           |
+| `disabled`    | auto when empty/`—` | Or force via prop              |
+
+```vue
+<CopyButton :value="row.value" :title="trans('map.info-control.copy')" :copied-title="trans('map.info-control.copied')" />
+```
+
+```tsx
+<CopyButton
+  value={row.value}
+  title={trans('map.info-control.copy')}
+  copiedTitle={trans('map.info-control.copied')}
+/>
+```
+
+**Rule:** do **not** hand-roll a map-core copy wrapper. Low-level `copyText` / `createCopyFeedback` remain Stable on `@hungpvq/map-core` for non-button flows (menus, programmatic copy).
+
+### Core - General (Map/Card)
+
+- `--map-card-bg`: themed translucent overlays (light = near-white; vibrant/ocean/forest/sunset = tinted panels; dark/slate = dark overlays)
+- `--map-card-text`: follows theme text
+- `--map-card-highlight-bg`: accent / primary highlight
+
+Named classes: `map-theme-light`, `map-theme-dark`, `map-theme-vibrant`, `map-theme-ocean`, `map-theme-forest`, `map-theme-sunset`, `map-theme-slate`.
+
+| Theme     | Feel                             |
+| --------- | -------------------------------- |
+| `light`   | Neutral white + blue             |
+| `dark`    | Charcoal + sky blue              |
+| `vibrant` | Lavender panels + purple/magenta |
+| `ocean`   | Aqua panels + teal/cyan          |
+| `forest`  | Sage panels + green              |
+| `sunset`  | Peach panels + coral/amber       |
+| `slate`   | Steel dark + cyan accent         |
+
+Draggable overlays alias these as `--card-background-color` / `--card-color`. Apply a theme class on `html` (or use [`ThemeControl`](./module/ThemeControl.md) / `bootstrapMapTheme()`).
+
+When `prefers-contrast: more` is active, `html` also gets `map-theme-contrast` (stronger `--map-border-color` / focus outlines). See [`themes.css`](../../core/src/style/themes.css).
+
+### Measurement - MeasurementControl
+
+- `--map-measurement-primary`: `var(--map-primary-color, #004e98)`
+
+### Dataset - LayerList / Menu
+
+- `--map-layer-menu-bg`: `#ecf0f1` (Specific light grey)
+- `--map-layer-menu-text`: `var(--map-text-primary, #333)`
+- `--map-layer-menu-hover-bg`: `var(--map-primary-color, #004e98)`
+- `--map-layer-menu-hover-text`: `var(--map-text-inverse, #fff)`
+
+### Dataset - IdentifyControl
+
+- `--map-identify-box-bg`: `rgba(255, 255, 255, 0.19)`
+- `--map-identify-primary`: `var(--map-primary-color, #1a73e8)`
+
+### Dataset - ListItem
+
+- `--map-list-item-active-bg`: `var(--map-primary-color, #1a73e8)`
+- `--map-list-item-active-text`: `var(--map-text-inverse, #fff)`
+- `--map-list-item-active-outline`: `var(--map-primary-color, #1a73e8)`
+
+### Draw - InspectControl
+
+- `--map-inspect-text`: `var(--map-text-primary, #333)`
+- `--map-inspect-border`: `var(--map-border-color, #ccc)`
+
+### Draw - DrawControl (Advanced)
+
+- `primaryColor`: Initializer primary color for drawing layers.
+- `activeColor`: Initializer active/selected color for drawing layers.
+
+### Draw - DrawToolbar
+
+- `--map-draw-badge-bg`: `var(--map-primary-color, #004e98)`
+- `--map-draw-badge-text`: `var(--map-text-inverse, white)`
+
+### Basemap Module
+
+- `--map-basemap-active-color`: `var(--map-primary-color, #1a73e8)`
+- `--map-basemap-tag-bg`: `var(--map-primary-color, #1a73e8)`
+
+## 🎨 Standard Themes Usage
+
+Theme tokens ship in `@hungpvq/map-core` (`src/style/themes.css`, pulled in via package `style.css`). Prefer **`bootstrapMapTheme` / `ThemeControl`** over hand-importing the CSS file.
+
+### How to use:
+
+1. **Import map-core styles** (includes theme tokens) in your entry file:
+
+```typescript
+import '@hungpvq/map-core/style.css';
+// + framework adapter CSS as needed, e.g. '@hungpvq/vue-map-core/style.css'
+```
+
+2. **Bootstrap or use ThemeControl** (process-global on `html` by default):
+
+```typescript
+import { bootstrapMapTheme } from '@hungpvq/map-core/theme';
+
+bootstrapMapTheme('auto');
+```
+
+3. **Optional:** apply a class to a parent for a one-off chrome override (see [ThemeControl — per-map](./module/ThemeControl.md#optional-per-map-theme-override-advanced)):
+
+```html
+<!-- Dark Theme -->
+<div class="map-theme-dark">...</div>
+```
+
+## 📦 Box model (`box-sizing`)
+
+Map UI packages set `box-sizing: border-box` on their own roots so host apps **do not** need a Tailwind-style global:
+
+```css
+*, *::before, *::after { box-sizing: border-box; border-width: 0; … }
+```
+
+| Package CSS                                    | Covers                                                                                          |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `@hungpvq/map-core/style.css`                  | `.map-container` (+ descendants), `.module__container`, `.map-context-menu`, `.map-error-toast` |
+| `@hungpvq/draggable` / `*-draggable/style.css` | Popup / modal / drawer / float / sidebar / card / context-menu portals                          |
+| `@hungpvq/map-debug/style.css`                 | Floating Devtools shell + viewers                                                               |
+
+Without border-box, patterns like `width: 100%` + horizontal padding (e.g. layer-detail rows in `.table-show-info`) overflow parents with `overflow: auto` and show an unwanted scrollbar.
+
+Do **not** rely on `border-width: 0` from a host reset — map components set borders explicitly.
+
+## 🚀 Manual Customization
+
+```css
+/* Override colors globally */
+:root {
+  --map-primary-color: #ff5722;
+  --map-text-primary: #212121;
+}
+
+/* Dark Mode support */
+[data-theme='dark'] {
+  --map-surface-color: #1e1e1e;
+  --map-text-primary: #e0e0e0;
+  --map-border-color: #424242;
+}
+```

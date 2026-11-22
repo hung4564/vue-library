@@ -1,11 +1,9 @@
 import {
-  deepMergeLocale,
+  MAP_CORE_LOCALE_VI,
   type MapLangFlatMessages,
   type MapLangLocale,
   type MapLanguageCode,
 } from '@hungpvq/map-core';
-import { MAP_DATASET_LOCALE_EN, MAP_DATASET_LOCALE_VI } from '@hungpvq/map-dataset';
-import { MAP_DRAW_LOCALE_EN, MAP_DRAW_LOCALE_VI } from '@hungpvq/map-draw';
 import {
   BaseMapControl,
   GotoControl,
@@ -16,13 +14,16 @@ import {
   MeasurementControl,
   MouseCoordinatesControl,
   ThemeControl,
-  ZoomControl,
   useLang,
   useMapContext,
+  ZoomControl,
 } from '@hungpvq/react-map-core';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useCallback, useMemo, useState } from 'react';
-import { AsideControl } from '../layout/AsideControl';
+
 import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { MapPageShell } from '../components/MapPageShell';
+import { AsideControl } from '../layout/AsideControl';
 
 const FR_LOCALE: MapLangLocale = {
   map: {
@@ -81,8 +82,7 @@ export function LanguagePage() {
   const [reloadOnSelect, setReloadOnSelect] = useState(false);
   const locales = useMemo(
     () => ({
-      en: deepMergeLocale(MAP_DATASET_LOCALE_EN, MAP_DRAW_LOCALE_EN),
-      vi: deepMergeLocale(MAP_DATASET_LOCALE_VI, MAP_DRAW_LOCALE_VI),
+      vi: MAP_CORE_LOCALE_VI,
       fr: FR_LOCALE,
     }),
     [],
@@ -102,26 +102,32 @@ export function LanguagePage() {
   }, []);
 
   return (
-    <Map>
-      <AsideControl position="top-left" />
-      <LanguageControl
-        defaultLanguage="vi"
-        languages={['en', 'vi', 'fr']}
-        labels={{ en: 'English', vi: 'Tiếng Việt', fr: 'Français' }}
-        locales={locales}
-        localeLoader={localeLoader}
-        reloadOnSelect={reloadOnSelect}
-      />
-      <ThemeControl />
-      <HomeControl />
-      <ZoomControl />
-      <GotoControl position="top-right" />
-      <InfoControl position="top-right" />
-      <MeasurementControl position="top-right" />
-      <BaseMapControl position="bottom-left" />
-      <MouseCoordinatesControl />
-      <DemoHelpPanel />
-      <ReloadToggle checked={reloadOnSelect} onChange={setReloadOnSelect} />
-    </Map>
+    <MapPageShell>
+      <Map>
+        <DevtoolsControl position="bottom-right" />
+        <AsideControl position="top-left" />
+        <LanguageControl
+          defaultLanguage="vi"
+          languages={['en', 'vi', 'fr']}
+          labels={{ en: 'English', vi: 'Tiếng Việt', fr: 'Français' }}
+          locales={locales}
+          localeLoader={localeLoader}
+          reloadOnSelect={reloadOnSelect}
+        />
+        <ThemeControl />
+        <HomeControl />
+        <ZoomControl />
+        <GotoControl position="top-right" />
+        <InfoControl position="top-right" />
+        <MeasurementControl position="top-right" />
+        <BaseMapControl position="bottom-left" />
+        <MouseCoordinatesControl />
+        <DemoHelpPanel />
+        <ReloadToggle
+          checked={reloadOnSelect}
+          onChange={setReloadOnSelect}
+        />
+      </Map>
+    </MapPageShell>
   );
 }

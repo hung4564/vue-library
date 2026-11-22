@@ -38,10 +38,16 @@ function onClick(event: MouseEvent) {
     @click="onClick"
   >
     <span class="at-sample-header__label">{{ label }}</span>
-    <span v-if="sortSuffix()" class="at-sample-header__sort">{{
-      sortSuffix()
-    }}</span>
-    <span v-else-if="sortable" class="at-sample-header__hint">⇅</span>
+    <span
+      v-if="sortSuffix()"
+      class="at-sample-header__sort"
+      >{{ sortSuffix() }}</span
+    >
+    <span
+      v-else-if="sortable"
+      class="at-sample-header__hint"
+      >⇅</span
+    >
   </button>
 </template>
 <style scoped>

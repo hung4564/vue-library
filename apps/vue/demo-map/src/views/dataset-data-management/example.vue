@@ -1,5 +1,4 @@
-<script setup lang="ts">
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+﻿<script setup lang="ts">
 import type { DataManagementPart } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
@@ -15,10 +14,13 @@ import {
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { reactive, ref } from 'vue';
+
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
 import { loadDataManagementDemoDatasets } from '../../data/loaders';
 import AsideControl from '../../layout/aside-control.vue';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
 const mapId = ref(getUUIDv4());
 
@@ -80,14 +82,21 @@ async function next(state: PagerState) {
 </script>
 
 <template>
-  <Map @map-loaded="onMapLoaded" :mapId="mapId">
+  <Map
+    @mapLoaded="onMapLoaded"
+    :mapId="mapId"
+  >
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl
       position="bottom-left"
       default-base-map="Google Satellite"
     />
-    <LayerControl position="top-left" show>
+    <LayerControl
+      position="top-left"
+      show
+    >
       <template #endList="{ mapId: mid }">
         <BaseMapCard :mapId="mid" />
       </template>
@@ -109,8 +118,18 @@ async function next(state: PagerState) {
         </div>
         <div>
           page {{ state.page }} / total {{ state.total }}
-          <button type="button" @click="prev(state)">Prev</button>
-          <button type="button" @click="next(state)">Next</button>
+          <button
+            type="button"
+            @click="prev(state)"
+          >
+            Prev
+          </button>
+          <button
+            type="button"
+            @click="next(state)"
+          >
+            Next
+          </button>
         </div>
       </section>
     </div>

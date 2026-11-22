@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
 import { useDownloadFile } from '../useDownloadFile';
 
 const { status, error, downloadFile } = useDownloadFile();
@@ -44,7 +45,12 @@ const downloadBufferFile = () => {
   <div class="status">
     <p><b>Status:</b> {{ status }}</p>
     <p><b>Source:</b> {{ downloadingFrom }}</p>
-    <p v-if="error" class="error">❌ Error: {{ error }}</p>
+    <p
+      v-if="error"
+      class="error"
+    >
+      ❌ Error: {{ error }}
+    </p>
   </div>
 </template>
 

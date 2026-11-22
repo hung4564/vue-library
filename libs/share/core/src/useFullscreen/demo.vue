@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
 import { useFullscreen } from '.';
 
 const el = ref(null);
@@ -8,7 +9,10 @@ const { toggle } = useFullscreen(el);
 
 <template>
   <div class="text-center">
-    <div class="flex" p="y-4">
+    <div
+      class="flex"
+      p="y-4"
+    >
       <video
         ref="el"
         class="m-auto rounded"

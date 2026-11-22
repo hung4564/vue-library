@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { MapError } from '../errors';
 import { MapErrorHandler } from './error-handler.service';
 

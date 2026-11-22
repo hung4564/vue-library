@@ -1,12 +1,14 @@
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
 import { describe, expect, it } from 'vitest';
+
 import {
-  MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL,
-  MAP_CORE_ADAPTER_SHARED_STABLE,
   MAP_CONTROL_BUTTON_SIZES,
   MAP_CONTROL_BUTTON_VARIANTS,
+  MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL,
+  MAP_CORE_ADAPTER_SHARED_STABLE,
   MAP_DATASET_ADAPTER_SHARED_STABLE,
   MAP_DRAW_ADAPTER_SHARED_STABLE,
   MAP_DUAL_CONTROL_IDS,
@@ -69,12 +71,12 @@ function sourceMentionsControlId(text: string, id: string): boolean {
 }
 
 describe('Vue ↔ React dual-framework parity', () => {
-  const vueCore = join(repoLibs, 'vue/map-core/src');
-  const reactCore = join(repoLibs, 'react/map-core/src');
-  const vueDataset = join(repoLibs, 'vue/map-dataset/src');
-  const reactDataset = join(repoLibs, 'react/map-dataset/src');
-  const vueDraw = join(repoLibs, 'vue/map-draw/src');
-  const reactDraw = join(repoLibs, 'react/map-draw/src');
+  const vueCore = join(repoLibs, 'map-core/vue/src');
+  const reactCore = join(repoLibs, 'map-core/react/src');
+  const vueDataset = join(repoLibs, 'map-dataset/vue/src');
+  const reactDataset = join(repoLibs, 'map-dataset/react/src');
+  const vueDraw = join(repoLibs, 'map-draw/vue/src');
+  const reactDraw = join(repoLibs, 'map-draw/react/src');
 
   it('shared control ids appear in both Vue and React adapter sources', () => {
     const vueText = [
@@ -101,14 +103,14 @@ describe('Vue ↔ React dual-framework parity', () => {
   });
 
   it('map-core adapters publish shared Stable on root and Experimental on fields', () => {
-    const vue = parseAllowlistExports(
-      join(vueCore, 'public-api.spec.ts'),
-    );
-    const react = parseAllowlistExports(
-      join(reactCore, 'public-api.spec.ts'),
-    );
+    const vue = parseAllowlistExports(join(vueCore, 'public-api.spec.ts'));
+    const react = parseAllowlistExports(join(reactCore, 'public-api.spec.ts'));
     assertSubset('vue-map-core Stable', MAP_CORE_ADAPTER_SHARED_STABLE, vue);
-    assertSubset('react-map-core Stable', MAP_CORE_ADAPTER_SHARED_STABLE, react);
+    assertSubset(
+      'react-map-core Stable',
+      MAP_CORE_ADAPTER_SHARED_STABLE,
+      react,
+    );
     assertSubset(
       'vue-map-core fields Experimental',
       MAP_CORE_ADAPTER_SHARED_EXPERIMENTAL,
@@ -122,38 +124,23 @@ describe('Vue ↔ React dual-framework parity', () => {
   });
 
   it('map-dataset adapters publish shared Stable symbols', () => {
-    const vue = parseAllowlistExports(
-      join(vueDataset, 'public-api.spec.ts'),
-    );
+    const vue = parseAllowlistExports(join(vueDataset, 'public-api.spec.ts'));
     const react = parseAllowlistExports(
       join(reactDataset, 'public-api.spec.ts'),
     );
-    assertSubset(
-      'vue-map-dataset',
-      MAP_DATASET_ADAPTER_SHARED_STABLE,
-      vue,
-    );
-    assertSubset(
-      'react-map-dataset',
-      MAP_DATASET_ADAPTER_SHARED_STABLE,
-      react,
-    );
+    assertSubset('vue-map-dataset', MAP_DATASET_ADAPTER_SHARED_STABLE, vue);
+    assertSubset('react-map-dataset', MAP_DATASET_ADAPTER_SHARED_STABLE, react);
   });
 
   it('map-draw adapters publish shared Stable symbols', () => {
     const vue = parseAllowlistExports(join(vueDraw, 'public-api.spec.ts'));
-    const react = parseAllowlistExports(
-      join(reactDraw, 'public-api.spec.ts'),
-    );
+    const react = parseAllowlistExports(join(reactDraw, 'public-api.spec.ts'));
     assertSubset('vue-map-draw', MAP_DRAW_ADAPTER_SHARED_STABLE, vue);
     assertSubset('react-map-draw', MAP_DRAW_ADAPTER_SHARED_STABLE, react);
   });
 
   it('MapControlButton variant/size SoT lives in map-core; adapters import it', () => {
-    const coreButtonPath = join(
-      repoLibs,
-      'map-core/core/src/ui/map-button.ts',
-    );
+    const coreButtonPath = join(repoLibs, 'map-core/core/src/ui/map-button.ts');
     expect(existsSync(coreButtonPath)).toBe(true);
     const coreButton = readFileSync(coreButtonPath, 'utf8');
     for (const variant of MAP_CONTROL_BUTTON_VARIANTS) {
@@ -164,15 +151,17 @@ describe('Vue ↔ React dual-framework parity', () => {
     }
 
     const vueMapButton = readFileSync(
-      join(vueCore, 'components/MapButton.vue'),
+      join(vueCore, 'components/MapControlButton.vue'),
       'utf8',
     );
     const reactMapButton = readFileSync(
-      join(reactCore, 'components/MapButton.tsx'),
+      join(reactCore, 'components/MapControlButton.tsx'),
       'utf8',
     );
     expect(vueMapButton).toContain("from '@hungpvq/map-core'");
     expect(reactMapButton).toContain("from '@hungpvq/map-core'");
+    expect(vueMapButton).toContain("from '@hungpvq/vue-ui-core'");
+    expect(reactMapButton).toContain("from '@hungpvq/react-ui-core'");
     expect(existsSync(join(vueCore, 'components/map-button-variant.ts'))).toBe(
       false,
     );

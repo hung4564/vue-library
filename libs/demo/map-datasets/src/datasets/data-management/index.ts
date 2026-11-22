@@ -224,10 +224,12 @@ function createMockHttpFetch(seed: DataRecord[]) {
           if (Number.isFinite(an) && Number.isFinite(bn)) {
             return (an - bn) * order;
           }
-          return String(av).localeCompare(String(bv), undefined, {
-            numeric: true,
-            sensitivity: 'base',
-          }) * order;
+          return (
+            String(av).localeCompare(String(bv), undefined, {
+              numeric: true,
+              sensitivity: 'base',
+            }) * order
+          );
         });
       }
       const start = limitRaw < 0 ? 0 : (page - 1) * limit;
@@ -479,9 +481,7 @@ export function createDataManagementHttpCustomFormatDataset() {
             meta: {
               total: Number(pagination.count ?? rows.length),
               page: Number(pagination.current ?? 1),
-              pageSize: Number(
-                pagination.perPage ?? (rows.length || 1),
-              ),
+              pageSize: Number(pagination.perPage ?? (rows.length || 1)),
             },
           };
         },
@@ -570,6 +570,4 @@ export const DATA_MANAGEMENT_DEMO_DATASET_FACTORIES = [
   createDataManagementMemoryStoreDataset,
 ] as const;
 
-export {
-  DATA_MANAGEMENT_DEMO_HELP,
-} from './help';
+export { DATA_MANAGEMENT_DEMO_HELP } from './help';

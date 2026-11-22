@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import './story-telling.css';
+
 import { getMap, type MapSimple } from '@hungpvq/map-core';
-import { BaseMapControl } from '@hungpvq/vue-map-core';
+import { loggerFactory } from '@hungpvq/shared-log';
 import {
   CrsControl,
   FullScreenControl,
@@ -11,13 +12,17 @@ import {
   Map,
   MouseCoordinatesControl,
   SettingControl,
-  ZoomControl
+  ZoomControl,
 } from '@hungpvq/vue-map-core';
-import {
-  MapCard
-} from '@hungpvq/vue-map-core/fields';
 import { MeasurementControl } from '@hungpvq/vue-map-core';
+import { BaseMapControl } from '@hungpvq/vue-map-core';
+import { MapCard } from '@hungpvq/vue-map-core/fields';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { ref } from 'vue';
+
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../../layout/aside-control.vue';
 import {
   createCustomAction,
   createDrawRouteAction,
@@ -29,7 +34,9 @@ import {
   createZoomAction,
 } from './helper-action';
 import { useMapStorytelling } from './useStorytelling';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+
+const storyLog = loggerFactory.createLogger().setNamespace('demo:story', 0);
+
 const mapRef = ref();
 const mapId = ref('');
 function onMapLoaded(_map: MapSimple) {
@@ -106,8 +113,14 @@ const chapters = [
     actions: [
       createCustomAction(
         'log',
-        () => console.info('Chapter 9 started'),
-        () => console.info('Chapter 9 ended'),
+        () =>
+          storyLog
+            .with({ fn: 'chapter9', span: 'story.chapter' })
+            .info('Chapter 9 started'),
+        () =>
+          storyLog
+            .with({ fn: 'chapter9', span: 'story.chapter' })
+            .info('Chapter 9 ended'),
       ),
     ],
   },
@@ -117,7 +130,7 @@ const chapters = [
     actions: [createZoomAction([105.86, 21.08], 15)],
   },
   {
-    id: '6',
+    id: '6b',
     duration: 6000,
     actions: [createOrbitCurrentCenterAction(0.005, 6000)],
   },
@@ -134,8 +147,13 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
 );
 </script>
 <template>
-  <Map ref="mapRef" @map-loaded="onMapLoaded">
+  <Map
+    ref="mapRef"
+    @mapLoaded="onMapLoaded"
+  >
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
+    <AsideControl position="top-left" />
     <MeasurementControl position="top-right" />
     <GotoControl position="top-right" />
     <CrsControl />
@@ -146,57 +164,43 @@ const { play, pause, next, prev, isPlaying, currentIndex } = useMapStorytelling(
     <HomeControl />
     <MouseCoordinatesControl />
     <BaseMapControl position="bottom-left" />
-    <div class="buttons-container">
-      <MapCard>
-        <button @click="play">Play</button>
-        <button @click="pause">Pause</button>
-        <button @click="prev">Prev</button>
-        <button @click="next">Next</button>
-        <div style="padding: 8px">
-          <div>Current: {{ currentIndex }}</div>
-          <div v-if="isPlaying">Playing</div>
-          <div id="btn-highlight"></div>
-        </div>
-      </MapCard>
-    </div>
     <DemoHelpPanel />
   </Map>
+  <div class="buttons-container">
+    <MapCard>
+      <button
+        type="button"
+        :disabled="!mapId"
+        @click="play"
+      >
+        Play
+      </button>
+      <button
+        type="button"
+        :disabled="!mapId"
+        @click="pause"
+      >
+        Pause
+      </button>
+      <button
+        type="button"
+        :disabled="!mapId"
+        @click="prev"
+      >
+        Prev
+      </button>
+      <button
+        type="button"
+        :disabled="!mapId"
+        @click="next"
+      >
+        Next
+      </button>
+      <div style="padding: 8px">
+        <div>Current: {{ currentIndex }}</div>
+        <div v-if="isPlaying">Playing</div>
+        <div id="btn-highlight"></div>
+      </div>
+    </MapCard>
+  </div>
 </template>
-
-<style></style>
-
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-.buttons-container {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 99;
-  display: flex;
-  gap: 8px;
-  padding: 8px;
-}
-.buttons-container button {
-  background-color: transparent;
-  padding: 8px;
-}
-.buttons-container button:hover {
-  background-color: blue;
-}
-.highlight {
-  background-color: red;
-}
-#btn-highlight {
-  height: 10px;
-  width: 100%;
-}
-</style>

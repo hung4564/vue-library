@@ -1,4 +1,5 @@
 {
+  "files.eol": "\n",
   "cSpell.words": [
     "basemap",
     "Buildable",
@@ -21,5 +22,10 @@
     "typescript",
     "typescriptreact",
     "vue"
+  ],
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "file": ".github/copilot-commit-instructions.md"
+    }
   ]
 }

@@ -12,10 +12,16 @@ const packages = computed(() =>
 </script>
 
 <template>
-  <div v-if="packages?.length" class="doc-pkg-versions">
+  <div
+    v-if="packages?.length"
+    class="doc-pkg-versions"
+  >
     <span class="doc-pkg-versions__label">Docs version</span>
     <div class="doc-pkg-versions__list">
-      <code v-for="pkg in packages" :key="pkg.name">
+      <code
+        v-for="pkg in packages"
+        :key="pkg.name"
+      >
         {{ pkg.name }}@{{ pkg.version }}
       </code>
     </div>

@@ -6,6 +6,7 @@
  * Adding a runtime symbol requires updating this list + Stable docs.
  */
 import { describe, expect, it } from 'vitest';
+
 import * as api from './index';
 
 /** Stable root runtime exports (SemVer contract for <!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->). */
@@ -17,6 +18,22 @@ export const DRAGGABLE_STABLE_RUNTIME_EXPORTS = [
   'createEmptyItemGroup',
   'createEmptySideBar',
   'itemTypeToGroup',
+  // debug
+  'applyDragDebugAction',
+  'canMove',
+  'canStack',
+  'captureDragOrigin',
+  'describeDragOrigin',
+  'detailRows',
+  'dragOriginKey',
+  'formatDragOrigin',
+  'isInternalDragOriginName',
+  'listDragDebugContainers',
+  'listDragDebugItems',
+  'LOCATION_ITEMS',
+  'LOCATIONS',
+  'registerDragItemOrigin',
+  'rowKey',
   // store
   'configureDragStore',
   'useBottomItem',

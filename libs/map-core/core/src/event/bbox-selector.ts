@@ -119,7 +119,10 @@ export function startBoxRangerMap(
 
   // Add the initial mousedown / touchstart listener
   canvas.addEventListener('mousedown', mouseDown, true);
-  canvas.addEventListener('touchstart', mouseDown, { capture: true, passive: false });
+  canvas.addEventListener('touchstart', mouseDown, {
+    capture: true,
+    passive: false,
+  });
   canvas.style.cursor = 'crosshair';
 
   return {

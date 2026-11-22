@@ -1,0 +1,483 @@
+import { fitBounds, getMap } from '@hungpvq/map-core';
+import { convertFeatureToItem } from '@hungpvq/map-dataset';
+import {
+  ATTRIBUTE_TABLE_COMPONENT_KEY,
+  ATTRIBUTE_TABLE_CONTROL,
+  ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS,
+  attributeTableControlId,
+  type AttributeTableController,
+  type AttributeTableProps,
+  type AttributeTableRow,
+  type AttributeTableSelectRowsPayload,
+  type AttributeTableViewLabels,
+  type AttributeTableViewProps,
+  clearPendingAttributeTableSelectRows,
+  createAttributeTableController,
+  resolveAttributeTableUi,
+  resolveAttributeTableUiOption,
+  takePendingAttributeTableSelectRows,
+} from '@hungpvq/map-dataset/attribute-table';
+import {
+  clearGeoExportActiveSource,
+  type GeoExportFormat,
+  openGeoExportModalFromAttributeTable,
+  resolveAttributeTableGeoExport,
+  runGeoExportClickFromAttributeTable,
+  runGeoExportFormatFromAttributeTable,
+  setGeoExportActiveSource,
+} from '@hungpvq/map-dataset/geo-export';
+import {
+  bindHighlightMittBridge,
+  emitHighlightAttributeTableClose,
+} from '@hungpvq/map-dataset/highlight';
+import { getHighlightResolver } from '@hungpvq/map-dataset/identify';
+import {
+  createMenuConditionContext,
+  getItemMenuHost,
+  getResolvedMenus,
+  handleMenuAction,
+  isMenuItemDisabled,
+  isMenuItemHidden,
+  MENU_CONTROL_ID,
+} from '@hungpvq/map-dataset/menu';
+import { DraggableItemPopup } from '@hungpvq/react-draggable';
+import {
+  defaultMapProps,
+  ModuleContainer,
+  RegistryItem,
+  useLang,
+  useMap,
+  useMapControl,
+  useShow,
+} from '@hungpvq/react-map-core';
+import { loggerFactory } from '@hungpvq/shared-log';
+import type { Feature } from 'geojson';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { MenuConditionProvider } from '../../extra/menu/condition-context';
+import { DatasetMenus } from '../../extra/menu/dataset-menus';
+import { AttributeTableView } from './AttributeTableView';
+
+export function AttributeTable(props: AttributeTableProps) {
+  const merged = { ...defaultMapProps, ...props };
+  const controlId = attributeTableControlId(props.layer.id);
+  const { mapId } = useMap({
+    ...merged,
+    controlId,
+  });
+  const { trans } = useLang(mapId);
+  const [show, toggleShow] = useShow(true);
+  const toggleShowRef = useRef(toggleShow);
+  /** Popup close emits both onUpdateShow(false) and onClose — dismiss once. */
+  const closedRef = useRef(false);
+  toggleShowRef.current = toggleShow;
+  const [tick, setTick] = useState(0);
+
+  const localeReady = useRef(false);
+  if (!localeReady.current) {
+    localeReady.current = true;
+  }
+
+  useEffect(() => bindHighlightMittBridge(mapId), [mapId]);
+  const clearTableHighlight = useCallback(() => {
+    emitHighlightAttributeTableClose(mapId, { dataset: props.layer });
+  }, [mapId, props.layer]);
+  const clearHighlightRef = useRef(clearTableHighlight);
+  clearHighlightRef.current = clearTableHighlight;
+
+  const controllerRef = useRef<AttributeTableController | null>(null);
+  const [controller, setController] = useState<AttributeTableController | null>(
+    null,
+  );
+
+  const zoomMapToSelection = useCallback(
+    async (ctrl?: AttributeTableController | null) => {
+      const targetCtrl = ctrl ?? controllerRef.current;
+      if (!targetCtrl) return;
+      const rows = await targetCtrl.resolveFeaturesForSelection();
+      const features = rows
+        .map((row) => row.feature as Feature)
+        .filter((feature): feature is Feature => !!feature?.geometry);
+      if (!features.length) return;
+      const target =
+        features.length === 1
+          ? features[0]!
+          : ({ type: 'FeatureCollection', features } as const);
+      getMap(mapId, (map) => {
+        fitBounds(map, target);
+      });
+    },
+    [mapId],
+  );
+  const zoomMapToSelectionRef = useRef(zoomMapToSelection);
+  zoomMapToSelectionRef.current = zoomMapToSelection;
+
+  const applySelection = useCallback(
+    (ctrl: AttributeTableController, _focus?: AttributeTableRow) => {
+      return loggerFactory.ensureActionContext(
+        { mapId, span: 'attribute-table.selection' },
+        async () => {
+          const rows = await ctrl.resolveFeaturesForSelection();
+          const features = rows
+            .map((row) => row.feature as Feature)
+            .filter((f): f is Feature => !!f?.geometry);
+          void getHighlightResolver(mapId).execute({
+            mapId,
+            count: features.length,
+            features,
+            dataset: props.layer,
+            sources: ['attribute-table'],
+          });
+          const s = ctrl.getState();
+          if (features.length === 0 || !s.zoomToSelection) return;
+          void zoomMapToSelectionRef.current(ctrl);
+        },
+      );
+    },
+    [mapId, props.layer],
+  );
+  const applySelectionRef = useRef(applySelection);
+  applySelectionRef.current = applySelection;
+
+  useEffect(() => {
+    const ui = resolveAttributeTableUiOption(props.layer, props.ui);
+    const next = createAttributeTableController(props.layer, {
+      columns: props.columns,
+      store: props.store,
+      rowFilter: props.rowFilter,
+      sortable: resolveAttributeTableUi(ui).sort,
+      mapId,
+    });
+    controllerRef.current = next;
+    setController(next);
+
+    setGeoExportActiveSource(mapId, {
+      layerId: props.layer.id,
+      getSearch: () => next.getState().search,
+      getSort: () => next.getState().sortStates,
+      getSelectedIds: () => next.getState().selectedIds,
+      resolveSelectedCollection: async (ids) => {
+        const rows = await next.resolveFeaturesForSelection(ids);
+        return {
+          type: 'FeatureCollection',
+          features: rows.map((row) => row.feature as Feature),
+        };
+      },
+      resolveFilteredCollection: async () => {
+        const rows = await next.resolveFilteredFeatures();
+        return {
+          type: 'FeatureCollection',
+          features: rows.map((row) => row.feature as Feature),
+        };
+      },
+    });
+
+    const unsub = next.subscribe(() => {
+      setTick((v) => v + 1);
+      applySelectionRef.current(next);
+    });
+
+    // Re-open when addComponent updates the same `check` while hidden via toggle.
+    toggleShowRef.current(true);
+
+    void (async () => {
+      const queued = takePendingAttributeTableSelectRows(mapId, props.layer.id);
+      await next.load('initial');
+      if (queued) {
+        clearPendingAttributeTableSelectRows(mapId, props.layer.id);
+        toggleShowRef.current(true);
+        await next.selectIds(queued);
+      }
+    })();
+
+    return () => {
+      unsub();
+      clearGeoExportActiveSource(mapId, props.layer.id);
+      next.dispose();
+      clearHighlightRef.current();
+    };
+  }, [
+    props.layer,
+    props.columns,
+    props.store,
+    props.rowFilter,
+    props.ui,
+    mapId,
+  ]);
+
+  useEffect(() => {
+    if (props.revision == null) return;
+    toggleShowRef.current(true);
+  }, [props.revision]);
+
+  const state = useMemo(() => {
+    void tick;
+    return controller?.getState() ?? null;
+  }, [controller, tick]);
+
+  const labels = useMemo(
+    (): AttributeTableViewLabels => ({
+      search: trans('map.attribute-table.search'),
+      zoomToSelection: trans('map.attribute-table.zoomToSelection'),
+      showAll: trans('map.attribute-table.showAll'),
+      showSelected: trans('map.attribute-table.showSelected'),
+      clear: trans('map.attribute-table.clear'),
+      loading: trans('map.attribute-table.loading'),
+      empty: trans('map.attribute-table.empty'),
+      page: trans('map.attribute-table.page'),
+      of: trans('map.attribute-table.of'),
+      prev: trans('map.attribute-table.prev'),
+      next: trans('map.attribute-table.next'),
+      rowsPerPage: trans('map.attribute-table.rowsPerPage'),
+      table: trans('map.attribute-table.table'),
+      gridRegion: trans('map.attribute-table.gridRegion'),
+      selectAll: trans('map.attribute-table.selectAll'),
+      selectRow: trans('map.attribute-table.selectRow'),
+      actionsColumn: trans('map.attribute-table.actionsColumn'),
+      rowFilter: trans('map.attribute-table.rowFilter'),
+      columnFilter: trans('map.attribute-table.columnFilter'),
+      columnFilterQuery: trans('map.attribute-table.columnFilterQuery'),
+      columnFilterQueryEquals: trans(
+        'map.attribute-table.columnFilterQueryEquals',
+      ),
+      columnFilterQueryNumber: trans(
+        'map.attribute-table.columnFilterQueryNumber',
+      ),
+      columnFilterQueryNumberBetween: trans(
+        'map.attribute-table.columnFilterQueryNumberBetween',
+      ),
+      columnFilterQueryDate: trans('map.attribute-table.columnFilterQueryDate'),
+      clearColumnFilter: trans('map.attribute-table.clearColumnFilter'),
+      columnFilterFor: trans('map.attribute-table.columnFilterFor'),
+      columnFilterMode: trans('map.attribute-table.columnFilterMode'),
+      columnFilterModeContains: trans(
+        'map.attribute-table.columnFilterModeContains',
+      ),
+      columnFilterModeEquals: trans(
+        'map.attribute-table.columnFilterModeEquals',
+      ),
+      columnFilterModeNumberEq: trans(
+        'map.attribute-table.columnFilterModeNumberEq',
+      ),
+      columnFilterModeNumberGte: trans(
+        'map.attribute-table.columnFilterModeNumberGte',
+      ),
+      columnFilterModeNumberLte: trans(
+        'map.attribute-table.columnFilterModeNumberLte',
+      ),
+      columnFilterModeNumberBetween: trans(
+        'map.attribute-table.columnFilterModeNumberBetween',
+      ),
+      columnFilterModeDateEq: trans(
+        'map.attribute-table.columnFilterModeDateEq',
+      ),
+      columnFilterModeDateGte: trans(
+        'map.attribute-table.columnFilterModeDateGte',
+      ),
+      columnFilterModeDateLte: trans(
+        'map.attribute-table.columnFilterModeDateLte',
+      ),
+      columnsVisibility: trans('map.attribute-table.columnsVisibility'),
+      columnsShowAll: trans('map.attribute-table.columnsShowAll'),
+      sortedAsc: trans('map.attribute-table.sortedAsc'),
+      sortedDesc: trans('map.attribute-table.sortedDesc'),
+      notSorted: trans('map.attribute-table.notSorted'),
+      selectionStatus: trans('map.attribute-table.selectionStatus'),
+      export: trans('map.attribute-table.export'),
+    }),
+    [trans],
+  );
+
+  const title = useMemo(() => {
+    const name = props.layer?.getName?.() || trans('map.attribute-table.title');
+    const count = state?.total ?? 0;
+    if (!count && !state?.loading) return trans('map.attribute-table.title');
+    if (!count) return name;
+    const selected = state?.selectedIds.length ?? 0;
+    return selected
+      ? `${name} (${count}, ${selected} selected)`
+      : `${name} (${count})`;
+  }, [props.layer, state, trans]);
+
+  /**
+   * X / Escape: remove from ComponentManagement (same as LayerDetail).
+   * Re-open via menu / identify `addComponent` + pending selectRows.
+   */
+  function handleClose() {
+    if (closedRef.current) return;
+    closedRef.current = true;
+    clearTableHighlight();
+    toggleShow(false);
+    props.onClose?.();
+  }
+
+  const { panelBind, moduleContainerProps } = useMapControl(mapId, {
+    id: controlId,
+    panelKind: 'popup',
+    title,
+    from: merged,
+    show,
+    setShow: (v) => {
+      if (!v) {
+        handleClose();
+        return;
+      }
+      closedRef.current = false;
+      toggleShow(true);
+    },
+    actions: [
+      {
+        type: ATTRIBUTE_TABLE_CONTROL.id,
+        run: () => {
+          if (show) {
+            handleClose();
+          } else {
+            closedRef.current = false;
+            toggleShow(true);
+          }
+        },
+      },
+      {
+        type: ATTRIBUTE_TABLE_CONTROL.actionSelectRows,
+        run: (event) => {
+          const payload = event as AttributeTableSelectRowsPayload | undefined;
+          if (payload?.layerId != null && payload.layerId !== props.layer.id) {
+            return;
+          }
+          return loggerFactory.ensureActionContext(
+            { mapId, span: 'attribute-table.select-rows' },
+            async () => {
+              const ids = (payload?.ids ?? []).map(String);
+              clearPendingAttributeTableSelectRows(mapId, props.layer.id);
+              closedRef.current = false;
+              toggleShow(true);
+              const ctrl = controllerRef.current;
+              if (!ctrl) return;
+              await ctrl.load('initial');
+              await ctrl.selectIds(ids);
+            },
+          );
+        },
+      },
+    ],
+  });
+
+  useEffect(() => {
+    if (!show) clearTableHighlight();
+  }, [show, clearTableHighlight]);
+
+  const itemMenuHost = getItemMenuHost(props.layer);
+  const itemMenuConditionCtx = createMenuConditionContext(itemMenuHost, {
+    mapId,
+  });
+  const resolvedUi = resolveAttributeTableUiOption(props.layer, props.ui);
+  const itemMenus =
+    resolvedUi?.rowMenus === false
+      ? []
+      : getResolvedMenus(props.layer, 'item').filter(
+          (menu) =>
+            menu.type !== 'divider' &&
+            !isMenuItemHidden(menu, itemMenuConditionCtx),
+        );
+  const layerTitleMenus = getResolvedMenus(props.layer, 'layer');
+
+  if (!controller) return null;
+
+  const geo = resolveAttributeTableGeoExport(props.layer);
+  const menuMode = geo.uiMode === 'menu';
+  const clickMode = geo.uiMode === 'click';
+
+  const viewProps: AttributeTableViewProps = {
+    mapId,
+    layer: props.layer,
+    controller,
+    pageSizeItems: [...ATTRIBUTE_TABLE_PAGE_SIZE_ITEMS],
+    labels,
+    ui: resolvedUi,
+    itemMenus,
+    itemMenuHost,
+    isMenuDisabled: (menu) => isMenuItemDisabled(menu, itemMenuConditionCtx),
+    onRowMenuAction: (row, menu, event) => {
+      if (isMenuItemDisabled(menu, itemMenuConditionCtx)) return;
+      handleMenuAction(menu, {
+        event,
+        layer: itemMenuHost,
+        mapId,
+        value: convertFeatureToItem(row.feature),
+        context: { control: MENU_CONTROL_ID.attributeTable },
+      });
+    },
+    onZoomToSelection: () => {
+      void zoomMapToSelection();
+    },
+    onExport: menuMode
+      ? undefined
+      : (event) => {
+          if (clickMode) {
+            void runGeoExportClickFromAttributeTable({
+              layer: props.layer,
+              mapId,
+              event,
+            });
+            return;
+          }
+          openGeoExportModalFromAttributeTable({
+            layer: props.layer,
+            mapId,
+            event,
+          });
+        },
+    exportFormats: menuMode ? geo.formats : undefined,
+    onExportFormat: menuMode
+      ? (format, event) => {
+          void runGeoExportFormatFromAttributeTable({
+            layer: props.layer,
+            mapId,
+            format: format as GeoExportFormat,
+            event,
+          });
+        }
+      : undefined,
+  };
+
+  return (
+    <MenuConditionProvider value={{ control: MENU_CONTROL_ID.attributeTable }}>
+      <ModuleContainer
+        {...moduleContainerProps}
+        draggable={(bind) => (
+          <DraggableItemPopup
+            show={show}
+            width={760}
+            height={460}
+            title={title}
+            onClose={handleClose}
+            onUpdateShow={(v) => {
+              if (!v) {
+                handleClose();
+                return;
+              }
+              toggleShow(true);
+            }}
+            afterTitle={
+              <DatasetMenus
+                menus={layerTitleMenus}
+                data={props.layer}
+                mapId={mapId}
+                locations={['title']}
+              />
+            }
+            {...bind}
+            {...panelBind}
+          >
+            <RegistryItem
+              componentKey={ATTRIBUTE_TABLE_COMPONENT_KEY.view}
+              defaultComponent={AttributeTableView}
+              mapId={mapId}
+              {...viewProps}
+            />
+          </DraggableItemPopup>
+        )}
+      />
+    </MenuConditionProvider>
+  );
+}

@@ -8,6 +8,34 @@ on:
       - 'draggable@*'
       - 'map@*'
       - 'shared-store@*'
+      - 'shared-log@*'
+      - 'ui-core@*'
+      # Individual package releases
+      - 'shared@*'
+      - 'shared-core@*'
+      - 'shared-file@*'
+  workflow_dispatch:
+    inputs:
+      group:
+        description: 'Release group or package to publish (or "all")'
+        required: true
+        type: choice
+        default: 'all'
+        options:
+          - all
+          - map
+          - draggable
+          - ui-core
+          - shared-log
+          - shared-store
+          - shared
+          - shared-core
+          - shared-file
+      dry_run:
+        description: 'Dry run (build and preview publish without pushing to npm)'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   publish:
@@ -23,28 +51,72 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve release group from tag
+      - name: Resolve target and mode
         id: meta
         shell: bash
         run: |
-          TAG="${GITHUB_REF_NAME}"
-          case "$TAG" in
-            draggable@*)
-              echo "group=draggable" >> "$GITHUB_OUTPUT"
-              ;;
-            map@*)
-              echo "group=map" >> "$GITHUB_OUTPUT"
-              ;;
-            shared-store@*)
-              echo "group=shared-store" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              echo "Unsupported tag: $TAG (expected draggable@ / map@ / shared-store@)"
-              exit 1
-              ;;
-          esac
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "Resolved group=$(echo "$TAG" | cut -d@ -f1) from $TAG"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            SELECTED="${{ inputs.group }}"
+            DRY_RUN="${{ inputs.dry_run }}"
+            echo "Triggered via workflow_dispatch: group/package=$SELECTED, dry_run=$DRY_RUN"
+            echo "dry_run=$DRY_RUN" >> "$GITHUB_OUTPUT"
+            echo "tag=" >> "$GITHUB_OUTPUT"
+            echo "name=$SELECTED" >> "$GITHUB_OUTPUT"
+            case "$SELECTED" in
+              all)
+                echo "type=all" >> "$GITHUB_OUTPUT"
+                ;;
+              shared|shared-core|shared-file)
+                echo "type=project" >> "$GITHUB_OUTPUT"
+                ;;
+              *)
+                echo "type=group" >> "$GITHUB_OUTPUT"
+                ;;
+            esac
+          else
+            TAG="${GITHUB_REF_NAME}"
+            echo "dry_run=false" >> "$GITHUB_OUTPUT"
+            echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+            case "$TAG" in
+              draggable@*)
+                echo "type=group" >> "$GITHUB_OUTPUT"
+                echo "name=draggable" >> "$GITHUB_OUTPUT"
+                ;;
+              map@*)
+                echo "type=group" >> "$GITHUB_OUTPUT"
+                echo "name=map" >> "$GITHUB_OUTPUT"
+                ;;
+              shared-store@*)
+                echo "type=group" >> "$GITHUB_OUTPUT"
+                echo "name=shared-store" >> "$GITHUB_OUTPUT"
+                ;;
+              shared-log@*)
+                echo "type=group" >> "$GITHUB_OUTPUT"
+                echo "name=shared-log" >> "$GITHUB_OUTPUT"
+                ;;
+              ui-core@*)
+                echo "type=group" >> "$GITHUB_OUTPUT"
+                echo "name=ui-core" >> "$GITHUB_OUTPUT"
+                ;;
+              shared@*)
+                echo "type=project" >> "$GITHUB_OUTPUT"
+                echo "name=shared" >> "$GITHUB_OUTPUT"
+                ;;
+              shared-core@*)
+                echo "type=project" >> "$GITHUB_OUTPUT"
+                echo "name=shared-core" >> "$GITHUB_OUTPUT"
+                ;;
+              shared-file@*)
+                echo "type=project" >> "$GITHUB_OUTPUT"
+                echo "name=shared-file" >> "$GITHUB_OUTPUT"
+                ;;
+              *)
+                echo "::error::Unsupported tag: $TAG"
+                exit 1
+                ;;
+            esac
+            echo "Resolved target from tag $TAG"
+          fi
 
       - name: Install Node
         uses: actions/setup-node@v4
@@ -53,51 +125,64 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci || npm install
         shell: bash
 
       - name: Print Environment Info
         run: npx nx report
         shell: bash
 
-      - name: Build release group (no cache — dist must match tag version)
+      - name: Build target packages (no cache — dist must match tag version)
         shell: bash
         run: |
-          GROUP="${{ steps.meta.outputs.group }}"
-          # Resolve only projects that actually have `build` (avoids Nx noise for
-          # demos/e2e that share tags but have no build target).
-          PROJECTS="$(npx nx show projects --projects="tag:${GROUP}" --exclude=tag:demo,tag:e2e --with-target=build | paste -sd, -)"
-          if [ -z "$PROJECTS" ]; then
-            echo "::error::No buildable projects for tag:${GROUP}"
-            exit 1
+          TYPE="${{ steps.meta.outputs.type }}"
+          NAME="${{ steps.meta.outputs.name }}"
+          echo "Building: type=$TYPE, name=$NAME"
+          if [ "$TYPE" = "all" ]; then
+            npx nx run-many --target=build --exclude=tag:demo,tag:e2e --skip-nx-cache
+          elif [ "$TYPE" = "project" ]; then
+            npx nx run "${NAME}:build" --skip-nx-cache
+          else
+            PROJECTS="$(npx nx show projects --projects="tag:${NAME}" --exclude=tag:demo,tag:e2e --with-target=build | paste -sd, -)"
+            if [ -z "$PROJECTS" ]; then
+              echo "::error::No buildable projects for tag:${NAME}"
+              exit 1
+            fi
+            echo "Building projects: $PROJECTS"
+            npx nx run-many --projects="$PROJECTS" --target=build --skip-nx-cache
           fi
-          echo "Building: $PROJECTS"
-          npx nx run-many --projects="$PROJECTS" --target=build --skip-nx-cache
 
       - name: Verify dist versions match tag
+        if: ${{ steps.meta.outputs.tag != '' }}
         shell: bash
         run: |
           TAG="${{ steps.meta.outputs.tag }}"
           VER="${TAG#*@}"
-          GROUP="${{ steps.meta.outputs.group }}"
-          echo "Expecting $GROUP packages at version $VER"
+          TYPE="${{ steps.meta.outputs.type }}"
+          NAME="${{ steps.meta.outputs.name }}"
+          echo "Expecting $NAME ($TYPE) packages at version $VER"
           node <<'NODE'
           const fs = require('fs');
           const { execSync } = require('child_process');
           const tag = process.env.TAG;
           const ver = tag.split('@')[1];
-          const group = process.env.GROUP;
-          const projects = execSync(
-            `npx nx show projects --projects=tag:${group} --exclude=tag:demo,tag:e2e --with-target=build`,
-            { encoding: 'utf8' },
-          )
-            .trim()
-            .split(/\s+/)
-            .filter(Boolean);
+          const type = process.env.TYPE;
+          const name = process.env.NAME;
+          let projects = [];
+          if (type === 'project') {
+            projects = [name];
+          } else {
+            projects = execSync(
+              `npx nx show projects --projects=tag:${name} --exclude=tag:demo,tag:e2e --with-target=build`,
+              { encoding: 'utf8' },
+            )
+              .trim()
+              .split(/\s+/)
+              .filter(Boolean);
+          }
           let fail = 0;
-          for (const name of projects) {
-            // project name == package name for these libs; resolve root via nx
-            const root = execSync(`npx nx show project ${name} --json`, {
+          for (const proj of projects) {
+            const root = execSync(`npx nx show project ${proj} --json`, {
               encoding: 'utf8',
             });
             const { root: projectRoot } = JSON.parse(root);
@@ -118,28 +203,51 @@ jobs:
           NODE
         env:
           TAG: ${{ steps.meta.outputs.tag }}
-          GROUP: ${{ steps.meta.outputs.group }}
+          TYPE: ${{ steps.meta.outputs.type }}
+          NAME: ${{ steps.meta.outputs.name }}
 
       - name: Check npm publish token
         shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+          DRY_RUN: ${{ steps.meta.outputs.dry_run }}
         run: |
           if [ -z "${NODE_AUTH_TOKEN}" ]; then
-            echo "::error::Missing secret NPM_ACCESS_TOKEN."
-            echo "Create an npm Automation token (or Granular Access Token with Read+Write for @hungpvq/*),"
-            echo "then add it as repo secret NPM_ACCESS_TOKEN."
-            echo "Token user must be maintainer/owner of the @hungpvq packages on npmjs.com."
-            exit 1
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "::warning::Missing secret NPM_ACCESS_TOKEN, proceeding in dry-run mode."
+            else
+              echo "::error::Missing secret NPM_ACCESS_TOKEN."
+              echo "Create an npm Automation token (or Granular Access Token with Read+Write for @hungpvq/*),"
+              echo "then add it as repo secret NPM_ACCESS_TOKEN."
+              echo "Token user must be maintainer/owner of the @hungpvq packages on npmjs.com."
+              exit 1
+            fi
+          else
+            echo "NPM_ACCESS_TOKEN is set (${#NODE_AUTH_TOKEN} chars)."
           fi
-          echo "NPM_ACCESS_TOKEN is set (${#NODE_AUTH_TOKEN} chars)."
 
-      - name: Publish packages (${{ steps.meta.outputs.group }})
-        run: npx nx release publish --group=${{ steps.meta.outputs.group }} --yes
+      - name: Publish packages
         shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
-          # Provenance needs a token that can publish + id-token: write (already set).
-          # If publish still fails with 403, regenerate token type/scope on npm — not git push.
           NPM_CONFIG_PROVENANCE: true
           NX_SKIP_NX_CACHE: true
+        run: |
+          TYPE="${{ steps.meta.outputs.type }}"
+          NAME="${{ steps.meta.outputs.name }}"
+          DRY_RUN="${{ steps.meta.outputs.dry_run }}"
+          FLAGS="--yes"
+          if [ "$DRY_RUN" = "true" ]; then
+            FLAGS="$FLAGS --dry-run"
+            echo "Running publish in DRY-RUN mode..."
+          fi
+          if [ "$TYPE" = "all" ]; then
+            echo "Publishing all packages..."
+            npx nx release publish $FLAGS
+          elif [ "$TYPE" = "project" ]; then
+            echo "Publishing project: $NAME..."
+            npx nx release publish --projects="$NAME" $FLAGS
+          else
+            echo "Publishing release group: $NAME..."
+            npx nx release publish --group="$NAME" $FLAGS
+          fi

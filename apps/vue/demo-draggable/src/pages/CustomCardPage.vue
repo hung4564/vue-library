@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import {
   DraggableContainer,
-  DraggableDrawer,
   DraggableItemBottom,
+  DraggableItemDrawer,
   DraggableItemFloat,
+  DraggableItemModal,
   DraggableItemPopup,
   DraggableItemSideBar,
-  DraggableModal,
   ManagementControl,
-  useDragComponent,
 } from '@hungpvq/vue-draggable';
 import { onBeforeMount, onUnmounted, ref } from 'vue';
+
+import { useDragComponent } from '@hungpvq/draggable';
 import GlobalCard from '../components/custom-cards/GlobalCard.vue';
 import GlobalHeader from '../components/custom-cards/GlobalHeader.vue';
 import LocalCard from '../components/custom-cards/LocalCard.vue';
@@ -33,8 +34,15 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <DraggableContainer containerId="demo-custom-card" class="demo-page">
-    <DraggableItemSideBar show title="Controls" location="left">
+  <DraggableContainer
+    containerId="demo-custom-card"
+    class="demo-page"
+  >
+    <DraggableItemSideBar
+      show
+      title="Controls"
+      location="left"
+    >
       <div class="panel">
         <h2>Custom card</h2>
         <p>
@@ -45,9 +53,15 @@ onUnmounted(() => {
       </div>
     </DraggableItemSideBar>
 
-    <DraggableItemSideBar show title="Sidebar (global)" location="right">
+    <DraggableItemSideBar
+      show
+      title="Sidebar (global)"
+      location="right"
+    >
       <div class="panel">
-        <p>Sidebar uses global card (store) — no local override API on shell.</p>
+        <p>
+          Sidebar uses global card (store) — no local override API on shell.
+        </p>
       </div>
     </DraggableItemSideBar>
 
@@ -97,7 +111,7 @@ onUnmounted(() => {
       <div class="panel">Local override on float.</div>
     </DraggableItemFloat>
 
-    <DraggableDrawer
+    <DraggableItemDrawer
       show
       title="Drawer (global)"
       location="bottom"
@@ -106,13 +120,20 @@ onUnmounted(() => {
       :max-size="360"
     >
       <div class="panel">Drawer with global card.</div>
-    </DraggableDrawer>
+    </DraggableItemDrawer>
 
-    <DraggableItemBottom show title="Bottom (local)" :componentCard="LocalCard" :componentCardHeader="LocalHeader">
-      <div class="panel">Bottom shell uses local override while this item is active.</div>
+    <DraggableItemBottom
+      show
+      title="Bottom (local)"
+      :componentCard="LocalCard"
+      :componentCardHeader="LocalHeader"
+    >
+      <div class="panel">
+        Bottom shell uses local override while this item is active.
+      </div>
     </DraggableItemBottom>
 
-    <DraggableModal
+    <DraggableItemModal
       v-model:show="showModal"
       title="Modal (local)"
       :width="360"
@@ -121,6 +142,6 @@ onUnmounted(() => {
       :componentCardHeader="LocalHeader"
     >
       <div class="panel">Modal with local custom card.</div>
-    </DraggableModal>
+    </DraggableItemModal>
   </DraggableContainer>
 </template>

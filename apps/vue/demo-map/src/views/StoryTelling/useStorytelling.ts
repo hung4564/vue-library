@@ -1,4 +1,5 @@
 import { onUnmounted, Ref, ref } from 'vue';
+
 import {
   createOrbitGlobalActions,
   createSimpleMapAction,
@@ -180,8 +181,14 @@ export function useMapStorytelling(
             document.querySelector(selector)?.classList.remove('highlight'),
         };
       },
-      ...(createSimpleMapAction(mapId) as Record<string, GlobalActionFn>),
-      ...(createOrbitGlobalActions(mapId) as Record<string, GlobalActionFn>),
+      ...(createSimpleMapAction(mapId) as unknown as Record<
+        string,
+        GlobalActionFn
+      >),
+      ...(createOrbitGlobalActions(mapId) as unknown as Record<
+        string,
+        GlobalActionFn
+      >),
       ...options.globalActions,
     },
   });

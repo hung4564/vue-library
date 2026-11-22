@@ -1,23 +1,31 @@
-<script setup lang="ts">
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+﻿<script setup lang="ts">
+import { DEMO_SAMPLE_LAYER_MENU_KEY } from '@hungpvq/demo-map-datasets';
 import type { MapSimple } from '@hungpvq/map-core';
 import { getUUIDv4 } from '@hungpvq/shared';
-import { loggerFactory } from '@hungpvq/shared-log';
-import { BaseMapCard, BaseMapControl, Map, UniversalRegistry, WorkerControl } from '@hungpvq/vue-map-core';
+import {
+  BaseMapCard,
+  BaseMapControl,
+  Map,
+  UniversalRegistry,
+  WorkerControl,
+} from '@hungpvq/vue-map-core';
 import {
   ComponentManagementControl,
-  HighlightPointer,
   LayerControl,
 } from '@hungpvq/vue-map-dataset';
-import { DEMO_SAMPLE_LAYER_MENU_KEY } from '@hungpvq/demo-map-datasets';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { reactive, ref } from 'vue';
-import AsideControl from '../../layout/aside-control.vue';
-import { loadListDemoDatasets } from '../../data/loaders';
-import SampleCustomMenu from './sample-custom-menu.vue';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
-UniversalRegistry.registerComponent(DEMO_SAMPLE_LAYER_MENU_KEY, SampleCustomMenu);
-loggerFactory.enable('menu');
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import { loadListDemoDatasets } from '../../data/loaders';
+import AsideControl from '../../layout/aside-control.vue';
+import SampleCustomMenu from './sample-custom-menu.vue';
+
+UniversalRegistry.registerComponent(
+  DEMO_SAMPLE_LAYER_MENU_KEY,
+  SampleCustomMenu,
+);
 const mapId = ref(getUUIDv4());
 const menuUi = reactive({
   role: 'admin' as 'admin' | 'viewer',
@@ -29,12 +37,20 @@ function onMapLoaded(map: MapSimple) {
 }
 </script>
 <template>
-  <Map @map-loaded="onMapLoaded" :mapId="mapId">
+  <Map
+    @mapLoaded="onMapLoaded"
+    :mapId="mapId"
+  >
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <BaseMapControl position="bottom-left" />
     <WorkerControl position="top-left" />
-    <LayerControl position="top-left" show :menu-context="menuUi">
+    <LayerControl
+      position="top-left"
+      show
+      :menu-context="menuUi"
+    >
       <template #titleList>
         <label class="menu-condition-toggle">
           <input
@@ -49,7 +65,10 @@ function onMapLoaded(map: MapSimple) {
           admin
         </label>
         <label class="menu-condition-toggle">
-          <input type="checkbox" v-model="menuUi.canUsePen" />
+          <input
+            type="checkbox"
+            v-model="menuUi.canUsePen"
+          />
           pen
         </label>
       </template>
@@ -57,21 +76,7 @@ function onMapLoaded(map: MapSimple) {
         <BaseMapCard :mapId="mapId" />
       </template>
     </LayerControl>
-    <HighlightPointer enableClick />
     <ComponentManagementControl />
     <DemoHelpPanel />
   </Map>
 </template>
-
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-</style>

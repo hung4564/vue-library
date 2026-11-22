@@ -1,0 +1,48 @@
+# @hungpvq/react-map-core
+
+React MapLibre map container, controls, and hooks over `@hungpvq/map-core`.
+
+## Install
+
+```bash
+npm install @hungpvq/react-map-core @hungpvq/map-core
+```
+
+## Styles
+
+```ts
+import '@hungpvq/react-map-core/style.css';
+```
+
+## Usage
+
+```tsx
+import { Map, ZoomControl, HomeControl, FullScreenControl } from '@hungpvq/react-map-core';
+import '@hungpvq/react-map-core/style.css';
+
+export function App() {
+  return (
+    <Map
+      mapId="demo"
+      onMapLoaded={(map) => {
+        console.info('loaded', map);
+      }}
+    >
+      <ZoomControl position="top-right" />
+      <HomeControl position="top-right" />
+      <FullScreenControl position="top-right" />
+    </Map>
+  );
+}
+```
+
+For layers / identify / menus, use `@hungpvq/react-map-dataset` and call `installMapApp()` at bootstrap.
+
+## Docs
+
+- Hub: [map docs](../docs/index.md)
+- Controls & registry: [map-core docs](../docs/core/index.md)
+- Stable API: [stable-api.md](../docs/core/stable-api.md) — `./fields` is map-only; generic `BaseButton` / `Icon` live on `@hungpvq/react-ui-core`. See `public-api.spec.ts`
+- Error handling (`errorHandler` from `@hungpvq/map-core`): [error-handling.md](../docs/core/error-handling.md)
+- Map store / `getMap`: [map-store.md](../docs/core/map-store.md)
+- Demo: [React demo](https://hung4564.github.io/demo-map/react/)

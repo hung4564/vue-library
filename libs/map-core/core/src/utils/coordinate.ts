@@ -3,9 +3,8 @@
  * Provides functions for coordinate formatting and conversion
  */
 
-import { type CoordinatesNumber, type DraftCoordinatesNumber } from '../types';
-
 import { type CrsItem } from '../crs/types';
+import { type CoordinatesNumber, type DraftCoordinatesNumber } from '../types';
 import { transformWgs84ToCrs } from './coordinate-proj4';
 
 export function isCoordinatesNumber(
@@ -229,9 +228,7 @@ export function parseCoordinateText(text: string): ParsedCoordinateText | null {
     const zoom = Number(google[3]);
     const hasZ = Boolean(google[4]);
     // With "z": always lat,lng,zoom. Without "z": only if third looks like a zoom level.
-    const zoomOk =
-      !Number.isNaN(zoom) &&
-      (hasZ || (zoom >= 0 && zoom <= 24));
+    const zoomOk = !Number.isNaN(zoom) && (hasZ || (zoom >= 0 && zoom <= 24));
     if (
       zoomOk &&
       !Number.isNaN(a) &&
@@ -257,7 +254,10 @@ export function parseCoordinateText(text: string): ParsedCoordinateText | null {
       : undefined;
 
   const withoutZoom = raw
-    .replace(/@?\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,\s*-?\d+(?:\.\d+)?z\b/i, '$1, $2')
+    .replace(
+      /@?\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,\s*-?\d+(?:\.\d+)?z\b/i,
+      '$1, $2',
+    )
     .replace(/(?:^|[\s,;])(?:zoom)\s*[:=]?\s*-?\d+(?:\.\d+)?/i, ' ')
     .replace(/^@\s*/, '')
     .trim();
@@ -297,7 +297,11 @@ export function parseCoordinateText(text: string): ParsedCoordinateText | null {
     if (firstHemi && /[NnSs]/.test(firstHemi)) {
       lat = first;
       lng = second;
-    } else if (Math.abs(first) <= 90 && Math.abs(second) > 90 && Math.abs(second) <= 180) {
+    } else if (
+      Math.abs(first) <= 90 &&
+      Math.abs(second) > 90 &&
+      Math.abs(second) <= 180
+    ) {
       lat = first;
       lng = second;
     }

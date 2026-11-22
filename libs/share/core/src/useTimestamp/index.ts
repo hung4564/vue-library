@@ -2,6 +2,7 @@ import type { Pausable } from '@hungpvq/shared';
 import { timestamp, useIntervalFn } from '@hungpvq/shared';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
+
 import { useRafFn } from '../useRafFn';
 
 export interface UseTimestampOptions<Controls extends boolean> {

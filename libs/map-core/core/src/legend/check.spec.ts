@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   getLegendName,
   isDisabledLegendLayer,
@@ -21,9 +22,7 @@ describe('legend check', () => {
         metadata: { 'maplibregl-legend:disable': '1' },
       } as any),
     ).toBe(true);
-    expect(isDisabledLegendLayer({ id: 'a', type: 'fill' } as any)).toBe(
-      false,
-    );
+    expect(isDisabledLegendLayer({ id: 'a', type: 'fill' } as any)).toBe(false);
   });
 
   it('getLegendName prefers metadata name', () => {

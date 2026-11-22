@@ -3,17 +3,15 @@ import path from 'path';
 
 const ROOT = 'g:/code/0-library/vue-library';
 const SCAN_DIRS = [
-  'libs/ui/core',
-  'libs/router',
   'libs/share/shared',
   'libs/share/store',
   'libs/share/file',
-  'libs/share/log',
-  'libs/map-core/map-draw/src',
-  'libs/vue/map-draw',
-  'libs/react/map-draw',
-  'libs/vue/map-devtools',
-  'libs/react/map-devtools',
+  'libs/shared-log/core',
+  'libs/map-draw/core/src',
+  'libs/map-draw/vue',
+  'libs/map-draw/react',
+  'libs/map-devtools/vue',
+  'libs/map-devtools/react',
   'apps/vue/demo-map-e2e',
   'apps/react/demo-map-e2e',
 ];
@@ -89,11 +87,24 @@ function walkAll(dir) {
   for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, ent.name);
     if (ent.isDirectory()) {
-      if (['node_modules', 'dist', '.nx', 'deploy'].includes(ent.name)) continue;
+      if (['node_modules', 'dist', '.nx', 'deploy'].includes(ent.name))
+        continue;
       walkAll(p);
     } else {
       const ext = path.extname(ent.name);
-      if (['.ts', '.tsx', '.vue', '.js', '.jsx', '.css', '.scss', '.json', '.html'].includes(ext)) {
+      if (
+        [
+          '.ts',
+          '.tsx',
+          '.vue',
+          '.js',
+          '.jsx',
+          '.css',
+          '.scss',
+          '.json',
+          '.html',
+        ].includes(ext)
+      ) {
         allFiles.push(norm(p));
       }
     }
@@ -116,7 +127,9 @@ function collectPkgExports(pkgPath) {
     const full = norm(path.join(pkgDir, rel));
     ex.add(full);
     pkgExportFiles.add(full);
-    const srcAlt = full.replace(/\/index\.(js|d\.ts)$/, '/src/index.ts').replace(/\.css$/, '/src/style.css');
+    const srcAlt = full
+      .replace(/\/index\.(js|d\.ts)$/, '/src/index.ts')
+      .replace(/\.css$/, '/src/style.css');
     if (fs.existsSync(srcAlt)) pkgExportFiles.add(srcAlt);
   };
   add(pkg.main);
@@ -126,7 +139,11 @@ function collectPkgExports(pkgPath) {
     if (typeof obj === 'string') add(obj);
     else if (obj && typeof obj === 'object') {
       for (const [k, v] of Object.entries(obj)) {
-        if (['types', 'import', 'require', 'default'].includes(k) && typeof v === 'string') add(v);
+        if (
+          ['types', 'import', 'require', 'default'].includes(k) &&
+          typeof v === 'string'
+        )
+          add(v);
         else walkExp(v);
       }
     }
@@ -191,7 +208,8 @@ for (const file of allFiles) {
     let m;
     while ((m = re.exec(content)) !== null) {
       const spec = m[1];
-      if (spec.startsWith('.') || spec.startsWith('@/')) addImport(file, resolveJsImport(file, spec));
+      if (spec.startsWith('.') || spec.startsWith('@/'))
+        addImport(file, resolveJsImport(file, spec));
     }
   }
 }
@@ -199,7 +217,9 @@ for (const file of allFiles) {
 const pkgNameToDir = {};
 for (const [pkgDir] of packageExports) {
   try {
-    const pkg = JSON.parse(fs.readFileSync(path.join(pkgDir, 'package.json'), 'utf8'));
+    const pkg = JSON.parse(
+      fs.readFileSync(path.join(pkgDir, 'package.json'), 'utf8'),
+    );
     if (pkg.name) pkgNameToDir[pkg.name] = pkgDir;
   } catch {
     /* ignore */
@@ -221,14 +241,18 @@ for (const file of allFiles) {
     while ((m = re.exec(content)) !== null) {
       const sub = m[1];
       if (sub) {
-        for (const base of [path.join(pkgDir, 'src', sub), path.join(pkgDir, sub)]) {
+        for (const base of [
+          path.join(pkgDir, 'src', sub),
+          path.join(pkgDir, sub),
+        ]) {
           for (const e of ['', '.ts', '.tsx', '/index.ts', '/index.tsx']) {
             const full = norm(base + e);
             if (fs.existsSync(full)) addImport(file, full);
           }
         }
       } else {
-        for (const exp of packageExports.get(pkgDir) || []) addImport(file, exp);
+        for (const exp of packageExports.get(pkgDir) || [])
+          addImport(file, exp);
       }
     }
   }
@@ -250,7 +274,8 @@ function followBarrels(file, visited = new Set()) {
     /export\s+\{[^}]+\}\s+from\s+['"]([^'"]+)['"]/g,
   ]) {
     let m;
-    while ((m = re.exec(content)) !== null) followBarrels(resolveJsImport(file, m[1]), visited);
+    while ((m = re.exec(content)) !== null)
+      followBarrels(resolveJsImport(file, m[1]), visited);
   }
 }
 for (const f of pkgExportFiles) followBarrels(f);

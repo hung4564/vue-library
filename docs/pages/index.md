@@ -18,6 +18,9 @@ features:
   - title: Shared
     details: Shared package
     link: /shared
+  - title: Shared Log
+    details: Structured logging, Live tracing, and Devtools shell
+    link: /shared-log/
   - title: Draggable
     details: Draggable package
     link: https://hung4564.github.io/demo-draggable/

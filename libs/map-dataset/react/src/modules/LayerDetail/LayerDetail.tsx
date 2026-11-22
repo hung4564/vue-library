@@ -1,0 +1,257 @@
+import type { MapPopupProps } from '@hungpvq/map-core';
+import { type FieldFeaturesDef, type IDataset } from '@hungpvq/map-dataset';
+import {
+  bindHighlightMittBridge,
+  emitHighlightDetailClose,
+} from '@hungpvq/map-dataset/highlight';
+import {
+  filterLayerDetailHeaderMenus,
+  getItemMenuHost,
+  getResolvedMenus,
+  MENU_CONTROL_ID,
+} from '@hungpvq/map-dataset/menu';
+import { DraggableItemPopup } from '@hungpvq/react-draggable';
+import {
+  ModuleContainer,
+  ModuleContainerProps,
+  useLang,
+  useMap,
+  useMapControl,
+  useShow,
+} from '@hungpvq/react-map-core';
+import { CopyButton, InputTextarea } from '@hungpvq/react-ui-core';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
+
+import { MenuConditionProvider } from '../../extra/menu/condition-context';
+import { DatasetMenus } from '../../extra/menu/dataset-menus';
+
+type DetailField = FieldFeaturesDef[number] & { inline?: boolean };
+
+type LayerDetailProps = {
+  item?: Record<string, unknown>;
+  view?: IDataset;
+  fields?: DetailField[];
+  popupProps?: MapPopupProps;
+  onClose?: () => void;
+};
+
+function TableTdCopy({
+  value,
+  children,
+}: {
+  value: unknown;
+  children: ReactNode;
+}) {
+  return (
+    <div className="layer-detail-row">
+      <div className="layer-detail-row__copy">
+        <CopyButton value={value == null ? '' : String(value)} />
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function TableTdLayer({
+  field,
+  label,
+  item,
+}: {
+  field: DetailField;
+  label: string;
+  item?: Record<string, unknown>;
+}) {
+  const raw = item ? item[field.value] : '';
+  const text =
+    raw == null
+      ? ''
+      : typeof raw === 'string' ||
+          typeof raw === 'number' ||
+          typeof raw === 'boolean'
+        ? String(raw)
+        : JSON.stringify(raw, undefined, 2);
+
+  return (
+    <TableTdCopy value={text}>
+      {!field.inline ? (
+        <div className="layer-detail-grid">
+          <div
+            className="layer-detail-grid__label"
+            title={label}
+          >
+            {label}
+          </div>
+          <div className="layer-detail-grid__value">{text}</div>
+        </div>
+      ) : (
+        <div className="layer-detail-grid layer-detail-grid--full">
+          <InputTextarea
+            readOnly
+            rows={10}
+            value={text}
+            label={label}
+          />
+        </div>
+      )}
+    </TableTdCopy>
+  );
+}
+
+export function LayerDetail({
+  item,
+  view,
+  fields = [],
+  popupProps,
+  onClose,
+}: LayerDetailProps) {
+  const { mapId } = useMap({
+    controlId: 'mapLayerDetail',
+  });
+  const { trans } = useLang(mapId);
+  const [show, toggleShow] = useShow(true);
+  /** Popup close emits both onUpdateShow(false) and onClose — dismiss once. */
+  const closedRef = useRef(false);
+  useEffect(() => bindHighlightMittBridge(mapId), [mapId]);
+
+  const itemMenuHost = useMemo(
+    () => (view ? getItemMenuHost(view) : undefined),
+    [view],
+  );
+
+  const layerTitleMenus = useMemo(
+    () =>
+      view
+        ? filterLayerDetailHeaderMenus(getResolvedMenus(view, 'layer'), {
+            hasFeatureItem: item != null,
+          })
+        : [],
+    [view, item],
+  );
+
+  const itemMenus = useMemo(() => {
+    if (!view) return [];
+    return getResolvedMenus(view, 'item').filter(
+      (menu) => menu.type !== 'divider',
+    );
+  }, [view]);
+
+  function handleClose() {
+    if (closedRef.current) return;
+    closedRef.current = true;
+    emitHighlightDetailClose(mapId, {
+      item,
+      dataset: view,
+    });
+    toggleShow(false);
+    onClose?.();
+  }
+
+  const { panelBind, moduleContainerProps } = useMapControl(mapId, {
+    id: 'mapLayerDetail',
+    panelKind: 'popup',
+    title: trans('map.layer-control.info.title'),
+    from: { popupProps },
+    show,
+    setShow: (v) => {
+      if (!v) {
+        handleClose();
+        return;
+      }
+      closedRef.current = false;
+      toggleShow(true);
+    },
+    actions: [
+      {
+        type: 'mapLayerDetail',
+        run: () => {
+          if (show) handleClose();
+          else {
+            closedRef.current = false;
+            toggleShow(true);
+          }
+        },
+      },
+    ],
+  });
+
+  const host = itemMenuHost ?? view;
+
+  const renderDraggable = useCallback<
+    NonNullable<ModuleContainerProps['draggable']>
+  >(
+    (bind) => (
+      <DraggableItemPopup
+        show={show}
+        onClose={handleClose}
+        onUpdateShow={(v) => {
+          if (!v) handleClose();
+        }}
+        width={520}
+        {...bind}
+        {...panelBind}
+        title={trans('map.layer-control.info.title')}
+        afterTitle={
+          view ? (
+            <>
+              <DatasetMenus
+                menus={layerTitleMenus}
+                data={view}
+                mapId={mapId}
+                locations={['title']}
+              />
+              {host ? (
+                <DatasetMenus
+                  menus={itemMenus}
+                  data={host}
+                  mapId={mapId}
+                  value={item}
+                  locations={['title']}
+                />
+              ) : null}
+            </>
+          ) : undefined
+        }
+      >
+        <div className="table-show-info">
+          <div className="table-content">
+            {fields.map((field, i) => (
+              <TableTdLayer
+                key={i}
+                field={field}
+                label={
+                  'trans' in field && field.trans
+                    ? trans(field.trans)
+                    : 'text' in field
+                      ? field.text
+                      : ''
+                }
+                item={item}
+              />
+            ))}
+          </div>
+        </div>
+      </DraggableItemPopup>
+    ),
+    [
+      fields,
+      handleClose,
+      host,
+      item,
+      itemMenus,
+      layerTitleMenus,
+      mapId,
+      panelBind,
+      show,
+      trans,
+      view,
+    ],
+  );
+  return (
+    <MenuConditionProvider value={{ control: MENU_CONTROL_ID.layerDetail }}>
+      <ModuleContainer
+        {...moduleContainerProps}
+        draggable={renderDraggable}
+      />
+    </MenuConditionProvider>
+  );
+}

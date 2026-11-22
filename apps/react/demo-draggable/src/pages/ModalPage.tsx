@@ -1,7 +1,7 @@
 import {
   DraggableContainer,
+  DraggableItemModal,
   DraggableItemSideBar,
-  DraggableModal,
   ManagementControl,
 } from '@hungpvq/react-draggable';
 import { useState } from 'react';
@@ -12,8 +12,15 @@ export function ModalPage() {
   const [showThird, setShowThird] = useState(false);
 
   return (
-    <DraggableContainer containerId="demo-modal" className="demo-page">
-      <DraggableItemSideBar show title="Controls" location="left">
+    <DraggableContainer
+      containerId="demo-modal"
+      className="demo-page"
+    >
+      <DraggableItemSideBar
+        show
+        title="Controls"
+        location="left"
+      >
         <div className="panel">
           <h2>Modal demo</h2>
           <p>
@@ -39,7 +46,7 @@ export function ModalPage() {
         </div>
       </DraggableItemSideBar>
 
-      <DraggableModal
+      <DraggableItemModal
         show={showOuter}
         title="Outer modal"
         width={440}
@@ -59,9 +66,9 @@ export function ModalPage() {
             </button>
           </div>
         </div>
-      </DraggableModal>
+      </DraggableItemModal>
 
-      <DraggableModal
+      <DraggableItemModal
         show={showInner}
         title="Nested modal"
         width={340}
@@ -84,9 +91,9 @@ export function ModalPage() {
             Close nested
           </button>
         </div>
-      </DraggableModal>
+      </DraggableItemModal>
 
-      <DraggableModal
+      <DraggableItemModal
         show={showThird}
         title="Sibling modal"
         width={320}
@@ -99,7 +106,7 @@ export function ModalPage() {
         <div className="panel">
           <p>Opened from the control panel (sibling, not nested).</p>
         </div>
-      </DraggableModal>
+      </DraggableItemModal>
     </DraggableContainer>
   );
 }

@@ -7,23 +7,22 @@ import {
   Map,
   ThemeControl,
   UniversalRegistry,
-  ZoomControl,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
-  HighlightPointer,
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { getUUIDv4 } from '@hungpvq/shared';
 import { useMemo } from 'react';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { loadMenuDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { SampleLayerToggleShow } from './sample-layer-toggle-show';
 import { SampleToggleShowButton } from './sample-toggle-show-button';
 
@@ -58,7 +57,11 @@ export function DatasetMenuPage() {
 
   return (
     <MapPageShell>
-      <Map mapId={mapId} onMapLoaded={onMapLoaded}>
+      <Map
+        mapId={mapId}
+        onMapLoaded={onMapLoaded}
+      >
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <LayerControl
@@ -66,11 +69,9 @@ export function DatasetMenuPage() {
           show
           endList={({ mapId: id }) => <BaseMapCard mapId={id} />}
         />
-        <HighlightPointer enableClick />
         <IdentifyControl position="top-right" />
         <ComponentManagementControl />
         <ThemeControl />
-        <ZoomControl />
         <BaseMapControl position="bottom-left" />
         <DemoHelpPanel />
       </Map>

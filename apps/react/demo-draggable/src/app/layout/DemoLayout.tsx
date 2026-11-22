@@ -22,7 +22,9 @@ export function DemoLayout() {
             to={link.to}
             end={link.end}
             className={({ isActive }) =>
-              isActive ? 'demo-nav__link demo-nav__link--active' : 'demo-nav__link'
+              isActive
+                ? 'demo-nav__link demo-nav__link--active'
+                : 'demo-nav__link'
             }
           >
             {link.label}

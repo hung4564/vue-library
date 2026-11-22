@@ -3,11 +3,12 @@
  * Handles store operations, map instance registry, and cleanup
  */
 
-import { getOrCreateStore } from '@hungpvq/shared-store';
 import { MapInitializationError } from '../errors';
 import { UniversalRegistry } from '../registry/universal-registry';
 import { hasMapInstance, type MapSimple } from '../types';
 import type { IMapStoreAdapter, MapFCOnUseMap } from './interface';
+import { isUsableMapId } from './is-usable-map-id';
+import { getMapCoreMetaStore } from './map-core-meta';
 import type {
   AddStoreOptions,
   DefaultValue,
@@ -23,17 +24,14 @@ export const MAP_CORE_EVENT = {
   READY: 'ready',
 } as const;
 
-/** Process-wide bag so Vue + React MapStoreManager copies share removeMap tombstones. */
-const MAP_CORE_META_STORE_KEY = 'map:core:meta';
-
-type MapCoreMetaStore = {
-  removedMapIds: Set<string>;
-};
-
 function getRemovedMapIds(): Set<string> {
-  return getOrCreateStore<MapCoreMetaStore>(MAP_CORE_META_STORE_KEY, () => ({
-    removedMapIds: new Set<string>(),
-  })).removedMapIds;
+  return getMapCoreMetaStore().removedMapIds;
+}
+
+function assertMapId(mapId: string): asserts mapId is string {
+  if (!isUsableMapId(mapId)) {
+    throw new Error('mapId is required');
+  }
 }
 
 /**
@@ -43,13 +41,23 @@ function getRemovedMapIds(): Set<string> {
 export class MapStoreManager {
   constructor(private adapter: IMapStoreAdapter) {}
 
+  /** Root bag; drops legacy empty-string map entries from prior bugs. */
+  private getRoot(): Record<string, MapStore> {
+    const root = this.adapter.getRootStore();
+    if (Object.prototype.hasOwnProperty.call(root, '')) {
+      delete root[''];
+    }
+    return root;
+  }
+
   /**
    * Ensure map entry exists in root store
    */
   private ensureMapEntry(mapId: string): MapStore {
-    const root = this.adapter.getRootStore();
+    assertMapId(mapId);
+    const root = this.getRoot();
     if (!root[mapId]) {
-      this.log(mapId, 'debug', 'ensureMapEntry: create new entry');
+      this.log(mapId, 'debug', 'Creating map store root entry for mapId.');
       root[mapId] = {};
     }
     return root[mapId];
@@ -77,9 +85,13 @@ export class MapStoreManager {
    * Get map store by ID
    */
   getMapStore(id: string): MapStore | undefined {
-    const entry = this.adapter.getRootStore()[id];
+    const root = this.getRoot();
+    if (!id) {
+      return undefined;
+    }
+    const entry = root[id];
     if (!entry) {
-      this.log(id, 'debug', 'getMapStore: entry not found');
+      this.log(id, 'debug', 'Map store entry not found for mapId.');
     }
     return entry;
   }
@@ -88,7 +100,11 @@ export class MapStoreManager {
    * Add store entry
    */
   peekStore<T>(mapId: string, key: string): T | undefined {
-    const temp = this.adapter.getRootStore()[mapId];
+    const root = this.getRoot();
+    if (!mapId) {
+      return undefined;
+    }
+    const temp = root[mapId];
     if (!temp || !(key in temp)) {
       return undefined;
     }
@@ -103,7 +119,7 @@ export class MapStoreManager {
   ): T {
     const temp = this.ensureMapEntry(mapId);
     if (!(key in temp)) {
-      this.log(mapId, 'debug', 'addStore: initialize key', key);
+      this.log(mapId, 'debug', 'Initializing map store key.', key);
       temp[key] = this.resolveDefaultValue(defaultValue);
     }
     if (options?.cleanup) {
@@ -118,7 +134,7 @@ export class MapStoreManager {
   getStore<T>(mapId: string, key: string): T | undefined {
     const temp = this.getMapStore(mapId);
     if (!temp || !(key in temp)) {
-      this.log(mapId, 'debug', 'getStore: missing key', key);
+      this.log(mapId, 'debug', 'Map store key is missing.', key);
       return undefined;
     }
     return temp[key] as T;
@@ -130,6 +146,14 @@ export class MapStoreManager {
    * never wait. Returns an unsubscribe that removes the READY listener.
    */
   subscribeMapReady(id: string, cb: MapFCOnUseMap): () => void {
+    if (!id) {
+      this.log(
+        id,
+        'debug',
+        'subscribeMapReady skipped because mapId is empty.',
+      );
+      return () => undefined;
+    }
     const map = this.getMapFromStore(id);
     if (map) {
       cb(map);
@@ -137,11 +161,15 @@ export class MapStoreManager {
     }
 
     if (getRemovedMapIds().has(id)) {
-      this.log(id, 'debug', 'subscribeMapReady: skip wait after removeMap');
+      this.log(
+        id,
+        'debug',
+        'subscribeMapReady skipped because mapId was removed and is tombstoned.',
+      );
       return () => undefined;
     }
 
-    this.log(id, 'debug', 'subscribeMapReady: waiting for map instance');
+    this.log(id, 'debug', 'Waiting for map READY before invoking subscriber.');
     const emitter = this.adapter.getEventEmitter(id);
     const handler = () => {
       const ready = this.getMapFromStore(id);
@@ -162,6 +190,9 @@ export class MapStoreManager {
    * was removed (tombstoned) and has not been re-init'd.
    */
   getMap(id: string, cb?: MapFCOnUseMap): MapSimple | undefined {
+    if (!id) {
+      return undefined;
+    }
     const map = this.getMapFromStore(id);
     if (map) {
       cb?.(map);
@@ -171,7 +202,11 @@ export class MapStoreManager {
     if (cb) {
       this.subscribeMapReady(id, cb);
     } else {
-      this.log(id, 'debug', 'getMap: map instance not ready');
+      this.log(
+        id,
+        'debug',
+        'getMap returned undefined because the map instance is not ready yet.',
+      );
     }
 
     return undefined;
@@ -181,6 +216,14 @@ export class MapStoreManager {
    * Register cleanup function for a store key
    */
   registerCleanup(mapId: string, key: string, cleanup: StoreCleanup): void {
+    if (!isUsableMapId(mapId)) {
+      this.log(
+        mapId,
+        'debug',
+        'registerCleanup skipped because mapId is empty.',
+      );
+      return;
+    }
     const store = this.ensureMapEntry(mapId) as MapStoreInternal;
     store.__cleanup__ ??= {};
     store.__cleanup__[key] ??= [];
@@ -208,14 +251,14 @@ export class MapStoreManager {
             typeof (maybePromise as Promise<unknown>).catch === 'function'
           ) {
             (maybePromise as Promise<unknown>).catch((error) => {
-              this.log(mapId, 'error', 'cleanup rejected', {
+              this.log(mapId, 'error', 'Store cleanup promise rejected.', {
                 key: cleanupKey,
                 error,
               });
             });
           }
         } catch (error) {
-          this.log(mapId, 'error', 'cleanup failed', {
+          this.log(mapId, 'error', 'Store cleanup threw synchronously.', {
             key: cleanupKey,
             error,
           });
@@ -240,7 +283,11 @@ export class MapStoreManager {
         { context: { mapId } },
       );
     }
-    this.log(mapId, 'debug', 'init', map);
+    this.log(
+      mapId,
+      'debug',
+      'Initializing map instance in store and emitting READY.',
+    );
     const mapStore = this.ensureMapEntry(mapId);
     mapStore.map = map;
     this.adapter.getEventEmitter(mapId).emit(MAP_CORE_EVENT.READY);
@@ -250,10 +297,13 @@ export class MapStoreManager {
    * Remove map from store
    */
   removeMap(mapId: string): void {
-    this.log(mapId, 'debug', 'removeMap');
+    if (!mapId) {
+      return;
+    }
+    this.log(mapId, 'debug', 'Removing map from store and running cleanups.');
     this.runCleanup(mapId);
     UniversalRegistry.clearMap(mapId);
-    const root = this.adapter.getRootStore();
+    const root = this.getRoot();
     delete root[mapId];
     getRemovedMapIds().add(mapId);
   }

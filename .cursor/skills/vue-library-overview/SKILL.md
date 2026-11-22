@@ -3,8 +3,9 @@ name: vue-library-overview
 description: >-
   Orients agents to the vue-library Nx monorepo (@hungpvq map, draggable, share
   packages for Vue and React). Use when starting work in this repo, locating the
-  right package, choosing where to put GIS vs UI code, picking npm/nx scripts,
-  or when adding logging (must use @hungpvq/shared-log, never raw console.*).
+  right package, choosing where to put GIS vs UI code, adding or reusing generic
+  UI (always @hungpvq/*-ui-core when possible), picking npm/nx scripts, or when
+  adding logging (must use @hungpvq/shared-log, never raw console.*).
 ---
 
 # Vue Library Overview
@@ -13,49 +14,113 @@ Nx + TypeScript monorepo publishing `@hungpvq/*` packages for MapLibre GIS maps,
 
 ## Package map
 
-| Area | Paths | npm scope examples |
-|------|-------|-------------------|
-| Map engine | `libs/map-core/core`, `map-dataset`, `map-draw`, `map-debug` | `@hungpvq/map-core`, `map-dataset`, `map-draw`, `map-debug` |
-| Vue map | `libs/vue/map-core`, `map-dataset`, `map-draw`, `map-devtools` | `@hungpvq/vue-map-*` |
-| React map | `libs/react/map-core`, `map-dataset`, `map-draw`, `map-devtools` | `@hungpvq/react-map-*` |
-| Draggable | `libs/draggable/core`, `libs/vue/draggable`, `libs/react/draggable` | `@hungpvq/draggable`, `vue-draggable`, `react-draggable` |
-| Share / UI | `libs/share/*`, `libs/ui/core`, `libs/router` | `@hungpvq/shared*`, UI kit |
-| Demos / docs | Nx serve demos, `docs/`, `deploy/demo-*` | VitePress sites |
+| Area         | Paths                                                               | npm scope examples                                          |
+| ------------ | ------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Map domains  | `libs/map-core`, `libs/map-dataset`, `libs/map-draw`, `libs/map-devtools`, `libs/map` | `@hungpvq/map-*`                                            |
+| Draggable    | `libs/draggable/core`, `libs/draggable/vue`, `libs/draggable/react` | `@hungpvq/draggable`, `vue-draggable`, `react-draggable`    |
+| Share / UI   | `libs/share/*`, `libs/ui-core/vue`, `libs/ui-core/react`            | `@hungpvq/shared*`, `vue-ui-core`, `react-ui-core`          |
+| Demos / docs | Nx serve demos, `docs/`, `deploy/demo-*`                            | VitePress sites                                             |
 
-Nx tags: `map`, `draggable`, `share`, `demo`, `e2e`, plus framework tags. `tag:map` / `tag:draggable` are for publishable libs (+ demo apps); e2e and private fixtures like `demo-map-datasets` do **not** carry those release tags. Release groups: `map`, `draggable`, `shared-store` (see root `nx.json`).
+Nx tags: `map`, `draggable`, `share`, `demo`, `e2e`, plus framework tags. `tag:map` / `tag:draggable` are for publishable libs (+ demo apps); e2e and private fixtures like `demo-map-datasets` do **not** carry those release tags. Release groups: `map`, `draggable`, `shared-store`, `shared-log`, `ui` (see root `nx.json`).
 
 ## Where to change code
 
 1. **GIS / store / registry / workers / theme / locale** → `libs/map-core/*` (framework-agnostic). Fixed UI languages: always under a `locale/` folder as `locale/locale.<en|vi|…>.ts` (see `map-locale` skill). Demo apps default to **VI** and bilingual guides.
-2. **Map shell, controls, hooks (Vue)** → `libs/vue/map-*`.
-3. **Same for React** → `libs/react/map-*` (keep parity with Vue when the feature is dual).
-4. **Draw / edit** → protocol in `libs/map-core/map-draw`; UI in `libs/vue/map-draw` and `libs/react/map-draw` (shared InspectController). Docs: `libs/map-core/map-draw/docs` → `/map/draw/`. Demo: `/#/draw` only.
-5. **Dataset builders / identify / style protocol** → `libs/map-core/map-dataset`; UI in `vue`/`react` `map-dataset`. Docs: `libs/map-core/map-dataset/docs`.
+2. **Map shell, controls, hooks (Vue)** → `libs/map-*/vue`.
+3. **Same for React** → `libs/map-*/react` (keep parity with Vue when the feature is dual).
+4. **Draw / edit** → protocol in `libs/map-draw/core`; UI in `libs/map-draw/vue` and `libs/map-draw/react` (shared InspectController). Docs: `libs/map-draw/docs` → `/map/draw/`. Demo: `/#/draw` only.
+5. **Dataset builders / identify / style protocol** → `libs/map-dataset/core`; UI in `libs/map-dataset/vue` and `libs/map-dataset/react`. Docs: `libs/map-dataset/docs`.
 6. **Shared non-map utils** → `libs/share/*`.
+7. **Generic UI → always `*-ui-core` when possible.** Reuse `@hungpvq/vue-ui-core` / `@hungpvq/react-ui-core` first (`InputText`, `BaseButton`, `Icon`, `Tabs`, `CopyButton`, `Collapse`, fields, …). If a reusable, non-map control is missing, **add it there** (Vue + React parity, public-api lock) and import it — do **not** invent a local copy, re-export, or one-off SFC/TSX in map adapters, shared-log, or demos. Do **not** import generics from `*-map-core/fields`. Map-only fields (`InputCrs`, `MapRangeSlider`, `MapCard`, `MapImage`) stay on `*-map-core/fields`. Map chrome (`MapControlButton`, `MapTabs`) stays on `*-map-core` root (those compose ui-core; do not bypass them with raw `<button>` / `BaseButton` in map packages). Text copy uses ui-core `CopyButton` (not a map-core wrapper). Avoid reserved HTML names (`Button` → `BaseButton`).
 
-**Process / app stores:** always `@hungpvq/shared-store` (`getOrCreateStore` / `defineStore` / `GlobalStoreService` → `globalThis.$_hungpv_store`, process-wide SSR). Never invent a parallel bag on `@hungpvq/shared`.
+**Process / app stores:** always `@hungpvq/shared-store` (`getOrCreateStore` / `defineStore` / `GlobalStoreService` → `globalThis.$_hungpv_store`, process-wide SSR). Never invent a parallel bag on `@hungpvq/shared`. Module-level `let` / `const Map` for process state is forbidden — put it on an existing `ensure*` / `get*Store` bag (see **shared-store-state**).
+
+**Per-map protocol stores:** always `map:core[mapId]` via `registerMapDomainStoreFactory` / `ensureMapDomainStore` / `peekMapDomainStore` (see **map-domain-store** skill and `libs/map-core/docs/core/map-store.md`). Do not add new `getOrCreateStore(…).maps[mapId]` bags.
 
 Do not put MapLibre business logic only in a Vue or React package if it belongs in `map-core` / `map-dataset` / `map-draw`.
 
 **Import paths:** cores (`@hungpvq/map-core`, `map-dataset`, `map-draw`, `draggable`) for protocol/types/services; adapters (`@hungpvq/vue-*` / `react-*`) for UI/hooks only. Adapters must not re-export core.
 
-**Map UI buttons:** in Vue/React map packages, always use Stable `MapControlButton` (see `map-dual-framework`) — never raw `<button>` / `BaseButton` for map chrome. Text copy actions use Stable `MapCopyButton` (icon feedback, no toast). Other action buttons (Pin, Run, async) must use `createActionFeedback` phases: idle → loading → success|error → idle (~1.5s).
+**Map UI buttons:** in Vue/React map packages, always use Stable `MapControlButton` (see `map-dual-framework`) — never raw `<button>` / `BaseButton` for map chrome. Text copy actions use `@hungpvq/*-ui-core` `CopyButton` (icon `mdiContentCopy` → `mdiCheck`, no toast). Other action buttons (Pin, Run, async) must use `createActionFeedback` phases: idle → loading → success|error → idle (~1.5s).
 
 ## Logging (`@hungpvq/shared-log`)
 
-**Always** log through `@hungpvq/shared-log`. Do **not** use raw `console.log` / `console.info` / `console.warn` / `console.debug` / `console.error` in libs, demos, or apps (except inside `@hungpvq/shared-log` adapters themselves).
+**Always** log through `@hungpvq/shared-log`. Do **not** use raw `console.log` / `console.info` / `console.warn` / `console.debug` / `console.error` in libs, demos, or apps (except inside `@hungpvq/shared-log` adapters themselves). Package details: `libs/shared-log/core/README.md`. `@hungpvq/shared-log` is **vanilla JS only** — Vue/React hooks (`useLiveHookDebug`, `LiveHookScope`) live in `@hungpvq/vue-shared-log` / `@hungpvq/react-shared-log` (see **shared-log-vanilla** skill).
+
+### Logger Context Rule (required)
+
+Every application log call **must** use `.with({ fn, span })` before the level method:
 
 ```ts
 import { loggerFactory } from '@hungpvq/shared-log';
 
-const logger = loggerFactory.createLogger().setNamespace('demo:list', 2);
-logger.info('layer selected', { mapId, layerId });
+const logger = loggerFactory.createLogger().setNamespace('demo:list');
+
+logger.with({ fn: 'onLayerSelect', span: 'menu.action' }).info('Dataset layer selected from the list.', { mapId, layerId });
 ```
 
+- **`fn`**: name of the **enclosing** function/method where the log is written (not a free-form description). Nested/anon handlers: nearest meaningful name (`onFavorite`, `processChunk`, …).
+- **`span`**: phase of the operation. Prefer existing project spans (`menu.action`, `identify.query`, `dataset.add`, `store.init`, `mitt.emit`, …) over inventing new vocabulary.
+- **Forbidden**: bare `logger.info/warn/error/debug(...)` (or `logHelper(...).info(...)`) without `.with({ fn, span })`. Prefer `.with({ fn, span })` over `.at(fn)` alone (`.at` only sets `fn`).
+- When known, also pass `mapId`, `datasetId`, `datasetName`, `datasetType`, `menuId`, `menuName` (never invent values).
 - Prefer a module-level `logger` with a stable namespace (`map:…`, `demo:…`, `draggable:…`).
-- Map packages: use `logHelper` from `@hungpvq/map-core` when the log is map-scoped (`mapId` + extra namespaces).
-- Demos: enable namespaces with `loggerFactory.enable('…')` when the page needs verbose output (see dataset-list demo).
-- Replacing an existing `console.*` while touching a file is required; do not add new `console.*`.
+- Map packages: use `logHelper` from `@hungpvq/map-core` when the log is map-scoped (`mapId` + extra namespaces), still chained with `.with({ fn, span })`.
+- Ambient context uses **ZoneContextStorage** (per async chain) — not sticky module-local. Wrap gesture boundaries with `ensureActionContext` (mints/reuses **`actionId`**); nested work with `runWithFunctionLog` (**`spanId`** / **`parentSpanId`**).
+- HTTP / any client: `loggerFactory.trackRequest({ url, method }, () => client…)` mints HTTP-only **`requestId`** (≠ `actionId`), or call the client inside an existing zone.
+- Demos: enable namespaces with `loggerFactory.enable('…')` when the page needs verbose output (see dataset-list demo). Map logging cookbook: `#/logging-cookbook`. Non-map shared-log: `#/shared-log` (Vue + React demo-map).
+- Replacing an existing `console.*` while touching a file is required; do not add new `console.*`. Draggable stays silent by design unless a public error boundary needs a log.
+
+### Function Lifecycle Rule
+
+Important operations (dataset add/remove, identify, menu action, geo-export, attribute-table load, draw save, …) must use `runWithFunctionLog` (under `ensureActionContext` at gesture boundaries) so Devtools Flow shows START / END / ERROR with `outcome` and `durationMs`.
+
+- Do **not** add manual `"Start"` / `"End"` / `"Done"` messages that only restate the helper.
+- Keep phase / branch / skip / result logs that add information beyond lifecycle.
+
+### Message Quality Rule
+
+Every new or edited message must:
+
+- Describe the **domain action** (dataset / map / identify / menu / draw), not a vague token (`Processing`, `Update`, `init`, `Success`).
+- Distinguish **started** vs **in progress** vs **finished** vs **skipped** vs **failed** vs **aborted**.
+- Prefer skip reasons grounded in code (`… skipped because the map instance is not ready`).
+- Never claim success before the async work has settled.
+- Log useful scalars (`featureCount`, `datasetId`, `handler`) — not full GeoJSON, tokens, or large props dumps.
+- Avoid per-iteration logs inside paint / query loops (warn/error at layer/source level only).
+
+### Event Flow Rule (Mitt)
+
+- Map buses from `createMapMitt` pack zone snapshots (`packLogEvent`) and restore in handlers (`runWithLogEvent` only — **no** START/END on the mitt wrapper).
+- One EMIT log per emit: message `EMIT <eventName>`, header `fn=mitt.emit`, `eventName=<event>`.
+- Prefer named handlers; use `bus.on('*', …)` if you need a wildcard (no `onAny` helper).
+- Do **not** add duplicate payload dumps that restate EMIT.
+- When a handler does real work, log inside that handler (with its own `fn` / `span` or `runWithFunctionLog`). Multiple listeners are **independent fan-out branches** — do not invent a sequential parent/child order mitt does not guarantee.
+
+### Error Logging Rule
+
+- Message must name the failed operation and phase; pass `errorName` / `errorMessage` (or the error as data) using the existing Logger API.
+- Prefer **one** error log at the owning boundary; do not re-log the same exception at every stack frame unless each frame adds new context.
+- Central `errorHandler` already logs MapError; avoid a second identical dump unless the caller adds domain ids.
+
+### Duplicate Logging Rule
+
+After adopting `runWithFunctionLog` or mitt EMIT, remove older Start/End/Done twins that no longer add value. Keep distinct phase / branch / result lines.
+
+### Logging Review Rule
+
+When adding a function, changing a business flow, or touching a logger, check:
+
+1. Missing important phase / skip / failure logs?
+2. Message clear and domain-specific?
+3. `fn` and `span` accurate?
+4. Extra context available (`mapId`, dataset/menu ids) without inventing values?
+5. Duplicate lifecycle or EMIT dumps?
+6. Any message that claims success too early or misstates outcome?
+7. Async / mitt fan-out still represented correctly?
+
+### Devtools mount
+
+Mount `@hungpvq/vue-map-devtools` / `react-map-devtools` **inside** `<Map>` (`DraggableItemPopup`). Do not remount a global overlay shell. Generic tabs (Store / Live / Logs / Errors) come from `*-shared-log`; Dataset is pin-registered by map-devtools. Log store default is IndexedDB on `getLogDebugStore()` (`log:debug` in `@hungpvq/shared-log`). See `libs/map-core/docs/core/devtools.md`.
 
 ## Common scripts (root `package.json`)
 
@@ -76,6 +141,9 @@ npm run share:build
 npm run shared-store:build
 npm run shared-store:release   # version + peer sync + tag shared-store@<ver>
 npm run shared-store:release:local
+npm run shared-log:build
+npm run shared-log:release     # version + peer sync + tag shared-log@<ver>
+npm run shared-log:release:local
 
 npm run docs:dev          # VitePress docs/
 npm run build / lint / ts-check   # run-many --all
@@ -90,17 +158,17 @@ Commits: Conventional Commits (`@commitlint/config-conventional`). Prefer `npm r
 ## Docs hubs
 
 - Map SemVer + public surface: `libs/map-core/README.md`
-- Map Stable API allowlist: `libs/map-core/core/docs/core/stable-api.md` (named root exports + runtime lock via `public-api.spec.ts` in map-core / map-dataset / vue|react map-*; leaf imports in package `index.ts`)
-- Map minimal starter: `libs/map-core/core/docs/core/minimal-starter.md` (demos `/#/minimal/`)
-- Map docs index: `libs/map-core/core/docs/index.md`
-- Map store / `getMap`: `libs/map-core/core/docs/core/map-store.md`
-- Map error handling: `libs/map-core/core/docs/core/error-handling.md`
+- Map Stable API allowlist: `libs/map-core/docs/core/stable-api.md` (named root exports + runtime lock via `public-api.spec.ts` in map-core / map-dataset / vue|react map-*; leaf imports in package `index.ts`)
+- Map minimal starter: `libs/map-core/docs/core/minimal-starter.md` (demos `/#/minimal/`)
+- Map docs index: `libs/map-core/docs/index.md`
+- Map store / `getMap`: `libs/map-core/docs/core/map-store.md`
+- Map error handling: `libs/map-core/docs/core/error-handling.md`
 - Draggable SemVer + public surface: `libs/draggable/README.md` (line **<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->**)
-- Draggable Stable API: `libs/draggable/core/docs/stable-api.md` (named exports + `public-api.spec.ts` lock)
-- Draggable a11y: `libs/draggable/core/docs/a11y.md`
-- Draggable testing: `libs/draggable/core/docs/testing.md`
-- Draggable next minor prep: `libs/draggable/core/docs/releases/v1.2.md`
-- Draggable docs index: `libs/draggable/core/docs/index.md`
+- Draggable Stable API: `libs/draggable/docs/stable-api.md` (named exports + `public-api.spec.ts` lock)
+- Draggable a11y: `libs/draggable/docs/a11y.md`
+- Draggable testing: `libs/draggable/docs/testing.md`
+- Draggable next minor prep: `libs/draggable/docs/releases/v1.2.md`
+- Draggable docs index: `libs/draggable/docs/index.md`
 - Draggable release: `npm run draggable:release` → `scripts/release-group.js` (docs sync + site push + tag `draggable@<version>`)
 - Per-package READMEs under each lib
 
@@ -116,3 +184,5 @@ Tsconfig paths point `@hungpvq/react-*` at `libs/**/src`. React Vite demos must 
 - Release → `nx-release-workflow`
 - Docs sites → `map-docs-vitepress`
 - Tests → `map-testing`
+- Shared-log vanilla JS (no Vue/React in `libs/shared-log/core`) → `shared-log-vanilla`
+- Process / local state on `ensure*` + `@hungpvq/shared-store` → `shared-store-state`

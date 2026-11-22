@@ -1,16 +1,23 @@
-<template>
+﻿<template>
   <Map ref="mapRef">
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <ToolbarControl position="top-right" />
-    <GotoControl position="top-right" control-layout="toolbar" />
+    <GotoControl
+      position="top-right"
+      control-layout="toolbar"
+    />
     <MeasurementControl position="top-left" />
     <CrsControl />
     <GlobeControl />
     <SettingControl />
     <FullScreenControl />
     <EventManagementControl />
-    <ZoomControl control-layout="toolbar" control-order="99" />
+    <ZoomControl
+      control-layout="toolbar"
+      control-order="99"
+    />
     <HomeControl control-layout="toolbar" />
     <MouseCoordinatesControl />
     <BaseMapControl position="bottom-left" />
@@ -20,13 +27,18 @@
       control-layout="toolbar"
       control-order="5"
     />
-    <PrintControl position="top-left" control-layout="toolbar" />
-    <PrintAdvancedControl position="top-left" control-layout="toolbar" />
+    <PrintControl
+      position="top-left"
+      control-layout="toolbar"
+    />
+    <PrintAdvancedControl
+      position="top-left"
+      control-layout="toolbar"
+    />
     <DemoHelpPanel />
   </Map>
 </template>
 <script setup lang="ts">
-import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import { BaseMapControl } from '@hungpvq/vue-map-core';
 import {
   CrsControl,
@@ -45,18 +57,9 @@ import {
 import { LegendControl } from '@hungpvq/vue-map-core';
 import { MeasurementControl } from '@hungpvq/vue-map-core';
 import { PrintAdvancedControl, PrintControl } from '@hungpvq/vue-map-core';
-import AsideControl from '../layout/aside-control.vue';
-import DemoHelpPanel from '../components/DemoHelpPanel.vue';
-</script>
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 
-body,
-html,
-#root {
-  height: 100%;
-}
-</style>
+import DemoHelpPanel from '../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
+import AsideControl from '../layout/aside-control.vue';
+</script>

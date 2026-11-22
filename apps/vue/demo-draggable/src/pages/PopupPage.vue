@@ -16,10 +16,16 @@ const containerId = ref('');
     class="demo-page"
     @init="(id) => (containerId = id)"
   >
-    <DraggableItemSideBar show title="Controls" location="left">
+    <DraggableItemSideBar
+      show
+      title="Controls"
+      location="left"
+    >
       <div class="panel">
         <h2>Popup demo</h2>
-        <p>Draggable and resizable popups, including one outside the container.</p>
+        <p>
+          Draggable and resizable popups, including one outside the container.
+        </p>
         <ManagementControl />
       </div>
     </DraggableItemSideBar>
@@ -51,7 +57,10 @@ const containerId = ref('');
     </DraggableItemPopup>
   </DraggableContainer>
 
-  <Teleport to="body" v-if="containerId">
+  <Teleport
+    to="body"
+    v-if="containerId"
+  >
     <DraggableItemPopup
       show
       title="Popup (Teleport)"

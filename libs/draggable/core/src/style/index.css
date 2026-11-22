@@ -1,3 +1,43 @@
+/* Self-contained box model (hosts may lack a global border-box reset). */
+.draggable-root,
+.draggable-root *,
+.draggable-root *::before,
+.draggable-root *::after,
+.draggable-modal-root,
+.draggable-modal-root *,
+.draggable-modal-root *::before,
+.draggable-modal-root *::after,
+.draggable-drawer,
+.draggable-drawer *,
+.draggable-drawer *::before,
+.draggable-drawer *::after,
+.draggable-popup-wrapper,
+.draggable-popup-wrapper *,
+.draggable-popup-wrapper *::before,
+.draggable-popup-wrapper *::after,
+.float-container,
+.float-container *,
+.float-container *::before,
+.float-container *::after,
+.sidebar-container,
+.sidebar-container *,
+.sidebar-container *::before,
+.sidebar-container *::after,
+.popup-mobile-container,
+.popup-mobile-container *,
+.popup-mobile-container *::before,
+.popup-mobile-container *::after,
+.hungpvq-draggable-card,
+.hungpvq-draggable-card *,
+.hungpvq-draggable-card *::before,
+.hungpvq-draggable-card *::after,
+.context-menu-container,
+.context-menu-container *,
+.context-menu-container *::before,
+.context-menu-container *::after {
+  box-sizing: border-box;
+}
+
 /* ===== DragButton ===== */
 .hungpvq-draggable-button {
   cursor: pointer;
@@ -10,7 +50,10 @@
   border-radius: 4px;
   display: inline-flex;
   flex: 0 0 auto;
-  font-weight: var(--draggable-font-weight-medium, var(--map-font-weight-medium, 500));
+  font-weight: var(
+    --draggable-font-weight-medium,
+    var(--map-font-weight-medium, 500)
+  );
   letter-spacing: 0.0892857143em;
   justify-content: center;
   outline: 0;
@@ -29,7 +72,7 @@
   min-width: 0;
   padding: 0;
 }
-.draggable-container .vdr{
+.draggable-container .vdr {
   border: unset;
 }
 .hungpvq-draggable-button__content {
@@ -96,7 +139,10 @@
 }
 
 .draggable-header__content {
-  padding: var(--draggable-padding-header, var(--map-padding-header, 0 4px 0 8px));
+  padding: var(
+    --draggable-padding-header,
+    var(--map-padding-header, 0 4px 0 8px)
+  );
   align-items: center;
   display: flex;
   position: relative;
@@ -119,7 +165,10 @@
   gap: 4px;
   min-width: 0;
   font-size: var(--draggable-font-size-2xl, var(--map-font-size-2xl, 20px));
-  font-weight: var(--draggable-font-weight-medium, var(--map-font-weight-medium, 500));
+  font-weight: var(
+    --draggable-font-weight-medium,
+    var(--map-font-weight-medium, 500)
+  );
   line-height: var(--draggable-line-height, var(--map-line-height, 1.4));
   font-family: inherit;
 }
@@ -140,8 +189,14 @@
 
 /* ===== DragCard ===== */
 .hungpvq-draggable-card {
-  background-color: var(--card-background-color, var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9))));
-  color: var(--card-color, var(--draggable-card-text, var(--map-card-text, #fff)));
+  background-color: var(
+    --card-background-color,
+    var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9)))
+  );
+  color: var(
+    --card-color,
+    var(--draggable-card-text, var(--map-card-text, #fff))
+  );
   position: relative;
   border: 2px solid transparent;
   border-radius: var(--draggable-radius, 0px);
@@ -308,6 +363,25 @@
 .context-menu-container {
   pointer-events: all;
   overflow: visible;
+  /* Teleported to body — do not inherit host page font/size. */
+  font-family: var(
+    --draggable-font-family,
+    var(
+      --map-font-family,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      Arial,
+      'Noto Sans',
+      sans-serif
+    )
+  );
+  font-size: var(--draggable-font-size-base, var(--map-font-size-base, 14px));
+  line-height: var(--draggable-line-height, var(--map-line-height, 1.4));
+  color: var(--card-color, var(--map-card-text, inherit));
 }
 
 .context-menu-container:not(.context-menu-mobile) {
@@ -379,8 +453,14 @@
     'top top top'
     'left center right'
     'bottom bottom bottom';
-  grid-template-columns: var(--drawer-left-size, 0px) minmax(0, 1fr) var(--drawer-right-size, 0px);
-  grid-template-rows: var(--drawer-top-size, 0px) minmax(0, 1fr) var(--drawer-bottom-size, 0px);
+  grid-template-columns: var(--drawer-left-size, 0px) minmax(0, 1fr) var(
+      --drawer-right-size,
+      0px
+    );
+  grid-template-rows: var(--drawer-top-size, 0px) minmax(0, 1fr) var(
+      --drawer-bottom-size,
+      0px
+    );
   overflow: hidden;
 }
 
@@ -445,8 +525,14 @@
 }
 
 :root {
-  --card-background-color: var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9)));
-  --card-highlight-background-color: var(--draggable-card-highlight-bg, var(--map-card-highlight-bg, rgba(26, 115, 232)));
+  --card-background-color: var(
+    --draggable-card-bg,
+    var(--map-card-bg, rgba(32, 43, 54, 0.9))
+  );
+  --card-highlight-background-color: var(
+    --draggable-card-highlight-bg,
+    var(--map-card-highlight-bg, rgba(26, 115, 232))
+  );
   --card-color: var(--draggable-card-text, var(--map-card-text, #fff));
   --draggable-radius: 0px;
   --draggable-shadow: none;
@@ -782,8 +868,14 @@
   height: 48px;
   width: 23px;
   display: flex;
-  background-color: var(--card-background-color, var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9))));
-  color: var(--card-color, var(--draggable-card-text, var(--map-card-text, #fff)));
+  background-color: var(
+    --card-background-color,
+    var(--draggable-card-bg, var(--map-card-bg, rgba(32, 43, 54, 0.9)))
+  );
+  color: var(
+    --card-color,
+    var(--draggable-card-text, var(--map-card-text, #fff))
+  );
   align-items: center;
   justify-content: center;
   border-radius: 0px;
@@ -1392,4 +1484,173 @@
 .draggable-variant-plain .map-divider {
   border-color: currentColor;
   opacity: 0.15;
+}
+.drag-debug-viewer__container {
+  container-type: inline-size;
+  container-name: drag-debug-viewer;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  overflow-x: hidden;
+}
+
+.drag-debug-viewer__filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.drag-debug-viewer__filter select,
+.drag-debug-viewer__row select,
+.drag-debug-viewer__actions button {
+  font: inherit;
+}
+
+.drag-debug-viewer__split {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(160px, 40%);
+  gap: 10px;
+  padding: 0 6px 6px;
+  overflow: hidden;
+}
+@container drag-debug-viewer (min-width: 520px) {
+  .drag-debug-viewer__split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+}
+
+.drag-debug-viewer__list,
+.drag-debug-viewer__detail {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+
+  border: 1px solid
+    color-mix(in srgb, var(--map-border-color, #ccc) 75%, transparent);
+  border-radius: 8px;
+
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #999 transparent;
+}
+
+/* Chrome, Edge, Safari */
+.drag-debug-viewer__list::-webkit-scrollbar,
+.drag-debug-viewer__detail::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.drag-debug-viewer__list::-webkit-scrollbar-track,
+.drag-debug-viewer__detail::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 8px;
+}
+
+.drag-debug-viewer__list::-webkit-scrollbar-thumb,
+.drag-debug-viewer__detail::-webkit-scrollbar-thumb {
+  background: #999;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  border-radius: 8px;
+}
+
+.drag-debug-viewer__list::-webkit-scrollbar-thumb:hover,
+.drag-debug-viewer__detail::-webkit-scrollbar-thumb:hover {
+  background: #666;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.drag-debug-viewer__empty {
+  text-align: center;
+  padding: 28px 12px;
+  color: #9aa0a6;
+}
+
+.drag-debug-viewer__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.drag-debug-viewer__row:hover,
+.drag-debug-viewer__row--active {
+  background: var(--map-hover-color, #f5f5f5);
+}
+
+.drag-debug-viewer__meta {
+  min-width: 0;
+}
+
+.drag-debug-viewer__title {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drag-debug-viewer__sub {
+  color: var(--map-text-secondary, #5f6368);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drag-debug-viewer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.drag-debug-viewer__detail {
+  padding: 8px 10px;
+}
+
+.drag-debug-viewer__detail-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.drag-debug-viewer__detail-row {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 10px;
+  align-items: start;
+  margin-bottom: 4px;
+}
+
+.drag-debug-viewer__detail-label {
+  color: var(--map-text-secondary, #5f6368);
+}
+
+.drag-debug-viewer__mono {
+  word-break: break-all;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.drag-debug-viewer__row .form-group,
+.drag-debug-viewer__actions .form-group,
+.drag-debug-viewer__toolbar .form-group {
+  margin: 0;
+}
+
+.drag-debug-viewer__filter {
+  min-width: 160px;
 }

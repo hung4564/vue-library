@@ -1,19 +1,24 @@
+import './DemoHelpPanel.css';
+
 import type { DemoHelpSection } from '@hungpvq/demo-map-datasets';
-import { getDemoHelpChrome, type DemoPageGuide } from '@hungpvq/demo-map-datasets';
+import {
+  type DemoPageGuide,
+  getDemoHelpChrome,
+} from '@hungpvq/demo-map-datasets';
 import { getStoredMapLanguage } from '@hungpvq/map-core';
 import { useLang, useMapContext } from '@hungpvq/react-map-core';
 import {
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
-  type PointerEvent as ReactPointerEvent,
 } from 'react';
 import { useLocation } from 'react-router';
+
 import { getDemoPageGuide } from '../demo-guides';
-import './DemoHelpPanel.css';
 
 const MOBILE_MQ = '(max-width: 640px)';
 const DRAG_THRESHOLD_PX = 4;
@@ -63,11 +68,16 @@ export function DemoHelpPanel(props?: {
       return { intro: props.intro, sections: props.sections };
     }
     return getDemoPageGuide(location.pathname, guideLang);
-  }, [props?.guide, props?.intro, props?.sections, location.pathname, guideLang]);
+  }, [
+    props?.guide,
+    props?.intro,
+    props?.sections,
+    location.pathname,
+    guideLang,
+  ]);
 
   const [isMobile, setIsMobile] = useState(
-    () =>
-      typeof window !== 'undefined' && window.matchMedia(MOBILE_MQ).matches,
+    () => typeof window !== 'undefined' && window.matchMedia(MOBILE_MQ).matches,
   );
   const [open, setOpen] = useState(() => !isMobile);
   const [pos, setPos] = useState<Pos | null>(null);
@@ -191,7 +201,10 @@ export function DemoHelpPanel(props?: {
         <span className="demo-help__toggle-label">
           {open ? chrome.hide : chrome.show}
         </span>
-        <span className="demo-help__toggle-icon" aria-hidden="true">
+        <span
+          className="demo-help__toggle-icon"
+          aria-hidden="true"
+        >
           {open ? '▾' : '▸'}
         </span>
       </button>
@@ -208,7 +221,10 @@ export function DemoHelpPanel(props?: {
           ) : null}
           <ul className="demo-help__list">
             {resolved.sections.map((section) => (
-              <li key={section.id} className="demo-help__item">
+              <li
+                key={section.id}
+                className="demo-help__item"
+              >
                 <div className="demo-help__title">{section.title}</div>
                 <div className="demo-help__text">{section.body}</div>
               </li>

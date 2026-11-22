@@ -3,6 +3,7 @@
 import type { MaybeRefOrGetter } from '@hungpvq/shared';
 import { toValue, tryOnScopeDispose } from '@hungpvq/shared';
 import { ref, watchEffect } from 'vue';
+
 import type { ConfigurableWindow } from '../_configurable';
 import { defaultWindow } from '../_configurable';
 import { useSupported } from '../useSupported';

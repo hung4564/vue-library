@@ -7,19 +7,20 @@ import {
   Map,
   WorkerControl,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
   IdentifyControl,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 import { useCallback, useMemo, useState } from 'react';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { loadDataManagementDemoDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 type PagerState = {
   label: string;
@@ -105,6 +106,7 @@ export function DatasetDataManagementPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <BaseMapControl
@@ -122,7 +124,10 @@ export function DatasetDataManagementPage() {
         <WorkerControl position="top-left" />
         <div style={panelStyle}>
           {pagers.map((state, index) => (
-            <div key={state.label} className="dm-card dm-card--pager">
+            <div
+              key={state.label}
+              className="dm-card dm-card--pager"
+            >
               <strong>{state.label}</strong>
               <div className="dm-card__names">
                 {state.names.join(', ') || '(empty)'}

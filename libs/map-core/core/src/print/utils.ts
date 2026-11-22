@@ -2,8 +2,9 @@
  * Framework-agnostic print/export utilities for MapLibre GL JS
  */
 
-import type { MapSimple } from '../types';
 import { Map as MaplibreMap } from 'maplibre-gl';
+
+import type { MapSimple } from '../types';
 
 /**
  * Get a hidden map canvas for rendering/export purposes
@@ -111,12 +112,8 @@ export type ExportMapboxOptions = {
   pixelRatio?: number;
 };
 
-function resolveExportPixelRatio(
-  explicit?: number,
-  dpi?: number,
-): number {
-  const fromDpi =
-    typeof dpi === 'number' && dpi > 0 ? dpi / 96 : undefined;
+function resolveExportPixelRatio(explicit?: number, dpi?: number): number {
+  const fromDpi = typeof dpi === 'number' && dpi > 0 ? dpi / 96 : undefined;
   const dpr =
     typeof explicit === 'number' && explicit > 0
       ? explicit

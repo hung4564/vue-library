@@ -55,6 +55,19 @@ export type MapControlButtonUIState = {
   position?: Position;
   /** Cluster direction when rendered in menu/toolbar hosts. Default column. */
   orientation?: 'row' | 'column';
+  /**
+   * When true (stamped from expandable modules), ToolbarControl collapses the
+   * group to a launcher and opens options on a secondary row.
+   */
+  expandable?: boolean;
+  /** Role within an expandable module group. */
+  role?: 'launcher' | 'option' | 'close';
+  /**
+   * Stamped on expandable launchers. When `false`, pointerdown outside the
+   * toolbar does not collapse the secondary row (Escape / close still do).
+   * Default: `true`.
+   */
+  closeOnOutsideClick?: boolean;
 };
 
 /**
@@ -98,13 +111,16 @@ export type WithToolbar = {
 export interface Subscribable<T> {
   subscribe(fn: (state: T) => void): () => void;
 }
+export type ToolbarButtonGetState = {
+  location: 'host' | 'toolbar';
+};
 
 /**
  * Configuration for a toolbar button
  */
 export type ToolbarButtonConfig = {
   id: string;
-  getState: () => MapControlButtonUIState;
+  getState: (props: ToolbarButtonGetState) => MapControlButtonUIState;
   order?: number;
   onClick?: (e: MouseEvent) => void;
 };
@@ -112,14 +128,16 @@ export type ToolbarButtonConfig = {
 /**
  * Options for a single toolbar button
  */
-export type ToolbarSingleOptions = {
+export type ToolbarOptionsSingle = {
   kind?: 'single';
-} & ToolbarButtonConfig;
+  /** Control / button id used for store register (defaults in normalize). */
+  id?: string;
+} & Omit<ToolbarButtonConfig, 'id'>;
 
 /**
  * Options for a toolbar module (group of buttons)
  */
-export type ToolbarModuleOptions = {
+export type ToolbarOptionsModule = {
   kind: 'module';
   moduleId: string;
   order?: number;
@@ -127,11 +145,26 @@ export type ToolbarModuleOptions = {
   orientation?: 'row' | 'column';
   buttons: ToolbarButtonConfig[];
 };
+export type ToolbarOptionsModuleExpandable = {
+  kind: 'module-expandable';
+  moduleId: string;
+  order?: number;
+  /** How this module’s buttons sit together (menu corner / toolbar cluster). */
+  orientation?: 'row' | 'column';
+  /**
+   * When `false`, clicking outside the toolbar does not collapse the secondary
+   * row. Escape and the secondary close button still collapse. Default: `true`.
+   */
+  closeOnOutsideClick?: boolean;
+  buttons: ToolbarButtonConfig[];
+  expandableButton: (_props: { active: boolean }) => MapControlButtonUIState;
+};
 
 /**
  * Union type for all toolbar options
  */
-export type AnyToolbarOptions = ToolbarSingleOptions | ToolbarModuleOptions;
+export type AnyToolbarOptions =
+  ToolbarOptionsSingle | ToolbarOptionsModule | ToolbarOptionsModuleExpandable;
 
 /**
  * Strategy interface for toolbar controls
@@ -146,28 +179,9 @@ export type ToolbarStrategy<TState> = Subscribable<TState> & {
 /**
  * Strategy for a single control button
  */
-export type ControlStrategy = ToolbarStrategy<MapControlButtonUIState> & {
-  id: string;
-};
-
-/**
- * Strategy for a module (group of buttons)
- */
-export type ModuleStrategy = ToolbarStrategy<
-  Record<string, MapControlButtonUIState>
-> & {
-  moduleId: string;
-};
+export type ControlStrategy = ToolbarStrategy<MapControlButtonUIState>;
 
 /**
  * Union type for all toolbar strategies
  */
-export type AnyToolbarStrategy = ControlStrategy | ModuleStrategy;
-
-/**
- * Definition for creating a toolbar strategy
- */
-export type ToolbarStrategyDef<O, S extends AnyToolbarStrategy> = {
-  kind: string;
-  create(options: O & WithToolbar): S;
-};
+export type AnyToolbarStrategy = ControlStrategy;

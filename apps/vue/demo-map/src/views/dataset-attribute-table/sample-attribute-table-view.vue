@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ATTRIBUTE_TABLE_COMPONENT_KEY } from '@hungpvq/map-dataset/attribute-table';
 import type { AttributeTableViewProps } from '@hungpvq/map-dataset/attribute-table';
+import { ATTRIBUTE_TABLE_COMPONENT_KEY } from '@hungpvq/map-dataset/attribute-table';
 import { MapControlButton } from '@hungpvq/vue-map-core';
 import { computed, ref, watch } from 'vue';
 
@@ -49,9 +49,7 @@ function onRowClick(id: string) {
         :value="state.search"
         :placeholder="props.labels.search"
         @input="
-          props.controller.setSearch(
-            ($event.target as HTMLInputElement).value,
-          )
+          props.controller.setSearch(($event.target as HTMLInputElement).value)
         "
       />
       <MapControlButton
@@ -62,28 +60,39 @@ function onRowClick(id: string) {
         {{ props.labels.clear }}
       </MapControlButton>
       <MapControlButton
+        v-if="props.onExport"
         variant="outlined"
         size="small"
-        @click="props.onExportClick($event)"
+        @click="props.onExport?.($event)"
       >
-        {{
-          state.selectedIds.length
-            ? props.labels.exportSelected
-            : props.labels.export
-        }}
+        {{ props.labels.export }}
       </MapControlButton>
     </div>
-    <div v-if="state.loading" class="sample-at-view__status">
+    <div
+      v-if="state.loading"
+      class="sample-at-view__status"
+    >
       {{ props.labels.loading }}
     </div>
-    <div v-else-if="!state.rows.length" class="sample-at-view__status">
+    <div
+      v-else-if="!state.rows.length"
+      class="sample-at-view__status"
+    >
       {{ props.labels.empty }}
     </div>
-    <table v-else class="sample-at-view__table">
+    <table
+      v-else
+      class="sample-at-view__table"
+    >
       <thead>
         <tr>
           <th></th>
-          <th v-for="col in state.columns" :key="col.key">{{ col.label }}</th>
+          <th
+            v-for="col in state.columns"
+            :key="col.key"
+          >
+            {{ col.label }}
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -100,7 +109,10 @@ function onRowClick(id: string) {
               @click.stop="onRowClick(row.id)"
             />
           </td>
-          <td v-for="col in state.columns" :key="col.key">
+          <td
+            v-for="col in state.columns"
+            :key="col.key"
+          >
             {{ row.cells[col.key] }}
           </td>
         </tr>

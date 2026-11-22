@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { checkIsFirst, checkIsLast } from './array';
 
 describe('checkIsLast', () => {

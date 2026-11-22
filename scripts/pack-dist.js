@@ -25,56 +25,70 @@ const outDir = path.join(root, 'dist', 'packs');
 const SHARE = [
   'libs/share/shared',
   'libs/share/store',
-  'libs/share/log',
+  'libs/shared-log/core',
   'libs/share/file',
   'libs/share/core',
 ];
 
+const UI_CORE = ['libs/ui-core/vue', 'libs/ui-core/react'];
+
+const SHARED_LOG = [
+  'libs/shared-log/core',
+  'libs/shared-log/vue',
+  'libs/shared-log/react',
+];
+
 const DRAGGABLE_CORE = ['libs/draggable/core'];
-const DRAGGABLE_VUE = [...DRAGGABLE_CORE, 'libs/vue/draggable'];
-const DRAGGABLE_REACT = [...DRAGGABLE_CORE, 'libs/react/draggable'];
+const DRAGGABLE_VUE = [...DRAGGABLE_CORE, 'libs/draggable/vue'];
+const DRAGGABLE_REACT = [...DRAGGABLE_CORE, 'libs/draggable/react'];
 
 const MAP_CORE = [
   'libs/map-core/core',
-  'libs/map-core/map-dataset',
-  'libs/map-core/map-draw',
-  'libs/map-core/map-debug',
+  'libs/map-dataset/core',
+  'libs/map-draw/core',
+  'libs/map-devtools/core',
 ];
 
 const MAP_VUE = [
-  'libs/vue/map-core',
-  'libs/vue/map-dataset',
-  'libs/vue/map-draw',
-  'libs/vue/map-devtools',
-  'libs/vue/map',
+  'libs/map-core/vue',
+  'libs/map-dataset/vue',
+  'libs/map-draw/vue',
+  'libs/map-devtools/vue',
+  'libs/map/vue',
 ];
 
 const MAP_REACT = [
-  'libs/react/map-core',
-  'libs/react/map-dataset',
-  'libs/react/map-draw',
-  'libs/react/map-devtools',
-  'libs/react/map',
+  'libs/map-core/react',
+  'libs/map-dataset/react',
+  'libs/map-draw/react',
+  'libs/map-devtools/react',
+  'libs/map/react',
 ];
 
 /** @type {Record<string, string[]>} relative to dist/ */
 const PRESETS = {
+  'ui-core': UI_CORE,
+  'ui-core-vue': ['libs/ui-core/vue'],
+  'ui-core-react': ['libs/ui-core/react'],
+  'shared-log': SHARED_LOG,
+  'shared-log-vue': ['libs/shared-log/core', 'libs/shared-log/vue'],
+  'shared-log-react': ['libs/shared-log/core', 'libs/shared-log/react'],
   share: SHARE,
   'draggable-vue': [...SHARE.slice(0, 2), ...DRAGGABLE_VUE],
   'draggable-react': [...SHARE.slice(0, 2), ...DRAGGABLE_REACT],
   draggable: [
     ...SHARE.slice(0, 2),
     ...DRAGGABLE_CORE,
-    'libs/vue/draggable',
-    'libs/react/draggable',
+    'libs/draggable/vue',
+    'libs/draggable/react',
   ],
   'map-vue': [...SHARE, ...DRAGGABLE_VUE, ...MAP_CORE, ...MAP_VUE],
   'map-react': [...SHARE, ...DRAGGABLE_REACT, ...MAP_CORE, ...MAP_REACT],
   map: [
     ...SHARE,
     ...DRAGGABLE_CORE,
-    'libs/vue/draggable',
-    'libs/react/draggable',
+    'libs/draggable/vue',
+    'libs/draggable/react',
     ...MAP_CORE,
     ...MAP_VUE,
     ...MAP_REACT,

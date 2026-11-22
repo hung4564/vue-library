@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+
 import { useTimeoutFn } from '.';
 
 const defaultText = 'Please wait for 3 seconds';
@@ -16,5 +17,10 @@ function restart() {
 
 <template>
   <p>{{ text }}</p>
-  <button :class="{ disabled: isPending }" @click="restart()">Restart</button>
+  <button
+    :class="{ disabled: isPending }"
+    @click="restart()"
+  >
+    Restart
+  </button>
 </template>

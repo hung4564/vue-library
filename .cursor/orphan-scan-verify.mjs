@@ -3,7 +3,6 @@ import path from 'path';
 
 const ROOT = 'g:/code/0-library/vue-library';
 const SCAN_DIRS = [
-  'libs/ui/core',
   'libs/share',
   'libs/map-core',
   'libs/vue',
@@ -49,7 +48,8 @@ function walkAll(dir) {
   for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, ent.name);
     if (ent.isDirectory()) {
-      if (['node_modules', 'dist', '.nx', 'deploy'].includes(ent.name)) continue;
+      if (['node_modules', 'dist', '.nx', 'deploy'].includes(ent.name))
+        continue;
       walkAll(p);
     } else if (/\.(ts|tsx|vue|js|jsx|css|scss|html|json|md)$/.test(ent.name)) {
       allTextFiles.push(norm(p));
@@ -87,7 +87,9 @@ function refCount(file) {
   // Also check partial path segments commonly used in imports
   const srcIdx = rel.indexOf('/src/');
   if (srcIdx >= 0) {
-    patterns.push(rel.slice(srcIdx + 5).replace(/\.(ts|tsx|vue|js|jsx|css)$/, ''));
+    patterns.push(
+      rel.slice(srcIdx + 5).replace(/\.(ts|tsx|vue|js|jsx|css)$/, ''),
+    );
   }
   let count = 0;
   for (const p of [...new Set(patterns)]) {

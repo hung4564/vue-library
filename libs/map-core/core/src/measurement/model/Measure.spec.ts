@@ -1,12 +1,13 @@
-import { describe, expect, it, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+
+import { setMeasurementLabelPrefs } from '../utils';
 import { Measure } from './Measure';
+import { angleAtVertexDegrees, MeasureAngle } from './MeasureAngle';
 import { MeasureArea } from './MeasureArea';
-import { MeasureAngle, angleAtVertexDegrees } from './MeasureAngle';
+import { MeasureAzimuth } from './MeasureAzimuth';
 import { MeasureDistance } from './MeasureDistance';
 import { MeasurePoint } from './MeasurePoint';
-import { MeasureAzimuth } from './MeasureAzimuth';
 import { MeasureRadius } from './MeasureRadius';
-import { setMeasurementLabelPrefs } from '../utils';
 
 describe('Measure', () => {
   it('add/init/reset manage coordinates and replace invalid slots', () => {
@@ -71,9 +72,9 @@ describe('MeasureArea', () => {
       result.features_label?.filter((f) => f.properties?.is_edge) ?? [];
     expect(edges).toHaveLength(4);
     expect(typeof edges[0].properties?.text_rotate).toBe('number');
-    expect(
-      result.features_label?.some((f) => f.properties?.is_center),
-    ).toBe(true);
+    expect(result.features_label?.some((f) => f.properties?.is_center)).toBe(
+      true,
+    );
   });
 });
 

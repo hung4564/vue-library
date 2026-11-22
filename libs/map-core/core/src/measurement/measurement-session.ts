@@ -4,15 +4,18 @@
  * Hosts keep toolbar / registry / EventClick / image registration / UI popup.
  */
 
-import { convertGeometry, fitBounds } from '../utils/fillBound';
-import type { CoordinatesNumber, MapSimple } from '../types';
 import type { CrsItem } from '../crs/types';
+import type { CoordinatesNumber, MapSimple } from '../types';
+import { convertGeometry, fitBounds } from '../utils/fillBound';
 import {
-  MEASUREMENT_DEFAULT_HIGHLIGHT_COLOR,
   createMeasurementMapView,
+  MEASUREMENT_DEFAULT_HIGHLIGHT_COLOR,
 } from './map-view-layers';
 import { resolveMeasurementModeToggle } from './mode';
-import { MeasurementHandle, type MeasurementHandleInstance } from './model/handle';
+import {
+  MeasurementHandle,
+  type MeasurementHandleInstance,
+} from './model/handle';
 import { MeasureAngle } from './model/MeasureAngle';
 import { MeasureArea } from './model/MeasureArea';
 import { MeasureAzimuth } from './model/MeasureAzimuth';
@@ -24,12 +27,7 @@ import { MapMarkerView } from './model/viewMapMarker';
 import type { IViewSettingField } from './types';
 
 export type MeasurementModeType =
-  | 'distance'
-  | 'area'
-  | 'azimuth'
-  | 'angle'
-  | 'radius'
-  | 'point';
+  'distance' | 'area' | 'azimuth' | 'angle' | 'radius' | 'point';
 
 export type MeasurementUiState = {
   measurementType: string | undefined;
@@ -44,10 +42,7 @@ export type MeasurementUiState = {
 export type MeasurementSessionOptions = {
   callMap: (fn: (map: MapSimple) => void | Promise<void>) => void;
   getMeasurePointCrsItems?: () => CrsItem[];
-  translate?: (
-    key: string,
-    params?: Record<string, string | number>,
-  ) => string;
+  translate?: (key: string, params?: Record<string, string | number>) => string;
   onStateChange?: (state: MeasurementUiState) => void;
   /** Host wires EventClick when map view starts / resets. */
   onEventClickActive?: (active: boolean) => void;

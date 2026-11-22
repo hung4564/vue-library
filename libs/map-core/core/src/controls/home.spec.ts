@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { captureHomeView, goHome } from './home';
 
 describe('home control helpers', () => {

@@ -1,21 +1,25 @@
-<script setup lang="ts">
-import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+﻿<script setup lang="ts">
 import type { MapSimple } from '@hungpvq/map-core';
 import { getMap } from '@hungpvq/map-core';
 import {
   DrawingType,
   getFirstFeatureByMap,
-  sameFeature,
   type MapDrawOption,
+  sameFeature,
 } from '@hungpvq/map-draw';
+import { loggerFactory } from '@hungpvq/shared-log';
 import { BaseMapControl, Map } from '@hungpvq/vue-map-core';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { DrawControl, useMapDraw } from '@hungpvq/vue-map-draw';
 import type { Feature, FeatureCollection } from 'geojson';
 import type { GeoJSONSource } from 'maplibre-gl';
-import AsideControl from '../../layout/aside-control.vue';
-import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
 
-const MAP_ID = 'demo';
+import DemoHelpPanel from '../../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../../components/DemoLanguageControl.vue';
+import AsideControl from '../../layout/aside-control.vue';
+
+const logger = loggerFactory.createLogger().setNamespace('demo:draw');
+const MAP_ID = 'draw-demo';
 const RESULT_SOURCE = 'demo-draw-result';
 const RESULT_LAYERS = [
   'demo-draw-result-fill',
@@ -47,11 +51,7 @@ function ensureResultLayers(map: MapSimple) {
     id: RESULT_LAYERS[1],
     type: 'line',
     source: RESULT_SOURCE,
-    filter: [
-      'any',
-      ['==', '$type', 'LineString'],
-      ['==', '$type', 'Polygon'],
-    ],
+    filter: ['any', ['==', '$type', 'LineString'], ['==', '$type', 'Polygon']],
     paint: { 'line-color': '#3bb2d0', 'line-width': 2 },
   });
   map.addLayer({
@@ -115,14 +115,20 @@ function onMapLoaded(map: MapSimple) {
     },
     redraw: (mapId) => paintResult(mapId),
     callback(result) {
-      console.info('draw save', result);
+      logger
+        .with({ fn: 'onDrawSave', span: 'draw.save' })
+        .info('draw save', result);
     },
   } satisfies MapDrawOption);
 }
 </script>
 
 <template>
-  <Map map-id="demo" @map-loaded="onMapLoaded">
+  <Map
+    map-id="draw-demo"
+    @mapLoaded="onMapLoaded"
+  >
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
     <AsideControl position="top-left" />
     <DrawControl position="top-right" />
@@ -130,16 +136,3 @@ function onMapLoaded(map: MapSimple) {
     <DemoHelpPanel />
   </Map>
 </template>
-
-<style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
-</style>

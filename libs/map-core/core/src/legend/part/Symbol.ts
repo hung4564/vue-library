@@ -1,4 +1,5 @@
 import { SymbolLayerSpecification } from 'maplibre-gl';
+
 import type { LegendElement, PropsLegendOption } from '../types';
 
 function renderIconSymbol({

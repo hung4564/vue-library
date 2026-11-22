@@ -1,5 +1,6 @@
 import type { Ref } from 'vue';
 import { ref } from 'vue';
+
 import { useIntervalFn } from '../useIntervalFn';
 import type { MaybeRefOrGetter, Pausable } from '../utils';
 

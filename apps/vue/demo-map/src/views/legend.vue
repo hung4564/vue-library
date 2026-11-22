@@ -1,6 +1,11 @@
-<template lang="">
-  <Map ref="mapRef" @map-loaded="onMapLoaded">
+﻿<template lang="">
+  <Map
+    ref="mapRef"
+    @mapLoaded="onMapLoaded"
+  >
+    <DevtoolsControl position="bottom-right" />
     <DemoLanguageControl />
+    <AsideControl position="top-left" />
     <GotoControl position="top-right" />
     <GlobeControl />
     <SettingControl />
@@ -20,8 +25,8 @@
   </Map>
 </template>
 <script setup lang="ts">
-import DemoLanguageControl from '../components/DemoLanguageControl.vue';
 import { MapSimple } from '@hungpvq/map-core';
+import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
 import {
   BaseMapControl,
   FullScreenControl,
@@ -34,9 +39,12 @@ import {
   useLayerLegend,
   ZoomControl,
 } from '@hungpvq/vue-map-core';
-import { LayerSimpleMapboxBuild } from '@hungpvq/map-dataset/style';
+import { DevtoolsControl } from '@hungpvq/vue-map-devtools';
 import { shallowRef } from 'vue';
+
 import DemoHelpPanel from '../components/DemoHelpPanel.vue';
+import DemoLanguageControl from '../components/DemoLanguageControl.vue';
+import AsideControl from '../layout/aside-control.vue';
 const { getLayerLegendVNode } = useLayerLegend();
 const legends = shallowRef<any[]>([]);
 function onMapLoaded(map: MapSimple) {
@@ -110,16 +118,6 @@ function onMapLoaded(map: MapSimple) {
 }
 </script>
 <style>
-* {
-  padding: 0;
-  margin: 0;
-}
-
-body,
-html,
-#root {
-  height: 100%;
-}
 .legend-control {
   position: fixed;
   top: 10px;

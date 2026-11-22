@@ -21,20 +21,21 @@ import {
   WorkerControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
-
-import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import {
   ComponentManagementControl,
   DatasetControl,
-  HighlightPointer,
   IdentifyControl,
   IdentifyShowFirstControl,
   LayerControl,
 } from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
+import { DrawControl, InspectControl } from '@hungpvq/react-map-draw';
+
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
+import { DemoLanguageControl } from '../components/DemoLanguageControl';
 import { MapPageShell } from '../components/MapPageShell';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
 export function RegistryControlPage() {
   useDatasetRegistry();
@@ -42,6 +43,7 @@ export function RegistryControlPage() {
   return (
     <MapPageShell>
       <Map>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <MeasurementControl position="top-right" />
@@ -59,6 +61,8 @@ export function RegistryControlPage() {
         <InfoControl position="top-right" />
         <WorkerControl position="top-left" />
         <IdentifyControl position="top-right" />
+        <DrawControl position="top-right" />
+        <InspectControl position="top-right" />
         <GeoLocateControl position="top-right" />
 
         <PrintAdvancedControl />
@@ -75,9 +79,11 @@ export function RegistryControlPage() {
         <BaseMapControl position="bottom-left" />
 
         <IdentifyShowFirstControl />
-        <HighlightPointer enableClick />
 
-        <RegistryControl position="top-right" show />
+        <RegistryControl
+          position="top-right"
+          show
+        />
         <DemoHelpPanel />
       </Map>
     </MapPageShell>

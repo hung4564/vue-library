@@ -1,12 +1,5 @@
 import type { MapSimple } from '@hungpvq/map-core';
 import {
-  ComponentManagementControl,
-  DatasetControl,
-  HighlightPointer,
-  IdentifyControl,
-  LayerControl,
-} from '@hungpvq/react-map-dataset';
-import {
   BaseMapCard,
   BaseMapControl,
   CrsControl,
@@ -21,15 +14,22 @@ import {
   PrintControl,
   ZoomControl,
 } from '@hungpvq/react-map-core';
+import {
+  ComponentManagementControl,
+  DatasetControl,
+  IdentifyControl,
+  LayerControl,
+} from '@hungpvq/react-map-dataset';
+import { DevtoolsControl } from '@hungpvq/react-map-devtools';
 
+import { DemoHelpPanel } from '../components/DemoHelpPanel';
 import { DemoLanguageControl } from '../components/DemoLanguageControl';
+import { MapPageShell } from '../components/MapPageShell';
 import { loadAllMapDatasets } from '../data/loaders';
 import { useDatasetRegistry } from '../hooks/useDatasetRegistry';
-import { MapPageShell } from '../components/MapPageShell';
 import { AsideControl } from '../layout/AsideControl';
-import { DemoHelpPanel } from '../components/DemoHelpPanel';
 
-/** Alias of full dataset demo â€” same as home but reachable via /map-dataset */
+/** Alias of full dataset demo — same as home but reachable via /map-dataset */
 export function MapDatasetPage() {
   useDatasetRegistry();
 
@@ -40,6 +40,7 @@ export function MapDatasetPage() {
   return (
     <MapPageShell>
       <Map onMapLoaded={onMapLoaded}>
+        <DevtoolsControl position="bottom-right" />
         <DemoLanguageControl />
         <AsideControl position="top-left" />
         <GlobeControl />
@@ -60,7 +61,6 @@ export function MapDatasetPage() {
         <DatasetControl position="top-left" />
         <IdentifyControl position="top-right" />
         <EventManagementControl position="top-left" />
-        <HighlightPointer enableClick />
         <ComponentManagementControl />
         <DemoHelpPanel />
       </Map>

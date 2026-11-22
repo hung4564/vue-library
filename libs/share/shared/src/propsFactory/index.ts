@@ -25,6 +25,7 @@
  */
 
 import { ComponentObjectPropsOptions, Prop, PropType } from 'vue';
+
 import { IfAny } from '../utils';
 
 export function propsFactory<PropsOptions extends ComponentObjectPropsOptions>(
