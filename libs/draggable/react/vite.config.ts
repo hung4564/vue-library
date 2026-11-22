@@ -8,7 +8,7 @@ import dts from 'vite-plugin-dts';
 
 export default defineConfig(() => ({
   root: __dirname,
-  cacheDir: '../../../node_modules/.vite/libs/react/draggable',
+  cacheDir: '../../../node_modules/.vite/libs/draggable/react',
   plugins: [
     react(),
     nxViteTsPaths(),
@@ -19,7 +19,7 @@ export default defineConfig(() => ({
     }),
   ],
   build: {
-    outDir: '../../../dist/libs/react/draggable',
+    outDir: '../../../dist/libs/draggable/react',
     emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {
@@ -59,7 +59,7 @@ export default defineConfig(() => ({
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {
-      reportsDirectory: '../../../coverage/libs/react/draggable',
+      reportsDirectory: '../../../coverage/libs/draggable/react',
       provider: 'v8' as const,
     },
   },

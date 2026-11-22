@@ -19,13 +19,13 @@ function readPkg(relativePath: string): { name: string; version: string } {
 
 export function loadPackageVersions(): Record<string, string> {
   const draggable = readPkg('libs/draggable/core/package.json');
-  const reactDraggable = readPkg('libs/react/draggable/package.json');
+  const reactDraggable = readPkg('libs/draggable/react/package.json');
   const reactMapCore = readPkg('libs/react/map-core/package.json');
   const reactMapDataset = readPkg('libs/react/map-dataset/package.json');
   const shared = readPkg('libs/share/shared/package.json');
   const sharedCore = readPkg('libs/share/core/package.json');
   const sharedFile = readPkg('libs/share/file/package.json');
-  const vueDraggable = readPkg('libs/vue/draggable/package.json');
+  const vueDraggable = readPkg('libs/draggable/vue/package.json');
   const vueMapCore = readPkg('libs/vue/map-core/package.json');
   const vueMapDataset = readPkg('libs/vue/map-dataset/package.json');
   const vueMap = readPkg('libs/vue/map/package.json');

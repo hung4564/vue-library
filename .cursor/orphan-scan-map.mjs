@@ -12,8 +12,8 @@ const SCAN_DIRS = [
   'libs/vue/map-dataset',
   'libs/react/map-dataset',
   'libs/share/core',
-  'libs/vue/draggable',
-  'libs/react/draggable',
+  'libs/draggable/vue',
+  'libs/draggable/react',
   'libs/draggable',
 ];
 

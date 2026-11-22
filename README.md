@@ -35,8 +35,8 @@ Vue / React adapters (UI and hooks only — **do not** re-export core):
 ### 🎯 Draggable Libraries
 
 - **[@hungpvq/draggable](./libs/draggable/core/)** — Types, store (`drag:core`), utils, shared CSS
-- **[@hungpvq/vue-draggable](./libs/vue/draggable/)** — Vue container, items, hooks
-- **[@hungpvq/react-draggable](./libs/react/draggable/)** — React container, items, hooks
+- **[@hungpvq/vue-draggable](./libs/draggable/vue/)** — Vue container, items, hooks
+- **[@hungpvq/react-draggable](./libs/draggable/react/)** — React container, items, hooks
 
 **Docs hub:** [libs/draggable/core/docs/index.md](./libs/draggable/core/docs/index.md) · **SemVer checklist:** [libs/draggable/README.md](./libs/draggable/README.md)
 

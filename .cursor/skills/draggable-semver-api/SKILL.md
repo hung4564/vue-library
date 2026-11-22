@@ -92,8 +92,8 @@ Root `src/index.ts` must use **named exports only** — never reintroduce `expor
 | Package                    | Lock file                                     |
 | -------------------------- | --------------------------------------------- |
 | `@hungpvq/draggable`       | `libs/draggable/core/src/public-api.spec.ts`  |
-| `@hungpvq/vue-draggable`   | `libs/vue/draggable/src/public-api.spec.ts`   |
-| `@hungpvq/react-draggable` | `libs/react/draggable/src/public-api.spec.ts` |
+| `@hungpvq/vue-draggable`   | `libs/draggable/vue/src/public-api.spec.ts`   |
+| `@hungpvq/react-draggable` | `libs/draggable/react/src/public-api.spec.ts` |
 
 When adding/removing a **runtime** export:
 

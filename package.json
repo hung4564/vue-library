@@ -27,7 +27,7 @@
     "docs:preview": "vitepress preview docs",
     "docs:site:push": "node scripts/push-deploy-site.js docs",
     "sites:push": "node scripts/push-all-deploy-sites.js",
-    "draggable:format": "prettier --write \"libs/draggable\" \"libs/vue/draggable\" \"libs/react/draggable\" && nx run-many --projects=tag:draggable --exclude=tag:demo --target=lint -- --fix",
+    "draggable:format": "prettier --write \"libs/draggable\" && nx run-many --projects=tag:draggable --exclude=tag:demo --target=lint -- --fix",
     "draggable:build": "nx run-many --projects=tag:draggable --exclude=tag:demo --target=lint,build",
     "draggable:pack": "npm run share:build && npm run draggable:build && node scripts/pack-dist.js draggable",
     "draggable:pack:vue": "npm run share:build && npm run draggable:build && node scripts/pack-dist.js draggable-vue",

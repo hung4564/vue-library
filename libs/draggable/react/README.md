@@ -69,9 +69,9 @@ Store / commands: `useDragStore`, `useDragCommands`, `useDragLayout` (re-exporte
 
 ## Docs
 
-- Hub: [docs/index.md](../../draggable/core/docs/index.md)
-- [Stable API](../../draggable/core/docs/stable-api.md) · [a11y](../../draggable/core/docs/a11y.md) · [testing](../../draggable/core/docs/testing.md)
-- SemVer: [libs/draggable/README.md](../../draggable/README.md)
+- Hub: [docs/index.md](../core/docs/index.md)
+- [Stable API](../core/docs/stable-api.md) · [a11y](../core/docs/a11y.md) · [testing](../core/docs/testing.md)
+- SemVer: [libs/draggable/README.md](../README.md)
 
 **Vite / monorepo:** apps that path-alias this package to `libs/` must exclude `libs/` from `@vitejs/plugin-react` Fast Refresh or named exports break in the browser. See `apps/react/demo-draggable/vite.config.ts` and skill `draggable-semver-api`.
 

@@ -83,9 +83,9 @@
         "./libs/map-core/map-debug/src/style.css"
       ],
       "@hungpvq/map-draw": ["./libs/map-core/map-draw/src/index.ts"],
-      "@hungpvq/react-draggable": ["./libs/react/draggable/src/index.ts"],
+      "@hungpvq/react-draggable": ["./libs/draggable/react/src/index.ts"],
       "@hungpvq/react-draggable/style.css": [
-        "./libs/react/draggable/src/style.css"
+        "./libs/draggable/react/src/style.css"
       ],
       "@hungpvq/react-map": ["./libs/react/map/src/index.ts"],
       "@hungpvq/react-map-core": ["./libs/react/map-core/src/index.ts"],
@@ -110,9 +110,9 @@
       "@hungpvq/react-shared-log/style.css": [
         "./libs/shared-log/react/src/style.css"
       ],
-      "@hungpvq/react-ui-core": ["./libs/react/ui-core/src/index.ts"],
+      "@hungpvq/react-ui-core": ["./libs/ui-core/react/src/index.ts"],
       "@hungpvq/react-ui-core/style.css": [
-        "./libs/react/ui-core/src/style.css"
+        "./libs/ui-core/react/src/style.css"
       ],
       "@hungpvq/shared": ["./libs/share/shared/src/index.ts"],
       "@hungpvq/shared-core": ["./libs/share/core/src/index.ts"],
@@ -121,9 +121,9 @@
       "@hungpvq/shared-log/style.css": ["./libs/shared-log/core/src/style.css"],
       "@hungpvq/shared-store": ["./libs/share/store/src/index.ts"],
       "@hungpvq/shared-store/react": ["./libs/share/store/src/react/index.ts"],
-      "@hungpvq/vue-draggable": ["./libs/vue/draggable/src/index.ts"],
+      "@hungpvq/vue-draggable": ["./libs/draggable/vue/src/index.ts"],
       "@hungpvq/vue-draggable/style.css": [
-        "./libs/vue/draggable/src/style.css"
+        "./libs/draggable/vue/src/style.css"
       ],
       "@hungpvq/vue-map": ["./libs/vue/map/src/index.ts"],
       "@hungpvq/vue-map-core": ["./libs/vue/map-core/src/index.ts"],
@@ -144,8 +144,8 @@
       "@hungpvq/vue-shared-log/style.css": [
         "./libs/shared-log/vue/src/style.css"
       ],
-      "@hungpvq/vue-ui-core": ["./libs/vue/ui-core/src/index.ts"],
-      "@hungpvq/vue-ui-core/style.css": ["./libs/vue/ui-core/src/style.css"]
+      "@hungpvq/vue-ui-core": ["./libs/ui-core/vue/src/index.ts"],
+      "@hungpvq/vue-ui-core/style.css": ["./libs/ui-core/vue/src/style.css"]
     }
   },
   "exclude": ["node_modules", "tmp"]

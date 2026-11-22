@@ -5,8 +5,8 @@ const ROOT = 'g:/code/0-library/vue-library';
 const SCAN_DIRS = [
   'libs/share',
   'libs/draggable',
-  'libs/vue/draggable',
-  'libs/react/draggable',
+  'libs/draggable/vue',
+  'libs/draggable/react',
   'apps/vue/demo-draggable',
   'apps/react/demo-draggable',
 ];

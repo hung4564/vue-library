@@ -1,7 +1,7 @@
 {
   "name": "@hungpvq/react-draggable",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/react/draggable/src",
+  "sourceRoot": "libs/draggable/react/src",
   "projectType": "library",
   "release": {
     "version": {

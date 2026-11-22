@@ -8,7 +8,7 @@ import dts from 'vite-plugin-dts';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../../node_modules/.vite/libs/vue/draggable',
+  cacheDir: '../../../node_modules/.vite/libs/draggable/vue',
 
   plugins: [
     vue(),
@@ -21,7 +21,7 @@ export default defineConfig({
   ],
 
   build: {
-    outDir: '../../../dist/libs/vue/draggable',
+    outDir: '../../../dist/libs/draggable/vue',
     emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {
@@ -60,7 +60,7 @@ export default defineConfig({
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {
-      reportsDirectory: '../../../coverage/libs/vue/draggable',
+      reportsDirectory: '../../../coverage/libs/draggable/vue',
       provider: 'v8' as const,
     },
   },

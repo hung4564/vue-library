@@ -43,7 +43,7 @@ Prefer editing package-local markdown that the sites consume:
 - Context menu (experimental): `libs/draggable/core/docs/context-menu.md`
 - SemVer checklist: `libs/draggable/README.md`
 - Component docs: `libs/draggable/core/docs/draggable-*.md`
-- Adapter experimental barrels: `libs/vue/draggable/src/experimental.ts`, `libs/react/draggable/src/experimental.ts`
+- Adapter experimental barrels: `libs/draggable/vue/src/experimental.ts`, `libs/draggable/react/src/experimental.ts`
 
 Keep Stable docs aligned with code when changing public protocol (ids, exports, CSS tokens, store keys, a11y helpers).
 When adding a root export: update `public-api.spec.ts` + `stable-api.md` together (map and draggable).

@@ -1,7 +1,7 @@
 {
   "name": "@hungpvq/react-ui-core",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/react/ui-core/src",
+  "sourceRoot": "libs/ui-core/react/src",
   "projectType": "library",
   "release": {
     "version": {

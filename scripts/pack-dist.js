@@ -31,8 +31,8 @@ const SHARE = [
 ];
 
 const DRAGGABLE_CORE = ['libs/draggable/core'];
-const DRAGGABLE_VUE = [...DRAGGABLE_CORE, 'libs/vue/draggable'];
-const DRAGGABLE_REACT = [...DRAGGABLE_CORE, 'libs/react/draggable'];
+const DRAGGABLE_VUE = [...DRAGGABLE_CORE, 'libs/draggable/vue'];
+const DRAGGABLE_REACT = [...DRAGGABLE_CORE, 'libs/draggable/react'];
 
 const MAP_CORE = [
   'libs/map-core/core',
@@ -65,16 +65,16 @@ const PRESETS = {
   draggable: [
     ...SHARE.slice(0, 2),
     ...DRAGGABLE_CORE,
-    'libs/vue/draggable',
-    'libs/react/draggable',
+    'libs/draggable/vue',
+    'libs/draggable/react',
   ],
   'map-vue': [...SHARE, ...DRAGGABLE_VUE, ...MAP_CORE, ...MAP_VUE],
   'map-react': [...SHARE, ...DRAGGABLE_REACT, ...MAP_CORE, ...MAP_REACT],
   map: [
     ...SHARE,
     ...DRAGGABLE_CORE,
-    'libs/vue/draggable',
-    'libs/react/draggable',
+    'libs/draggable/vue',
+    'libs/draggable/react',
     ...MAP_CORE,
     ...MAP_VUE,
     ...MAP_REACT,

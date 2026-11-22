@@ -1,16 +1,16 @@
 /// <reference types="vitest" />
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-import vue from '@vitejs/plugin-vue';
+import react from '@vitejs/plugin-react';
 import * as path from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../../node_modules/.vite/libs/vue/ui-core',
+  cacheDir: '../../../node_modules/.vite/libs/ui-core/react',
   plugins: [
-    vue(),
+    react(),
     nxViteTsPaths(),
     nxCopyAssetsPlugin(['*.md', 'package.json']),
     dts({
@@ -19,18 +19,13 @@ export default defineConfig({
     }),
   ],
   build: {
-    outDir: '../../../dist/libs/vue/ui-core',
+    outDir: '../../../dist/libs/ui-core/react',
     emptyOutDir: true,
     reportCompressedSize: true,
-    commonjsOptions: {
-      transformMixedEsModules: true,
-    },
+    commonjsOptions: { transformMixedEsModules: true },
     lib: {
-      entry: {
-        index: 'src/index.ts',
-        css: 'src/style.ts',
-      },
-      name: 'vue-ui-core',
+      entry: { index: 'src/index.ts', css: 'src/style.ts' },
+      name: 'react-ui-core',
       fileName: (format, entryName) => {
         const ext = format === 'cjs' ? 'cjs' : 'js';
         return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
@@ -38,11 +33,15 @@ export default defineConfig({
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      external: ['vue', '@ckpack/vue-color', '@jamescoyle/vue-icon', '@mdi/js'],
-      output: {
-        assetFileNames: 'style.css',
-        globals: { vue: 'Vue' },
-      },
+      external: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        '@mdi/js',
+        '@mdi/react',
+        '@uiw/react-color-sketch',
+      ],
+      output: { assetFileNames: 'style.css' },
     },
   },
   test: {

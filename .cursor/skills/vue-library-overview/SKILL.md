@@ -19,8 +19,8 @@ Nx + TypeScript monorepo publishing `@hungpvq/*` packages for MapLibre GIS maps,
 | Map engine   | `libs/map-core/core`, `map-dataset`, `map-draw`, `map-debug`        | `@hungpvq/map-core`, `map-dataset`, `map-draw`, `map-debug` |
 | Vue map      | `libs/vue/map-core`, `map-dataset`, `map-draw`, `map-devtools`      | `@hungpvq/vue-map-*`                                        |
 | React map    | `libs/react/map-core`, `map-dataset`, `map-draw`, `map-devtools`    | `@hungpvq/react-map-*`                                      |
-| Draggable    | `libs/draggable/core`, `libs/vue/draggable`, `libs/react/draggable` | `@hungpvq/draggable`, `vue-draggable`, `react-draggable`    |
-| Share / UI   | `libs/share/*`, `libs/vue/ui-core`, `libs/react/ui-core`            | `@hungpvq/shared*`, `vue-ui-core`, `react-ui-core`          |
+| Draggable    | `libs/draggable/core`, `libs/draggable/vue`, `libs/draggable/react` | `@hungpvq/draggable`, `vue-draggable`, `react-draggable`    |
+| Share / UI   | `libs/share/*`, `libs/ui-core/vue`, `libs/ui-core/react`            | `@hungpvq/shared*`, `vue-ui-core`, `react-ui-core`          |
 | Demos / docs | Nx serve demos, `docs/`, `deploy/demo-*`                            | VitePress sites                                             |
 
 Nx tags: `map`, `draggable`, `share`, `demo`, `e2e`, plus framework tags. `tag:map` / `tag:draggable` are for publishable libs (+ demo apps); e2e and private fixtures like `demo-map-datasets` do **not** carry those release tags. Release groups: `map`, `draggable`, `shared-store`, `shared-log`, `ui` (see root `nx.json`).

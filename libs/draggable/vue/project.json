@@ -1,7 +1,7 @@
 {
   "name": "@hungpvq/vue-draggable",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/vue/draggable/src",
+  "sourceRoot": "libs/draggable/vue/src",
   "projectType": "library",
   "release": {
     "version": {

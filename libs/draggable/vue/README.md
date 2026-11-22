@@ -57,9 +57,9 @@ Prefer controlled `v-model:show` so store-driven open/close stays in sync.
 
 ## Docs
 
-- Hub: [docs/index.md](../../draggable/core/docs/index.md)
-- [Stable API](../../draggable/core/docs/stable-api.md) · [a11y](../../draggable/core/docs/a11y.md) · [testing](../../draggable/core/docs/testing.md)
-- SemVer: [libs/draggable/README.md](../../draggable/README.md)
+- Hub: [docs/index.md](../core/docs/index.md)
+- [Stable API](../core/docs/stable-api.md) · [a11y](../core/docs/a11y.md) · [testing](../core/docs/testing.md)
+- SemVer: [libs/draggable/README.md](../README.md)
 
 **Public surface:** named root exports only. Experimental UI (`ManagementControl`, `ContextMenu`, …) lives in `src/experimental.ts` and is re-exported from the root for 1.x. Lock: `src/public-api.spec.ts`.
 

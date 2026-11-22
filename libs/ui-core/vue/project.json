@@ -1,7 +1,7 @@
 {
   "name": "@hungpvq/vue-ui-core",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/vue/ui-core/src",
+  "sourceRoot": "libs/ui-core/vue/src",
   "projectType": "library",
   "release": {
     "version": {
