@@ -25,7 +25,7 @@ const outDir = path.join(root, 'dist', 'packs');
 const SHARE = [
   'libs/share/shared',
   'libs/share/store',
-  'libs/share/log',
+  'libs/shared-log/core',
   'libs/share/file',
   'libs/share/core',
 ];

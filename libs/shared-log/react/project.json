@@ -1,7 +1,7 @@
 {
   "name": "@hungpvq/react-shared-log",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/react/shared-log/src",
+  "sourceRoot": "libs/shared-log/react/src",
   "projectType": "library",
   "release": {
     "version": {
@@ -24,7 +24,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../../coverage/libs/react/shared-log"
+        "reportsDirectory": "../../../coverage/libs/shared-log/react"
       }
     },
     "ts-check": {

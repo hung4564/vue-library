@@ -1,7 +1,7 @@
 {
   "name": "shared-log",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/share/log/src",
+  "sourceRoot": "libs/shared-log/core/src",
   "projectType": "library",
   "release": {
     "version": {
@@ -17,17 +17,17 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/share/log",
-        "main": "libs/share/log/src/index.ts",
-        "tsConfig": "libs/share/log/tsconfig.lib.json",
-        "assets": ["libs/share/log/*.md", "libs/share/log/src/style.css"]
+        "outputPath": "dist/libs/shared-log/core",
+        "main": "libs/shared-log/core/src/index.ts",
+        "tsConfig": "libs/shared-log/core/tsconfig.lib.json",
+        "assets": ["libs/shared-log/core/*.md", "libs/shared-log/core/src/style.css"]
       }
     },
     "test": {
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../../coverage/libs/share/log"
+        "reportsDirectory": "../../../coverage/libs/shared-log/core"
       }
     },
     "ts-check": {

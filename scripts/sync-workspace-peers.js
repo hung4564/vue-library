@@ -54,7 +54,7 @@ const GROUPS = {
   },
   'shared-log': {
     packages: ['@hungpvq/shared-log'],
-    leadPkg: 'libs/share/log/package.json',
+    leadPkg: 'libs/shared-log/core/package.json',
   },
 };
 

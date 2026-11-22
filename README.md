@@ -46,7 +46,7 @@ Vue / React adapters (UI and hooks only — **do not** re-export core):
 - **[@hungpvq/shared-core](./libs/share/core/)** — Core shared functions
 - **[@hungpvq/shared-file](./libs/share/file/)** — File utilities
 - **[@hungpvq/shared-store](./libs/share/store/)** — Store utilities
-- **[@hungpvq/shared-log](./libs/share/log/)** — Logging utilities
+- **[@hungpvq/shared-log](./libs/shared-log/core/)** — Logging utilities
 
 ## 🛠️ Installation
 

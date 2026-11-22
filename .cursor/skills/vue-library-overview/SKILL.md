@@ -47,7 +47,7 @@ Do not put MapLibre business logic only in a Vue or React package if it belongs 
 
 ## Logging (`@hungpvq/shared-log`)
 
-**Always** log through `@hungpvq/shared-log`. Do **not** use raw `console.log` / `console.info` / `console.warn` / `console.debug` / `console.error` in libs, demos, or apps (except inside `@hungpvq/shared-log` adapters themselves). Package details: `libs/share/log/README.md`. `@hungpvq/shared-log` is **vanilla JS only** — Vue/React hooks (`useLiveHookDebug`, `LiveHookScope`) live in `@hungpvq/vue-shared-log` / `@hungpvq/react-shared-log` (see **shared-log-vanilla** skill).
+**Always** log through `@hungpvq/shared-log`. Do **not** use raw `console.log` / `console.info` / `console.warn` / `console.debug` / `console.error` in libs, demos, or apps (except inside `@hungpvq/shared-log` adapters themselves). Package details: `libs/shared-log/core/README.md`. `@hungpvq/shared-log` is **vanilla JS only** — Vue/React hooks (`useLiveHookDebug`, `LiveHookScope`) live in `@hungpvq/vue-shared-log` / `@hungpvq/react-shared-log` (see **shared-log-vanilla** skill).
 
 ### Logger Context Rule (required)
 
@@ -186,5 +186,5 @@ Tsconfig paths point `@hungpvq/react-*` at `libs/**/src`. React Vite demos must 
 - Release → `nx-release-workflow`
 - Docs sites → `map-docs-vitepress`
 - Tests → `map-testing`
-- Shared-log vanilla JS (no Vue/React in `libs/share/log`) → `shared-log-vanilla`
+- Shared-log vanilla JS (no Vue/React in `libs/shared-log/core`) → `shared-log-vanilla`
 - Process / local state on `ensure*` + `@hungpvq/shared-store` → `shared-store-state`

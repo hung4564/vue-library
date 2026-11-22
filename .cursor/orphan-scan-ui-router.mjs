@@ -6,7 +6,7 @@ const SCAN_DIRS = [
   'libs/share/shared',
   'libs/share/store',
   'libs/share/file',
-  'libs/share/log',
+  'libs/shared-log/core',
   'libs/map-core/map-draw/src',
   'libs/vue/map-draw',
   'libs/react/map-draw',

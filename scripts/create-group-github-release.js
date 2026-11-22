@@ -19,7 +19,7 @@ const LEAD = {
   draggable: 'libs/draggable/core/package.json',
   map: 'libs/map-core/core/package.json',
   'shared-store': 'libs/share/store/package.json',
-  'shared-log': 'libs/share/log/package.json',
+  'shared-log': 'libs/shared-log/core/package.json',
 };
 
 function resolveGithubRepo() {

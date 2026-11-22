@@ -1,16 +1,16 @@
 /// <reference types="vitest" />
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
-import react from '@vitejs/plugin-react';
+import vue from '@vitejs/plugin-vue';
 import * as path from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../../node_modules/.vite/libs/react/shared-log',
+  cacheDir: '../../../node_modules/.vite/libs/shared-log/vue',
   plugins: [
-    react(),
+    vue(),
     nxViteTsPaths(),
     nxCopyAssetsPlugin(['*.md', 'package.json']),
     dts({
@@ -19,13 +19,18 @@ export default defineConfig({
     }),
   ],
   build: {
-    outDir: '../../../dist/libs/react/shared-log',
+    outDir: '../../../dist/libs/shared-log/vue',
     emptyOutDir: true,
     reportCompressedSize: true,
-    commonjsOptions: { transformMixedEsModules: true },
+    commonjsOptions: {
+      transformMixedEsModules: true,
+    },
     lib: {
-      entry: { index: 'src/index.ts', css: 'src/style.ts' },
-      name: 'react-shared-log',
+      entry: {
+        index: 'src/index.ts',
+        css: 'src/style.ts',
+      },
+      name: 'vue-shared-log',
       fileName: (format, entryName) => {
         const ext = format === 'cjs' ? 'cjs' : 'js';
         return entryName === 'index' ? `index.${ext}` : `${entryName}.${ext}`;
@@ -34,14 +39,15 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [
-        'react',
-        'react-dom',
-        'react/jsx-runtime',
+        'vue',
         '@hungpvq/shared-log',
         '@hungpvq/shared-store',
-        '@hungpvq/react-ui-core',
+        '@hungpvq/vue-ui-core',
       ],
-      output: { assetFileNames: 'style.css' },
+      output: {
+        assetFileNames: 'style.css',
+        globals: { vue: 'Vue' },
+      },
     },
   },
   test: {

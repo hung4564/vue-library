@@ -1,7 +1,7 @@
 {
   "name": "@hungpvq/vue-shared-log",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/vue/shared-log/src",
+  "sourceRoot": "libs/shared-log/vue/src",
   "projectType": "library",
   "release": {
     "version": {
@@ -24,7 +24,7 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../../coverage/libs/vue/shared-log"
+        "reportsDirectory": "../../../coverage/libs/shared-log/vue"
       }
     },
     "ts-check": {

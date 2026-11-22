@@ -52,7 +52,7 @@ const GROUPS = {
     syncDocs: false,
   },
   'shared-log': {
-    leadPkg: 'libs/share/log/package.json',
+    leadPkg: 'libs/shared-log/core/package.json',
     site: null,
     syncDocs: false,
   },
