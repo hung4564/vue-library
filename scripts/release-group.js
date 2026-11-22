@@ -308,6 +308,8 @@ dryRun=${opts.dryRun} skipSite=${opts.skipSite} skipPush=${opts.skipPush} localP
       'version',
       ...(opts.specifier ? [opts.specifier] : []),
       `--group=${opts.group}`,
+      '--git-commit=false',
+      '--git-tag=false',
     ];
     if (opts.dryRun) parts.push('--dry-run');
     run(parts.join(' '));
@@ -382,7 +384,14 @@ dryRun=${opts.dryRun} skipSite=${opts.skipSite} skipPush=${opts.skipPush} localP
         `GitHub Release body: ${body.split(/\r?\n/).length} lines from ${path.dirname(cfg.leadPkg)}/CHANGELOG.md`,
       );
     }
-    await createOrUpdateGroupGithubRelease(expectedTag, body);
+    try {
+      await createOrUpdateGroupGithubRelease(expectedTag, body);
+    } catch (err) {
+      console.warn(
+        `\nWarning: Could not create GitHub Release for ${expectedTag}: ${err.message}\n` +
+          `Git commit and tag were created successfully. Push with: git push origin main --tags\n`,
+      );
+    }
   } else {
     console.warn(
       `skip-push: skipped GitHub Release for ${expectedTag}. Create manually after push.`,
