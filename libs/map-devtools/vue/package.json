@@ -34,7 +34,7 @@
     "@hungpvq/vue-shared-log": "^0.1.0",
     "@hungpvq/vue-draggable": "^1.4.0",
     "@hungpvq/vue-map-core": "^1.2.0",
-    "@hungpvq/vue-ui-core": "^0.1.0",
+    "@hungpvq/vue-ui-core": "^0.4.0",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.4.47",
     "vue": "^3.3.4"
