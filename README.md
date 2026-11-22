@@ -1,17 +1,20 @@
 # VueLibrary
 
-> A monorepo of MapLibre map libraries and UI components for Vue 3 and React
+> A monorepo of MapLibre map libraries, draggable layouts, UI components, and logging utilities for Vue 3 and React
 
 ## 🚀 Introduction
 
-VueLibrary is an Nx + TypeScript monorepo publishing `@hungpvq/*` packages for interactive maps, draggable layouts, and shared utilities. Dual Vue and React adapters sit on framework-agnostic cores:
+VueLibrary is an Nx + TypeScript monorepo publishing `@hungpvq/*` packages. Dual Vue 3 and React adapters sit on framework-agnostic cores:
 
-- **Interactive maps** with MapLibre GL (`map-core`, `map-dataset`, `map-draw`)
-- **Drag and drop layouts** with Vue / React adapters
-- **Dataset management** and visualization
-- **Shared utilities** used across packages
+- **Interactive maps** with MapLibre GL (`map-core`, `map-dataset`, `map-draw`, `map-devtools`, `map`)
+- **Drag and drop layouts** with Vue / React adapters (`draggable`)
+- **Generic UI components** with zero internal dependencies (`ui-core`)
+- **Logging & Devtools infrastructure** with live hook tracking (`shared-log`)
+- **Shared utilities & state management** used across packages (`shared-store`, `shared`, `shared-core`, `shared-file`)
 
 ## 📦 Main Libraries
+
+Libraries in this monorepo are structured by functional domain under `libs/<domain>/{core,vue,react,docs}`:
 
 ### 🗺️ Map Libraries
 
@@ -20,17 +23,21 @@ Framework-agnostic cores:
 - **[@hungpvq/map-core](./libs/map-core/core/)** — Engine helpers, store, theme, locale, registry, workers
 - **[@hungpvq/map-dataset](./libs/map-dataset/core/)** — Dataset tree, builders, identify, style, GIS worker
 - **[@hungpvq/map-draw](./libs/map-draw/core/)** — DrawService, DrawingType, styles, shared `InspectController`
+- **[@hungpvq/map-debug](./libs/map-devtools/core/)** — Map debug host bridge, store helpers, shared styles
 
 Vue / React adapters (UI and hooks only — **do not** re-export core):
 
 - **[@hungpvq/vue-map-core](./libs/map-core/vue/)** / **[@hungpvq/react-map-core](./libs/map-core/react/)** — Map container, controls (basemap, measurement, print, legend, …), hooks (`useMap`, `useMapState`, …)
 - **[@hungpvq/vue-map-dataset](./libs/map-dataset/vue/)** / **[@hungpvq/react-map-dataset](./libs/map-dataset/react/)** — Dataset UI, hooks, registry plugin
-- **[@hungpvq/vue-map-draw](./libs/map-draw/vue/)** / **[@hungpvq/react-map-draw](./libs/map-draw/react/)** — Draw / edit UI; `InspectControl` is **parity** (shared `InspectController`: style + popup/hover)
+- **[@hungpvq/vue-map-draw](./libs/map-draw/vue/)** / **[@hungpvq/react-map-draw](./libs/map-draw/react/)** — Draw / edit UI; `InspectControl` parity (shared `InspectController`)
 - **[@hungpvq/vue-map-devtools](./libs/map-devtools/vue/)** / **[@hungpvq/react-map-devtools](./libs/map-devtools/react/)** — Debug panel (store, logs, errors)
+- **[@hungpvq/vue-map](./libs/map/vue/)** / **[@hungpvq/react-map](./libs/map/react/)** — Meta packages grouping all map adapters
 
 **Import guidance:** import protocol/types/services (`getMap`, `errorHandler`, builders, `DrawService`, …) from `@hungpvq/map-core` / `map-dataset` / `map-draw`; import UI and hooks from the matching `vue-*` / `react-*` package.
 
-**Docs hub:** [libs/map-core/docs/index.md](./libs/map-core/docs/index.md) · **Stable API:** [stable-api.md](./libs/map-core/docs/core/stable-api.md) · **Map store:** [map-store.md](./libs/map-core/docs/core/map-store.md) · **Error handling:** [error-handling.md](./libs/map-core/docs/core/error-handling.md) · **Devtools:** [devtools.md](./libs/map-core/docs/core/devtools.md) · **SemVer checklist:** [libs/map-core/README.md](./libs/map-core/README.md)
+**Docs hubs:** [Map Core docs](./libs/map-core/docs/index.md) · [Map Dataset docs](./libs/map-dataset/docs/index.md) · [Map Draw docs](./libs/map-draw/docs/index.md) · **Stable API:** [stable-api.md](./libs/map-core/docs/core/stable-api.md) · **Map store:** [map-store.md](./libs/map-core/docs/core/map-store.md) · **Devtools:** [devtools.md](./libs/map-core/docs/core/devtools.md)
+
+---
 
 ### 🎯 Draggable Libraries
 
@@ -40,17 +47,43 @@ Vue / React adapters (UI and hooks only — **do not** re-export core):
 
 **Docs hub:** [libs/draggable/docs/index.md](./libs/draggable/docs/index.md) · **SemVer checklist:** [libs/draggable/README.md](./libs/draggable/README.md)
 
-### 🔧 Shared Libraries
+---
 
-- **[@hungpvq/shared](./libs/share/shared/)** — Shared utilities
-- **[@hungpvq/shared-core](./libs/share/core/)** — Core shared functions
-- **[@hungpvq/shared-file](./libs/share/file/)** — File utilities
-- **[@hungpvq/shared-store](./libs/share/store/)** — Store utilities
-- **[@hungpvq/shared-log](./libs/shared-log/core/)** — Logging utilities
+### 🎨 UI Core Libraries
+
+Framework-level UI primitives with **zero** dependencies on other workspace libraries:
+
+- **[@hungpvq/vue-ui-core](./libs/ui-core/vue/)** — Vue 3 buttons, inputs, tabs, lists, tree items, form fields
+- **[@hungpvq/react-ui-core](./libs/ui-core/react/)** — React 18 buttons, inputs, tabs, lists, tree items, form fields
+
+Controls include: `BaseButton`, `CopyButton`, `Icon`, `Tabs`, `List`, `ListItem`, `TreeItem`, `Collapse`, and form fields (`InputText`, `InputSelect`, `InputCheckbox`, `InputSlider`, `DragDropFile`).
+
+---
+
+### 🪵 Shared Log & Devtools
+
+Universal logging envelope (`{ id, header, data }`), live hook inspector, and devtools shell:
+
+- **[@hungpvq/shared-log](./libs/shared-log/core/)** — Vanilla JS core logger, stores (IndexedDB/memory), ambient zone context, debug host
+- **[@hungpvq/vue-shared-log](./libs/shared-log/vue/)** — Vue Devtools shell, built-in tabs (Store, Live, Logs, Errors), `useLiveHookDebug`
+- **[@hungpvq/react-shared-log](./libs/shared-log/react/)** — React Devtools shell, built-in tabs, `useLiveHookDebug`, `LiveHookScope`
+
+**Docs hub:** [libs/shared-log/docs/index.md](./libs/shared-log/docs/index.md) · [Overview](./libs/shared-log/README.md)
+
+---
+
+### 🔧 Shared Utilities
+
+- **[@hungpvq/shared-store](./libs/share/store/)** — Process-wide reactive store service
+- **[@hungpvq/shared](./libs/share/shared/)** — General shared utilities
+- **[@hungpvq/shared-core](./libs/share/core/)** — Core shared helpers
+- **[@hungpvq/shared-file](./libs/share/file/)** — File reading, writing, and parsing utilities
+
+---
 
 ## 🛠️ Installation
 
-### Install the entire project
+### Install the entire project (development)
 
 ```bash
 # Clone repository
@@ -64,27 +97,33 @@ npm install
 npm run build
 ```
 
-### Install individual libraries
+### Install individual packages (production)
 
 ```bash
 # Map cores + Vue adapters
 npm install @hungpvq/map-core @hungpvq/map-dataset @hungpvq/map-draw
 npm install @hungpvq/vue-map-core @hungpvq/vue-map-dataset @hungpvq/vue-map-draw
 
-# Or React adapters
+# Or React map adapters
 npm install @hungpvq/react-map-core @hungpvq/react-map-dataset @hungpvq/react-map-draw
-
-# Optional map debug panel
-npm install @hungpvq/vue-map-devtools
-# npm install @hungpvq/react-map-devtools
 
 # Draggable
 npm install @hungpvq/draggable @hungpvq/vue-draggable
 # npm install @hungpvq/react-draggable
 
-# Shared libraries
-npm install @hungpvq/shared @hungpvq/shared-core @hungpvq/shared-file @hungpvq/shared-store @hungpvq/shared-log
+# UI Core
+npm install @hungpvq/vue-ui-core
+# npm install @hungpvq/react-ui-core
+
+# Shared Log & Devtools
+npm install @hungpvq/shared-log @hungpvq/vue-shared-log
+# npm install @hungpvq/react-shared-log
+
+# Shared Utilities
+npm install @hungpvq/shared-store @hungpvq/shared @hungpvq/shared-core @hungpvq/shared-file
 ```
+
+---
 
 ## 🚀 Quick Start
 
@@ -155,66 +194,79 @@ function onMapLoaded(map: MapSimple) {
 </template>
 ```
 
-Dataset setup: [map-dataset docs](./libs/map-dataset/docs/index.md) (also linked from the [map docs hub](./libs/map-core/docs/index.md)).
-
-### Devtools (optional)
-
-- **Vue / React:** `installDevtools()` then mount `<Devtools />` (`@hungpvq/vue-map-devtools` / `@hungpvq/react-map-devtools`)
-
-Details: [devtools.md](./libs/map-core/docs/core/devtools.md).
+---
 
 ## 📚 Documentation
 
-- [Shared Utilities Documentation](libs/share/README.md)
-- [Map Draw Documentation](libs/map-draw/core/README.md)
-- [Map Devtools Documentation](libs/map-devtools/core/README.md)
-
-- **[Map docs hub](./libs/map-core/docs/index.md)** — Getting started, Stable API, minimal starter
-- **[VitePress docs](./docs/)** — Linked package docs site (`npm run docs:dev`)
+- **[VitePress Docs Site](./docs/)** — Unified portal (`npm run docs:dev`)
+- **[Map Core Docs Hub](./libs/map-core/docs/index.md)** — Getting started, Stable API, minimal starter
+- **[Map Dataset Docs](./libs/map-dataset/docs/index.md)** — Datasets, layers, styles, identify
+- **[Map Draw Docs](./libs/map-draw/docs/index.md)** — Draw service, shapes, inspect
+- **[Draggable Docs](./libs/draggable/docs/index.md)** — Layouts, drag-and-drop, containers
+- **[Shared Log Docs](./libs/shared-log/docs/index.md)** — Logging API, Live hook tracking, Devtools shell
 - **Live demos:** [Vue map](https://hung4564.github.io/demo-map/vue/) · [React map](https://hung4564.github.io/demo-map/react/) · [Vue draggable](https://hung4564.github.io/demo-draggable/vue/) · [React draggable](https://hung4564.github.io/demo-draggable/react/)
-- **Local demos:** `apps/vue/demo-map`, `apps/react/demo-map`, `apps/vue/demo-draggable`, `apps/react/demo-draggable`
+- **Local demo apps:** `apps/vue/demo-map`, `apps/react/demo-map`, `apps/vue/demo-draggable`, `apps/react/demo-draggable`
+
+---
 
 ## 🏗️ Development
 
 ### Available Scripts
 
+| Domain              | Build                        | Test                      | Release                        |
+| :------------------ | :--------------------------- | :------------------------ | :----------------------------- |
+| **Map**             | `npm run map:build`          | `npm run map:test`        | `npm run map:release`          |
+| **Draggable**       | `npm run draggable:build`    | `npm run draggable:test`  | `npm run draggable:release`    |
+| **UI Core**         | `npm run ui-core:build`      | `npm run ui-core:test`    | `npm run ui-core:release`      |
+| **Shared Log**      | `npm run shared-log:build`   | `npm run shared-log:test` | `npm run shared-log:release`   |
+| **Shared Store**    | `npm run shared-store:build` | —                         | `npm run shared-store:release` |
+| **All / Workspace** | `npm run build`              | `npm run lint`            | `npm run release-publish`      |
+
+Additional commands:
+
 ```bash
-# Map
-npm run map:lint          # lint + typecheck tagged map (exclude demo)
-npm run map:build         # lint + build map libs
-npm run map:test          # vitest tagged map (excl. demo)
-npm run map:dev-vue       # nx serve vue-demo-map
-npm run map:dev-react     # nx serve react-demo-map
-npm run map:site:dev      # link docs + VitePress demo-map
-npm run map:release       # nx release --group=map
+# Demo apps
+npm run map:dev-vue           # nx serve vue-demo-map
+npm run map:dev-react         # nx serve react-demo-map
+npm run draggable:dev-vue     # nx serve demo-draggable
+npm run draggable:dev-react   # nx serve react-demo-draggable
 
-# Draggable
-npm run draggable:build
-npm run draggable:test
-npm run draggable:dev-vue
-npm run draggable:dev-react
+# Docs site
+npm run docs:dev              # link docs + start VitePress
+npm run docs:build            # build VitePress documentation
 
-# Share / docs / workspace
-npm run share:build
-npm run docs:dev          # VitePress docs/
-npm run build             # lint + build all
-npm run lint
-npm run ts-check
+# Peer synchronization
+npm run map:peers:sync
+npm run draggable:peers:sync
+npm run ui-core:peers:sync
+npm run shared-log:peers:sync
+npm run shared-store:peers:sync
 ```
 
 ### Project Structure
 
 ```
 vue-library/
-├── apps/                      # Demo applications (vue / react)
-├── docs/                      # VitePress docs site
-├── libs/
-│   ├── map-core/              # @hungpvq/map-core, map-dataset, map-draw
-│   ├── vue/                   # vue-map-*, vue-draggable
-│   ├── react/                 # react-map-*, react-draggable
-│   ├── draggable/             # @hungpvq/draggable
-│   └── share/                 # shared utilities
+├── apps/                         # Demo applications
+│   ├── vue/                      # vue-demo-map, demo-draggable
+│   └── react/                    # react-demo-map, react-demo-draggable
+├── docs/                         # VitePress unified docs portal
+├── libs/                         # Domain-organized libraries
+│   ├── map-core/                 # core, vue, react, docs
+│   ├── map-dataset/              # core, vue, react, docs
+│   ├── map-draw/                 # core, vue, react, docs
+│   ├── map-devtools/             # core (map-debug), vue, react
+│   ├── map/                      # vue (meta), react (meta)
+│   ├── draggable/                # core, vue, react, docs
+│   ├── ui-core/                  # vue, react
+│   ├── shared-log/               # core, vue, react, docs
+│   ├── share/                    # store, shared, core, file
+│   └── demo/                     # demo-map-datasets (private fixtures)
+├── scripts/                      # Release automation, doc linking, submodule deployment
+└── deploy/                       # Submodules for GitHub Pages deployment
 ```
+
+---
 
 ## 👨‍💻 Author
 
