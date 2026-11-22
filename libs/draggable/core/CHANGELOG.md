@@ -1,3 +1,19 @@
+## 1.5.0 (2026-11-22)
+
+### 🚀 Features
+
+- **panels:** add new debug panels for log and store viewing ([205e86e2](https://github.com/hung4564/vue-library/commit/205e86e2))
+- **docs:** add comprehensive documentation ([51523ab6](https://github.com/hung4564/vue-library/commit/51523ab6))
+- **ui-core:** add List and ListItem components with tests ([0dee7218](https://github.com/hung4564/vue-library/commit/0dee7218))
+
+### 🩹 Fixes
+
+- lint ([4f48f90e](https://github.com/hung4564/vue-library/commit/4f48f90e))
+
+### ❤️ Thank You
+
+- hung.pv
+
 ## 1.4.0 (2026-09-22)
 
 ### 🚀 Features

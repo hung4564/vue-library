@@ -32,13 +32,13 @@
     }
   },
   "dependencies": {
-    "@hungpvq/draggable": "^1.4.0",
+    "@hungpvq/draggable": "^1.5.0",
     "@hungpvq/map-core": "^1.2.0",
     "@hungpvq/map-dataset": "^1.2.0",
     "@hungpvq/shared": "^0.4.0",
     "@hungpvq/shared-log": "^0.3.0",
     "@hungpvq/shared-store": "^0.3.1",
-    "@hungpvq/vue-draggable": "^1.4.0",
+    "@hungpvq/vue-draggable": "^1.5.0",
     "@hungpvq/vue-map-core": "^1.2.0",
     "@hungpvq/vue-map-dataset": "^1.2.0",
     "@jamescoyle/vue-icon": "^0.1.2",

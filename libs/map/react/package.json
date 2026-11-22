@@ -32,10 +32,10 @@
     }
   },
   "dependencies": {
-    "@hungpvq/draggable": "^1.4.0",
+    "@hungpvq/draggable": "^1.5.0",
     "@hungpvq/map-core": "^1.2.0",
     "@hungpvq/map-dataset": "^1.2.0",
-    "@hungpvq/react-draggable": "^1.4.0",
+    "@hungpvq/react-draggable": "^1.5.0",
     "@hungpvq/react-map-core": "^1.2.0",
     "@hungpvq/react-map-dataset": "^1.2.0",
     "@hungpvq/shared": "^0.4.0",
