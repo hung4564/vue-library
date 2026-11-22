@@ -458,14 +458,14 @@ import {
   TreeItem,
 } from '@hungpvq/vue-ui-core';
 import { computed, nextTick, ref, watch } from 'vue';
-import type { LiveTreeNode } from './live-tree';
-import LiveNode from './LiveNode.vue';
-import { useVueLogUiStore } from './store';
+import type { LiveTreeNode } from '../live-tree';
+import LiveNode from '../LiveNode.vue';
+import { useVueLogUiStore } from '../store';
 
-import DevtoolPanelCard from './ui/DevtoolPanelCard.vue';
-import DevtoolPanelContainer from './ui/DevtoolPanelContainer.vue';
-import DevtoolPanelSplit from './ui/DevtoolPanelSplit.vue';
-import DevtoolPanelToolbar from './ui/DevtoolPanelToolbar.vue';
+import DevtoolPanelCard from '../ui/DevtoolPanelCard.vue';
+import DevtoolPanelContainer from '../ui/DevtoolPanelContainer.vue';
+import DevtoolPanelSplit from '../ui/DevtoolPanelSplit.vue';
+import DevtoolPanelToolbar from '../ui/DevtoolPanelToolbar.vue';
 
 const { liveInstances, liveEvents, selectedInstanceId, selectedEventId } =
   useVueLogUiStore();

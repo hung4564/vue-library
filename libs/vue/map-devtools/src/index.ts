@@ -4,7 +4,15 @@
 export {
   installDatasetDebug,
   installDevtools,
+  MAP_DEVTOOLS_KNOWN_TABS,
+  resolveMapDevtoolsTabs,
   uninstallDevtools,
+} from './install';
+export type {
+  DevtoolsInstallOptions,
+  DevtoolsTabConfig,
+  DevtoolsTabItem,
+  MapDevtoolsTabId,
 } from './install';
 export { useDevtoolState } from './store';
 export type { DevtoolTab } from './store';

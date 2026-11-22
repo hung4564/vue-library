@@ -1438,3 +1438,30 @@
   opacity: 0.9;
   pointer-events: auto;
 }
+
+/* Tab manager panel */
+.devtool-tab-manager__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.devtool-tab-manager__meta code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.devtool-tab-manager__order {
+  font-family: monospace;
+}
+
+.devtool-tab-manager__empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-muted, #888);
+}
+

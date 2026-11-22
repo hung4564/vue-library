@@ -2,12 +2,12 @@ import { snapshotGlobalStore } from '@hungpvq/shared-log';
 import { BaseButton, TreeItem } from '@hungpvq/react-ui-core';
 import { useEffect, useState } from 'react';
 
-import { phaseLabel, runWithPhase, type ActionFeedbackPhase } from './feedback';
-import { DevtoolPanelCard } from './ui/DevtoolPanelCard';
-import { DevtoolPanelContainer } from './ui/DevtoolPanelContainer';
-import { DevtoolPanelToolbar } from './ui/DevtoolPanelToolbar';
+import { phaseLabel, runWithPhase, type ActionFeedbackPhase } from '../feedback';
+import { DevtoolPanelCard } from '../ui/DevtoolPanelCard';
+import { DevtoolPanelContainer } from '../ui/DevtoolPanelContainer';
+import { DevtoolPanelToolbar } from '../ui/DevtoolPanelToolbar';
 
-export function StoreViewer() {
+export function PanelStoreViewer() {
   const [storeState, setStoreState] = useState<Record<string, unknown>>({});
   const [refreshPhase, setRefreshPhase] = useState<ActionFeedbackPhase>('idle');
 
@@ -46,3 +46,5 @@ export function StoreViewer() {
     </DevtoolPanelContainer>
   );
 }
+
+export { PanelStoreViewer as StoreViewer };

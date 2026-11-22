@@ -6,11 +6,11 @@ import {
 } from '@hungpvq/shared-log';
 
 import { BaseButton, CopyButton } from '@hungpvq/react-ui-core';
-import { DevtoolPanelContainer } from './ui/DevtoolPanelContainer';
-import { DevtoolPanelToolbar } from './ui/DevtoolPanelToolbar';
-import { useDebugHost } from './use-debug-host';
+import { DevtoolPanelContainer } from '../ui/DevtoolPanelContainer';
+import { DevtoolPanelToolbar } from '../ui/DevtoolPanelToolbar';
+import { useDebugHost } from '../use-debug-host';
 
-export function ErrorViewer() {
+export function PanelErrorViewer() {
   const { errors } = useDebugHost();
   return (
     <DevtoolPanelContainer
@@ -64,3 +64,5 @@ export function ErrorViewer() {
     </DevtoolPanelContainer>
   );
 }
+
+export { PanelErrorViewer as ErrorViewer };

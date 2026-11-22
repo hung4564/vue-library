@@ -34,12 +34,16 @@ export type { TreeValueType } from './helpers/tree-helpers';
 export {
   ensureHungpvqDebugHost,
   HUNGPVQ_DEBUG_KEY,
+  isDebugTabEnabled,
+  listAllDebugTabs,
   openDebugTab,
   peekHungpvqDebugHost,
   resetHungpvqDebugHostForTests,
   setDebugActiveTab,
   setDebugOpen,
+  setDebugTabEnabled,
   toggleDebugOpen,
+  toggleDebugTab,
 } from './host';
 export type {
   DebugTabFramework,

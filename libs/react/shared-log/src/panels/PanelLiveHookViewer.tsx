@@ -29,11 +29,11 @@ import {
   ensureReactLogUiStore,
   readLiveSnapshot,
   type ReactLiveSnapshot,
-} from './store';
-import { DevtoolPanelCard } from './ui/DevtoolPanelCard';
-import { DevtoolPanelContainer } from './ui/DevtoolPanelContainer';
-import { DevtoolPanelSplit } from './ui/DevtoolPanelSplit';
-import { DevtoolPanelToolbar } from './ui/DevtoolPanelToolbar';
+} from '../store';
+import { DevtoolPanelCard } from '../ui/DevtoolPanelCard';
+import { DevtoolPanelContainer } from '../ui/DevtoolPanelContainer';
+import { DevtoolPanelSplit } from '../ui/DevtoolPanelSplit';
+import { DevtoolPanelToolbar } from '../ui/DevtoolPanelToolbar';
 
 type TabId = 'instances' | 'traces';
 
@@ -175,7 +175,7 @@ function LiveNode({
   );
 }
 
-export function LiveHookViewer() {
+export function PanelLiveHookViewer() {
   const { instances, events } = useSyncExternalStore(
     subscribe,
     getSnapshot,
@@ -753,3 +753,5 @@ export function LiveHookViewer() {
     </DevtoolPanelContainer>
   );
 }
+
+export { PanelLiveHookViewer as LiveHookViewer };

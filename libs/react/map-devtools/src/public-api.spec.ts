@@ -7,6 +7,8 @@ export const REACT_MAP_DEVTOOLS_STABLE_RUNTIME_EXPORTS = [
   'DevtoolsControl',
   'installDatasetDebug',
   'installDevtools',
+  'MAP_DEVTOOLS_KNOWN_TABS',
+  'resolveMapDevtoolsTabs',
   'uninstallDevtools',
   'useDevtoolState',
 ] as const;

@@ -2,10 +2,7 @@ import type { DebugTabRegistration } from '@hungpvq/shared-log';
 import { BaseButton, Tabs } from '@hungpvq/react-ui-core';
 import type { ComponentType } from 'react';
 
-import { registerBuiltinDebugTabs } from './register-builtin';
 import { useDebugHost } from './use-debug-host';
-
-registerBuiltinDebugTabs();
 
 function tabLabel(tab: DebugTabRegistration): string {
   const base = typeof tab.label === 'function' ? tab.label() : tab.label;

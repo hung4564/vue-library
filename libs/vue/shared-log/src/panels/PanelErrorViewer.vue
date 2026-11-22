@@ -69,9 +69,9 @@ import {
   formatErrorTime,
 } from '@hungpvq/shared-log';
 import { BaseButton, CopyButton } from '@hungpvq/vue-ui-core';
-import DevtoolPanelContainer from './ui/DevtoolPanelContainer.vue';
-import DevtoolPanelToolbar from './ui/DevtoolPanelToolbar.vue';
-import { useDebugHost } from './use-debug-host.js';
+import DevtoolPanelContainer from '../ui/DevtoolPanelContainer.vue';
+import DevtoolPanelToolbar from '../ui/DevtoolPanelToolbar.vue';
+import { useDebugHost } from '../use-debug-host.js';
 
 const { errors } = useDebugHost();
 </script>

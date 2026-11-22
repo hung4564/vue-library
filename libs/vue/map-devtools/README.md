@@ -27,7 +27,11 @@ import { installDevtools } from '@hungpvq/vue-map-devtools';
 import '@hungpvq/vue-map-devtools/style.css';
 
 installDevtools();
-// or: installDevtools({ logStore: 'memory' | customStore | { kind, limit? } })
+// or with tab configuration:
+// installDevtools({ tabs: ['store', 'logs', 'draggable'] })
+// installDevtools({ tabs: { live: false, errors: false } })
+// installDevtools({ disabledTabs: ['live'] })
+// or log store: installDevtools({ logStore: 'memory' | customStore | { kind, limit? } })
 const app = createApp(App);
 ```
 

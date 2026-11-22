@@ -165,6 +165,12 @@ Details: [devtools.md](./libs/map-core/core/docs/core/devtools.md).
 
 ## 📚 Documentation
 
+- [Vue Adapters Documentation](libs/vue/README.md)
+- [React Adapters Documentation](libs/react/README.md)
+- [Shared Utilities Documentation](libs/share/README.md)
+- [Map Draw Documentation](libs/map-core/map-draw/README.md)
+- [Map Debug Documentation](libs/map-core/map-debug/README.md)
+
 - **[Map docs hub](./libs/map-core/core/docs/index.md)** — Getting started, Stable API, minimal starter
 - **[VitePress docs](./docs/)** — Linked package docs site (`npm run docs:dev`)
 - **Live demos:** [Vue map](https://hung4564.github.io/demo-map/vue/) · [React map](https://hung4564.github.io/demo-map/react/) · [Vue draggable](https://hung4564.github.io/demo-draggable/vue/) · [React draggable](https://hung4564.github.io/demo-draggable/react/)
@@ -222,8 +228,3 @@ vue-library/
 
 - **Issues**: [GitHub Issues](https://github.com/hung4564/vue-library/issues)
 - **Repository**: [GitHub Repository](https://github.com/hung4564/vue-library)
-
-## Todo
-
-- [ ] tách component ui cho devtool
-- [ ] xử lý việc xóa dataset

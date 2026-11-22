@@ -7,7 +7,7 @@ import {
 import { cleanup, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { LiveHookViewer } from './LiveHookViewer';
+import { LiveHookViewer } from './panels/PanelLiveHookViewer';
 
 describe('LiveHookViewer', () => {
   beforeEach(() => {

@@ -90,20 +90,20 @@ import {
   InputText,
 } from '@hungpvq/vue-ui-core';
 import { computed, nextTick, ref, watch } from 'vue';
-import DevtoolPanelCard from './ui/DevtoolPanelCard.vue';
-import DevtoolPanelContainer from './ui/DevtoolPanelContainer.vue';
-import DevtoolPanelSplit from './ui/DevtoolPanelSplit.vue';
-import DevtoolPanelToolbar from './ui/DevtoolPanelToolbar.vue';
+import DevtoolPanelCard from '../ui/DevtoolPanelCard.vue';
+import DevtoolPanelContainer from '../ui/DevtoolPanelContainer.vue';
+import DevtoolPanelSplit from '../ui/DevtoolPanelSplit.vue';
+import DevtoolPanelToolbar from '../ui/DevtoolPanelToolbar.vue';
 
 import {
   phaseLabel,
   runWithPhase,
   type ActionFeedbackPhase,
-} from './feedback.js';
-import LogDetailPanel from './LogDetailPanel.vue';
-import LogRenderNode from './LogRenderNode.vue';
-import LogRequestFlowViewer from './LogRequestFlowViewer.vue';
-import { useDebugHost } from './use-debug-host.js';
+} from '../feedback.js';
+import LogDetailPanel from '../LogDetailPanel.vue';
+import LogRenderNode from '../LogRenderNode.vue';
+import LogRequestFlowViewer from '../LogRequestFlowViewer.vue';
+import { useDebugHost } from '../use-debug-host.js';
 
 const { logs } = useDebugHost();
 const logListRef = ref<HTMLElement | null>(null);

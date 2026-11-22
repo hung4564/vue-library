@@ -40,7 +40,23 @@ Apps that already depend on shared-log can use `ensureHungpvqDebugHost()` from `
 
 Demo `#/shared-log` registers `app:demo` through the vendor helper (not `registerDebugTab`).
 
-Built-in tabs (`store`, `live`, `logs`, `errors`) register when the Vue/React UI package loads. Dataset is added by `*-map-devtools`.
+Built-in tabs (`store`, `live`, `logs`, `errors`, `tabs`) register when the Vue/React UI package loads. Dataset is added by `*-map-devtools`.
+
+### Tab toggling API
+
+Tabs registered from anywhere can be toggled on/off dynamically by their ID:
+
+```ts
+import {
+  isDebugTabEnabled,
+  listAllDebugTabs,
+  setDebugTabEnabled,
+  toggleDebugTab,
+} from '@hungpvq/shared-log';
+
+setDebugTabEnabled('errors', false); // Hide tab
+toggleDebugTab('errors');            // Toggle tab visibility
+```
 
 ## Correlation IDs (schema B)
 

@@ -3,9 +3,13 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { ConsoleAdapter, type LogAdapter, LoggerFactory } from '../core';
 import {
   ensureHungpvqDebugHost,
+  isDebugTabEnabled,
+  listAllDebugTabs,
   openDebugTab,
   peekHungpvqDebugHost,
   resetHungpvqDebugHostForTests,
+  setDebugTabEnabled,
+  toggleDebugTab,
 } from './host';
 import { installDebug, uninstallDebug } from './install';
 import { getDebugLogDataStore } from './store';
@@ -135,5 +139,36 @@ describe('__hungpvqDebug pin', () => {
     });
     expect(n).toBeGreaterThan(0);
     stop();
+  });
+
+  it('can enable and disable tabs by id', () => {
+    const host = ensureHungpvqDebugHost();
+    host.registerTab({
+      id: 'tab-1',
+      label: 'Tab 1',
+      framework: 'vue',
+      component: {},
+    });
+    host.registerTab({
+      id: 'tab-2',
+      label: 'Tab 2',
+      framework: 'vue',
+      component: {},
+    });
+
+    expect(host.listTabs('vue').map((t) => t.id)).toEqual(['tab-1', 'tab-2']);
+    expect(isDebugTabEnabled('tab-1')).toBe(true);
+
+    setDebugTabEnabled('tab-1', false);
+    expect(isDebugTabEnabled('tab-1')).toBe(false);
+    expect(host.listTabs('vue').map((t) => t.id)).toEqual(['tab-2']);
+
+    toggleDebugTab('tab-1');
+    expect(isDebugTabEnabled('tab-1')).toBe(true);
+    expect(host.listTabs('vue').map((t) => t.id)).toEqual(['tab-1', 'tab-2']);
+
+    toggleDebugTab('tab-2', false);
+    expect(host.listTabs('vue').map((t) => t.id)).toEqual(['tab-1']);
+    expect(listAllDebugTabs('vue').map((t) => t.id)).toEqual(['tab-1', 'tab-2']);
   });
 });

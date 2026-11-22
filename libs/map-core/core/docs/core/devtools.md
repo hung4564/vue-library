@@ -72,6 +72,113 @@ installDevtools();
 
 `map:debug` keeps only the dataset pin + `installed` flag (`getMapDebugStore()`).
 
+## Tab Management & Registration
+
+Devtools supports modular tab registration, enabling/disabling tabs by ID,
+and an interactive **Tabs** manager panel.
+
+### Built-in Tabs
+
+| Tab ID | Registrar | Source Package | Notes |
+| --- | --- | --- | --- |
+| `store` | `registerStoreDebugTab` | `*-shared-log` | Store inspection viewer |
+| `live` | `registerLiveDebugTab` | `*-shared-log` | Live event & hook trace viewer |
+| `logs` | `registerLogsDebugTab` | `*-shared-log` | Log records & flow viewer |
+| `errors` | `registerErrorsDebugTab` | `*-shared-log` | Captured errors viewer |
+| `tabs` | `registerTabsDebugTab` | `*-shared-log` | Visual tab manager panel |
+| `draggable` | `registerDragDebugTab` | `*-draggable` | Draggable items & positions |
+| `dataset` | `registerDatasetDebugTab` | `*-map-devtools` | Dataset roots, inspect & menus |
+
+### Configuring Tabs at Bootstrap
+
+`installDevtools` provides flexible tab configuration:
+
+```ts
+import { installDevtools } from '@hungpvq/vue-map-devtools';
+import {
+  registerLogsDebugTab,
+  registerStoreDebugTab,
+} from '@hungpvq/vue-shared-log';
+import { registerDragDebugTab } from '@hungpvq/vue-draggable';
+
+// Option 1: Pass specific registrar functions
+installDevtools({
+  tabs: [registerStoreDebugTab, registerLogsDebugTab, registerDragDebugTab],
+});
+
+// Option 2: Pass tab IDs as string array
+installDevtools({
+  tabs: ['store', 'logs', 'draggable'],
+});
+
+// Option 3: Enable/disable specific tabs with a boolean map
+installDevtools({
+  tabs: {
+    live: false,
+    errors: false,
+    draggable: true,
+  },
+});
+
+// Option 4: Use disabledTabs or enabledTabs filters
+installDevtools({
+  disabledTabs: ['live', 'errors'],
+});
+```
+
+### Multi-location Registration
+
+Tabs can be registered from anywhere in your codebase using `registerDebugTab`
+(or the global pin `window.__hungpvqDebug.registerTab`):
+
+```ts
+import { registerDebugTab } from '@hungpvq/vue-shared-log';
+import CustomPluginPanel from './CustomPluginPanel.vue';
+
+registerDebugTab({
+  id: 'my-plugin',
+  label: 'My Plugin',
+  order: 50,
+  component: CustomPluginPanel,
+});
+```
+
+Every registered tab (built-in, map-specific, or custom) can be toggled on/off
+dynamically by its ID.
+
+### Runtime Tab Toggling API
+
+Tabs can be enabled, disabled, or queried at runtime:
+
+```ts
+import {
+  isDebugTabEnabled,
+  listAllDebugTabs,
+  setDebugTabEnabled,
+  toggleDebugTab,
+} from '@hungpvq/shared-log';
+
+// Check if a tab is currently enabled
+const isStoreEnabled = isDebugTabEnabled('store');
+
+// Disable a tab
+setDebugTabEnabled('store', false);
+
+// Toggle a tab on/off
+toggleDebugTab('draggable');
+
+// List all registered tabs (both active and disabled)
+const allTabs = listAllDebugTabs();
+```
+
+### Visual Tab Manager Panel
+
+By default, the `tabs` tab is registered (`registerTabsDebugTab`). It renders
+a visual UI panel (`PanelTabManager`) allowing developers to:
+- See all registered tabs across all libraries.
+- Toggle visibility for any tab in real time.
+- Quickly "Enable All" or "Disable All" tabs.
+
 ## Stable API
 
 | Export                                  | Notes                                                     |

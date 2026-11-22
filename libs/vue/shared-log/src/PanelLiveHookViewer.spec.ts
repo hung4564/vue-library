@@ -6,7 +6,7 @@ import {
 } from '@hungpvq/shared-log';
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import PanelLiveHookViewer from './PanelLiveHookViewer.vue';
+import PanelLiveHookViewer from './panels/PanelLiveHookViewer.vue';
 import { useVueLogUiStore } from './store';
 
 describe('PanelLiveHookViewer', () => {

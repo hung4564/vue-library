@@ -1,19 +1,10 @@
-import { listDragDebugItems, useDragStore } from '@hungpvq/draggable';
-import { peekHungpvqDebugHost } from '@hungpvq/shared-log';
+import { listDragDebugItems } from '@hungpvq/draggable';
 import { registerDebugTab } from '@hungpvq/vue-shared-log';
 
 import DragDebugViewer from './DragDebugViewer.vue';
 
-function isDragTabOnHost(): boolean {
-  return !!peekHungpvqDebugHost()
-    ?.listTabs('vue')
-    .some((tab) => tab.id === 'draggable');
-}
-
 export function registerDragDebugTab(): () => void {
-  const store = useDragStore();
-  if (store.debugTabUnsub && isDragTabOnHost()) return store.debugTabUnsub;
-  const unsub = registerDebugTab({
+  return registerDebugTab({
     id: 'draggable',
     label: 'Draggable',
     order: 20,
@@ -23,10 +14,4 @@ export function registerDragDebugTab(): () => void {
     },
     component: DragDebugViewer,
   });
-  const stop = () => {
-    unsub();
-    if (store.debugTabUnsub === stop) store.debugTabUnsub = undefined;
-  };
-  store.debugTabUnsub = stop;
-  return stop;
 }

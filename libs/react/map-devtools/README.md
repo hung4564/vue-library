@@ -31,6 +31,10 @@ import '@hungpvq/react-map-devtools/style.css';
 import App from './App';
 
 installDevtools();
+// or with tab configuration:
+// installDevtools({ tabs: ['store', 'logs', 'draggable'] })
+// installDevtools({ tabs: { live: false, errors: false } })
+// installDevtools({ disabledTabs: ['live'] })
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

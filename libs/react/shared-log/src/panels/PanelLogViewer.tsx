@@ -15,15 +15,15 @@ import {
 } from '@hungpvq/shared-log';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { phaseLabel, runWithPhase, type ActionFeedbackPhase } from './feedback';
-import { LogDetailPanel } from './LogDetailPanel';
-import { LogRenderNode } from './LogRenderNode';
-import { LogRequestFlowViewer } from './LogRequestFlowViewer';
-import { DevtoolPanelCard } from './ui/DevtoolPanelCard';
-import { DevtoolPanelContainer } from './ui/DevtoolPanelContainer';
-import { DevtoolPanelSplit } from './ui/DevtoolPanelSplit';
-import { DevtoolPanelToolbar } from './ui/DevtoolPanelToolbar';
-import { useDebugHost } from './use-debug-host';
+import { phaseLabel, runWithPhase, type ActionFeedbackPhase } from '../feedback';
+import { LogDetailPanel } from '../LogDetailPanel';
+import { LogRenderNode } from '../LogRenderNode';
+import { LogRequestFlowViewer } from '../LogRequestFlowViewer';
+import { DevtoolPanelCard } from '../ui/DevtoolPanelCard';
+import { DevtoolPanelContainer } from '../ui/DevtoolPanelContainer';
+import { DevtoolPanelSplit } from '../ui/DevtoolPanelSplit';
+import { DevtoolPanelToolbar } from '../ui/DevtoolPanelToolbar';
+import { useDebugHost } from '../use-debug-host';
 
 function filterLogs(
   rows: DebugRecord[],
@@ -42,7 +42,7 @@ function filterLogs(
   });
 }
 
-export function LogViewer() {
+export function PanelLogViewer() {
   const { logs } = useDebugHost();
   const logListRef = useRef<HTMLDivElement | null>(null);
   const [autoScroll, setAutoScroll] = useState(true);
@@ -184,3 +184,5 @@ export function LogViewer() {
     </DevtoolPanelContainer>
   );
 }
+
+export { PanelLogViewer as LogViewer };

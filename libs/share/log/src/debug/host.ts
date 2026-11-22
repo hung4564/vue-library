@@ -22,6 +22,9 @@ export type HungpvqDebugHost = {
   setActiveTab(id: string): void;
   isOpen(): boolean;
   getActiveTab(): string;
+  setTabEnabled?(id: string, enabled: boolean): void;
+  isTabEnabled?(id: string): boolean;
+  listAllTabs?(framework?: DebugTabFramework): DebugTabRegistration[];
   help?: () => void;
 };
 
@@ -41,6 +44,7 @@ function resolveLabel(tab: DebugTabRegistration): string {
 
 function createDebugHostStub(): HungpvqDebugHost {
   const tabs = new Map<string, DebugTabRegistration>();
+  const disabledTabIds = new Set<string>();
   const listeners = new Set<() => void>();
   let open = false;
   let activeTab = 'store';
@@ -66,6 +70,7 @@ function createDebugHostStub(): HungpvqDebugHost {
     listTabs(framework) {
       return [...tabs.values()]
         .filter((tab) => {
+          if (disabledTabIds.has(tab.id)) return false;
           if (framework && tab.framework !== framework) return false;
           if (!tab.component) return false;
           try {
@@ -83,6 +88,7 @@ function createDebugHostStub(): HungpvqDebugHost {
       };
     },
     openTab(id) {
+      if (disabledTabIds.has(id)) return;
       const tab = tabs.get(id);
       if (!tab) return;
       try {
@@ -100,12 +106,38 @@ function createDebugHostStub(): HungpvqDebugHost {
       notify();
     },
     setActiveTab(id) {
-      if (activeTab === id) return;
+      if (activeTab === id || disabledTabIds.has(id)) return;
       activeTab = id;
       notify();
     },
     isOpen: () => open,
     getActiveTab: () => activeTab,
+    setTabEnabled(id, enabled) {
+      if (enabled) {
+        if (!disabledTabIds.has(id)) return;
+        disabledTabIds.delete(id);
+      } else {
+        if (disabledTabIds.has(id)) return;
+        disabledTabIds.add(id);
+        if (activeTab === id) {
+          const next = host.listTabs()[0];
+          activeTab = next?.id ?? 'store';
+        }
+      }
+      notify();
+    },
+    isTabEnabled(id) {
+      return !disabledTabIds.has(id);
+    },
+    listAllTabs(framework) {
+      return [...tabs.values()]
+        .filter((tab) => {
+          if (framework && tab.framework !== framework) return false;
+          if (!tab.component) return false;
+          return true;
+        })
+        .sort((a, b) => (a.order ?? 50) - (b.order ?? 50));
+    },
     help() {
       const rows = [...tabs.values()].map((tab) => ({
         id: tab.id,
@@ -170,3 +202,24 @@ export function toggleDebugOpen(): void {
   const host = ensureHungpvqDebugHost();
   host.setOpen(!host.isOpen());
 }
+
+export function setDebugTabEnabled(id: string, enabled: boolean): void {
+  ensureHungpvqDebugHost().setTabEnabled?.(id, enabled);
+}
+
+export function isDebugTabEnabled(id: string): boolean {
+  return ensureHungpvqDebugHost().isTabEnabled?.(id) ?? true;
+}
+
+export function toggleDebugTab(id: string, enabled?: boolean): void {
+  const current = isDebugTabEnabled(id);
+  const next = enabled !== undefined ? enabled : !current;
+  setDebugTabEnabled(id, next);
+}
+
+export function listAllDebugTabs(
+  framework?: DebugTabFramework,
+): DebugTabRegistration[] {
+  return ensureHungpvqDebugHost().listAllTabs?.(framework) ?? [];
+}
+

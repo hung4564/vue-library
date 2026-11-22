@@ -21,9 +21,9 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, shallowRef } from 'vue';
-import DevtoolPanelCard from './ui/DevtoolPanelCard.vue';
-import DevtoolPanelContainer from './ui/DevtoolPanelContainer.vue';
-import DevtoolPanelToolbar from './ui/DevtoolPanelToolbar.vue';
+import DevtoolPanelCard from '../ui/DevtoolPanelCard.vue';
+import DevtoolPanelContainer from '../ui/DevtoolPanelContainer.vue';
+import DevtoolPanelToolbar from '../ui/DevtoolPanelToolbar.vue';
 
 import { snapshotGlobalStore } from '@hungpvq/shared-log';
 import { BaseButton, TreeItem } from '@hungpvq/vue-ui-core';
@@ -31,7 +31,7 @@ import {
   phaseLabel,
   runWithPhase,
   type ActionFeedbackPhase,
-} from './feedback.js';
+} from '../feedback.js';
 
 
 const storeState = shallowRef<Record<string, unknown>>({});

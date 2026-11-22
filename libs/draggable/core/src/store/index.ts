@@ -70,8 +70,6 @@ export const useDragStore = defineStore('drag:core', () => {
     componentCardSidebarToggle: undefined as unknown,
     /** Origin metadata for Devtools (component vs hook/function). */
     debugOrigins: {} as Record<string, DragItemOrigin>,
-    /** Unsubscribe for the Devtools Draggable tab. */
-    debugTabUnsub: undefined as (() => void) | undefined,
     /** @internal Adapter notify / makeReactive — do not treat as app state. */
     __config,
   };

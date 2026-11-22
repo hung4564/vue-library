@@ -32,10 +32,7 @@ import type { DebugTabRegistration } from '@hungpvq/shared-log';
 import { BaseButton, Tabs } from '@hungpvq/vue-ui-core';
 import { computed } from 'vue';
 
-import { registerBuiltinDebugTabs } from './register-builtin';
 import { useDebugHost } from './use-debug-host';
-
-registerBuiltinDebugTabs();
 
 withDefaults(
   defineProps<{

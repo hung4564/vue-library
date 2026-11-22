@@ -1,8 +1,5 @@
-import { registerBuiltinDebugTabs } from './register-builtin';
 import { DevtoolsShell } from './DevtoolsShell';
 import { useDebugHost } from './use-debug-host';
-
-registerBuiltinDebugTabs();
 
 export function Devtools() {
   const { host, isOpen } = useDebugHost();
