@@ -352,7 +352,7 @@ dryRun=${opts.dryRun} skipSite=${opts.skipSite} skipPush=${opts.skipPush} localP
     run(`git add -- ${extras.join(' ')}`);
   }
 
-  // 5) Changelog + Nx git commit / tag / push
+  // 5) Changelog + Nx git commit (git tagging handled explicitly below to guarantee exact commit)
   {
     const parts = [
       'npx',
@@ -361,13 +361,20 @@ dryRun=${opts.dryRun} skipSite=${opts.skipSite} skipPush=${opts.skipPush} localP
       'changelog',
       version,
       `--group=${opts.group}`,
+      '--git-tag=false',
     ];
     if (opts.skipPush) parts.push('--git-push=false');
     run(parts.join(' '));
   }
 
+  // Explicitly create annotated tag on the release commit we just created
+  run(`git tag -a -f "${expectedTag}" -m "Release ${expectedTag}"`);
+  if (!opts.skipPush) {
+    run(`git push origin -f "${expectedTag}"`);
+  }
+
   console.log(
-    `\nNx should have created tag ${expectedTag} (see nx.json releaseTagPattern).\n`,
+    `\nCreated and verified tag ${expectedTag} on release commit (HEAD).\n`,
   );
 
   // 6) One GitHub Release for the group tag (body = lead CHANGELOG section)
