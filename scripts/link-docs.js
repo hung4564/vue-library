@@ -23,6 +23,10 @@ const links = [
     target: path.resolve(__dirname, '../docs/pages/draggable'),
   },
   {
+    source: path.resolve(__dirname, '../libs/shared-log/docs'),
+    target: path.resolve(__dirname, '../docs/pages/shared-log'),
+  },
+  {
     source: path.resolve(__dirname, '../libs/share/shared/src'),
     target: path.resolve(__dirname, '../docs/pages/share/shared'),
   },

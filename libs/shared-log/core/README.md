@@ -2,6 +2,8 @@
 
 Structured logging with ambient **zone** context (`ZoneContextStorage`) and required `.with({ fn, span })` on every line.
 
+**Documentation:** [Docs Hub](../docs/index.md) · [Logger & Storage](../docs/logger.md) · [Live Hook](../docs/live-hook.md) · [Devtools](../docs/devtools.md) · [Examples](../docs/examples.md) · [Stable API](../docs/stable-api.md)
+
 Every emitted record is a `DebugRecord`: `{ id, header, data }`. Logs use `data.args` + `data.extra`; Live traces share the same envelope (`header.kind = 'live'`).
 
 ### Log data stores (`LogDataStore`)

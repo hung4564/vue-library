@@ -74,6 +74,11 @@ const mainDocsConfig: UserConfig = {
         activeMatch: '/^shared/',
       },
       {
+        text: navLabel('Shared Log', '@hungpvq/shared-log'),
+        link: '/shared-log/',
+        activeMatch: '/^shared-log/',
+      },
+      {
         text: navLabel('Draggable', '@hungpvq/draggable'),
         link: `${demoSiteOrigin}/demo-draggable/`,
         target: '_self',
@@ -89,6 +94,19 @@ const mainDocsConfig: UserConfig = {
     sidebar: {
       '/shared': SharedFunctionsSideBar,
       '/shared-core': SharedFunctionsSideBar,
+      '/shared-log': [
+        {
+          text: 'Shared Log',
+          items: [
+            { text: 'Tổng quan (Overview)', link: '/shared-log/' },
+            { text: 'Logger & Storage', link: '/shared-log/logger' },
+            { text: 'Live Hook Tracing', link: '/shared-log/live-hook' },
+            { text: 'Devtools Shell', link: '/shared-log/devtools' },
+            { text: 'Ví dụ thực tế (Examples)', link: '/shared-log/examples' },
+            { text: 'Stable API', link: '/shared-log/stable-api' },
+          ],
+        },
+      ],
       '/draggable': [
         {
           text: 'Demo Vue',
