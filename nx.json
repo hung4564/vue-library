@@ -196,16 +196,17 @@
           }
         }
       },
-      "ui": {
+      "ui-core": {
         "projects": ["@hungpvq/vue-ui-core", "@hungpvq/react-ui-core"],
         "projectsRelationship": "fixed",
-        "releaseTagPattern": "ui@{version}",
+        "releaseTagPattern": "ui-core@{version}",
         "version": {
           "conventionalCommits": true,
           "fallbackCurrentVersionResolver": "disk",
           "versionPrefix": "^",
           "updateDependents": "auto",
-          "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"]
+          "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
+          "preVersionCommand": "npx nx run-many --projects=tag:ui-core --target=build"
         },
         "changelog": {
           "file": "{projectRoot}/CHANGELOG.md",
@@ -230,7 +231,7 @@
           "versionPrefix": "^",
           "updateDependents": "auto",
           "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
-          "preVersionCommand": "npx nx run shared-log:build"
+          "preVersionCommand": "npx nx run-many --projects=tag:shared-log --target=build"
         },
         "changelog": {
           "file": "{projectRoot}/CHANGELOG.md",
@@ -244,13 +245,17 @@
       "packages": {
         "projects": [
           "libs/share/*",
-          "libs/ui/*",
+          "libs/ui-core/*",
           "libs/map/*",
           "libs/*",
+          "!tag:shared-store",
           "!shared-store",
           "!@hungpvq/shared-store",
+          "!tag:shared-log",
           "!shared-log",
           "!@hungpvq/shared-log",
+          "!@hungpvq/vue-shared-log",
+          "!@hungpvq/react-shared-log",
           "!tag:map",
           "!@hungpvq/map-core",
           "!@hungpvq/map-dataset",
@@ -266,9 +271,11 @@
           "!@hungpvq/react-map-dataset",
           "!@hungpvq/react-map-draw",
           "!@hungpvq/react-map-devtools",
+          "!tag:draggable",
           "!@hungpvq/draggable",
           "!@hungpvq/vue-draggable",
           "!@hungpvq/react-draggable",
+          "!tag:ui-core",
           "!@hungpvq/vue-ui-core",
           "!@hungpvq/react-ui-core"
         ],

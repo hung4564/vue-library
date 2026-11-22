@@ -11,6 +11,7 @@
  *   node scripts/sync-workspace-peers.js map
  *   node scripts/sync-workspace-peers.js shared-store
  *   node scripts/sync-workspace-peers.js shared-log
+ *   node scripts/sync-workspace-peers.js ui-core
  *   node scripts/sync-workspace-peers.js draggable --dry-run
  */
 const fs = require('fs');
@@ -53,8 +54,16 @@ const GROUPS = {
     leadPkg: 'libs/share/store/package.json',
   },
   'shared-log': {
-    packages: ['@hungpvq/shared-log'],
+    packages: [
+      '@hungpvq/shared-log',
+      '@hungpvq/vue-shared-log',
+      '@hungpvq/react-shared-log',
+    ],
     leadPkg: 'libs/shared-log/core/package.json',
+  },
+  'ui-core': {
+    packages: ['@hungpvq/vue-ui-core', '@hungpvq/react-ui-core'],
+    leadPkg: 'libs/ui-core/vue/package.json',
   },
 };
 
@@ -67,7 +76,7 @@ const DEP_FIELDS = [
 
 if (!group || !GROUPS[group]) {
   console.error(
-    'Usage: node scripts/sync-workspace-peers.js <draggable|map|shared-store|shared-log> [--dry-run]',
+    `Usage: node scripts/sync-workspace-peers.js <${Object.keys(GROUPS).join('|')}> [--dry-run]`,
   );
   process.exit(1);
 }

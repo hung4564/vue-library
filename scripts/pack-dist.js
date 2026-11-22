@@ -30,6 +30,14 @@ const SHARE = [
   'libs/share/core',
 ];
 
+const UI_CORE = ['libs/ui-core/vue', 'libs/ui-core/react'];
+
+const SHARED_LOG = [
+  'libs/shared-log/core',
+  'libs/shared-log/vue',
+  'libs/shared-log/react',
+];
+
 const DRAGGABLE_CORE = ['libs/draggable/core'];
 const DRAGGABLE_VUE = [...DRAGGABLE_CORE, 'libs/draggable/vue'];
 const DRAGGABLE_REACT = [...DRAGGABLE_CORE, 'libs/draggable/react'];
@@ -59,6 +67,12 @@ const MAP_REACT = [
 
 /** @type {Record<string, string[]>} relative to dist/ */
 const PRESETS = {
+  'ui-core': UI_CORE,
+  'ui-core-vue': ['libs/ui-core/vue'],
+  'ui-core-react': ['libs/ui-core/react'],
+  'shared-log': SHARED_LOG,
+  'shared-log-vue': ['libs/shared-log/core', 'libs/shared-log/vue'],
+  'shared-log-react': ['libs/shared-log/core', 'libs/shared-log/react'],
   share: SHARE,
   'draggable-vue': [...SHARE.slice(0, 2), ...DRAGGABLE_VUE],
   'draggable-react': [...SHARE.slice(0, 2), ...DRAGGABLE_REACT],

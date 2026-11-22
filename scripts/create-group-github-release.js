@@ -20,6 +20,7 @@ const LEAD = {
   map: 'libs/map-core/core/package.json',
   'shared-store': 'libs/share/store/package.json',
   'shared-log': 'libs/shared-log/core/package.json',
+  'ui-core': 'libs/ui-core/vue/package.json',
 };
 
 function resolveGithubRepo() {

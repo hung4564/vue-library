@@ -1,9 +1,9 @@
 /**
- * Thin wrapper around Nx Release for map / draggable / shared-store / shared-log groups.
+ * Thin wrapper around Nx Release for map / draggable / shared-store / shared-log / ui-core groups.
  *
  * Tag pattern comes from nx.json:
  *   release.groups.<name>.releaseTagPattern
- *     = "draggable@{version}" | "map@{version}" | "shared-store@{version}" | "shared-log@{version}"
+ *     = "draggable@{version}" | "map@{version}" | "shared-store@{version}" | "shared-log@{version}" | "ui-core@{version}"
  *
  * Extra steps Nx does not own:
  *   - sync SemVer markers in draggable docs
@@ -56,6 +56,11 @@ const GROUPS = {
     site: null,
     syncDocs: false,
   },
+  'ui-core': {
+    leadPkg: 'libs/ui-core/vue/package.json',
+    site: null,
+    syncDocs: false,
+  },
 };
 
 function parseArgs(argv) {
@@ -65,7 +70,7 @@ function parseArgs(argv) {
   const specifier = positional[1];
   if (!group || !GROUPS[group]) {
     console.error(
-      `Usage: node scripts/release-group.js <draggable|map|shared-store|shared-log> [specifier] [flags]`,
+      `Usage: node scripts/release-group.js <${Object.keys(GROUPS).join('|')}> [specifier] [flags]`,
     );
     process.exit(1);
   }

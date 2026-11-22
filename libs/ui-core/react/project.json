@@ -10,7 +10,7 @@
       "fallbackCurrentVersionResolver": "disk"
     }
   },
-  "tags": ["ui", "react"],
+  "tags": ["ui", "ui-core", "react"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",

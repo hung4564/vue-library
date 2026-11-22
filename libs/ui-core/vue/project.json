@@ -10,7 +10,7 @@
       "fallbackCurrentVersionResolver": "disk"
     }
   },
-  "tags": ["ui", "vue"],
+  "tags": ["ui", "ui-core", "vue"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
