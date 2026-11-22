@@ -16,9 +16,7 @@ Nx + TypeScript monorepo publishing `@hungpvq/*` packages for MapLibre GIS maps,
 
 | Area         | Paths                                                               | npm scope examples                                          |
 | ------------ | ------------------------------------------------------------------- | ----------------------------------------------------------- |
-| Map engine   | `libs/map-core/core`, `map-dataset`, `map-draw`, `map-debug`        | `@hungpvq/map-core`, `map-dataset`, `map-draw`, `map-debug` |
-| Vue map      | `libs/vue/map-core`, `map-dataset`, `map-draw`, `map-devtools`      | `@hungpvq/vue-map-*`                                        |
-| React map    | `libs/react/map-core`, `map-dataset`, `map-draw`, `map-devtools`    | `@hungpvq/react-map-*`                                      |
+| Map domains  | `libs/map-core`, `libs/map-dataset`, `libs/map-draw`, `libs/map-devtools`, `libs/map` | `@hungpvq/map-*`                                            |
 | Draggable    | `libs/draggable/core`, `libs/draggable/vue`, `libs/draggable/react` | `@hungpvq/draggable`, `vue-draggable`, `react-draggable`    |
 | Share / UI   | `libs/share/*`, `libs/ui-core/vue`, `libs/ui-core/react`            | `@hungpvq/shared*`, `vue-ui-core`, `react-ui-core`          |
 | Demos / docs | Nx serve demos, `docs/`, `deploy/demo-*`                            | VitePress sites                                             |
@@ -28,10 +26,10 @@ Nx tags: `map`, `draggable`, `share`, `demo`, `e2e`, plus framework tags. `tag:m
 ## Where to change code
 
 1. **GIS / store / registry / workers / theme / locale** → `libs/map-core/*` (framework-agnostic). Fixed UI languages: always under a `locale/` folder as `locale/locale.<en|vi|…>.ts` (see `map-locale` skill). Demo apps default to **VI** and bilingual guides.
-2. **Map shell, controls, hooks (Vue)** → `libs/vue/map-*`.
-3. **Same for React** → `libs/react/map-*` (keep parity with Vue when the feature is dual).
-4. **Draw / edit** → protocol in `libs/map-core/map-draw`; UI in `libs/vue/map-draw` and `libs/react/map-draw` (shared InspectController). Docs: `libs/map-core/map-draw/docs` → `/map/draw/`. Demo: `/#/draw` only.
-5. **Dataset builders / identify / style protocol** → `libs/map-core/map-dataset`; UI in `vue`/`react` `map-dataset`. Docs: `libs/map-core/map-dataset/docs`.
+2. **Map shell, controls, hooks (Vue)** → `libs/map-*/vue`.
+3. **Same for React** → `libs/map-*/react` (keep parity with Vue when the feature is dual).
+4. **Draw / edit** → protocol in `libs/map-draw/core`; UI in `libs/map-draw/vue` and `libs/map-draw/react` (shared InspectController). Docs: `libs/map-draw/core/docs` → `/map/draw/`. Demo: `/#/draw` only.
+5. **Dataset builders / identify / style protocol** → `libs/map-dataset/core`; UI in `libs/map-dataset/vue` and `libs/map-dataset/react`. Docs: `libs/map-dataset/core/docs`.
 6. **Shared non-map utils** → `libs/share/*`.
 7. **Generic UI → always `*-ui-core` when possible.** Reuse `@hungpvq/vue-ui-core` / `@hungpvq/react-ui-core` first (`InputText`, `BaseButton`, `Icon`, `Tabs`, `CopyButton`, `Collapse`, fields, …). If a reusable, non-map control is missing, **add it there** (Vue + React parity, public-api lock) and import it — do **not** invent a local copy, re-export, or one-off SFC/TSX in map adapters, shared-log, or demos. Do **not** import generics from `*-map-core/fields`. Map-only fields (`InputCrs`, `MapRangeSlider`, `MapCard`, `MapImage`) stay on `*-map-core/fields`. Map chrome (`MapControlButton`, `MapTabs`) stays on `*-map-core` root (those compose ui-core; do not bypass them with raw `<button>` / `BaseButton` in map packages). Text copy uses ui-core `CopyButton` (not a map-core wrapper). Avoid reserved HTML names (`Button` → `BaseButton`).
 

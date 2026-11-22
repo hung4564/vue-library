@@ -35,11 +35,11 @@ libs/map-core/core/src/
     locale.en.ts / locale.vi.ts
     index.ts                      # → locale.en
 
-libs/map-core/map-dataset/src/
+libs/map-dataset/core/src/
   locale/locale.en.ts             # MAP_DATASET_LOCALE_EN
   attribute-table/locale/locale.en.ts
 
-libs/map-core/map-draw/src/locale/
+libs/map-draw/core/src/locale/
   draw.en.ts / draw.vi.ts         # control slices
   locale.en.ts / locale.vi.ts     # MAP_DRAW_LOCALE_*
   index.ts                        # → draw.en

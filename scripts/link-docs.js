@@ -11,11 +11,11 @@ const links = [
     target: path.resolve(__dirname, '../docs/pages/map'),
   },
   {
-    source: path.resolve(__dirname, '../libs/map-core/map-dataset/docs'),
+    source: path.resolve(__dirname, '../libs/map-dataset/core/docs'),
     target: path.resolve(__dirname, '../docs/pages/map/dataset'),
   },
   {
-    source: path.resolve(__dirname, '../libs/map-core/map-draw/docs'),
+    source: path.resolve(__dirname, '../libs/map-draw/core/docs'),
     target: path.resolve(__dirname, '../docs/pages/map/draw'),
   },
   {

@@ -8,7 +8,7 @@ describe('captureLogCallerSite', () => {
       'Error',
       '    at Logger.log (G:/code/libs/shared-log/core/src/Logger.ts:120:10)',
       '    at Logger.debug (G:/code/libs/shared-log/core/src/Logger.ts:124:10)',
-      '    at registerLocale (G:/code/libs/vue/map-core/src/extra/lang/store.ts:34:42)',
+      '    at registerLocale (G:/code/libs/map-core/vue/src/extra/lang/store.ts:34:42)',
     ].join('\n');
     expect(captureLogCallerSite(stack)).toEqual({
       file: 'extra/lang/store.ts:34',

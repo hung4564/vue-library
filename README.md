@@ -18,15 +18,15 @@ VueLibrary is an Nx + TypeScript monorepo publishing `@hungpvq/*` packages for i
 Framework-agnostic cores:
 
 - **[@hungpvq/map-core](./libs/map-core/core/)** — Engine helpers, store, theme, locale, registry, workers
-- **[@hungpvq/map-dataset](./libs/map-core/map-dataset/)** — Dataset tree, builders, identify, style, GIS worker
-- **[@hungpvq/map-draw](./libs/map-core/map-draw/)** — DrawService, DrawingType, styles, shared `InspectController`
+- **[@hungpvq/map-dataset](./libs/map-dataset/core/)** — Dataset tree, builders, identify, style, GIS worker
+- **[@hungpvq/map-draw](./libs/map-draw/core/)** — DrawService, DrawingType, styles, shared `InspectController`
 
 Vue / React adapters (UI and hooks only — **do not** re-export core):
 
-- **[@hungpvq/vue-map-core](./libs/vue/map-core/)** / **[@hungpvq/react-map-core](./libs/react/map-core/)** — Map container, controls (basemap, measurement, print, legend, …), hooks (`useMap`, `useMapState`, …)
-- **[@hungpvq/vue-map-dataset](./libs/vue/map-dataset/)** / **[@hungpvq/react-map-dataset](./libs/react/map-dataset/)** — Dataset UI, hooks, registry plugin
-- **[@hungpvq/vue-map-draw](./libs/vue/map-draw/)** / **[@hungpvq/react-map-draw](./libs/react/map-draw/)** — Draw / edit UI; `InspectControl` is **parity** (shared `InspectController`: style + popup/hover)
-- **[@hungpvq/vue-map-devtools](./libs/vue/map-devtools/)** / **[@hungpvq/react-map-devtools](./libs/react/map-devtools/)** — Debug panel (store, logs, errors)
+- **[@hungpvq/vue-map-core](./libs/map-core/vue/)** / **[@hungpvq/react-map-core](./libs/map-core/react/)** — Map container, controls (basemap, measurement, print, legend, …), hooks (`useMap`, `useMapState`, …)
+- **[@hungpvq/vue-map-dataset](./libs/map-dataset/vue/)** / **[@hungpvq/react-map-dataset](./libs/map-dataset/react/)** — Dataset UI, hooks, registry plugin
+- **[@hungpvq/vue-map-draw](./libs/map-draw/vue/)** / **[@hungpvq/react-map-draw](./libs/map-draw/react/)** — Draw / edit UI; `InspectControl` is **parity** (shared `InspectController`: style + popup/hover)
+- **[@hungpvq/vue-map-devtools](./libs/map-devtools/vue/)** / **[@hungpvq/react-map-devtools](./libs/map-devtools/react/)** — Debug panel (store, logs, errors)
 
 **Import guidance:** import protocol/types/services (`getMap`, `errorHandler`, builders, `DrawService`, …) from `@hungpvq/map-core` / `map-dataset` / `map-draw`; import UI and hooks from the matching `vue-*` / `react-*` package.
 
@@ -155,7 +155,7 @@ function onMapLoaded(map: MapSimple) {
 </template>
 ```
 
-Dataset setup: [vue-map-dataset docs](./libs/vue/map-dataset/docs/index.md) (also linked from the [map docs hub](./libs/map-core/core/docs/index.md)).
+Dataset setup: [map-dataset docs](./libs/map-dataset/core/docs/index.md) (also linked from the [map docs hub](./libs/map-core/core/docs/index.md)).
 
 ### Devtools (optional)
 
@@ -165,11 +165,9 @@ Details: [devtools.md](./libs/map-core/core/docs/core/devtools.md).
 
 ## 📚 Documentation
 
-- [Vue Adapters Documentation](libs/vue/README.md)
-- [React Adapters Documentation](libs/react/README.md)
 - [Shared Utilities Documentation](libs/share/README.md)
-- [Map Draw Documentation](libs/map-core/map-draw/README.md)
-- [Map Debug Documentation](libs/map-core/map-debug/README.md)
+- [Map Draw Documentation](libs/map-draw/core/README.md)
+- [Map Devtools Documentation](libs/map-devtools/core/README.md)
 
 - **[Map docs hub](./libs/map-core/core/docs/index.md)** — Getting started, Stable API, minimal starter
 - **[VitePress docs](./docs/)** — Linked package docs site (`npm run docs:dev`)

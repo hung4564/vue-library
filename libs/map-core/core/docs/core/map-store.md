@@ -122,7 +122,7 @@ export function peekMapMyFeatureStore(mapId: string) {
 }
 ```
 
-Reference implementations: `libs/map-core/core/src/basemap/register-domain-store.ts`, `libs/map-core/core/src/registry/controls-store.ts`, `libs/map-core/map-dataset/src/register-domain-store.ts`.
+Reference implementations: `libs/map-core/core/src/basemap/register-domain-store.ts`, `libs/map-core/core/src/registry/controls-store.ts`, `libs/map-dataset/core/src/register-domain-store.ts`.
 
 **Still process-wide (not per-map):** `map:registry:global`, theme `localStorage`, `map:core:meta`, GIS worker URL — use `@hungpvq/shared-store` `getOrCreateStore` only for true process singletons.
 

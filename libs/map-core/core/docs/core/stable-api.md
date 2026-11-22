@@ -11,16 +11,16 @@ Root and domain barrels use **explicit named exports** (no public `export *`). R
 | Package                       | Spec                                                          |
 | ----------------------------- | ------------------------------------------------------------- |
 | `@hungpvq/map-core`           | `libs/map-core/core/src/public-api.spec.ts` (root + subpaths) |
-| `@hungpvq/map-dataset`        | `libs/map-core/map-dataset/src/public-api.spec.ts`            |
-| `@hungpvq/map-draw`           | `libs/map-core/map-draw/src/public-api.spec.ts`               |
-| `@hungpvq/vue-map-core`       | `libs/vue/map-core/src/public-api.spec.ts`                    |
-| `@hungpvq/vue-map-dataset`    | `libs/vue/map-dataset/src/public-api.spec.ts`                 |
-| `@hungpvq/vue-map-draw`       | `libs/vue/map-draw/src/public-api.spec.ts`                    |
-| `@hungpvq/vue-map-devtools`   | `libs/vue/map-devtools/src/public-api.spec.ts`                |
-| `@hungpvq/react-map-core`     | `libs/react/map-core/src/public-api.spec.ts`                  |
-| `@hungpvq/react-map-dataset`  | `libs/react/map-dataset/src/public-api.spec.ts`               |
-| `@hungpvq/react-map-draw`     | `libs/react/map-draw/src/public-api.spec.ts`                  |
-| `@hungpvq/react-map-devtools` | `libs/react/map-devtools/src/public-api.spec.ts`              |
+| `@hungpvq/map-dataset`        | `libs/map-dataset/core/src/public-api.spec.ts`            |
+| `@hungpvq/map-draw`           | `libs/map-draw/core/src/public-api.spec.ts`               |
+| `@hungpvq/vue-map-core`       | `libs/map-core/vue/src/public-api.spec.ts`                    |
+| `@hungpvq/vue-map-dataset`    | `libs/map-dataset/vue/src/public-api.spec.ts`                 |
+| `@hungpvq/vue-map-draw`       | `libs/map-draw/vue/src/public-api.spec.ts`                    |
+| `@hungpvq/vue-map-devtools`   | `libs/map-devtools/vue/src/public-api.spec.ts`                |
+| `@hungpvq/react-map-core`     | `libs/map-core/react/src/public-api.spec.ts`                  |
+| `@hungpvq/react-map-dataset`  | `libs/map-dataset/react/src/public-api.spec.ts`               |
+| `@hungpvq/react-map-draw`     | `libs/map-draw/react/src/public-api.spec.ts`                  |
+| `@hungpvq/react-map-devtools` | `libs/map-devtools/react/src/public-api.spec.ts`              |
 
 - Adding a **runtime** export → named export in the entry barrel + Stable (or Experimental) list in that package’s `public-api.spec.ts` + this page when documenting the area.
 - Removing a root **or** subpath runtime export is a **major**. Adding a **new** subpath while keeping root is usually a **minor**.
@@ -242,7 +242,7 @@ Inspect helpers (`brightColor`, `generateInspectStyle`, …) remain public; inve
 | Control ids   | `mapDrawDraftList`, `mapInspectControl`                                                                               |
 | Core boundary | Protocol / `isDraftOption` / locales from `@hungpvq/map-draw` — adapters do **not** re-export them                    |
 
-Consumer docs: `libs/map-core/map-draw/docs` → `/map/draw/`.
+Consumer docs: `libs/map-draw/core/docs` → `/map/draw/`.
 
 ## `@hungpvq/vue-map-devtools` / `@hungpvq/react-map-devtools`
 

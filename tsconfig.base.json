@@ -38,74 +38,74 @@
         "./libs/map-core/core/src/toolbar/index.ts"
       ],
       "@hungpvq/map-core/worker": ["./libs/map-core/core/src/worker-entry.ts"],
-      "@hungpvq/map-dataset": ["./libs/map-core/map-dataset/src/index.ts"],
+      "@hungpvq/map-dataset": ["./libs/map-dataset/core/src/index.ts"],
       "@hungpvq/map-dataset/attribute-table": [
-        "./libs/map-core/map-dataset/src/attribute-table/index.ts"
+        "./libs/map-dataset/core/src/attribute-table/index.ts"
       ],
       "@hungpvq/map-dataset/create-control": [
-        "./libs/map-core/map-dataset/src/create-control/index.ts"
+        "./libs/map-dataset/core/src/create-control/index.ts"
       ],
       "@hungpvq/map-dataset/data-management": [
-        "./libs/map-core/map-dataset/src/data-management/index.ts"
+        "./libs/map-dataset/core/src/data-management/index.ts"
       ],
       "@hungpvq/map-dataset/geo-export": [
-        "./libs/map-core/map-dataset/src/geo-export/index.ts"
+        "./libs/map-dataset/core/src/geo-export/index.ts"
       ],
       "@hungpvq/map-dataset/geojson": [
-        "./libs/map-core/map-dataset/src/geojson/index.ts"
+        "./libs/map-dataset/core/src/geojson/index.ts"
       ],
       "@hungpvq/map-dataset/highlight": [
-        "./libs/map-core/map-dataset/src/highlight/index.ts"
+        "./libs/map-dataset/core/src/highlight/index.ts"
       ],
       "@hungpvq/map-dataset/identify": [
-        "./libs/map-core/map-dataset/src/identify/index.ts"
+        "./libs/map-dataset/core/src/identify/index.ts"
       ],
       "@hungpvq/map-dataset/menu": [
-        "./libs/map-core/map-dataset/src/menu/index.ts"
+        "./libs/map-dataset/core/src/menu/index.ts"
       ],
       "@hungpvq/map-dataset/raster": [
-        "./libs/map-core/map-dataset/src/raster/index.ts"
+        "./libs/map-dataset/core/src/raster/index.ts"
       ],
       "@hungpvq/map-dataset/style": [
-        "./libs/map-core/map-dataset/src/style/index.ts"
+        "./libs/map-dataset/core/src/style/index.ts"
       ],
       "@hungpvq/map-dataset/style.css": [
-        "./libs/map-core/map-dataset/src/style.css"
+        "./libs/map-dataset/core/src/style.css"
       ],
       "@hungpvq/map-dataset/vector-tile": [
-        "./libs/map-core/map-dataset/src/vector-tile/index.ts"
+        "./libs/map-dataset/core/src/vector-tile/index.ts"
       ],
-      "@hungpvq/map-debug": ["./libs/map-core/map-debug/src/index.ts"],
+      "@hungpvq/map-debug": ["./libs/map-devtools/core/src/index.ts"],
       "@hungpvq/map-debug/dataset": [
-        "./libs/map-core/map-debug/src/dataset/index.ts"
+        "./libs/map-devtools/core/src/dataset/index.ts"
       ],
       "@hungpvq/map-debug/style.css": [
-        "./libs/map-core/map-debug/src/style.css"
+        "./libs/map-devtools/core/src/style.css"
       ],
-      "@hungpvq/map-draw": ["./libs/map-core/map-draw/src/index.ts"],
+      "@hungpvq/map-draw": ["./libs/map-draw/core/src/index.ts"],
       "@hungpvq/react-draggable": ["./libs/draggable/react/src/index.ts"],
       "@hungpvq/react-draggable/style.css": [
         "./libs/draggable/react/src/style.css"
       ],
-      "@hungpvq/react-map": ["./libs/react/map/src/index.ts"],
-      "@hungpvq/react-map-core": ["./libs/react/map-core/src/index.ts"],
-      "@hungpvq/react-map-core/fields": ["./libs/react/map-core/src/fields.ts"],
+      "@hungpvq/react-map": ["./libs/map/react/src/index.ts"],
+      "@hungpvq/react-map-core": ["./libs/map-core/react/src/index.ts"],
+      "@hungpvq/react-map-core/fields": ["./libs/map-core/react/src/fields.ts"],
       "@hungpvq/react-map-core/style.css": [
-        "./libs/react/map-core/src/style.css"
+        "./libs/map-core/react/src/style.css"
       ],
-      "@hungpvq/react-map-dataset": ["./libs/react/map-dataset/src/index.ts"],
+      "@hungpvq/react-map-dataset": ["./libs/map-dataset/react/src/index.ts"],
       "@hungpvq/react-map-dataset/style.css": [
-        "./libs/react/map-dataset/src/style.css"
+        "./libs/map-dataset/react/src/style.css"
       ],
-      "@hungpvq/react-map-devtools": ["./libs/react/map-devtools/src/index.ts"],
+      "@hungpvq/react-map-devtools": ["./libs/map-devtools/react/src/index.ts"],
       "@hungpvq/react-map-devtools/style.css": [
-        "./libs/react/map-devtools/src/style.css"
+        "./libs/map-devtools/react/src/style.css"
       ],
-      "@hungpvq/react-map-draw": ["./libs/react/map-draw/src/index.ts"],
+      "@hungpvq/react-map-draw": ["./libs/map-draw/react/src/index.ts"],
       "@hungpvq/react-map-draw/style.css": [
-        "./libs/react/map-draw/src/style.css"
+        "./libs/map-draw/react/src/style.css"
       ],
-      "@hungpvq/react-map/style.css": ["./libs/react/map/style.css"],
+      "@hungpvq/react-map/style.css": ["./libs/map/react/style.css"],
       "@hungpvq/react-shared-log": ["./libs/shared-log/react/src/index.ts"],
       "@hungpvq/react-shared-log/style.css": [
         "./libs/shared-log/react/src/style.css"
@@ -125,21 +125,21 @@
       "@hungpvq/vue-draggable/style.css": [
         "./libs/draggable/vue/src/style.css"
       ],
-      "@hungpvq/vue-map": ["./libs/vue/map/src/index.ts"],
-      "@hungpvq/vue-map-core": ["./libs/vue/map-core/src/index.ts"],
-      "@hungpvq/vue-map-core/fields": ["./libs/vue/map-core/src/fields.ts"],
-      "@hungpvq/vue-map-core/style.css": ["./libs/vue/map-core/src/style.css"],
-      "@hungpvq/vue-map-dataset": ["./libs/vue/map-dataset/src/index.ts"],
+      "@hungpvq/vue-map": ["./libs/map/vue/src/index.ts"],
+      "@hungpvq/vue-map-core": ["./libs/map-core/vue/src/index.ts"],
+      "@hungpvq/vue-map-core/fields": ["./libs/map-core/vue/src/fields.ts"],
+      "@hungpvq/vue-map-core/style.css": ["./libs/map-core/vue/src/style.css"],
+      "@hungpvq/vue-map-dataset": ["./libs/map-dataset/vue/src/index.ts"],
       "@hungpvq/vue-map-dataset/style.css": [
-        "./libs/vue/map-dataset/src/style.css"
+        "./libs/map-dataset/vue/src/style.css"
       ],
-      "@hungpvq/vue-map-devtools": ["./libs/vue/map-devtools/src/index.ts"],
+      "@hungpvq/vue-map-devtools": ["./libs/map-devtools/vue/src/index.ts"],
       "@hungpvq/vue-map-devtools/style.css": [
-        "./libs/vue/map-devtools/src/style.css"
+        "./libs/map-devtools/vue/src/style.css"
       ],
-      "@hungpvq/vue-map-draw": ["./libs/vue/map-draw/src/index.ts"],
-      "@hungpvq/vue-map-draw/style.css": ["./libs/vue/map-draw/src/style.css"],
-      "@hungpvq/vue-map/style.css": ["./libs/vue/map/style.css"],
+      "@hungpvq/vue-map-draw": ["./libs/map-draw/vue/src/index.ts"],
+      "@hungpvq/vue-map-draw/style.css": ["./libs/map-draw/vue/src/style.css"],
+      "@hungpvq/vue-map/style.css": ["./libs/map/vue/style.css"],
       "@hungpvq/vue-shared-log": ["./libs/shared-log/vue/src/index.ts"],
       "@hungpvq/vue-shared-log/style.css": [
         "./libs/shared-log/vue/src/style.css"

@@ -58,7 +58,7 @@
     "map:dev-vue": "nx serve vue-demo-map",
     "map:dev-react": "nx serve react-demo-map",
     "map:lint": "nx run-many --projects=tag:map --exclude=tag:demo,tag:e2e --target=lint,typecheck,ts-check",
-    "map:format": "prettier --write \"libs/map-core\" \"libs/vue/map-core\" \"libs/vue/map-dataset\" \"libs/vue/map-draw\" \"libs/vue/map-devtools\" \"libs/react/map-core\" \"libs/react/map-dataset\" \"libs/react/map-draw\" \"libs/react/map-devtools\" && nx run-many --projects=tag:map --exclude=tag:demo,tag:e2e --target=lint -- --fix",
+    "map:format": "prettier --write \"libs/map-core\" \"libs/map-dataset\" \"libs/map-draw\" \"libs/map-devtools\" \"libs/map\" && nx run-many --projects=tag:map --exclude=tag:demo,tag:e2e --target=lint -- --fix",
     "map:build": "nx run-many --projects=tag:map --exclude=tag:demo,tag:e2e --target=lint,build",
     "map:pack": "npm run share:build && npm run draggable:build && npm run map:build && node scripts/pack-dist.js map",
     "map:pack:vue": "npm run share:build && npm run draggable:build && npm run map:build && node scripts/pack-dist.js map-vue",

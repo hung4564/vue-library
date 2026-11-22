@@ -20,19 +20,19 @@ function readPkg(relativePath: string): { name: string; version: string } {
 export function loadPackageVersions(): Record<string, string> {
   const draggable = readPkg('libs/draggable/core/package.json');
   const reactDraggable = readPkg('libs/draggable/react/package.json');
-  const reactMapCore = readPkg('libs/react/map-core/package.json');
-  const reactMapDataset = readPkg('libs/react/map-dataset/package.json');
+  const reactMapCore = readPkg('libs/map-core/react/package.json');
+  const reactMapDataset = readPkg('libs/map-dataset/react/package.json');
   const shared = readPkg('libs/share/shared/package.json');
   const sharedCore = readPkg('libs/share/core/package.json');
   const sharedFile = readPkg('libs/share/file/package.json');
   const vueDraggable = readPkg('libs/draggable/vue/package.json');
-  const vueMapCore = readPkg('libs/vue/map-core/package.json');
-  const vueMapDataset = readPkg('libs/vue/map-dataset/package.json');
-  const vueMap = readPkg('libs/vue/map/package.json');
-  const mapDraw = readPkg('libs/map-core/map-draw/package.json');
-  const reactMapDraw = readPkg('libs/react/map-draw/package.json');
-  const vueMapDraw = readPkg('libs/vue/map-draw/package.json');
-  const reactMap = readPkg('libs/react/map/package.json');
+  const vueMapCore = readPkg('libs/map-core/vue/package.json');
+  const vueMapDataset = readPkg('libs/map-dataset/vue/package.json');
+  const vueMap = readPkg('libs/map/vue/package.json');
+  const mapDraw = readPkg('libs/map-draw/core/package.json');
+  const reactMapDraw = readPkg('libs/map-draw/react/package.json');
+  const vueMapDraw = readPkg('libs/map-draw/vue/package.json');
+  const reactMap = readPkg('libs/map/react/package.json');
 
   return {
     [draggable.name]: draggable.version,

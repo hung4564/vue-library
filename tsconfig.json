@@ -10,13 +10,13 @@
     { "path": "./libs/demo/map-datasets" },
     { "path": "./libs/draggable/core" },
     { "path": "./libs/map-core/core" },
-    { "path": "./libs/map-core/map-dataset" },
-    { "path": "./libs/map-core/map-draw" },
+    { "path": "./libs/map-dataset/core" },
+    { "path": "./libs/map-draw/core" },
     { "path": "./libs/draggable/react" },
-    { "path": "./libs/react/map-core" },
-    { "path": "./libs/react/map-dataset" },
-    { "path": "./libs/react/map-devtools" },
-    { "path": "./libs/react/map-draw" },
+    { "path": "./libs/map-core/react" },
+    { "path": "./libs/map-dataset/react" },
+    { "path": "./libs/map-devtools/react" },
+    { "path": "./libs/map-draw/react" },
     { "path": "./libs/share/core" },
     { "path": "./libs/share/file" },
     { "path": "./libs/share/shared" },
@@ -27,9 +27,9 @@
     { "path": "./libs/draggable/vue" },
     { "path": "./libs/ui-core/vue" },
     { "path": "./libs/ui-core/react" },
-    { "path": "./libs/vue/map-core" },
-    { "path": "./libs/vue/map-dataset" },
-    { "path": "./libs/vue/map-devtools" },
-    { "path": "./libs/vue/map-draw" }
+    { "path": "./libs/map-core/vue" },
+    { "path": "./libs/map-dataset/vue" },
+    { "path": "./libs/map-devtools/vue" },
+    { "path": "./libs/map-draw/vue" }
   ]
 }

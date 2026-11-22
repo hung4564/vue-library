@@ -17,10 +17,10 @@ Packages are on **1.0.x**. SemVer is strict: breaking → **major**, additive �
 2. `libs/map-core/core/docs/core/stable-api.md` — Stable allowlist vs experimental
 3. Matching `public-api.spec.ts` for the package you touch (runtime `Object.keys` lock):
    - `libs/map-core/core/src/public-api.spec.ts`
-   - `libs/map-core/map-dataset/src/public-api.spec.ts`
-   - `libs/map-core/map-draw/src/public-api.spec.ts`
-   - `libs/vue/map-core/src/public-api.spec.ts` / `libs/vue/map-dataset/src/public-api.spec.ts` / `libs/vue/map-draw/src/public-api.spec.ts`
-   - `libs/react/map-core/src/public-api.spec.ts` / `libs/react/map-dataset/src/public-api.spec.ts` / `libs/react/map-draw/src/public-api.spec.ts`
+   - `libs/map-dataset/core/src/public-api.spec.ts`
+   - `libs/map-draw/core/src/public-api.spec.ts`
+   - `libs/map-core/vue/src/public-api.spec.ts` / `libs/map-dataset/vue/src/public-api.spec.ts` / `libs/map-draw/vue/src/public-api.spec.ts`
+   - `libs/map-core/react/src/public-api.spec.ts` / `libs/map-dataset/react/src/public-api.spec.ts` / `libs/map-draw/react/src/public-api.spec.ts`
 
 ## Bump flowchart
 
@@ -78,7 +78,7 @@ Renaming or removing `buttonInMobile` values / `resolveControlLayout` return sha
 2. Stable vs experimental
 3. Suggested SemVer bump
 4. Peer / coordinated release needed (yes/no)
-5. Docs to update (`stable-api.md`, `public-api.spec.ts`, registry docs, README checklist; for draw also `libs/map-core/map-draw/docs`)
+5. Docs to update (`stable-api.md`, `public-api.spec.ts`, registry docs, README checklist; for draw also `libs/map-draw/core/docs`)
 
 ## Draw Stable surface (quick)
 
@@ -86,4 +86,4 @@ Renaming or removing `buttonInMobile` values / `resolveControlLayout` return sha
 - Adapters: `DrawControl`, `InspectControl`, `useMapDraw`, `useConfigDrawControl`, `useMapDrawStore` (do **not** re-export core protocol/locales — consumers import `isDraftOption` / `DRAW_CONTROL_LOCALE` / `INSPECT_CONTROL_LOCALE` from `@hungpvq/map-draw`)
 - Ids: `mapDrawDraftList`, `mapInspectControl`
 - Package CSS entry: `./style.css`
-- Consumer docs: `libs/map-core/map-draw/docs` (Inspect = section in hub, not `InspectControl.md`)
+- Consumer docs: `libs/map-draw/core/docs` (Inspect = section in hub, not `InspectControl.md`)

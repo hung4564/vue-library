@@ -36,25 +36,25 @@ const DRAGGABLE_REACT = [...DRAGGABLE_CORE, 'libs/draggable/react'];
 
 const MAP_CORE = [
   'libs/map-core/core',
-  'libs/map-core/map-dataset',
-  'libs/map-core/map-draw',
-  'libs/map-core/map-debug',
+  'libs/map-dataset/core',
+  'libs/map-draw/core',
+  'libs/map-devtools/core',
 ];
 
 const MAP_VUE = [
-  'libs/vue/map-core',
-  'libs/vue/map-dataset',
-  'libs/vue/map-draw',
-  'libs/vue/map-devtools',
-  'libs/vue/map',
+  'libs/map-core/vue',
+  'libs/map-dataset/vue',
+  'libs/map-draw/vue',
+  'libs/map-devtools/vue',
+  'libs/map/vue',
 ];
 
 const MAP_REACT = [
-  'libs/react/map-core',
-  'libs/react/map-dataset',
-  'libs/react/map-draw',
-  'libs/react/map-devtools',
-  'libs/react/map',
+  'libs/map-core/react',
+  'libs/map-dataset/react',
+  'libs/map-draw/react',
+  'libs/map-devtools/react',
+  'libs/map/react',
 ];
 
 /** @type {Record<string, string[]>} relative to dist/ */

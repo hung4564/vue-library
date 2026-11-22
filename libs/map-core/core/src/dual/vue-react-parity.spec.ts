@@ -71,12 +71,12 @@ function sourceMentionsControlId(text: string, id: string): boolean {
 }
 
 describe('Vue ↔ React dual-framework parity', () => {
-  const vueCore = join(repoLibs, 'vue/map-core/src');
-  const reactCore = join(repoLibs, 'react/map-core/src');
-  const vueDataset = join(repoLibs, 'vue/map-dataset/src');
-  const reactDataset = join(repoLibs, 'react/map-dataset/src');
-  const vueDraw = join(repoLibs, 'vue/map-draw/src');
-  const reactDraw = join(repoLibs, 'react/map-draw/src');
+  const vueCore = join(repoLibs, 'map-core/vue/src');
+  const reactCore = join(repoLibs, 'map-core/react/src');
+  const vueDataset = join(repoLibs, 'map-dataset/vue/src');
+  const reactDataset = join(repoLibs, 'map-dataset/react/src');
+  const vueDraw = join(repoLibs, 'map-draw/vue/src');
+  const reactDraw = join(repoLibs, 'map-draw/react/src');
 
   it('shared control ids appear in both Vue and React adapter sources', () => {
     const vueText = [

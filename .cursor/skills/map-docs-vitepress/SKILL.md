@@ -29,8 +29,8 @@ Prefer editing package-local markdown that the sites consume:
 - Stable API: `libs/map-core/core/docs/core/stable-api.md` (runtime lock via `public-api.spec.ts`)
 - SemVer checklist: `libs/map-core/README.md`
 - Registry / CSS: docs under `libs/map-core/core/docs/core/` (e.g. registry-controls, css-variables)
-- **Dataset:** `libs/map-core/map-dataset/docs` → junction via `scripts/link-docs.js` → `/map/dataset/`
-- **Draw:** `libs/map-core/map-draw/docs` → junction → `/map/draw/` (Inspect is a **section** under draw hub, not a separate InspectControl.md page)
+- **Dataset:** `libs/map-dataset/core/docs` → junction via `scripts/link-docs.js` → `/map/dataset/`
+- **Draw:** `libs/map-draw/core/docs` → junction → `/map/draw/` (Inspect is a **section** under draw hub, not a separate InspectControl.md page)
 - Module docs: often `index.md` beside modules or under package `docs/`
 - VitePress sidebar entries: `docs/.vitepress/metadata/metadata_map.json`
 
@@ -54,7 +54,7 @@ When adding a root export: update `public-api.spec.ts` + `stable-api.md` togethe
 
 | Do                                                                                          | Do not                                                                            |
 | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| Describe the contract locally (slot names, `title` vs `titleNode`, shell owns Escape/focus) | Link `/map/draggable/*` from `libs/map-core/map-dataset/docs/**`                  |
+| Describe the contract locally (slot names, `title` vs `titleNode`, shell owns Escape/focus) | Link `/map/draggable/*` from `libs/map-dataset/core/docs/**`                  |
 | Name peer packages in install lines (`@hungpvq/vue-draggable`, …)                           | Link `/map/dataset/*` from `libs/draggable/core/docs/**`                          |
 | Update both doc trees when a shared behavior changes (agents may edit both)                 | Relative paths like `../../../../draggable/core/docs/…` or `…/map-dataset/docs/…` |
 

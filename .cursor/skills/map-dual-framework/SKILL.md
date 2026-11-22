@@ -13,8 +13,8 @@ description: >-
 
 ```
 libs/map-core/core          → engine, store, theme, UniversalRegistry (host)
-libs/map-core/map-dataset   → datasets, menus, identify, style protocol, GIS worker
-libs/map-core/map-draw      → DrawService, DrawingType, styles, inspect helpers
+libs/map-dataset/core       → datasets, menus, identify, style protocol, GIS worker
+libs/map-draw/core          → DrawService, DrawingType, styles, inspect helpers
 libs/vue|react/map-core     → Map shell, controls, hooks; extend registry with components
 libs/vue|react/map-dataset  → dataset UI + createDatasetRegistryPlugin() only
 libs/vue|react/map-draw     → DrawControl / InspectControl (shared InspectController)
@@ -33,8 +33,8 @@ Never reintroduce adapter `builder/` / `model/` / `services/` barrels that only 
 When adding a dual feature:
 
 1. Implement protocol / logic in `map-core` or `map-dataset` if framework-agnostic (**pure / controller first** — see Thin-host controls).
-2. Add Vue control/hook/UI under `libs/vue/...` as a **thin host**.
-3. Mirror React under `libs/react/...` with the same control **ids**, action **types**, and public hook names where Stable.
+2. Add Vue control/hook/UI under `libs/<domain>/vue` as a **thin host**.
+3. Mirror React under `libs/<domain>/react` with the same control **ids**, action **types**, and public hook names where Stable.
 4. Register via existing patterns (`useRegisterMapControl`, dataset registry plugin).
 5. Update docs for both demos if user-facing.
 6. Check SemVer (`map-semver-api`) — new control id is usually **minor**; rename is **major**.
@@ -74,7 +74,7 @@ Existing pure owners to copy: `GeoLocateSession`, `createCopyFeedback`, theme/fu
 
 ## Draw checklist
 
-- Docs SoT: `libs/map-core/map-draw/docs` → `/map/draw/` (protocol + DrawControl; **Inspect documented under draw**, not a separate page).
+- Docs SoT: `libs/map-draw/core/docs` → `/map/draw/` (protocol + DrawControl; **Inspect documented under draw**, not a separate page).
 - Control ids (must match Vue ↔ React): `mapDrawDraftList`, `mapInspectControl`.
 - Stable shell: `DrawControl`, `InspectControl`, `useMapDraw`, `useConfigDrawControl`, `useMapDrawStore` (protocol / `isDraftOption` / locales from `@hungpvq/map-draw` — adapters do **not** re-export them).
 - React Inspect uses the same `InspectController` as Vue (style + popup).
@@ -94,7 +94,7 @@ Existing pure owners to copy: `GeoLocateSession`, `createCopyFeedback`, theme/fu
 
 ## Buttons: always `MapControlButton` (copy → ui-core `CopyButton`)
 
-In **all** map library UI (`libs/vue/map-*`, `libs/react/map-*`, including dataset, draw, devtools, controls, toolbars, pagers, menus chrome):
+In **all** map library UI (`libs/map-*/vue`, `libs/map-*/react`, including dataset, draw, devtools, controls, toolbars, pagers, menus chrome):
 
 - **Always** use Stable root `MapControlButton` from `@hungpvq/vue-map-core` / `@hungpvq/react-map-core`.
 - Do **not** use raw `<button>`, `BaseButton`, ad-hoc button classes, or Experimental `./fields` button primitives for map chrome actions.

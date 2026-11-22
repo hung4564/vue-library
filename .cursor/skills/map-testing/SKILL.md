@@ -76,7 +76,7 @@ npx nx test @hungpvq/react-draggable
 # or project name from project.json
 ```
 
-Ensure `tsconfig.spec.json` / vite `test:` block exist when adding the first spec to a package (see `libs/map-core/map-dataset` / `libs/vue/map-core`).
+Ensure `tsconfig.spec.json` / vite `test:` block exist when adding the first spec to a package (see `libs/map-dataset/core` / `libs/map-core/vue`).
 
 ## Map public-api lock
 
@@ -85,14 +85,14 @@ Map packages lock **runtime** root exports with `public-api.spec.ts` (Stable ∪
 | Package                      | Spec                                               |
 | ---------------------------- | -------------------------------------------------- |
 | `@hungpvq/map-core`          | `libs/map-core/core/src/public-api.spec.ts`        |
-| `@hungpvq/map-dataset`       | `libs/map-core/map-dataset/src/public-api.spec.ts` |
-| `@hungpvq/map-draw`          | `libs/map-core/map-draw/src/public-api.spec.ts`    |
-| `@hungpvq/vue-map-core`      | `libs/vue/map-core/src/public-api.spec.ts`         |
-| `@hungpvq/vue-map-dataset`   | `libs/vue/map-dataset/src/public-api.spec.ts`      |
-| `@hungpvq/vue-map-draw`      | `libs/vue/map-draw/src/public-api.spec.ts`         |
-| `@hungpvq/react-map-core`    | `libs/react/map-core/src/public-api.spec.ts`       |
-| `@hungpvq/react-map-dataset` | `libs/react/map-dataset/src/public-api.spec.ts`    |
-| `@hungpvq/react-map-draw`    | `libs/react/map-draw/src/public-api.spec.ts`       |
+| `@hungpvq/map-dataset`       | `libs/map-dataset/core/src/public-api.spec.ts`     |
+| `@hungpvq/map-draw`          | `libs/map-draw/core/src/public-api.spec.ts`        |
+| `@hungpvq/vue-map-core`      | `libs/map-core/vue/src/public-api.spec.ts`         |
+| `@hungpvq/vue-map-dataset`   | `libs/map-dataset/vue/src/public-api.spec.ts`      |
+| `@hungpvq/vue-map-draw`      | `libs/map-draw/vue/src/public-api.spec.ts`         |
+| `@hungpvq/react-map-core`    | `libs/map-core/react/src/public-api.spec.ts`       |
+| `@hungpvq/react-map-dataset` | `libs/map-dataset/react/src/public-api.spec.ts`    |
+| `@hungpvq/react-map-draw`    | `libs/map-draw/react/src/public-api.spec.ts`       |
 
 When changing `src/index.ts` named exports, update the allowlist arrays in that spec and `libs/map-core/core/docs/core/stable-api.md` (if Stable). See skill `map-semver-api`. Do **not** reintroduce public `export *` on `index.ts`.
 
