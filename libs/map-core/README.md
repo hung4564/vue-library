@@ -7,9 +7,9 @@ The **Map Core** library provides the framework‑agnostic foundation for intera
 - **map-draw** – Drawing tools, `InspectController`, and related UI components.
 
 ## Documentation
-- API reference lives in `libs/map-core/**/docs/` (e.g., `core/docs/core/`).
-- Stable API description: `libs/map-core/core/docs/core/stable-api.md`.
-- Quick start guide: `libs/map-core/core/docs/core/minimal-starter.md`.
+- API reference lives in `libs/map-core/docs/` (e.g., `docs/core/`).
+- Stable API description: `libs/map-core/docs/core/stable-api.md`.
+- Quick start guide: `libs/map-core/docs/core/minimal-starter.md`.
 
 ## Usage
 ```bash

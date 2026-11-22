@@ -1,6 +1,6 @@
 /**
  * Public entry for `@hungpvq/map-core/image`.
- * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
+ * Named exports only — see libs/map-core/docs/core/stable-api.md.
  */
 export { logger } from './logger';
 export { listMapStyleImages, subscribeMapStyleImages } from './map-images';

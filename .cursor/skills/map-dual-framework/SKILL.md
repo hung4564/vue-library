@@ -74,7 +74,7 @@ Existing pure owners to copy: `GeoLocateSession`, `createCopyFeedback`, theme/fu
 
 ## Draw checklist
 
-- Docs SoT: `libs/map-draw/core/docs` → `/map/draw/` (protocol + DrawControl; **Inspect documented under draw**, not a separate page).
+- Docs SoT: `libs/map-draw/docs` → `/map/draw/` (protocol + DrawControl; **Inspect documented under draw**, not a separate page).
 - Control ids (must match Vue ↔ React): `mapDrawDraftList`, `mapInspectControl`.
 - Stable shell: `DrawControl`, `InspectControl`, `useMapDraw`, `useConfigDrawControl`, `useMapDrawStore` (protocol / `isDraftOption` / locales from `@hungpvq/map-draw` — adapters do **not** re-export them).
 - React Inspect uses the same `InspectController` as Vue (style + popup).
@@ -85,7 +85,7 @@ Existing pure owners to copy: `GeoLocateSession`, `createCopyFeedback`, theme/fu
 
 - **Host:** `UniversalRegistry` in map-core — methods, menu handlers, **components**, control handles. Bags on `@hungpvq/shared-store` (`map:registry:global` / `maps` / `controls`); never class-static `new Map`.
 - **Platform fn wiring:** `registerMapAccessor` / Ready / Cleanup = UniversalRegistry **global** methods under `MAP_PLATFORM_REGISTRY_METHOD.*` (`__platform.*`). `clearMap` does not remove them.
-- **Process instances:** GIS worker URL → `getOrCreateStore` on `@hungpvq/shared-store` (`globalThis.$_hungpv_store`). `errorHandler` / error capture live on `map:core:meta`. `LoggerFactory` pins on its own `globalThis` key inside `@hungpvq/shared-log`. Never RegistryFn for these. Full key table (registry global, theme storage, `map:core`, `map:core:meta`): `libs/map-core/core/docs/core/map-store.md` § Process-wide singletons.
+- **Process instances:** GIS worker URL → `getOrCreateStore` on `@hungpvq/shared-store` (`globalThis.$_hungpv_store`). `errorHandler` / error capture live on `map:core:meta`. `LoggerFactory` pins on its own `globalThis` key inside `@hungpvq/shared-log`. Never RegistryFn for these. Full key table (registry global, theme storage, `map:core`, `map:core:meta`): `libs/map-core/docs/core/map-store.md` § Process-wide singletons.
 - **App state:** `defineStore` / `getOrCreateStore` / `map:core` / domain scoped stores on `$_hungpv_store` only — do **not** use `@hungpvq/shared` for stores.
 - **Adapters:** vue/react `map-core` extend the class and only add typed `registerComponent` / `getComponent` (Vue: `markRaw`). Do **not** create a parallel store outside shared-store.
 - Dataset UI must keep `createDatasetRegistryPlugin()` (or equivalent) so menus/components resolve.

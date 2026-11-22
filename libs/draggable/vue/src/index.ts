@@ -5,7 +5,7 @@ import './store';
 
 /**
  * Root barrel is an **explicit Stable allowlist** (+ experimental re-exports).
- * Do not reintroduce `export *`. See `libs/draggable/core/docs/stable-api.md`.
+ * Do not reintroduce `export *`. See `libs/draggable/docs/stable-api.md`.
  */
 import {
   DraggableContainer,

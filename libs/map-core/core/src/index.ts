@@ -3,7 +3,7 @@
  * Domain APIs live on subpath entries: `@hungpvq/map-core/basemap`, `/crs`,
  * `/event`, `/image`, `/legend`, `/measurement`, `/menu`, `/print`, `/theme`,
  * `/toolbar`, `/worker`.
- * Do not reintroduce `export *`. See libs/map-core/core/docs/core/stable-api.md.
+ * Do not reintroduce `export *`. See libs/map-core/docs/core/stable-api.md.
  * Direct leaf imports (no internal-barrel).
  */
 export {

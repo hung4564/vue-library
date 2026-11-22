@@ -23,26 +23,26 @@ description: >-
 
 Prefer editing package-local markdown that the sites consume:
 
-- Hub: `libs/map-core/core/docs/index.md`
-- Install from npm (external apps): `libs/map-core/core/docs/core/install-from-npm.md`
-- Minimal starter: `libs/map-core/core/docs/core/minimal-starter.md`
-- Stable API: `libs/map-core/core/docs/core/stable-api.md` (runtime lock via `public-api.spec.ts`)
+- Hub: `libs/map-core/docs/index.md`
+- Install from npm (external apps): `libs/map-core/docs/core/install-from-npm.md`
+- Minimal starter: `libs/map-core/docs/core/minimal-starter.md`
+- Stable API: `libs/map-core/docs/core/stable-api.md` (runtime lock via `public-api.spec.ts`)
 - SemVer checklist: `libs/map-core/README.md`
-- Registry / CSS: docs under `libs/map-core/core/docs/core/` (e.g. registry-controls, css-variables)
-- **Dataset:** `libs/map-dataset/core/docs` → junction via `scripts/link-docs.js` → `/map/dataset/`
-- **Draw:** `libs/map-draw/core/docs` → junction → `/map/draw/` (Inspect is a **section** under draw hub, not a separate InspectControl.md page)
+- Registry / CSS: docs under `libs/map-core/docs/core/` (e.g. registry-controls, css-variables)
+- **Dataset:** `libs/map-dataset/docs` → junction via `scripts/link-docs.js` → `/map/dataset/`
+- **Draw:** `libs/map-draw/docs` → junction → `/map/draw/` (Inspect is a **section** under draw hub, not a separate InspectControl.md page)
 - Module docs: often `index.md` beside modules or under package `docs/`
 - VitePress sidebar entries: `docs/.vitepress/metadata/metadata_map.json`
 
 ## Source-of-truth docs (draggable)
 
-- Hub: `libs/draggable/core/docs/index.md`
-- Stable API: `libs/draggable/core/docs/stable-api.md` (named barrels; experimental table; enforce via `public-api.spec.ts`)
-- Header slots: `libs/draggable/core/docs/header-slots.md` (`pre-title` / `title` / `after-title` / `extra-btn`)
-- Accessibility: `libs/draggable/core/docs/a11y.md`
-- Context menu (experimental): `libs/draggable/core/docs/context-menu.md`
+- Hub: `libs/draggable/docs/index.md`
+- Stable API: `libs/draggable/docs/stable-api.md` (named barrels; experimental table; enforce via `public-api.spec.ts`)
+- Header slots: `libs/draggable/docs/header-slots.md` (`pre-title` / `title` / `after-title` / `extra-btn`)
+- Accessibility: `libs/draggable/docs/a11y.md`
+- Context menu (experimental): `libs/draggable/docs/context-menu.md`
 - SemVer checklist: `libs/draggable/README.md`
-- Component docs: `libs/draggable/core/docs/draggable-*.md`
+- Component docs: `libs/draggable/docs/draggable-*.md`
 - Adapter experimental barrels: `libs/draggable/vue/src/experimental.ts`, `libs/draggable/react/src/experimental.ts`
 
 Keep Stable docs aligned with code when changing public protocol (ids, exports, CSS tokens, store keys, a11y helpers).
@@ -54,9 +54,9 @@ When adding a root export: update `public-api.spec.ts` + `stable-api.md` togethe
 
 | Do                                                                                          | Do not                                                                            |
 | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| Describe the contract locally (slot names, `title` vs `titleNode`, shell owns Escape/focus) | Link `/map/draggable/*` from `libs/map-dataset/core/docs/**`                  |
-| Name peer packages in install lines (`@hungpvq/vue-draggable`, …)                           | Link `/map/dataset/*` from `libs/draggable/core/docs/**`                          |
-| Update both doc trees when a shared behavior changes (agents may edit both)                 | Relative paths like `../../../../draggable/core/docs/…` or `…/map-dataset/docs/…` |
+| Describe the contract locally (slot names, `title` vs `titleNode`, shell owns Escape/focus) | Link `/map/draggable/*` from `libs/map-dataset/docs/**`                  |
+| Name peer packages in install lines (`@hungpvq/vue-draggable`, …)                           | Link `/map/dataset/*` from `libs/draggable/docs/**`                          |
+| Update both doc trees when a shared behavior changes (agents may edit both)                 | Relative paths like `../../../../draggable/docs/…` or `…/map-dataset/docs/…` |
 
 Same isolation applies to VitePress routes after `link-docs.js` (`/map/dataset/` ↔ `/map/draggable/`). Map-core / map-draw hubs may still link dataset or draw sections within the map site; they must not be used as a bridge to smuggle dataset↔draggable doc links.
 
@@ -83,4 +83,4 @@ Same isolation applies to VitePress routes after `link-docs.js` (`/map/dataset/`
 
 ## Windows junctions / `git reset --hard`
 
-`link-docs.js` creates junctions under `docs/pages/*` (and historically under `core/docs/{dataset,draw}`). If `git reset --hard` fails with “unable to create file …/docs/draw”, detach junctions first (`cmd /c rmdir path\\to\\junction`) then reset. Prefer `docs/pages/map/{dataset,draw}` junctions only; do not leave stale junctions under `libs/map-core/core/docs/`.
+`link-docs.js` creates junctions under `docs/pages/*` (and historically under `core/docs/{dataset,draw}`). If `git reset --hard` fails with “unable to create file …/docs/draw”, detach junctions first (`cmd /c rmdir path\\to\\junction`) then reset. Prefer `docs/pages/map/{dataset,draw}` junctions only; do not leave stale junctions under `libs/map-core/docs/`.

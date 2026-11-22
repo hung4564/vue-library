@@ -28,14 +28,14 @@ Nx tags: `map`, `draggable`, `share`, `demo`, `e2e`, plus framework tags. `tag:m
 1. **GIS / store / registry / workers / theme / locale** → `libs/map-core/*` (framework-agnostic). Fixed UI languages: always under a `locale/` folder as `locale/locale.<en|vi|…>.ts` (see `map-locale` skill). Demo apps default to **VI** and bilingual guides.
 2. **Map shell, controls, hooks (Vue)** → `libs/map-*/vue`.
 3. **Same for React** → `libs/map-*/react` (keep parity with Vue when the feature is dual).
-4. **Draw / edit** → protocol in `libs/map-draw/core`; UI in `libs/map-draw/vue` and `libs/map-draw/react` (shared InspectController). Docs: `libs/map-draw/core/docs` → `/map/draw/`. Demo: `/#/draw` only.
-5. **Dataset builders / identify / style protocol** → `libs/map-dataset/core`; UI in `libs/map-dataset/vue` and `libs/map-dataset/react`. Docs: `libs/map-dataset/core/docs`.
+4. **Draw / edit** → protocol in `libs/map-draw/core`; UI in `libs/map-draw/vue` and `libs/map-draw/react` (shared InspectController). Docs: `libs/map-draw/docs` → `/map/draw/`. Demo: `/#/draw` only.
+5. **Dataset builders / identify / style protocol** → `libs/map-dataset/core`; UI in `libs/map-dataset/vue` and `libs/map-dataset/react`. Docs: `libs/map-dataset/docs`.
 6. **Shared non-map utils** → `libs/share/*`.
 7. **Generic UI → always `*-ui-core` when possible.** Reuse `@hungpvq/vue-ui-core` / `@hungpvq/react-ui-core` first (`InputText`, `BaseButton`, `Icon`, `Tabs`, `CopyButton`, `Collapse`, fields, …). If a reusable, non-map control is missing, **add it there** (Vue + React parity, public-api lock) and import it — do **not** invent a local copy, re-export, or one-off SFC/TSX in map adapters, shared-log, or demos. Do **not** import generics from `*-map-core/fields`. Map-only fields (`InputCrs`, `MapRangeSlider`, `MapCard`, `MapImage`) stay on `*-map-core/fields`. Map chrome (`MapControlButton`, `MapTabs`) stays on `*-map-core` root (those compose ui-core; do not bypass them with raw `<button>` / `BaseButton` in map packages). Text copy uses ui-core `CopyButton` (not a map-core wrapper). Avoid reserved HTML names (`Button` → `BaseButton`).
 
 **Process / app stores:** always `@hungpvq/shared-store` (`getOrCreateStore` / `defineStore` / `GlobalStoreService` → `globalThis.$_hungpv_store`, process-wide SSR). Never invent a parallel bag on `@hungpvq/shared`. Module-level `let` / `const Map` for process state is forbidden — put it on an existing `ensure*` / `get*Store` bag (see **shared-store-state**).
 
-**Per-map protocol stores:** always `map:core[mapId]` via `registerMapDomainStoreFactory` / `ensureMapDomainStore` / `peekMapDomainStore` (see **map-domain-store** skill and `libs/map-core/core/docs/core/map-store.md`). Do not add new `getOrCreateStore(…).maps[mapId]` bags.
+**Per-map protocol stores:** always `map:core[mapId]` via `registerMapDomainStoreFactory` / `ensureMapDomainStore` / `peekMapDomainStore` (see **map-domain-store** skill and `libs/map-core/docs/core/map-store.md`). Do not add new `getOrCreateStore(…).maps[mapId]` bags.
 
 Do not put MapLibre business logic only in a Vue or React package if it belongs in `map-core` / `map-dataset` / `map-draw`.
 
@@ -120,7 +120,7 @@ When adding a function, changing a business flow, or touching a logger, check:
 
 ### Devtools mount
 
-Mount `@hungpvq/vue-map-devtools` / `react-map-devtools` **inside** `<Map>` (`DraggableItemPopup`). Do not remount a global overlay shell. Generic tabs (Store / Live / Logs / Errors) come from `*-shared-log`; Dataset is pin-registered by map-devtools. Log store default is IndexedDB on `getLogDebugStore()` (`log:debug` in `@hungpvq/shared-log`). See `libs/map-core/core/docs/core/devtools.md`.
+Mount `@hungpvq/vue-map-devtools` / `react-map-devtools` **inside** `<Map>` (`DraggableItemPopup`). Do not remount a global overlay shell. Generic tabs (Store / Live / Logs / Errors) come from `*-shared-log`; Dataset is pin-registered by map-devtools. Log store default is IndexedDB on `getLogDebugStore()` (`log:debug` in `@hungpvq/shared-log`). See `libs/map-core/docs/core/devtools.md`.
 
 ## Common scripts (root `package.json`)
 
@@ -158,17 +158,17 @@ Commits: Conventional Commits (`@commitlint/config-conventional`). Prefer `npm r
 ## Docs hubs
 
 - Map SemVer + public surface: `libs/map-core/README.md`
-- Map Stable API allowlist: `libs/map-core/core/docs/core/stable-api.md` (named root exports + runtime lock via `public-api.spec.ts` in map-core / map-dataset / vue|react map-*; leaf imports in package `index.ts`)
-- Map minimal starter: `libs/map-core/core/docs/core/minimal-starter.md` (demos `/#/minimal/`)
-- Map docs index: `libs/map-core/core/docs/index.md`
-- Map store / `getMap`: `libs/map-core/core/docs/core/map-store.md`
-- Map error handling: `libs/map-core/core/docs/core/error-handling.md`
+- Map Stable API allowlist: `libs/map-core/docs/core/stable-api.md` (named root exports + runtime lock via `public-api.spec.ts` in map-core / map-dataset / vue|react map-*; leaf imports in package `index.ts`)
+- Map minimal starter: `libs/map-core/docs/core/minimal-starter.md` (demos `/#/minimal/`)
+- Map docs index: `libs/map-core/docs/index.md`
+- Map store / `getMap`: `libs/map-core/docs/core/map-store.md`
+- Map error handling: `libs/map-core/docs/core/error-handling.md`
 - Draggable SemVer + public surface: `libs/draggable/README.md` (line **<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->**)
-- Draggable Stable API: `libs/draggable/core/docs/stable-api.md` (named exports + `public-api.spec.ts` lock)
-- Draggable a11y: `libs/draggable/core/docs/a11y.md`
-- Draggable testing: `libs/draggable/core/docs/testing.md`
-- Draggable next minor prep: `libs/draggable/core/docs/releases/v1.2.md`
-- Draggable docs index: `libs/draggable/core/docs/index.md`
+- Draggable Stable API: `libs/draggable/docs/stable-api.md` (named exports + `public-api.spec.ts` lock)
+- Draggable a11y: `libs/draggable/docs/a11y.md`
+- Draggable testing: `libs/draggable/docs/testing.md`
+- Draggable next minor prep: `libs/draggable/docs/releases/v1.2.md`
+- Draggable docs index: `libs/draggable/docs/index.md`
 - Draggable release: `npm run draggable:release` → `scripts/release-group.js` (docs sync + site push + tag `draggable@<version>`)
 - Per-package READMEs under each lib
 

@@ -40,9 +40,9 @@ For layers / identify / menus, use `@hungpvq/react-map-dataset` and call `instal
 
 ## Docs
 
-- Hub: [map docs](../../map-core/core/docs/index.md)
-- Controls & registry: [map-core docs](../../map-core/core/docs/core/index.md)
-- Stable API: [stable-api.md](../../map-core/core/docs/core/stable-api.md) — `./fields` is map-only; generic `BaseButton` / `Icon` live on `@hungpvq/react-ui-core`. See `public-api.spec.ts`
-- Error handling (`errorHandler` from `@hungpvq/map-core`): [error-handling.md](../../map-core/core/docs/core/error-handling.md)
-- Map store / `getMap`: [map-store.md](../../map-core/core/docs/core/map-store.md)
+- Hub: [map docs](../docs/index.md)
+- Controls & registry: [map-core docs](../docs/core/index.md)
+- Stable API: [stable-api.md](../docs/core/stable-api.md) — `./fields` is map-only; generic `BaseButton` / `Icon` live on `@hungpvq/react-ui-core`. See `public-api.spec.ts`
+- Error handling (`errorHandler` from `@hungpvq/map-core`): [error-handling.md](../docs/core/error-handling.md)
+- Map store / `getMap`: [map-store.md](../docs/core/map-store.md)
 - Demo: [React demo](https://hung4564.github.io/demo-map/react/)

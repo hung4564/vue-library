@@ -14,7 +14,7 @@ import './store';
 
 /**
  * Root barrel is an **explicit Stable allowlist** (+ experimental re-exports).
- * Do not reintroduce `export *`. See `libs/draggable/core/docs/stable-api.md`.
+ * Do not reintroduce `export *`. See `libs/draggable/docs/stable-api.md`.
  *
  * Shell exports use import-then-export so Vite ESM binds names even when the
  * components graph is heavy (avoids "does not provide an export named …").

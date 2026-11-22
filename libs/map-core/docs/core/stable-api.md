@@ -242,7 +242,7 @@ Inspect helpers (`brightColor`, `generateInspectStyle`, …) remain public; inve
 | Control ids   | `mapDrawDraftList`, `mapInspectControl`                                                                               |
 | Core boundary | Protocol / `isDraftOption` / locales from `@hungpvq/map-draw` — adapters do **not** re-export them                    |
 
-Consumer docs: `libs/map-draw/core/docs` → `/map/draw/`.
+Consumer docs: `libs/map-draw/docs` → `/map/draw/`.
 
 ## `@hungpvq/vue-map-devtools` / `@hungpvq/react-map-devtools`
 

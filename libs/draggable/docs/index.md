@@ -215,7 +215,7 @@ Importing `@hungpvq/vue-draggable` / `@hungpvq/react-draggable` (or mounting `Dr
 
 ### Why does the React demo say a named export is missing?
 
-Workspace demos resolve packages to `libs/**/src`. If `@vitejs/plugin-react` Fast Refresh runs on those files, the browser can report `does not provide an export named '…'`. Exclude `libs/` from the React plugin (already done for `demo-draggable` / `demo-map`). See [SemVer §7](../../README.md#7-reducing-everything-is-breaking).
+Workspace demos resolve packages to `libs/**/src`. If `@vitejs/plugin-react` Fast Refresh runs on those files, the browser can report `does not provide an export named '…'`. Exclude `libs/` from the React plugin (already done for `demo-draggable` / `demo-map`). See [SemVer §7](../README.md#7-reducing-everything-is-breaking).
 
 ## Stable API & SemVer
 
@@ -224,7 +224,7 @@ Workspace demos resolve packages to `libs/**/src`. If `@vitejs/plugin-react` Fas
 - [Accessibility](./a11y.md) (modal focus trap, menu typeahead, ARIA regions)
 - [CSS tokens](./css-tokens.md) (`variant="plain"`, radius/shadow/mask tokens)
 - [Testing](./testing.md) (`draggable:test`, public-api locks)
-- [SemVer / breaking checklist](../../README.md#checklist-semver--breaking-change)
+- [SemVer / breaking checklist](../README.md#checklist-semver--breaking-change)
 
 Current line: **`<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.line -->`** (fixed release group for core + Vue + React adapters).
 

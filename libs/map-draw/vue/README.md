@@ -53,7 +53,7 @@ Inspect (`InspectControl`, id `mapInspectControl`) is part of this package — s
 
 ## Docs
 
-- Hub: `/map/draw/` (source of truth: `libs/map-draw/core/docs`)
+- Hub: `/map/draw/` (source of truth: `libs/map-draw/docs`)
 - Protocol: `/map/draw/protocol`
 - Demo: `apps/vue/demo-map` → `/#/draw`
 

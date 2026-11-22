@@ -2,7 +2,7 @@
  * Root barrel: explicit named exports (Stable).
  * Domain symbols live on `@hungpvq/map-dataset/<domain>` subpaths (breaking major).
  * Highlight APIs live on `@hungpvq/map-dataset/highlight` (not re-exported here).
- * Do not reintroduce `export *`. See libs/map-core/core/docs/core/stable-api.md.
+ * Do not reintroduce `export *`. See libs/map-core/docs/core/stable-api.md.
  * Direct leaf imports (no internal-barrel).
  */
 export { createDataManagement, isDataManagementView } from './data-management';

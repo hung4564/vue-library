@@ -1,6 +1,6 @@
 /**
  * Public entry for `@hungpvq/map-dataset/highlight`.
- * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
+ * Named exports only — see libs/map-core/docs/core/stable-api.md.
  *
  * Cascade/query/resolve helpers are package-internal (relative imports / tests).
  * Paint-layer helpers are also package-internal; consumers use

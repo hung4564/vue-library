@@ -136,7 +136,7 @@ const mainDocsConfig: UserConfig = {
 const demoDraggableConfig: UserConfig = {
   title: `@hungpvq/draggable ${packageVersions['@hungpvq/draggable']}`,
   description: 'Draggable docs and demos',
-  srcDir: path.resolve(__dirname, '../../libs/draggable/core/docs'),
+  srcDir: path.resolve(__dirname, '../../libs/draggable/docs'),
   base: '/demo-draggable/',
   outDir: path.resolve(__dirname, '../../deploy/demo-draggable'),
   lastUpdated: true,
@@ -207,7 +207,7 @@ const demoDraggableConfig: UserConfig = {
 const demoMapConfig: UserConfig = {
   title: `@hungpvq/vue-map-core ${packageVersions['@hungpvq/vue-map-core']}`,
   description: 'Map docs and demos',
-  srcDir: path.resolve(__dirname, '../../libs/map-core/core/docs'),
+  srcDir: path.resolve(__dirname, '../../libs/map-core/docs'),
   base: '/demo-map/',
   outDir: path.resolve(__dirname, '../../deploy/demo-map'),
   lastUpdated: true,

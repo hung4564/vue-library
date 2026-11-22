@@ -70,10 +70,10 @@ Declared in `@hungpvq/react-draggable`. Lists items, toggles show, moves sidebar
 | `DevtoolsControl`   | Same as `Devtools`                           |
 | `DEVTOOLS_CONTROL`  | `{ id: 'mapDevtools' }`                      |
 
-Experimental root exports (store helpers / hooks such as `useDevtoolState`, `getDevtoolState`, …) may change in a minor — see [Stable API](../../map-core/core/docs/core/stable-api.md) and `public-api.spec.ts`.
+Experimental root exports (store helpers / hooks such as `useDevtoolState`, `getDevtoolState`, …) may change in a minor — see [Stable API](../../map-core/docs/core/stable-api.md) and `public-api.spec.ts`.
 
 ## Demo
 
 `apps/react/demo-map` — `installDevtools()` in `src/main.tsx`; every `<Map>` mounts `<DevtoolsControl position="bottom-right" />`.
 
-Docs hub: [Map Devtools](../../map-core/core/docs/core/devtools.md).
+Docs hub: [Map Devtools](../../map-core/docs/core/devtools.md).

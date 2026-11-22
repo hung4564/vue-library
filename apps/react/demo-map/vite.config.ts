@@ -23,7 +23,7 @@ export default defineConfig(() => ({
     nxViteTsPaths(),
     nxCopyAssetsPlugin(['*.md']),
   ],
-  // GIS parse + CRS reproject (CreateControl). See libs/map-dataset/core/docs/worker.md
+  // GIS parse + CRS reproject (CreateControl). See libs/map-dataset/docs/worker.md
   worker: {
     plugins: () => [nxViteTsPaths()],
     format: 'es' as const,

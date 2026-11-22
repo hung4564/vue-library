@@ -1,6 +1,6 @@
 /**
  * Public entry for `@hungpvq/map-core/menu`.
- * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
+ * Named exports only — see libs/map-core/docs/core/stable-api.md.
  */
 export {
   centerMapHere,

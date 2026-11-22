@@ -1,6 +1,6 @@
 /**
  * Public entry for `@hungpvq/map-core/legend`.
- * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
+ * Named exports only — see libs/map-core/docs/core/stable-api.md.
  */
 export type { LayerLegendSource } from './buildLayerLegendElements';
 export {

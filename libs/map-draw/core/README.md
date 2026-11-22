@@ -7,9 +7,9 @@ The **Map Draw** library provides drawing and editing capabilities on top of the
 - Vue and React adapters are exposed via `@hungpvq/vue-map-draw` and `@hungpvq/react-map-draw`.
 
 ## Documentation
-- API reference: `libs/map-draw/core/docs/api.md`
-- Usage guide: `libs/map-draw/core/docs/quick-start.md`
-- Component reference: `libs/map-draw/core/docs/components/*.md`
+- API reference: `libs/map-draw/docs/api.md`
+- Usage guide: `libs/map-draw/docs/quick-start.md`
+- Component reference: `libs/map-draw/docs/components/*.md`
 
 ## Development
 ```bash

@@ -1,6 +1,6 @@
 /**
  * Public entry for `@hungpvq/map-dataset/style`.
- * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
+ * Named exports only — see libs/map-core/docs/core/stable-api.md.
  */
 export { applyStyleTabValue, applyStyleZoom } from './apply-style-patch';
 export type { StyleTabComponentMap } from './config-tabs';

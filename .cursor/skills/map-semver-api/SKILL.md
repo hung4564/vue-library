@@ -14,7 +14,7 @@ Packages are on **1.0.x**. SemVer is strict: breaking → **major**, additive �
 ## Required reading before API edits
 
 1. `libs/map-core/README.md` — full SemVer / breaking checklist
-2. `libs/map-core/core/docs/core/stable-api.md` — Stable allowlist vs experimental
+2. `libs/map-core/docs/core/stable-api.md` — Stable allowlist vs experimental
 3. Matching `public-api.spec.ts` for the package you touch (runtime `Object.keys` lock):
    - `libs/map-core/core/src/public-api.spec.ts`
    - `libs/map-dataset/core/src/public-api.spec.ts`
@@ -41,7 +41,7 @@ Can the change break an existing consumer (compile / runtime / CSS / registry ke
 
 ## Treat as public / breaking
 
-- Symbols on the [Stable API allowlist](../../libs/map-core/core/docs/core/stable-api.md) (root **and** `@hungpvq/map-core/<domain>` barrels are **named exports**, locked by `public-api.spec.ts`)
+- Symbols on the [Stable API allowlist](../../libs/map-core/docs/core/stable-api.md) (root **and** `@hungpvq/map-core/<domain>` barrels are **named exports**, locked by `public-api.spec.ts`)
 - Package `exports` paths: `.`, `./style.css`, `./worker`, domain subpaths (`./basemap`, `./crs`, `./event`, `./image`, `./legend`, `./measurement`, `./menu`, `./print`, `./theme`, `./toolbar`), plus dataset `./vite`, `./geojson-worker`, `./assets/*`, and dataset domain subpaths (`./geojson`, `./raster`, `./vector-tile`, `./identify`, `./menu`, `./style`, `./create-control`, `./geo-export`, `./data-management`, `./attribute-table`, `./highlight`)
 - GIS worker: default relative `import.meta.url`; non-Vite hosts use Stable `configureGisWorker({ url })` + `./geojson-worker` static entry (not `public/` copy plugins).
 - **`exports` `types` must match vite-plugin-dts output:** domain entries → `./<domain>/index.d.ts` (not `./<domain>.d.ts`); `./worker` → `./worker-entry.d.ts`. Wrong paths break consumers under `moduleResolution: bundler` / Node16 (`Could not find a declaration file… types at …/index.d.ts but could not be resolved when respecting package.json exports`). Mirror `map-dataset` (`./geojson/index.d.ts`, …).
@@ -78,7 +78,7 @@ Renaming or removing `buttonInMobile` values / `resolveControlLayout` return sha
 2. Stable vs experimental
 3. Suggested SemVer bump
 4. Peer / coordinated release needed (yes/no)
-5. Docs to update (`stable-api.md`, `public-api.spec.ts`, registry docs, README checklist; for draw also `libs/map-draw/core/docs`)
+5. Docs to update (`stable-api.md`, `public-api.spec.ts`, registry docs, README checklist; for draw also `libs/map-draw/docs`)
 
 ## Draw Stable surface (quick)
 
@@ -86,4 +86,4 @@ Renaming or removing `buttonInMobile` values / `resolveControlLayout` return sha
 - Adapters: `DrawControl`, `InspectControl`, `useMapDraw`, `useConfigDrawControl`, `useMapDrawStore` (do **not** re-export core protocol/locales — consumers import `isDraftOption` / `DRAW_CONTROL_LOCALE` / `INSPECT_CONTROL_LOCALE` from `@hungpvq/map-draw`)
 - Ids: `mapDrawDraftList`, `mapInspectControl`
 - Package CSS entry: `./style.css`
-- Consumer docs: `libs/map-draw/core/docs` (Inspect = section in hub, not `InspectControl.md`)
+- Consumer docs: `libs/map-draw/docs` (Inspect = section in hub, not `InspectControl.md`)

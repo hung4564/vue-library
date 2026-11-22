@@ -94,11 +94,11 @@ Map packages lock **runtime** root exports with `public-api.spec.ts` (Stable ∪
 | `@hungpvq/react-map-dataset` | `libs/map-dataset/react/src/public-api.spec.ts`    |
 | `@hungpvq/react-map-draw`    | `libs/map-draw/react/src/public-api.spec.ts`       |
 
-When changing `src/index.ts` named exports, update the allowlist arrays in that spec and `libs/map-core/core/docs/core/stable-api.md` (if Stable). See skill `map-semver-api`. Do **not** reintroduce public `export *` on `index.ts`.
+When changing `src/index.ts` named exports, update the allowlist arrays in that spec and `libs/map-core/docs/core/stable-api.md` (if Stable). See skill `map-semver-api`. Do **not** reintroduce public `export *` on `index.ts`.
 
 ## Draggable public-api lock
 
-Draggable packages lock **runtime** root exports with `public-api.spec.ts` (core / vue / react). When changing `src/index.ts` or `experimental.ts`, update the allowlist arrays in that spec and `libs/draggable/core/docs/stable-api.md`. See skill `draggable-semver-api`.
+Draggable packages lock **runtime** root exports with `public-api.spec.ts` (core / vue / react). When changing `src/index.ts` or `experimental.ts`, update the allowlist arrays in that spec and `libs/draggable/docs/stable-api.md`. See skill `draggable-semver-api`.
 
 ## Conventions
 

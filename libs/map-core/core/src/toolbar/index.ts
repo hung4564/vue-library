@@ -1,6 +1,6 @@
 /**
  * Public entry for `@hungpvq/map-core/toolbar`.
- * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
+ * Named exports only — see libs/map-core/docs/core/stable-api.md.
  */
 export {
   createHostStrategy,

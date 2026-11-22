@@ -3,23 +3,23 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 // Order: core map docs → docs/pages/map, then dataset nested under that tree.
-// Because pages/map junctions to core/docs, pages/map/dataset appears as
-// core/docs/dataset (gitignore'd junction → map-dataset/docs).
+// Because pages/map junctions to map-core/docs, pages/map/dataset appears as
+// map-core/docs/dataset (gitignore'd junction → map-dataset/docs).
 const links = [
   {
-    source: path.resolve(__dirname, '../libs/map-core/core/docs'),
+    source: path.resolve(__dirname, '../libs/map-core/docs'),
     target: path.resolve(__dirname, '../docs/pages/map'),
   },
   {
-    source: path.resolve(__dirname, '../libs/map-dataset/core/docs'),
+    source: path.resolve(__dirname, '../libs/map-dataset/docs'),
     target: path.resolve(__dirname, '../docs/pages/map/dataset'),
   },
   {
-    source: path.resolve(__dirname, '../libs/map-draw/core/docs'),
+    source: path.resolve(__dirname, '../libs/map-draw/docs'),
     target: path.resolve(__dirname, '../docs/pages/map/draw'),
   },
   {
-    source: path.resolve(__dirname, '../libs/draggable/core/docs'),
+    source: path.resolve(__dirname, '../libs/draggable/docs'),
     target: path.resolve(__dirname, '../docs/pages/draggable'),
   },
   {
@@ -36,9 +36,23 @@ const links = [
   },
 ];
 
+function targetEntryExists(target) {
+  try {
+    fs.lstatSync(target);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function removeStaleTarget(target) {
-  if (!fs.existsSync(target)) return;
-  const stat = fs.lstatSync(target);
+  if (!targetEntryExists(target)) return;
+  let stat;
+  try {
+    stat = fs.lstatSync(target);
+  } catch {
+    return;
+  }
   // Prefer rmdir so Windows junctions are detached without deleting source contents.
   // Real (non-junction) directories use recursive delete.
   if (stat.isSymbolicLink()) {
@@ -80,7 +94,9 @@ function pointsToSource(target, source) {
   }
 }
 
-// Drop legacy nested copy/junction under core docs (SoT is package docs/).
+// Drop legacy nested copy/junction under map-core docs (SoT is package docs/).
+removeStaleTarget(path.resolve(__dirname, '../libs/map-core/docs/dataset'));
+removeStaleTarget(path.resolve(__dirname, '../libs/map-core/docs/draw'));
 removeStaleTarget(
   path.resolve(__dirname, '../libs/map-core/core/docs/dataset'),
 );
@@ -97,7 +113,7 @@ links.forEach(({ source, target }) => {
     fs.mkdirSync(parent, { recursive: true });
   }
 
-  if (fs.existsSync(target)) {
+  if (targetEntryExists(target)) {
     if (pointsToSource(target, source)) {
       console.log('Symlink already exists:', target);
       return;

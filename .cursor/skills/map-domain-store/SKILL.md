@@ -35,10 +35,10 @@ Do **not**:
 2. Add `register-domain-store.ts` (or lazy `ensure*Factory` if import cycle with `UniversalRegistry` / `map-platform-registry` — see `controls-store.ts`).
 3. Export `ensureMap*Store(mapId)` (+ peek/clear helpers as needed).
 4. Import the factory module from the package entry (or rely on lazy ensure).
-5. Update [map-store.md](../../libs/map-core/core/docs/core/map-store.md) key table + “Declare a new per-map domain store”; Stable surface → `stable-api.md` + `public-api.spec.ts`.
+5. Update [map-store.md](../../libs/map-core/docs/core/map-store.md) key table + “Declare a new per-map domain store”; Stable surface → `stable-api.md` + `public-api.spec.ts`.
 6. Optional adapter hook `useMap*Store` → calls `ensure*` only.
 
-Full checklist and example: `libs/map-core/core/docs/core/map-store.md` § **Declare a new per-map domain store**.
+Full checklist and example: `libs/map-core/docs/core/map-store.md` § **Declare a new per-map domain store**.
 
 ## Existing keys (orientation)
 

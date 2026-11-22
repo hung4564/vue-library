@@ -15,11 +15,11 @@ Packages are on **<!-- docs-ver:draggable.line -->1.x.x<!-- /docs-ver:draggable.
 ## Required reading before API edits
 
 1. `libs/draggable/README.md` — full SemVer / breaking checklist
-2. `libs/draggable/core/docs/stable-api.md` — Stable allowlist vs experimental
-3. `libs/draggable/core/docs/header-slots.md` — header slot layout (`pre-title` / `title` / `after-title` / `extra-btn`)
-4. `libs/draggable/core/docs/a11y.md` — when changing focus/ARIA/menu keyboard behavior
-5. `libs/draggable/core/docs/testing.md` — unit / public-api lock expectations
-6. `libs/draggable/core/docs/releases/v1.2.md` — next minor prep (when staging **1.2.0**)
+2. `libs/draggable/docs/stable-api.md` — Stable allowlist vs experimental
+3. `libs/draggable/docs/header-slots.md` — header slot layout (`pre-title` / `title` / `after-title` / `extra-btn`)
+4. `libs/draggable/docs/a11y.md` — when changing focus/ARIA/menu keyboard behavior
+5. `libs/draggable/docs/testing.md` — unit / public-api lock expectations
+6. `libs/draggable/docs/releases/v1.2.md` — next minor prep (when staging **1.2.0**)
 
 ## Release (docs site + git tag)
 
@@ -52,22 +52,22 @@ Can the change break an existing consumer (compile / runtime / CSS / store key)?
 
 ## Treat as public / breaking
 
-- Symbols on the [Stable API allowlist](../../libs/draggable/core/docs/stable-api.md) (root barrels are **named exports**, locked by `public-api.spec.ts`)
+- Symbols on the [Stable API allowlist](../../libs/draggable/docs/stable-api.md) (root barrels are **named exports**, locked by `public-api.spec.ts`)
 - Package `exports` paths: `.`, `./style.css`
 - Store id `drag:core` and documented notify path prefixes
 - `DraggableItemType` / `LocationSideBar` / `ItemGroupKey` string values
 - Documented props/events (`show`, `v-model:show`, `onUpdateShow`, `containerId`, `location`)
-- Documented **header slots** (`pre-title` / `title` / `after-title` / `extra-btn` and React `preTitle` / `title` / `afterTitle` / `extraBtn`) — see [header-slots.md](../../libs/draggable/core/docs/header-slots.md); rename = **major**
+- Documented **header slots** (`pre-title` / `title` / `after-title` / `extra-btn` and React `preTitle` / `title` / `afterTitle` / `extraBtn`) — see [header-slots.md](../../libs/draggable/docs/header-slots.md); rename = **major**
 - Documented a11y helpers (`focusFirst`, `restoreFocus`, `trapTabKey`, `handleMenuKeydown`, …) and panel contracts on `a11y.md`
 - **Escape-to-close** when focus is inside Stable shells (modal, popup, float, drawer, sidebar, bottom) — documented minor behavior; do not remove without a SemVer decision
-- Peer minimum raises; `@hungpvq/draggable` `<!-- docs-ver:draggable.peer -->^1.3.0<!-- /docs-ver:draggable.peer -->` pins on adapters
+- Peer minimum raises; `@hungpvq/draggable` `<!-- docs-ver:draggable.peer -->^1.4.0<!-- /docs-ver:draggable.peer -->` pins on adapters
 - Vue/React adapters share core store contracts — breaks propagate
 - Adapters must **not** re-export core types/factories (`createEmpty*`, `itemTypeToGroup`, …); import those from `@hungpvq/draggable`
 - Internal panel chrome (`DragButton`, `DragCard`, `DragHeader`, `DragSidebarToggle`) is **not** public — renaming it is patch unless a documented prop/contract changes
 
 ## Header slots (Stable contract)
 
-Documented header slot / prop names are **Stable** (rename = **major**). Source of truth: `libs/draggable/core/docs/header-slots.md`.
+Documented header slot / prop names are **Stable** (rename = **major**). Source of truth: `libs/draggable/docs/header-slots.md`.
 
 ```
 [ pre-title ] [ title | after-title ] …… spacer …… [ extra-btn ]

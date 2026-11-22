@@ -30,7 +30,7 @@ Vue / React adapters (UI and hooks only — **do not** re-export core):
 
 **Import guidance:** import protocol/types/services (`getMap`, `errorHandler`, builders, `DrawService`, …) from `@hungpvq/map-core` / `map-dataset` / `map-draw`; import UI and hooks from the matching `vue-*` / `react-*` package.
 
-**Docs hub:** [libs/map-core/core/docs/index.md](./libs/map-core/core/docs/index.md) · **Stable API:** [stable-api.md](./libs/map-core/core/docs/core/stable-api.md) · **Map store:** [map-store.md](./libs/map-core/core/docs/core/map-store.md) · **Error handling:** [error-handling.md](./libs/map-core/core/docs/core/error-handling.md) · **Devtools:** [devtools.md](./libs/map-core/core/docs/core/devtools.md) · **SemVer checklist:** [libs/map-core/README.md](./libs/map-core/README.md)
+**Docs hub:** [libs/map-core/docs/index.md](./libs/map-core/docs/index.md) · **Stable API:** [stable-api.md](./libs/map-core/docs/core/stable-api.md) · **Map store:** [map-store.md](./libs/map-core/docs/core/map-store.md) · **Error handling:** [error-handling.md](./libs/map-core/docs/core/error-handling.md) · **Devtools:** [devtools.md](./libs/map-core/docs/core/devtools.md) · **SemVer checklist:** [libs/map-core/README.md](./libs/map-core/README.md)
 
 ### 🎯 Draggable Libraries
 
@@ -38,7 +38,7 @@ Vue / React adapters (UI and hooks only — **do not** re-export core):
 - **[@hungpvq/vue-draggable](./libs/draggable/vue/)** — Vue container, items, hooks
 - **[@hungpvq/react-draggable](./libs/draggable/react/)** — React container, items, hooks
 
-**Docs hub:** [libs/draggable/core/docs/index.md](./libs/draggable/core/docs/index.md) · **SemVer checklist:** [libs/draggable/README.md](./libs/draggable/README.md)
+**Docs hub:** [libs/draggable/docs/index.md](./libs/draggable/docs/index.md) · **SemVer checklist:** [libs/draggable/README.md](./libs/draggable/README.md)
 
 ### 🔧 Shared Libraries
 
@@ -88,7 +88,7 @@ npm install @hungpvq/shared @hungpvq/shared-core @hungpvq/shared-file @hungpvq/s
 
 ## 🚀 Quick Start
 
-Call `installMapApp` once (theme + dataset registry), import CSS, then mount `Map` + `LayerControl`. Full walkthrough: [Minimal starter](./libs/map-core/core/docs/core/minimal-starter.md).
+Call `installMapApp` once (theme + dataset registry), import CSS, then mount `Map` + `LayerControl`. Full walkthrough: [Minimal starter](./libs/map-core/docs/core/minimal-starter.md).
 
 ### Vue — Map + GeoJSON layer
 
@@ -155,13 +155,13 @@ function onMapLoaded(map: MapSimple) {
 </template>
 ```
 
-Dataset setup: [map-dataset docs](./libs/map-dataset/core/docs/index.md) (also linked from the [map docs hub](./libs/map-core/core/docs/index.md)).
+Dataset setup: [map-dataset docs](./libs/map-dataset/docs/index.md) (also linked from the [map docs hub](./libs/map-core/docs/index.md)).
 
 ### Devtools (optional)
 
 - **Vue / React:** `installDevtools()` then mount `<Devtools />` (`@hungpvq/vue-map-devtools` / `@hungpvq/react-map-devtools`)
 
-Details: [devtools.md](./libs/map-core/core/docs/core/devtools.md).
+Details: [devtools.md](./libs/map-core/docs/core/devtools.md).
 
 ## 📚 Documentation
 
@@ -169,7 +169,7 @@ Details: [devtools.md](./libs/map-core/core/docs/core/devtools.md).
 - [Map Draw Documentation](libs/map-draw/core/README.md)
 - [Map Devtools Documentation](libs/map-devtools/core/README.md)
 
-- **[Map docs hub](./libs/map-core/core/docs/index.md)** — Getting started, Stable API, minimal starter
+- **[Map docs hub](./libs/map-core/docs/index.md)** — Getting started, Stable API, minimal starter
 - **[VitePress docs](./docs/)** — Linked package docs site (`npm run docs:dev`)
 - **Live demos:** [Vue map](https://hung4564.github.io/demo-map/vue/) · [React map](https://hung4564.github.io/demo-map/react/) · [Vue draggable](https://hung4564.github.io/demo-draggable/vue/) · [React draggable](https://hung4564.github.io/demo-draggable/react/)
 - **Local demos:** `apps/vue/demo-map`, `apps/react/demo-map`, `apps/vue/demo-draggable`, `apps/react/demo-draggable`

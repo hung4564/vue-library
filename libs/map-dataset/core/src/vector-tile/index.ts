@@ -1,6 +1,6 @@
 /**
  * Public entry for `@hungpvq/map-dataset/vector-tile`.
- * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
+ * Named exports only — see libs/map-core/docs/core/stable-api.md.
  */
 export type {
   VectorTileArchiveTileKind,

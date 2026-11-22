@@ -47,7 +47,7 @@ Use these variables to customize the look and feel of the entire map library.
 | `--map-on-primary-color`    | Foreground on solid primary/accent fills (e.g. `variant="filled"` label)                                           | `#ffffff`     |
 | `--map-accent-color`        | CTA and interactive accent: `MapControlButton` `filled`/`tonal`, `--map-status-active-color`, card highlight tints | `#1a73e8`     |
 
-Override both when rebranding; overriding only `--map-primary-color` leaves CTA buttons on the default accent. Themes set both in [`themes.css`](../../src/style/themes.css) (e.g. `.map-theme-light`).
+Override both when rebranding; overriding only `--map-primary-color` leaves CTA buttons on the default accent. Themes set both in [`themes.css`](../../core/src/style/themes.css) (e.g. `.map-theme-light`).
 
 GeoLocateControl also uses `--map-geolocate-dot-color` and `--map-geolocate-accuracy-color` (per theme).
 
@@ -141,7 +141,7 @@ Named classes: `map-theme-light`, `map-theme-dark`, `map-theme-vibrant`, `map-th
 
 Draggable overlays alias these as `--card-background-color` / `--card-color`. Apply a theme class on `html` (or use [`ThemeControl`](./module/ThemeControl.md) / `bootstrapMapTheme()`).
 
-When `prefers-contrast: more` is active, `html` also gets `map-theme-contrast` (stronger `--map-border-color` / focus outlines). See [`themes.css`](../../src/style/themes.css).
+When `prefers-contrast: more` is active, `html` also gets `map-theme-contrast` (stronger `--map-border-color` / focus outlines). See [`themes.css`](../../core/src/style/themes.css).
 
 ### Measurement - MeasurementControl
 

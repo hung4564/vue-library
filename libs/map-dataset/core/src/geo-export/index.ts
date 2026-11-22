@@ -1,6 +1,6 @@
 /**
  * Public entry for `@hungpvq/map-dataset/geo-export`.
- * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
+ * Named exports only — see libs/map-core/docs/core/stable-api.md.
  *
  * Intentionally small Stable surface: menu/part/controller/AT bridge +
  * types/constants apps need. Pipeline helpers stay module-private.

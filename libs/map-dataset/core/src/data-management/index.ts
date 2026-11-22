@@ -1,6 +1,6 @@
 /**
  * Public entry for `@hungpvq/map-dataset/data-management`.
- * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
+ * Named exports only — see libs/map-core/docs/core/stable-api.md.
  */
 export { toFeatureCollection } from '../utils/feature-collection';
 export { createDataManagement, isDataManagementView } from './dataset-part';

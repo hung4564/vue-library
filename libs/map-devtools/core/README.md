@@ -7,9 +7,9 @@ The **Map Debug** library provides a set of devtools UI components for visualizi
 - `@hungpvq/react-map-devtools` – React equivalents of the Vue devtools.
 
 ## Documentation
-- API reference: `libs/map-devtools/core/docs/api.md`
-- Usage guide: `libs/map-devtools/core/docs/quick-start.md`
-- Component reference: `libs/map-devtools/core/docs/components/*.md`
+- API reference: `libs/map-devtools/docs/api.md`
+- Usage guide: `libs/map-devtools/docs/quick-start.md`
+- Component reference: `libs/map-devtools/docs/components/*.md`
 
 ## Development
 ```bash

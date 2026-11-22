@@ -8,7 +8,7 @@ Vue 3 adapter for `@hungpvq/draggable` (**<!-- docs-ver:draggable.line -->1.x.x<
 npm i @hungpvq/vue-draggable
 ```
 
-Peers: `vue`, `@hungpvq/draggable@<!-- docs-ver:draggable.peer -->^1.3.0<!-- /docs-ver:draggable.peer -->`, `vue-draggable-resizable`, plus shared packages listed in `package.json`.
+Peers: `vue`, `@hungpvq/draggable@<!-- docs-ver:draggable.peer -->^1.4.0<!-- /docs-ver:draggable.peer -->`, `vue-draggable-resizable`, plus shared packages listed in `package.json`.
 
 ## Styles
 
@@ -57,8 +57,8 @@ Prefer controlled `v-model:show` so store-driven open/close stays in sync.
 
 ## Docs
 
-- Hub: [docs/index.md](../core/docs/index.md)
-- [Stable API](../core/docs/stable-api.md) · [a11y](../core/docs/a11y.md) · [testing](../core/docs/testing.md)
+- Hub: [docs/index.md](../docs/index.md)
+- [Stable API](../docs/stable-api.md) · [a11y](../docs/a11y.md) · [testing](../docs/testing.md)
 - SemVer: [libs/draggable/README.md](../README.md)
 
 **Public surface:** named root exports only. Experimental UI (`ManagementControl`, `ContextMenu`, …) lives in `src/experimental.ts` and is re-exported from the root for 1.x. Lock: `src/public-api.spec.ts`.

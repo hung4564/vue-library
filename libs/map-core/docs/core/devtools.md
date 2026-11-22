@@ -11,7 +11,7 @@ Logs and Live share one envelope: `{ id, header, data }`. Case-specific log fiel
 
 `installDevtools()` calls `installDebug()` from `@hungpvq/shared-log` (default IndexedDB on `log:debug`), registers built-in tabs, wires `errorHandler.onError` → `reportDebugError`, pin-registers the Dataset tab when `map-dataset` is present, and the **Draggable** tab when `*-draggable` is present (`registerDragDebugTab` is declared in that package). F12: `window.__hungpvqDebug` (tabs) and `window.__hungpvqDatasetDebug` (dataset inspect).
 
-Standalone (no map): mount `DevtoolsShell` from `*-shared-log` and register extra tabs on `globalThis.__hungpvqDebug` — see [`@hungpvq/shared-log` README](../../../share/log/README.md). Demo: `#/shared-log`.
+Standalone (no map): mount `DevtoolsShell` from `*-shared-log` and register extra tabs on `globalThis.__hungpvqDebug` — see [`@hungpvq/shared-log` README](../../../shared-log/core/README.md). Demo: `#/shared-log`.
 
 ## Dataset tab
 
@@ -23,7 +23,7 @@ Standalone (no map): mount `DevtoolsShell` from `*-shared-log` and register extr
 
 Menus without `id` show generated debug keys (`anon:…:<index>`, `idGenerated`). Shared dataset CSS is owned by `@hungpvq/map-debug` (`.dataset-viewer*`); generic chrome is `@hungpvq/shared-log/style.css`.
 
-See [`@hungpvq/map-debug` README](../../../map-debug/README.md) for the console API and the Debug-dataset menu item.
+See [`@hungpvq/map-debug` README](../../../map-devtools/core/README.md) for the console API and the Debug-dataset menu item.
 
 ## Draggable tab
 
@@ -195,4 +195,4 @@ Generic helpers (`configureDebugLogStore`, `reportDebugError`, `openDebugTab`, `
 - Viewport map: `installDevtools()` + `<DevtoolsControl />` in `apps/vue/demo-map` and `apps/react/demo-map`
 - Standalone log: `#/shared-log` mounts `DevtoolsShell` and pin-registers `app:demo` (vendor `ensure-debug-host`, no `registerDebugTab` import)
 
-See also [Stable API](./stable-api.md) · [Map store keys](./map-store.md) · [Error handling](./error-handling.md) · [`@hungpvq/shared-log` README](../../../share/log/README.md).
+See also [Stable API](./stable-api.md) · [Map store keys](./map-store.md) · [Error handling](./error-handling.md) · [`@hungpvq/shared-log` README](../../../shared-log/core/README.md).

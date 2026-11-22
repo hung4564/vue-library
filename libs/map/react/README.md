@@ -2,7 +2,7 @@
 
 Batteries-included React entry for the map stack: installs core + dataset + draggable shell and re-exports `installMapApp`.
 
-**Docs:** [Install from npm](../../map-core/core/docs/core/install-from-npm.md) · [Peers and bundle](../../map-core/core/docs/core/peers-and-bundle.md) · [Minimal starter](../../map-core/core/docs/core/minimal-starter.md)
+**Docs:** [Install from npm](../../map-core/docs/core/install-from-npm.md) · [Peers and bundle](../../map-core/docs/core/peers-and-bundle.md) · [Minimal starter](../../map-core/docs/core/minimal-starter.md)
 
 ## Install
 

@@ -46,6 +46,8 @@ docs/.vitepress/dist
 docs/.vitepress/cache
 docs/.vitepress/.temp
 # Junction created by scripts/link-docs.js → map-dataset/docs (do not commit)
+libs/map-core/docs/dataset
+libs/map-core/docs/draw
 libs/map-core/core/docs/dataset
 libs/map-core/core/docs/draw
 .npmrc

@@ -1,6 +1,6 @@
 /**
  * Public entry for `@hungpvq/map-core/measurement`.
- * Named exports only — see libs/map-core/core/docs/core/stable-api.md.
+ * Named exports only — see libs/map-core/docs/core/stable-api.md.
  */
 export type { MeasurementGeojsonDownload } from './geojson-download';
 export {

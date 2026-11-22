@@ -4,7 +4,7 @@ Allowlist of symbols and protocols we treat as **Stable** for SemVer on **`<!-- 
 
 Root barrels use **explicit named exports** (no `export *`). Runtime surface is locked by `public-api.spec.ts` in each package. Symbols listed under **Experimental** may change in a **minor**.
 
-Related: [SemVer checklist](../../README.md#checklist-semver--breaking-change) · [Docs hub](./index.md) · [Header slots](./header-slots.md) · [CSS tokens](./css-tokens.md) · [Accessibility](./a11y.md) · [Testing](./testing.md)
+Related: [SemVer checklist](../README.md#checklist-semver--breaking-change) · [Docs hub](./index.md) · [Header slots](./header-slots.md) · [CSS tokens](./css-tokens.md) · [Accessibility](./a11y.md) · [Testing](./testing.md)
 
 ## Architecture
 
@@ -131,4 +131,4 @@ Adapter shells compose private parts: `DragButton`, `DragCard`, `DragHeader`, `D
 
 ## Vite Fast Refresh + path aliases
 
-React demos that resolve packages to `libs/**/src` must exclude `libs/` from `@vitejs/plugin-react` Fast Refresh — see [SemVer README §7](../../README.md#7-reducing-everything-is-breaking) and skill `draggable-semver-api`.
+React demos that resolve packages to `libs/**/src` must exclude `libs/` from `@vitejs/plugin-react` Fast Refresh — see [SemVer README §7](../README.md#7-reducing-everything-is-breaking) and skill `draggable-semver-api`.

@@ -1,7 +1,7 @@
 /**
  * Locks `@hungpvq/react-draggable` root runtime exports.
  * Stable vs experimental sets are documented on
- * `libs/draggable/core/docs/stable-api.md`.
+ * `libs/draggable/docs/stable-api.md`.
  */
 import { describe, expect, it } from 'vitest';
 

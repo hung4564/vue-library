@@ -71,10 +71,10 @@ Declared in `@hungpvq/vue-draggable`. Lists items, toggles show, moves sidebar/d
 | `Devtools`          | Map control + popup (mount inside `<Map>`)   |
 | `DevtoolsControl`   | Same as `Devtools`                           |
 
-See [Stable API](../../map-core/core/docs/core/stable-api.md) and `public-api.spec.ts`.
+See [Stable API](../../map-core/docs/core/stable-api.md) and `public-api.spec.ts`.
 
 ## Demo
 
 `apps/vue/demo-map` — `installDevtools()` in `src/main.ts`; every `<Map>` mounts `<DevtoolsControl position="bottom-right" />`.
 
-Docs hub: [Map Devtools](../../map-core/core/docs/core/devtools.md).
+Docs hub: [Map Devtools](../../map-core/docs/core/devtools.md).
